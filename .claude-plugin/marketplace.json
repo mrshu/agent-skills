@@ -1,6 +1,9 @@
 {
   "name": "agent-skills",
   "description": "Useful skills for AI agents",
+  "owner": {
+    "name": "mrshu"
+  },
   "plugins": [
     {
       "name": "wshot",
