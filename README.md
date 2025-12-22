@@ -1,19 +1,20 @@
 # agent-skills
 
-A Claude Code plugin with useful skills for AI agents.
+A Claude Code plugin marketplace with useful skills for AI agents.
 
 ## Installation
 
+First, add the marketplace:
 ```bash
-/plugin install mrshu/agent-skills
+/plugin marketplace add mrshu/agent-skills
 ```
 
-Or via CLI:
+Then install plugins:
 ```bash
-claude plugin install mrshu/agent-skills
+/plugin install wshot
 ```
 
-## Skills
+## Plugins
 
 ### wshot
 
@@ -22,8 +23,6 @@ Screenshot tool for Wayland/GNOME. Capture windows by app name, PID, title, or w
 **Requirements:**
 - GNOME with Wayland
 - `window-calls` extension (auto-prompted if missing)
-
-Claude will automatically use this skill when you ask to take screenshots of windows or applications.
 
 ## License
 

@@ -1,0 +1,12 @@
+{
+  "name": "agent-skills",
+  "description": "Useful skills for AI agents",
+  "plugins": [
+    {
+      "name": "wshot",
+      "source": "./plugins/wshot",
+      "description": "Screenshot tool for Wayland/GNOME - capture windows by app name, PID, title, or window ID",
+      "version": "0.1.0"
+    }
+  ]
+}

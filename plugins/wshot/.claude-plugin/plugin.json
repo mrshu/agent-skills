@@ -1,0 +1,9 @@
+{
+  "name": "wshot",
+  "version": "0.1.0",
+  "description": "Screenshot tool for Wayland/GNOME - capture windows by app name, PID, title, or window ID",
+  "author": {
+    "name": "mrshu"
+  },
+  "keywords": ["screenshot", "wayland", "gnome", "capture"]
+}
