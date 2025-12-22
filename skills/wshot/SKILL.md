@@ -11,19 +11,19 @@ Take screenshots of specific windows by app name, PID, title, or window ID.
 
 ```bash
 # List all windows (returns JSON)
-uv run .claude/skills/wshot/wshot.py list
+uv run ${CLAUDE_PLUGIN_ROOT}/skills/wshot/wshot.py list
 
 # Capture by app name
-uv run .claude/skills/wshot/wshot.py capture firefox -o /tmp/shot.png
+uv run ${CLAUDE_PLUGIN_ROOT}/skills/wshot/wshot.py capture firefox -o /tmp/shot.png
 
 # Capture by PID
-uv run .claude/skills/wshot/wshot.py capture --pid 1234 -o /tmp/shot.png
+uv run ${CLAUDE_PLUGIN_ROOT}/skills/wshot/wshot.py capture --pid 1234 -o /tmp/shot.png
 
 # Capture by title substring
-uv run .claude/skills/wshot/wshot.py capture --title "GitHub" -o /tmp/shot.png
+uv run ${CLAUDE_PLUGIN_ROOT}/skills/wshot/wshot.py capture --title "GitHub" -o /tmp/shot.png
 
 # Capture by window ID
-uv run .claude/skills/wshot/wshot.py capture --id 2889387148 -o /tmp/shot.png
+uv run ${CLAUDE_PLUGIN_ROOT}/skills/wshot/wshot.py capture --id 2889387148 -o /tmp/shot.png
 ```
 
 ## Workflow

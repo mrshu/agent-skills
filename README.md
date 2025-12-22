@@ -1,6 +1,17 @@
 # agent-skills
 
-A collection of useful skills for AI agents (Claude Code, etc.)
+A Claude Code plugin with useful skills for AI agents.
+
+## Installation
+
+```bash
+/plugin install mrshu/agent-skills
+```
+
+Or via CLI:
+```bash
+claude plugin install mrshu/agent-skills
+```
 
 ## Skills
 
@@ -8,16 +19,12 @@ A collection of useful skills for AI agents (Claude Code, etc.)
 
 Screenshot tool for Wayland/GNOME. Capture windows by app name, PID, title, or window ID.
 
-```bash
-uv run .claude/skills/wshot/wshot.py list              # List windows (JSON)
-uv run .claude/skills/wshot/wshot.py capture firefox   # Screenshot by app
-```
+**Requirements:**
+- GNOME with Wayland
+- `window-calls` extension (auto-prompted if missing)
 
-## Installation
+Claude will automatically use this skill when you ask to take screenshots of windows or applications.
 
-Copy the `.claude/skills/` directory to your project or to `~/.claude/skills/` for global availability.
+## License
 
-## Requirements
-
-- [uv](https://github.com/astral-sh/uv) for running Python scripts
-- Skill-specific requirements listed in each skill's SKILL.md
+MIT
