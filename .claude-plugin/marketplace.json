@@ -10,6 +10,12 @@
       "source": "./plugins/wshot",
       "description": "Screenshot tool for Wayland/GNOME - capture windows by app name, PID, title, or window ID",
       "version": "0.1.0"
+    },
+    {
+      "name": "scholar-search",
+      "source": "./plugins/scholar-search",
+      "description": "Academic reference tools - find papers via Semantic Scholar and OpenAlex, get high-quality BibTeX from DBLP",
+      "version": "0.1.0"
     }
   ]
 }

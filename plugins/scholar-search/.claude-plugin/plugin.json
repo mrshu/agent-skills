@@ -1,0 +1,9 @@
+{
+  "name": "scholar-search",
+  "version": "0.1.0",
+  "description": "Academic reference tools - find papers via Semantic Scholar and OpenAlex, get high-quality BibTeX from DBLP",
+  "author": {
+    "name": "mrshu"
+  },
+  "keywords": ["academic", "references", "papers", "citations", "bibtex"]
+}

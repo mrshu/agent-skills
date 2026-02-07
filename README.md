@@ -11,10 +11,21 @@ First, add the marketplace:
 
 Then install plugins:
 ```bash
+/plugin install scholar-search
 /plugin install wshot
 ```
 
 ## Plugins
+
+### scholar-search
+
+Find academic papers, explore citations, and export BibTeX. Uses three tools under the hood:
+
+- **s2cli** (Semantic Scholar) — paper recommendations, citation/reference networks, arXiv/DOI lookups
+- **openalexcli** (OpenAlex) — broadest coverage (260M+ works), institution/journal queries, aggregation
+- **dblpcli** (DBLP) — high-quality, curated BibTeX export
+
+All tools run via `uvx` — no installation needed.
 
 ### wshot
 
