@@ -1,0 +1,9 @@
+{
+  "name": "paper-siphon",
+  "version": "0.1.0",
+  "description": "Convert academic PDFs to clean Markdown - handles local files and URLs, with VLM support for complex layouts",
+  "author": {
+    "name": "mrshu"
+  },
+  "keywords": ["pdf", "markdown", "academic", "papers", "extraction", "conversion"]
+}

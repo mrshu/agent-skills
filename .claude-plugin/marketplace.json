@@ -16,6 +16,12 @@
       "source": "./plugins/scholar-search",
       "description": "Academic reference tools - find papers via Semantic Scholar and OpenAlex, get high-quality BibTeX from DBLP",
       "version": "0.1.0"
+    },
+    {
+      "name": "paper-siphon",
+      "source": "./plugins/paper-siphon",
+      "description": "Convert academic PDFs to clean Markdown - handles local files and URLs, with VLM support for complex layouts",
+      "version": "0.1.0"
     }
   ]
 }
