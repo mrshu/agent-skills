@@ -5,11 +5,11 @@ description: Find academic papers, explore citations, and export BibTeX. Use whe
 
 # Academic Scholar Search
 
-Find papers with **s2cli** (Semantic Scholar) and **openalexcli** (OpenAlex), get high-quality BibTeX with **dblpcli** (DBLP). All tools run via `uvx` — no installation needed.
+Find papers with **s2cli** (Semantic Scholar), **openalexcli** (OpenAlex), and **arxivy** (arXiv), get high-quality BibTeX with **dblpcli** (DBLP). All tools run via `uvx` — no installation needed.
 
 ## Finding Papers
 
-Two tools for paper discovery, each with different strengths.
+Three tools for paper discovery, each with different strengths.
 
 ### s2cli (Semantic Scholar)
 
@@ -73,13 +73,44 @@ uvx openalexcli source works <source_id> --json
 uvx openalexcli search "deep learning" --group-by publication_year --json
 ```
 
+### arxivy (arXiv)
+
+Best for: searching arXiv directly, getting paper details by arXiv ID, browsing recent submissions in a category. No API key needed.
+
+```bash
+# Search by keyword
+uvx arxivy search "attention mechanism" --limit 10
+uvx arxivy search "transformers" -c cs.CL -n 20
+uvx arxivy search "diffusion models" --sort submittedDate
+
+# Include abstracts in results
+uvx arxivy search "RLHF" -c cs.AI --abstract
+
+# Get paper details by arXiv ID (accepts bare IDs, versioned IDs, or full URLs)
+uvx arxivy paper 1706.03762
+uvx arxivy paper 1706.03762 2010.11929 1810.04805   # compare multiple
+uvx arxivy paper 1706.03762 --json
+
+# Browse recent submissions in a category
+uvx arxivy new cs.AI
+uvx arxivy new cs.CL -n 20 --abstract
+
+# BibTeX export (fallback — prefer dblpcli for curated entries)
+uvx arxivy bibtex 1706.03762
+uvx arxivy bibtex 1706.03762 2010.11929 > refs.bib
+```
+
+**Note on output:** arxivy auto-detects whether stdout is a terminal. In a terminal it shows Rich tables; when piped it outputs JSON. Use `--json` to force JSON in a terminal.
+
 ### Which tool to pick
 
 | Need | Use |
 |---|---|
 | Recommendations for a paper | `s2cli recommend` |
 | Citation/reference graph traversal | `s2cli citations` / `s2cli references` |
-| arXiv ID or DOI lookup | `s2cli paper` |
+| arXiv ID or DOI lookup | `s2cli paper` or `arxivy paper` |
+| Search arXiv directly (by category, recency) | `arxivy search` |
+| Browse new arXiv submissions | `arxivy new` |
 | Broadest search coverage | `openalexcli search` |
 | Filter by institution or journal | `openalexcli institution` / `openalexcli source` |
 | Aggregate stats (group-by) | `openalexcli search --group-by` |
@@ -87,7 +118,7 @@ uvx openalexcli search "deep learning" --group-by publication_year --json
 
 ## Getting BibTeX
 
-Use **dblpcli** for high-quality BibTeX sourced directly from DBLP (curated, consistent formatting).
+Use **dblpcli** for high-quality BibTeX sourced directly from DBLP (curated, consistent formatting). If a paper isn't in DBLP (e.g. a very recent arXiv preprint), fall back to `uvx arxivy bibtex <arxiv_id>`.
 
 ### Workflow
 
@@ -183,3 +214,4 @@ Use this skill when the user asks about:
 - Author publication lists
 - Literature reviews or surveys
 - DOI, arXiv, or paper lookups
+- Browsing recent arXiv submissions in a category

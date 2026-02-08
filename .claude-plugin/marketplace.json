@@ -14,7 +14,7 @@
     {
       "name": "scholar-search",
       "source": "./plugins/scholar-search",
-      "description": "Academic reference tools - find papers via Semantic Scholar and OpenAlex, get high-quality BibTeX from DBLP",
+      "description": "Academic reference tools - find papers via Semantic Scholar, OpenAlex, and arXiv, get high-quality BibTeX from DBLP",
       "version": "0.1.0"
     },
     {
