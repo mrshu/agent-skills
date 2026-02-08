@@ -13,6 +13,7 @@ Then install plugins:
 ```bash
 /plugin install scholar-search
 /plugin install wshot
+/plugin install paper-siphon
 ```
 
 ## Plugins
@@ -26,6 +27,16 @@ Find academic papers, explore citations, and export BibTeX. Uses three tools und
 - **dblpcli** (DBLP) — high-quality, curated BibTeX export
 
 All tools run via `uvx` — no installation needed.
+
+### paper-siphon
+
+Convert academic PDFs to clean Markdown. Supports local files and remote URLs (e.g. arXiv). Three extraction modes:
+
+- **Default** — fast Docling-based extraction, handles most papers
+- **VLM** (`--vlm`) — vision-language model for complex layouts and scans
+- **Formula enrichment** (`--enrich-formula`) — better LaTeX fidelity for math-heavy papers
+
+Runs via `uvx` — no installation needed.
 
 ### wshot
 
