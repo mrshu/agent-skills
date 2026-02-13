@@ -20,10 +20,11 @@ Then install plugins:
 
 ### scholar-search
 
-Find academic papers, explore citations, and export BibTeX. Uses three tools under the hood:
+Find academic papers, explore citations, and export BibTeX. Uses four tools under the hood:
 
 - **s2cli** (Semantic Scholar) — paper recommendations, citation/reference networks, arXiv/DOI lookups
 - **openalexcli** (OpenAlex) — broadest coverage (260M+ works), institution/journal queries, aggregation
+- **arxivy** (arXiv) — direct arXiv search, paper lookup by ID, browse recent submissions by category
 - **dblpcli** (DBLP) — high-quality, curated BibTeX export
 
 All tools run via `uvx` — no installation needed.
