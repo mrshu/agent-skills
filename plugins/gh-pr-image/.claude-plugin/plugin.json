@@ -1,0 +1,9 @@
+{
+  "name": "gh-pr-image",
+  "version": "0.1.0",
+  "description": "Upload local images to GitHub PRs without committing them to the repo, using release assets as a CDN",
+  "author": {
+    "name": "mrshu"
+  },
+  "keywords": ["github", "pr", "image", "upload", "screenshot", "release-assets"]
+}
