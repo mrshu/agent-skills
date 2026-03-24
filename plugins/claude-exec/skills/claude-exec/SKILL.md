@@ -28,8 +28,9 @@ Follow these rules exactly to avoid empty or lost output:
 4. **When using `--allowedTools`, pipe the prompt via stdin** — `--allowedTools` is a variadic flag that consumes all subsequent positional arguments, including the prompt. Use `echo 'prompt' | claude -p ...` or `< /tmp/prompt.txt`.
 5. **When NOT using `--allowedTools`, pass the prompt as a positional argument** — `claude -p --max-turns 3 'prompt'` works fine.
 6. **Write long prompts to a temp file** and pass via stdin redirect (`< /tmp/claude-prompt.txt`). Do not use inline HEREDOCs like `$(cat <<'EOF'...)` — they break in the Bash tool's shell handling.
-7. **Use `run_in_background: true`** on the Bash tool call, then retrieve output with `TaskOutput`. Reviews routinely exceed the 120s Bash timeout.
-8. **Always use `--no-session-persistence`** to avoid littering the user's session history with sub-agent sessions.
+7. **Always pipe output through `tee /tmp/claude-exec-output.txt`** so that partial results are saved to disk as they stream. If the Bash tool times out or the task is lost, read `/tmp/claude-exec-output.txt` for whatever was captured so far.
+8. **Use `run_in_background: true`** on the Bash tool call, then retrieve output with `TaskOutput`. Reviews routinely exceed the 120s Bash timeout. If `TaskOutput` returns empty or times out, fall back to reading `/tmp/claude-exec-output.txt`.
+9. **Always use `--no-session-persistence`** to avoid littering the user's session history with sub-agent sessions.
 
 ## Commands
 
@@ -40,11 +41,13 @@ Use `claude -p` (print mode) for non-interactive review. When using `--allowedTo
 ```bash
 # Review current branch against main
 echo 'Review the changes on this branch compared to main. Run `git diff main...HEAD` to see the full diff. Be a strict reviewer: check for correctness, edge cases, security issues, and code clarity. Reference specific files and lines.' \
-  | claude -p --max-turns 3 --no-session-persistence --allowedTools "Bash(git:*)" "Read" "Glob" "Grep" 2>&1
+  | claude -p --max-turns 3 --no-session-persistence --allowedTools "Bash(git:*)" "Read" "Glob" "Grep" 2>&1 \
+  | tee /tmp/claude-exec-output.txt
 
 # Review only uncommitted changes
 echo 'Review all uncommitted changes (run `git diff` and `git diff --cached`). Check for correctness, edge cases, and code clarity. Be specific with file:line references.' \
-  | claude -p --max-turns 3 --no-session-persistence --allowedTools "Bash(git:*)" "Read" "Glob" "Grep" 2>&1
+  | claude -p --max-turns 3 --no-session-persistence --allowedTools "Bash(git:*)" "Read" "Glob" "Grep" 2>&1 \
+  | tee /tmp/claude-exec-output.txt
 ```
 
 For simpler reviews without tool restrictions, pass the prompt directly:
@@ -53,7 +56,7 @@ For simpler reviews without tool restrictions, pass the prompt directly:
 # Review with a specific focus (no --allowedTools, prompt as positional arg)
 claude -p --max-turns 3 --no-session-persistence \
   'Review the changes on this branch vs main. Focus specifically on error handling and security. Run `git diff main...HEAD` to see the diff.' \
-  2>&1
+  2>&1 | tee /tmp/claude-exec-output.txt
 ```
 
 ### Custom Prompted Review
@@ -61,11 +64,13 @@ claude -p --max-turns 3 --no-session-persistence \
 ```bash
 # Review a plan or design document
 echo 'Review the plan in PLAN.md. Be a strict critic: identify gaps, missing edge cases, and over-engineering. Suggest concrete improvements.' \
-  | claude -p --max-turns 3 --no-session-persistence --allowedTools "Read" "Glob" "Grep" 2>&1
+  | claude -p --max-turns 3 --no-session-persistence --allowedTools "Read" "Glob" "Grep" 2>&1 \
+  | tee /tmp/claude-exec-output.txt
 
 # Deep exploration for blind spots
 echo 'Explore the codebase for inconsistencies, dead code, and simplification opportunities. Focus on the src/api/ directory.' \
-  | claude -p --max-turns 5 --no-session-persistence --allowedTools "Read" "Glob" "Grep" 2>&1
+  | claude -p --max-turns 5 --no-session-persistence --allowedTools "Read" "Glob" "Grep" 2>&1 \
+  | tee /tmp/claude-exec-output.txt
 ```
 
 ### Prompt-Only Review (No File Access)
@@ -81,7 +86,8 @@ Review this diff for correctness, edge cases, and clarity:
 EOF
 
 # Run with no tools — forces a single-turn text response
-claude -p --tools "" --max-turns 1 --no-session-persistence < /tmp/claude-prompt.txt 2>&1
+claude -p --tools "" --max-turns 1 --no-session-persistence < /tmp/claude-prompt.txt 2>&1 \
+  | tee /tmp/claude-exec-output.txt
 ```
 
 ### Iterative Review
@@ -91,11 +97,13 @@ Run review in a loop until all issues are resolved:
 ```bash
 # First pass
 echo 'Review the changes on this branch compared to main. Run `git diff main...HEAD`. List all problems.' \
-  | claude -p --max-turns 3 --no-session-persistence --allowedTools "Bash(git:*)" "Read" "Glob" "Grep" 2>&1
+  | claude -p --max-turns 3 --no-session-persistence --allowedTools "Bash(git:*)" "Read" "Glob" "Grep" 2>&1 \
+  | tee /tmp/claude-exec-output.txt
 
 # Fix the issues, then re-run
 echo 'Review the changes on this branch compared to main. Run `git diff main...HEAD`. List remaining problems.' \
-  | claude -p --max-turns 3 --no-session-persistence --allowedTools "Bash(git:*)" "Read" "Glob" "Grep" 2>&1
+  | claude -p --max-turns 3 --no-session-persistence --allowedTools "Bash(git:*)" "Read" "Glob" "Grep" 2>&1 \
+  | tee /tmp/claude-exec-output.txt
 
 # Repeat until the review comes back clean
 ```
@@ -117,7 +125,7 @@ After completing implementation and before pushing:
 When drafting an implementation plan:
 
 1. Write the plan
-2. Run `echo 'Review the plan in PLAN.md. Be very strict.' | claude -p --max-turns 3 --no-session-persistence --allowedTools "Read" "Glob" "Grep" 2>&1`
+2. Run `echo 'Review the plan in PLAN.md. Be very strict.' | claude -p --max-turns 3 --no-session-persistence --allowedTools "Read" "Glob" "Grep" 2>&1 | tee /tmp/claude-exec-output.txt`
 3. Revise the plan based on feedback
 4. Re-run until claude agrees with the plan
 5. Proceed with implementation
@@ -129,11 +137,13 @@ When exploring a codebase area for quality improvements:
 ```bash
 # Broad exploration
 echo 'Do a deep dig of src/. Find blind spots, interesting things to fix, and things to simplify. Be specific with file:line references.' \
-  | claude -p --max-turns 5 --no-session-persistence --allowedTools "Read" "Glob" "Grep" 2>&1
+  | claude -p --max-turns 5 --no-session-persistence --allowedTools "Read" "Glob" "Grep" 2>&1 \
+  | tee /tmp/claude-exec-output.txt
 
 # Follow up on specific findings
 echo 'Look deeper at the error handling pattern in src/api/client.ts. Is the retry logic correct? What happens on timeout?' \
-  | claude -p --max-turns 3 --no-session-persistence --allowedTools "Read" "Glob" "Grep" 2>&1
+  | claude -p --max-turns 3 --no-session-persistence --allowedTools "Read" "Glob" "Grep" 2>&1 \
+  | tee /tmp/claude-exec-output.txt
 ```
 
 ## Options
@@ -149,7 +159,7 @@ echo 'Look deeper at the error handling pattern in src/api/client.ts. Is the ret
 
 ## Known Limitations
 
-- **Timeouts.** Reviews routinely take 30-120+ seconds. Use `run_in_background: true` on the Bash tool call and retrieve output with `TaskOutput`.
+- **Timeouts.** Reviews routinely take 30-120+ seconds. Use `run_in_background: true` on the Bash tool call and retrieve output with `TaskOutput`. If `TaskOutput` returns empty or times out, read `/tmp/claude-exec-output.txt` for partial results captured by `tee`.
 - **Nested sessions.** If Claude Code detects it is already running inside another Claude Code session (via the `CLAUDE_CODE` env var), it will refuse to start. This happens when the parent process sets that variable. If you hit this, the skill cannot be used in that environment.
 - **`--allowedTools` is variadic.** It consumes all subsequent positional arguments. When using it, always pipe the prompt via stdin (`echo '...' | claude -p ...`).
 - **Long prompts.** Do not pass prompts longer than ~500 chars inline. Write to a temp file and use `< /tmp/claude-prompt.txt` stdin redirect.
