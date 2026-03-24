@@ -20,21 +20,24 @@ Use this skill when:
 
 ## How It Works
 
-Use the **Agent tool** to spawn a sub-agent. The Agent tool handles streaming output natively — the user sees progress as the sub-agent works, with no timeout or buffering issues.
+**If the Agent tool is available** (Claude Code): use it. The Agent tool streams output natively — the user sees progress as the sub-agent works, with no timeout or buffering issues.
 
-**Do NOT use `claude -p` via the Bash tool.** The Bash tool buffers all stdout and only shows output when the command completes. For long reviews (30-120+ seconds), this means the user sees nothing until it's done, and output is lost on timeout.
+**If the Agent tool is NOT available** (other environments): fall back to `claude -p` via the Bash tool. See the [CLI Fallback](#cli-fallback) section for the correct invocation pattern.
 
-## Invocation Rules
+---
 
-1. **Use the Agent tool**, not the Bash tool with `claude -p`.
-2. **Set `subagent_type` to `"general-purpose"`** — this gives the sub-agent access to Read, Glob, Grep, and Bash for exploring the codebase.
-3. **Include "research only" in the prompt** when you want a review without modifications. Tell the sub-agent explicitly not to edit files.
-4. **Be specific in prompts.** Tell the sub-agent exactly what to review, what to focus on, and what format you want the output in. Vague prompts get vague reviews.
-5. **Use `run_in_background: true`** on the Agent tool call if you have other work to do while the review runs.
+## Agent Tool (Preferred)
 
-## Commands
+### Invocation Rules
 
-### Code Review
+1. **Set `subagent_type` to `"general-purpose"`** — this gives the sub-agent access to Read, Glob, Grep, and Bash for exploring the codebase.
+2. **Include "research only" in the prompt** when you want a review without modifications. Tell the sub-agent explicitly not to edit files.
+3. **Be specific in prompts.** Tell the sub-agent exactly what to review, what to focus on, and what format you want the output in. Vague prompts get vague reviews.
+4. **Use `run_in_background: true`** on the Agent tool call if you have other work to do while the review runs.
+
+### Commands
+
+#### Code Review
 
 ```
 Agent tool call:
@@ -43,7 +46,7 @@ Agent tool call:
   prompt: "You are a strict code reviewer. Review the changes on this branch compared to main. Run `git diff main...HEAD` to see the full diff. Check for correctness, edge cases, security issues, and code clarity. Reference specific files and lines. IMPORTANT: Research only — do not edit any files."
 ```
 
-### Uncommitted Changes Review
+#### Uncommitted Changes Review
 
 ```
 Agent tool call:
@@ -52,7 +55,7 @@ Agent tool call:
   prompt: "You are a strict code reviewer. Review all uncommitted changes (run `git diff` and `git diff --cached`). Check for correctness, edge cases, and code clarity. Be specific with file:line references. IMPORTANT: Research only — do not edit any files."
 ```
 
-### Plan Review
+#### Plan Review
 
 ```
 Agent tool call:
@@ -61,7 +64,7 @@ Agent tool call:
   prompt: "You are a strict plan reviewer. Read the plan in PLAN.md. Be a strict critic: identify gaps, missing edge cases, wrong assumptions, and over-engineering. Suggest concrete improvements. IMPORTANT: Research only — do not edit any files."
 ```
 
-### Deep Dig / Exploration
+#### Deep Dig / Exploration
 
 ```
 Agent tool call:
@@ -70,43 +73,7 @@ Agent tool call:
   prompt: "Explore the codebase for inconsistencies, dead code, and simplification opportunities. Focus on the src/ directory. Be specific with file:line references. IMPORTANT: Research only — do not edit any files."
 ```
 
-### Focused File Review
-
-```
-Agent tool call:
-  subagent_type: "general-purpose"
-  description: "Review specific file"
-  prompt: "Review src/handlers/webhook.ts for correctness, error handling, and clarity. Be pointed — list problems with file:line references. IMPORTANT: Research only — do not edit any files."
-```
-
-## Workflow Patterns
-
-### Pre-push Quality Gate
-
-After completing implementation and before pushing:
-
-1. Spawn a sub-agent to review changes on the branch vs main
-2. Read the review output (streams as the sub-agent works)
-3. Fix any issues raised
-4. Re-run the review until clean
-5. Push
-
-### Plan Counter-Review
-
-1. Write the plan
-2. Spawn a sub-agent to review the plan
-3. Revise the plan based on feedback
-4. Re-run until the sub-agent agrees with the plan
-5. Proceed with implementation
-
-### Iterative Review
-
-1. Spawn review sub-agent
-2. Fix issues found
-3. Spawn another review sub-agent to check remaining problems
-4. Repeat until clean
-
-### Parallel Reviews
+#### Parallel Reviews
 
 Use multiple Agent calls in a single message for independent reviews:
 
@@ -120,7 +87,7 @@ Agent call 2:
   prompt: "Check test coverage for changes on this branch vs main..."
 ```
 
-## Options
+### Options
 
 | Parameter | Purpose |
 |---|---|
@@ -130,24 +97,104 @@ Agent call 2:
 | `run_in_background: true` | Run review while you continue other work |
 | `model: "sonnet"` or `model: "opus"` | Override model for speed vs depth |
 
-## Anti-Patterns — Do NOT Do These
+---
 
+## CLI Fallback
+
+Use this when the Agent tool is not available (e.g., Codex, other non-Claude environments).
+
+### Invocation Rules
+
+1. **Never use `--permission-mode plan`.** It redirects output to an internal plan file instead of stdout, producing empty or 1-line output. Use `--allowedTools` to restrict tools instead.
+2. **Always use `--max-turns`** to prevent the sub-claude from exhausting all turns on tool calls without producing a text response. Use `--max-turns 3` for reviews, `--max-turns 5` for deep digs, or `--tools "" --max-turns 1` for prompt-only (no file access).
+3. **When using `--allowedTools`, pipe the prompt via stdin** — `--allowedTools` is a variadic flag that consumes all subsequent positional arguments, including the prompt. Use `echo 'prompt' | claude -p ...`.
+4. **When NOT using `--allowedTools`, pass the prompt as a positional argument** — `claude -p --max-turns 3 'prompt'` works fine.
+5. **Always add `2>&1`** at the end of the command to capture stderr alongside stdout.
+6. **Always use `--no-session-persistence`** to avoid littering the user's session history with sub-agent sessions.
+7. **Write long prompts to a temp file** and pass via stdin redirect (`< /tmp/claude-prompt.txt`). Do not use inline HEREDOCs like `$(cat <<'EOF'...)` — they break in some shell environments.
+
+### Commands
+
+```bash
+# Review current branch against main (with --allowedTools, prompt via stdin)
+echo 'Review the changes on this branch compared to main. Run `git diff main...HEAD` to see the full diff. Be a strict reviewer: check for correctness, edge cases, security issues, and code clarity. Reference specific files and lines.' \
+  | claude -p --max-turns 3 --no-session-persistence \
+    --allowedTools "Bash(git:*)" "Read" "Glob" "Grep" 2>&1
+
+# Simpler review without tool restrictions (prompt as positional arg)
+claude -p --max-turns 3 --no-session-persistence \
+  'Review the changes on this branch vs main. Focus on error handling and security. Run `git diff main...HEAD`.' \
+  2>&1
+
+# Prompt-only review — no file access, single-turn response
+claude -p --tools "" --max-turns 1 --no-session-persistence \
+  'Review this diff for correctness...' 2>&1
 ```
-# BAD: Using claude -p via Bash tool — output buffers until completion,
-# user sees nothing for 30-120+ seconds, output lost on timeout
-Bash tool: claude -p 'Review...'
 
-# BAD: Vague prompt — gets a vague review
-Agent tool: prompt: "Review the code"
+### CLI Anti-Patterns
 
-# BAD: Not saying "research only" — sub-agent may edit files
-Agent tool: prompt: "Review and fix any issues"
+```bash
+# BAD: --permission-mode plan causes empty stdout
+claude -p --permission-mode plan 'Review...'
+
+# BAD: --allowedTools eats the positional prompt — prompt is lost
+claude -p --allowedTools "Read Glob Grep" 'Review...'
+
+# BAD: No --max-turns — sub-claude may exhaust turns on tool calls
+claude -p 'Review...'
+
+# BAD: HEREDOC expansion — breaks in Bash tool shell
+claude -p "$(cat <<'EOF'
+long prompt here
+EOF
+)"
+
+# BAD: Missing 2>&1 — stderr errors are invisible
+claude -p --max-turns 3 'Review...'
 ```
+
+### CLI Options
+
+| Flag | Purpose |
+|---|---|
+| `-p, --print` | Non-interactive mode — print response and exit (required for delegation) |
+| `--model <model>` | Override model (e.g., `--model sonnet`, `--model opus`) |
+| `--max-turns <n>` | Limit tool-use turns. Use 1 for prompt-only, 3 for reviews, 5 for deep digs |
+| `--tools ""` | Disable all tools — forces a single-turn text response |
+| `--allowedTools "..."` | Restrict to specific tools. **Variadic — must pipe prompt via stdin when used** |
+| `--no-session-persistence` | Don't save the sub-agent session to disk |
+
+---
+
+## Workflow Patterns
+
+### Pre-push Quality Gate
+
+1. Run the review (Agent tool or CLI)
+2. Read the review output carefully
+3. Fix any issues raised
+4. Re-run the review until clean
+5. Push
+
+### Plan Counter-Review
+
+1. Write the plan
+2. Run the review
+3. Revise the plan based on feedback
+4. Re-run until the reviewer agrees with the plan
+5. Proceed with implementation
+
+### Iterative Review
+
+1. Run review
+2. Fix issues found
+3. Run another review to check remaining problems
+4. Repeat until clean
 
 ## Tips
 
-- **Be pointed in prompts.** Tell the sub-agent exactly what to focus on and what format you want the response in.
+- **Be pointed in prompts.** Tell the reviewer exactly what to focus on and what format you want the response in.
 - **Use "research only"** in the prompt to prevent the sub-agent from editing files during review.
-- **Run in parallel.** Multiple independent reviews can run simultaneously as separate Agent calls.
+- **Run in parallel.** Multiple independent reviews can run simultaneously (Agent tool: multiple calls in one message; CLI: multiple background processes).
 - **Iterate.** Don't treat the first review as final — run it again after fixes to catch regressions.
-- **Model override.** Use `model: "sonnet"` for faster reviews, `model: "opus"` for deeper analysis.
+- **Model override.** Use `sonnet` for faster reviews, `opus` for deeper analysis.
