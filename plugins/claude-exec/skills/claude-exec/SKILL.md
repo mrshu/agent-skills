@@ -23,67 +23,47 @@ Use this skill when:
 Follow these rules exactly to avoid empty or lost output:
 
 1. **Never use `--permission-mode plan`.** It redirects output to an internal plan file instead of stdout, producing empty or 1-line output. Use `--allowedTools` to restrict tools instead.
-2. **Always use streaming output.** Add `--output-format stream-json --verbose --include-partial-messages` and pipe through the jq filter (see below). This streams text tokens incrementally as they arrive, so partial output is captured even if the process times out.
-3. **Always use `--max-turns`** to prevent the sub-claude from exhausting all turns on tool calls without producing a text response. Use `--max-turns 3` for reviews, `--max-turns 5` for deep digs, or `--tools "" --max-turns 1` for prompt-only (no file access).
-4. **When using `--allowedTools`, pipe the prompt via stdin** — `--allowedTools` is a variadic flag that consumes all subsequent positional arguments, including the prompt. Use `echo 'prompt' | claude -p ...` or `< /tmp/prompt.txt`.
-5. **When NOT using `--allowedTools`, pass the prompt as a positional argument** — `claude -p --max-turns 3 'prompt'` works fine.
-6. **Write long prompts to a temp file** and pass via stdin redirect (`< /tmp/claude-prompt.txt`). Do not use inline HEREDOCs like `$(cat <<'EOF'...)` — they break in the Bash tool's shell handling.
-7. **Use `run_in_background: true`** on the Bash tool call, then retrieve output with `TaskOutput`. Reviews routinely exceed the 120s Bash timeout.
-8. **Always use `--no-session-persistence`** to avoid littering the user's session history with sub-agent sessions.
+2. **Always use `--max-turns`** to prevent the sub-claude from exhausting all turns on tool calls without producing a text response. Use `--max-turns 3` for reviews, `--max-turns 5` for deep digs, or `--tools "" --max-turns 1` for prompt-only (no file access).
+3. **When using `--allowedTools`, pipe the prompt via stdin** — `--allowedTools` is a variadic flag that consumes all subsequent positional arguments, including the prompt. Use `echo 'prompt' | claude -p ...` or `< /tmp/prompt.txt`.
+4. **When NOT using `--allowedTools`, pass the prompt as a positional argument** — `claude -p --max-turns 3 'prompt'` works fine.
+5. **Write long prompts to a temp file** and pass via stdin redirect (`< /tmp/claude-prompt.txt`). Do not use inline HEREDOCs like `$(cat <<'EOF'...)` — they break in the Bash tool's shell handling.
+6. **Always add `2>&1`** at the end of the command to capture stderr alongside stdout.
+7. **Always use `--no-session-persistence`** to avoid littering the user's session history with sub-agent sessions.
 
-### The Streaming Pipeline
+## Streaming Output
 
-Every `claude -p` invocation should follow this pattern:
+Reviews routinely take 30-120+ seconds. To show incremental progress instead of making the user wait:
 
-```bash
-# With --allowedTools (prompt via stdin):
-echo 'your prompt' \
-  | claude -p --max-turns 3 --no-session-persistence \
-    --output-format stream-json --verbose --include-partial-messages \
-    --allowedTools "Read" "Glob" "Grep" \
-  | jq -rj 'select(.type == "stream_event" and .event.delta.type? == "text_delta") | .event.delta.text' \
-  | tee /tmp/claude-exec-output.txt
+1. **Run with `run_in_background: true`** on the Bash tool call.
+2. **Poll with `TaskOutput`** using `block: false` every 10-15 seconds to retrieve new output since the last check.
+3. **Show partial output to the user** each time you poll — summarize or quote what the sub-claude has produced so far.
+4. **When the task completes**, do a final `TaskOutput` call to get the remaining output.
 
-# Without --allowedTools (prompt as positional arg):
-claude -p --max-turns 3 --no-session-persistence \
-  --output-format stream-json --verbose --include-partial-messages \
-  'your prompt' \
-  | jq -rj 'select(.type == "stream_event" and .event.delta.type? == "text_delta") | .event.delta.text' \
-  | tee /tmp/claude-exec-output.txt
-```
-
-**Why this works:** `--output-format stream-json --include-partial-messages` emits NDJSON with token-level `text_delta` events as they stream from the API. The `jq -rj` filter extracts just the text (the `-j` flag prevents jq from adding newlines between fragments). The `tee` saves a copy to disk as a fallback if `TaskOutput` fails.
+This gives the user visibility into the review as it progresses, without any extra tools in the pipeline.
 
 ## Commands
 
 ### Code Review
 
 ```bash
-# Review current branch against main
+# Review current branch against main (with --allowedTools, prompt via stdin)
 echo 'Review the changes on this branch compared to main. Run `git diff main...HEAD` to see the full diff. Be a strict reviewer: check for correctness, edge cases, security issues, and code clarity. Reference specific files and lines.' \
   | claude -p --max-turns 3 --no-session-persistence \
-    --output-format stream-json --verbose --include-partial-messages \
-    --allowedTools "Bash(git:*)" "Read" "Glob" "Grep" \
-  | jq -rj 'select(.type == "stream_event" and .event.delta.type? == "text_delta") | .event.delta.text' \
-  | tee /tmp/claude-exec-output.txt
+    --allowedTools "Bash(git:*)" "Read" "Glob" "Grep" 2>&1
 
 # Review only uncommitted changes
 echo 'Review all uncommitted changes (run `git diff` and `git diff --cached`). Check for correctness, edge cases, and code clarity. Be specific with file:line references.' \
   | claude -p --max-turns 3 --no-session-persistence \
-    --output-format stream-json --verbose --include-partial-messages \
-    --allowedTools "Bash(git:*)" "Read" "Glob" "Grep" \
-  | jq -rj 'select(.type == "stream_event" and .event.delta.type? == "text_delta") | .event.delta.text' \
-  | tee /tmp/claude-exec-output.txt
+    --allowedTools "Bash(git:*)" "Read" "Glob" "Grep" 2>&1
 ```
 
-For simpler reviews without tool restrictions:
+For simpler reviews without tool restrictions, pass the prompt directly:
 
 ```bash
+# No --allowedTools needed — prompt as positional arg
 claude -p --max-turns 3 --no-session-persistence \
-  --output-format stream-json --verbose --include-partial-messages \
   'Review the changes on this branch vs main. Focus on error handling and security. Run `git diff main...HEAD`.' \
-  | jq -rj 'select(.type == "stream_event" and .event.delta.type? == "text_delta") | .event.delta.text' \
-  | tee /tmp/claude-exec-output.txt
+  2>&1
 ```
 
 ### Custom Prompted Review
@@ -92,18 +72,12 @@ claude -p --max-turns 3 --no-session-persistence \
 # Review a plan or design document
 echo 'Review the plan in PLAN.md. Be a strict critic: identify gaps, missing edge cases, and over-engineering. Suggest concrete improvements.' \
   | claude -p --max-turns 3 --no-session-persistence \
-    --output-format stream-json --verbose --include-partial-messages \
-    --allowedTools "Read" "Glob" "Grep" \
-  | jq -rj 'select(.type == "stream_event" and .event.delta.type? == "text_delta") | .event.delta.text' \
-  | tee /tmp/claude-exec-output.txt
+    --allowedTools "Read" "Glob" "Grep" 2>&1
 
 # Deep exploration for blind spots
 echo 'Explore the codebase for inconsistencies, dead code, and simplification opportunities. Focus on the src/api/ directory.' \
   | claude -p --max-turns 5 --no-session-persistence \
-    --output-format stream-json --verbose --include-partial-messages \
-    --allowedTools "Read" "Glob" "Grep" \
-  | jq -rj 'select(.type == "stream_event" and .event.delta.type? == "text_delta") | .event.delta.text' \
-  | tee /tmp/claude-exec-output.txt
+    --allowedTools "Read" "Glob" "Grep" 2>&1
 ```
 
 ### Prompt-Only Review (No File Access)
@@ -120,10 +94,7 @@ EOF
 
 # Run with no tools — single-turn text response
 claude -p --tools "" --max-turns 1 --no-session-persistence \
-  --output-format stream-json --verbose --include-partial-messages \
-  < /tmp/claude-prompt.txt \
-  | jq -rj 'select(.type == "stream_event" and .event.delta.type? == "text_delta") | .event.delta.text' \
-  | tee /tmp/claude-exec-output.txt
+  < /tmp/claude-prompt.txt 2>&1
 ```
 
 ### Iterative Review
@@ -132,10 +103,7 @@ claude -p --tools "" --max-turns 1 --no-session-persistence \
 # First pass
 echo 'Review the changes on this branch compared to main. Run `git diff main...HEAD`. List all problems.' \
   | claude -p --max-turns 3 --no-session-persistence \
-    --output-format stream-json --verbose --include-partial-messages \
-    --allowedTools "Bash(git:*)" "Read" "Glob" "Grep" \
-  | jq -rj 'select(.type == "stream_event" and .event.delta.type? == "text_delta") | .event.delta.text' \
-  | tee /tmp/claude-exec-output.txt
+    --allowedTools "Bash(git:*)" "Read" "Glob" "Grep" 2>&1
 
 # Fix issues, then re-run until clean
 ```
@@ -146,11 +114,12 @@ echo 'Review the changes on this branch compared to main. Run `git diff main...H
 
 After completing implementation and before pushing:
 
-1. Run the review (using the streaming pipeline above)
-2. Read the review output carefully
-3. Fix any issues raised
-4. Re-run the review until clean
-5. Push
+1. Run the review with `run_in_background: true`
+2. Poll `TaskOutput` with `block: false` every 10-15s, showing partial output to the user
+3. When complete, read the full review output
+4. Fix any issues raised
+5. Re-run the review until clean
+6. Push
 
 ### Plan Counter-Review
 
@@ -165,10 +134,7 @@ After completing implementation and before pushing:
 ```bash
 echo 'Do a deep dig of src/. Find blind spots, interesting things to fix, and things to simplify. Be specific with file:line references.' \
   | claude -p --max-turns 5 --no-session-persistence \
-    --output-format stream-json --verbose --include-partial-messages \
-    --allowedTools "Read" "Glob" "Grep" \
-  | jq -rj 'select(.type == "stream_event" and .event.delta.type? == "text_delta") | .event.delta.text' \
-  | tee /tmp/claude-exec-output.txt
+    --allowedTools "Read" "Glob" "Grep" 2>&1
 ```
 
 ## Options
@@ -180,18 +146,13 @@ echo 'Do a deep dig of src/. Find blind spots, interesting things to fix, and th
 | `--max-turns <n>` | Limit tool-use turns. Use 1 for prompt-only, 3 for reviews, 5 for deep digs |
 | `--tools ""` | Disable all tools — forces a single-turn text response |
 | `--allowedTools "..."` | Restrict to specific tools. **Variadic flag — must pipe prompt via stdin when used** |
-| `--output-format stream-json` | Emit NDJSON events in real-time instead of buffering until completion |
-| `--verbose` | Required for full streaming event stream |
-| `--include-partial-messages` | Emit token-level `text_delta` events as they arrive from the API |
 | `--no-session-persistence` | Don't save the sub-agent session to disk |
 
 ## Known Limitations
 
-- **Timeouts.** Reviews routinely take 30-120+ seconds. Use `run_in_background: true` on the Bash tool call and retrieve output with `TaskOutput`. If `TaskOutput` returns empty or times out, read `/tmp/claude-exec-output.txt` for partial results.
 - **Nested sessions.** If Claude Code detects it is already running inside another Claude Code session (via the `CLAUDE_CODE` env var), it will refuse to start.
 - **`--allowedTools` is variadic.** It consumes all subsequent positional arguments. When using it, always pipe the prompt via stdin.
 - **Long prompts.** Write to a temp file and use `< /tmp/claude-prompt.txt` stdin redirect. Do not use inline HEREDOCs.
-- **Extended thinking.** When `--max-thinking-tokens` is set, `stream_event` messages are not emitted — you only get complete messages after each turn.
 
 ## Anti-Patterns — Do NOT Do These
 
@@ -205,14 +166,17 @@ claude -p --allowedTools "Read Glob Grep" 'Review...'
 # BAD: No --max-turns — sub-claude may exhaust turns on tool calls
 claude -p 'Review...'
 
-# BAD: No streaming — output buffers until completion, lost on timeout
-claude -p --max-turns 3 'Review...' 2>&1
-
 # BAD: HEREDOC expansion — breaks in Bash tool shell
 claude -p "$(cat <<'EOF'
 long prompt here
 EOF
 )"
+
+# BAD: Missing 2>&1 — stderr errors are invisible
+claude -p --max-turns 3 'Review...'
+
+# BAD: Foreground without timeout increase — will timeout and lose output
+# Instead, use run_in_background: true and poll with TaskOutput
 ```
 
 ## Tips
@@ -220,6 +184,6 @@ EOF
 - **Be pointed in prompts.** Vague prompts get vague reviews. Tell claude exactly what to focus on and what format you want the response in.
 - **Use `--allowedTools`** for read-only reviews instead of `--permission-mode plan`.
 - **Pipe the prompt** when using `--allowedTools` — it's a variadic flag that eats positional args.
+- **Poll for progress.** Use `run_in_background: true` + `TaskOutput` with `block: false` to show incremental output.
 - **Iterate.** Don't treat the first review as final — run it again after fixes to catch regressions or new issues.
 - **Model override.** Use `--model sonnet` for faster reviews, `--model opus` for deeper analysis.
-- **Background long reviews.** Use `run_in_background: true` and retrieve with `TaskOutput`. Fall back to reading `/tmp/claude-exec-output.txt`.

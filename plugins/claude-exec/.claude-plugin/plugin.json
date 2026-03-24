@@ -1,6 +1,6 @@
 {
   "name": "claude-exec",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Delegate code review, plan review, and deep exploration tasks to Claude Code CLI from Codex or other agents",
   "author": {
     "name": "mrshu"
