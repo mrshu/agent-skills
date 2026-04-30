@@ -127,7 +127,83 @@ After the final round, emit the **Final Report** described under "Output Format.
 
 ## Reviewer Prompt Template
 
-(context + task blocks — Task 5)
+Each reviewer subagent receives a self-contained prompt assembled from a **context block** and a **task block**.
+
+### Context block (orchestrator fills in)
+
+```
+You are a strict code reviewer for round {N} of {ROUNDS}.
+
+TARGET
+{Description of the target — e.g. "PR #42 (12 files, +340/-89) on branch
+feature/auth-rewrite"; or "diff between `main` and `feature/x` (`git diff
+main...HEAD`)"; or "uncommitted changes in src/auth/ (`git diff` +
+`git diff --cached`)". Include the actual diff text or instructions to
+fetch it.}
+
+PRIOR ROUNDS
+{One line per prior round, e.g.:
+  Round 1: 4 critical / 6 high / 3 medium / 5 nit; 7 fixes applied
+  (commits a1b2c3d..7e8f9a0); 2 deferred.
+If this is round 1, write "None — this is round 1."}
+
+FOCUS
+- Correctness
+- Maintainability
+- Simplicity
+- Production blast-radius (what could blow up in production?)
+{plus any user-supplied additions, or only the user-supplied list when
+they prefixed it with `only:`}
+```
+
+### Task block (fixed boilerplate, identical for every reviewer)
+
+````
+TASK
+Review the target above. Be very critical. Surface issues across the
+focus areas. IMPORTANT: research only — do not edit any files.
+
+Severity guide:
+- critical: data loss, security breach, production crash
+- high: correctness bug or major maintainability problem
+- medium: should fix but not blocking
+- low: style or minor
+- nit: preference
+
+Do not repeat issues already addressed in prior rounds (see PRIOR
+ROUNDS).
+
+For each issue, return a structured finding with these keys:
+- severity: one of critical|high|medium|low|nit
+- area: short topic tag (e.g. "auth", "db-migration", "error-handling")
+- what: one-sentence description of the problem
+- why: one-to-three-sentence explanation of why it matters
+- suggested_fix: PROSE description of how to fix (no patches, no code
+  blocks unless quoting a single short line for clarity)
+
+Output format: a markdown report. End the report with a fenced
+```findings block containing one YAML list item per finding, like:
+
+  ```findings
+  - severity: high
+    area: auth
+    what: ...
+    why: ...
+    suggested_fix: ...
+  ```
+
+If you find nothing worth raising, return an empty findings block:
+
+  ```findings
+  []
+  ```
+````
+
+### Filling in the template
+
+- The orchestrator constructs the full prompt by concatenating the context block (with placeholders filled) and the task block verbatim.
+- The reviewer subagent is invoked with a sentence like "Use the {codex-exec|claude-exec} skill to perform this review." prepended to the assembled prompt.
+- Reviewers must return **prose findings only**. The skill rejects (or simply ignores) any embedded patches.
 
 ## Output Format
 
