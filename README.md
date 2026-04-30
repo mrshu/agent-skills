@@ -16,6 +16,7 @@ Then install plugins:
 /plugin install paper-siphon
 /plugin install codex-exec
 /plugin install claude-exec
+/plugin install review-anvil
 ```
 
 ## Plugins
@@ -55,6 +56,14 @@ Delegate code review, plan review, and deep exploration tasks to **Claude Code C
 
 - `claude -p '<prompt>'` — non-interactive review or exploration
 - `claude -p --permission-mode plan '<prompt>'` — read-only safe review mode
+
+### review-anvil
+
+Iterative multi-agent review-and-fix loop. Wraps the *"let's do three rounds of fix/review"* pattern: dispatch parallel `codex-exec` and `claude-exec` reviewers, synthesize their findings, apply fixes with logically-separated commits, and repeat. Defaults to 3 rounds × 3 reviewers (2 codex + 1 claude). Configurable rounds, agent count/mix, focus, and target.
+
+- `Skill review-anvil` — run with all defaults against auto-detected target
+- `Skill review-anvil "5 rounds, 2 codex + 1 claude, focus: async correctness, target: PR #42"` — fully specified
+- `Skill review-anvil "1 round, only: security, target: src/auth/"` — narrow focus, single pass
 
 ### wshot
 
