@@ -207,8 +207,90 @@ If you find nothing worth raising, return an empty findings block:
 
 ## Output Format
 
-(final report + per-round status — Task 6)
+### During execution
+
+Print a one-line status before each round:
+
+```
+Round 2/3: dispatching 2 codex-exec + 1 claude-exec on PR #42 …
+```
+
+Append the round summary block (defined under Loop Mechanics, step 5) after each round completes.
+
+### Final report
+
+After the last round, emit a single markdown report with this structure:
+
+```
+# review-anvil report
+
+**Target:** <description, e.g. "PR #42 (feature/auth-rewrite, 12 files, +340/-89)">
+**Rounds:** <N>
+**Mix per round:** <e.g. "2 codex-exec + 1 claude-exec">
+**Focus:** <comma-separated focus list actually used>
+
+### Round 1 — <convergence flag>
+- Findings: C critical, H high, M medium, L low, X nit
+- Fixes applied: K commits (<sha1>..<shaK>)
+- Deferred: D items
+
+### Round 2 — <convergence flag>
+…
+
+### Total
+- Total commits: T
+- Findings addressed: A
+- Findings deferred: D
+- Tuning suggestion: <one line, e.g. "round 3 was clean — `rounds=2`
+  likely sufficient next time"; omit if no clean rounds occurred>
+
+### Deferred items
+For each deferred item across all rounds:
+- **[severity] area** — what (deferred because: reason)
+```
+
+### Tuning suggestion rule
+
+Look at the convergence flags across rounds:
+
+- If the **last** round was `clean` or `nits_only` and any earlier round was `material_findings`, suggest `rounds = N - 1` (or further if the last two rounds were both clean/nits).
+- If **every** round was `material_findings`, suggest `rounds = N + 1` next time (the loop hadn't converged).
+- Otherwise omit the suggestion.
 
 ## Edge Cases
 
-(failure handling, target detection, parse fallback — Task 6)
+### Empty or trivial target
+
+If the auto-detected target has no diff (e.g., user is on `main` with no uncommitted changes), abort early and report: "No target detected — nothing to review." Do not invent work to do.
+
+### Target spanning a binary file or huge diff
+
+If the diff exceeds ~5000 lines, warn in the per-round status and continue — but include in the reviewer prompt a note: "This is a large diff; you may focus on the most impactful slice if a thorough whole-diff review is impractical."
+
+### `agents` requested exceeds reasonable limits
+
+Reject `agents > 8` with an explanatory error before round 1. Eight parallel reviewers per round is already aggressive; higher counts produce more dedup work than signal.
+
+### `rounds = 0`
+
+Reject before starting. Zero rounds is a no-op and almost certainly a typo.
+
+### A reviewer returns an unparseable findings block
+
+Use the prose body as a free-form findings list. Do not retry. Note in the round summary: "<agent>: unstructured findings (parse failed)."
+
+### A reviewer fails outright
+
+Note in the round summary: "<agent>: failed (<reason>)." Continue with remaining reviewers. If **all** reviewers fail, abort and report.
+
+### A `git commit` fails inside a round
+
+Stop the loop, print the git error, leave any partial fixes in the working tree (or staged) for the user to resolve. Do not bypass hooks (`--no-verify`) and do not amend earlier commits.
+
+### Conflicting findings across reviewers
+
+If two reviewers contradict each other (one says "wrap in a try/except," another says "don't swallow this exception"), surface both under the same area in the synthesis with their reviewers tagged, and pick the orchestrator's judgment when applying fixes. Mention the disagreement in the round summary.
+
+### Re-runs
+
+This skill is **not idempotent**. Re-running it will start fresh review rounds against the latest state (including this run's own commits). That is usually what the user wants. If the prior run left deferred items, surface them at the top of the new run's final report under "Deferred from previous runs (still present)" — the orchestrator can detect this by inspecting recent commit messages for `fix(…)`/`refactor(…)` etc. associated with prior rounds.
