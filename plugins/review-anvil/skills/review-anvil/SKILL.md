@@ -229,22 +229,22 @@ After the last round, emit a single markdown report with this structure:
 **Mix per round:** <e.g. "2 codex-exec + 1 claude-exec">
 **Focus:** <comma-separated focus list actually used>
 
-### Round 1 — <convergence flag>
+## Round 1 — <convergence flag>
 - Findings: C critical, H high, M medium, L low, X nit
 - Fixes applied: K commits (<sha1>..<shaK>)
 - Deferred: D items
 
-### Round 2 — <convergence flag>
+## Round 2 — <convergence flag>
 …
 
-### Total
+## Total
 - Total commits: T
 - Findings addressed: A
 - Findings deferred: D
 - Tuning suggestion: <one line, e.g. "round 3 was clean — `rounds=2`
   likely sufficient next time"; omit if no clean rounds occurred>
 
-### Deferred items
+## Deferred items
 For each deferred item across all rounds:
 - **[severity] area** — what (deferred because: reason)
 ```
