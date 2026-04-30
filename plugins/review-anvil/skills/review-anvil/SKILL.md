@@ -63,12 +63,19 @@ Capture the current state of the diff/branch/PR at the start of the round so all
 
 ### 2. Dispatch reviewers in parallel
 
-Send a **single message containing M `Agent` tool calls**, one per reviewer in the mix. For each:
+**Do not invoke any reviewer mechanism directly.** Instead, delegate to the **`codex-exec`** and **`claude-exec`** skills — one invocation per reviewer in the mix. Those skills already encapsulate how to dispatch their underlying CLI (Agent tool when the host harness has one, `claude -p` / `codex exec` shell fallback otherwise). `review-anvil` only orchestrates rounds and synthesis; it does not pick the dispatch mechanism.
 
-- For codex-exec reviewers: `subagent_type: "general-purpose"`, with a prompt that opens with "Use the codex-exec skill to perform this review." The prompt body is the **Reviewer Prompt Template** below, filled in.
-- For claude-exec reviewers: `subagent_type: "general-purpose"`, with a prompt that opens with "Use the claude-exec skill to perform this review." Same template body.
+For each reviewer in the mix, invoke the appropriate skill:
 
-Always dispatch in parallel. Never serialize reviewers within a round.
+- **codex-exec reviewer:** invoke the `codex-exec` skill with the assembled **Reviewer Prompt Template** below as the review prompt.
+- **claude-exec reviewer:** invoke the `claude-exec` skill with the same prompt.
+
+All M invocations within a round must run in parallel. Never serialize reviewers within a round. The exact parallel-dispatch mechanism depends on the host:
+
+- If the host has an `Agent`/`Task` tool: send a single message with M tool calls, each one invoking `codex-exec` or `claude-exec` with the prompt.
+- If the host has only shell access: launch M background shell processes (e.g., `codex exec '...' &`, `claude -p '...' &`) and `wait`. Both `codex-exec` and `claude-exec` document the exact CLI invocations.
+
+If parallel dispatch is genuinely impossible in a given host, fall back to serial invocation but report this in the round summary so the user can switch hosts for future runs.
 
 ### 3. Synthesize
 
@@ -202,7 +209,7 @@ If you find nothing worth raising, return an empty findings block:
 ### Filling in the template
 
 - The orchestrator constructs the full prompt by concatenating the context block (with placeholders filled) and the task block verbatim.
-- The reviewer subagent is invoked with a sentence like "Use the {codex-exec|claude-exec} skill to perform this review." prepended to the assembled prompt.
+- The assembled prompt is passed to the `codex-exec` or `claude-exec` skill (per Loop Mechanics §2). Those skills handle the underlying CLI invocation — review-anvil never calls `claude -p` or `codex exec` directly.
 - Reviewers must return **prose findings only**. The skill rejects (or simply ignores) any embedded patches.
 - The PRIOR ROUNDS lines are constructed directly from each prior round's summary (Loop Mechanics §5) — include all five severity counts in the form `Round N: C critical / H high / M medium / L low / X nit; K fixes applied (<sha1>..<shaN>); D deferred.`
 
