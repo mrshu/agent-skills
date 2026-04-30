@@ -38,7 +38,7 @@
     {
       "name": "review-anvil",
       "source": "./plugins/review-anvil",
-      "description": "Iterative multi-agent review-and-fix loop. N rounds of parallel codex-exec/claude-exec reviewers, synthesized fixes with logically-separated commits.",
+      "description": "Iterative multi-agent review-and-fix loop. Dispatch N rounds of parallel codex-exec/claude-exec reviewers, synthesize findings, apply fixes with logically-separated commits.",
       "version": "0.1.0"
     }
   ]

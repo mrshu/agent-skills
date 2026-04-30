@@ -204,6 +204,7 @@ If you find nothing worth raising, return an empty findings block:
 - The orchestrator constructs the full prompt by concatenating the context block (with placeholders filled) and the task block verbatim.
 - The reviewer subagent is invoked with a sentence like "Use the {codex-exec|claude-exec} skill to perform this review." prepended to the assembled prompt.
 - Reviewers must return **prose findings only**. The skill rejects (or simply ignores) any embedded patches.
+- The PRIOR ROUNDS lines are constructed directly from each prior round's summary (Loop Mechanics §5) — include all five severity counts in the form `Round N: C critical / H high / M medium / L low / X nit; K fixes applied (<sha1>..<shaN>); D deferred.`
 
 ## Output Format
 
@@ -219,7 +220,9 @@ Append the round summary block (defined under Loop Mechanics, step 5) after each
 
 ### Final report
 
-After the last round, emit a single markdown report with this structure:
+After the last round completes, emit a fresh top-level report below the running output. The report is a new document — not a replacement for the per-round blocks already printed during execution.
+
+`Findings addressed` in the Total section equals the post-dedup count of unique findings surfaced across all rounds, minus the count of deferred items. Use this structure:
 
 ```
 # review-anvil report
@@ -258,6 +261,10 @@ Look at the convergence flags across rounds:
 - Otherwise omit the suggestion.
 
 ## Edge Cases
+
+### Missing reviewer dependency
+
+`review-anvil` dispatches `codex-exec` and `claude-exec` subagents — both must be installed for the skill to function. If `Skill codex-exec` or `Skill claude-exec` fails to resolve, the dispatched reviewer will error out. Before round 1, confirm both are available; if either is missing, abort with: "review-anvil requires codex-exec and claude-exec; install them via `/plugin install codex-exec` and `/plugin install claude-exec`."
 
 ### Empty or trivial target
 
