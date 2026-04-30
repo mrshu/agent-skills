@@ -17,6 +17,8 @@ The user invokes the skill with a free-form args string. Parse it to extract the
 | `agents` | `3` | "3 agents", "2 reviewers", or a mix like `"2 codex + 1 claude"`, `"three claude reviewers and one codex"` |
 | `focus` | the four pillars (correctness, maintainability, simplicity, production blast-radius) | "focus on async correctness", "only: security" (the `only:` prefix replaces defaults instead of appending) |
 | `target` | auto-detect | "PR #42", "branch", "uncommitted", "src/auth/", "last 3 commits" |
+| `allow_new_deps` | `false` | "allow new deps", "allow new dependencies" — auto-apply fixes that introduce new imports/subsystems instead of deferring them |
+| `min_fix_severity` | `medium` | "auto-fix high and above", "fix only critical", `min_fix_severity: high` — minimum severity for auto-fix; lower findings are listed but not applied |
 
 ### Parsing rules
 
@@ -30,10 +32,12 @@ The user invokes the skill with a free-form args string. Parse it to extract the
 
 ### Example invocations
 
-- `Skill review-anvil` → 3 rounds, default mix (2 codex + 1 claude), default four-pillar focus, auto-detected target.
+- `Skill review-anvil` → 3 rounds, default mix (2 codex + 1 claude), default four-pillar focus, auto-detected target. Auto-fix gated at severity ≥ medium and no new dependencies.
 - `Skill review-anvil "5 rounds, 2 codex + 1 claude, focus: async correctness, target: PR #42"`
 - `Skill review-anvil "1 round, only: security, target: src/auth/"`
 - `Skill review-anvil "three rounds, three claude reviewers"` → 3 rounds × 3 claude-exec.
+- `Skill review-anvil "allow new deps, focus: production blast-radius"` → opt into the prod-hardening pass; auto-applies fixes that introduce new imports/subsystems.
+- `Skill review-anvil "fix only critical"` → severity gate raised to `critical`; surfaces everything else as suggestions in the report without editing the file.
 
 ## Default Mix Policy
 
@@ -96,7 +100,17 @@ Make the edits as the orchestrator. Group fixes by topic and **commit one logica
 - `test(area): <what>` — when adding tests
 - `chore(area): <what>` — for production-readiness tweaks (logging, error handling, config)
 
-Items judged noise (e.g., reviewer disagreement with house style, false positives) are **deferred**, not silently dropped. Record each deferred item with a one-line reason.
+#### Auto-fix policy (proportionality rules)
+
+The orchestrator does **not** auto-apply every finding. Three rules gate what becomes code edits versus what gets listed in the report's deferred section:
+
+1. **Severity gate.** Only auto-fix findings at severity ≥ `min_fix_severity` (default `medium`). Findings below the gate are listed under "Suggestions" in the round summary and final report, but the file is not edited. Exception: an obvious one-line fix at any severity (e.g., removing a single unused import that the reviewer flagged as `nit`) is fine — apply it without bumping the severity.
+
+2. **No new dependencies (default).** A fix that introduces a new import, requires installing a new package, or stands up a new subsystem (rate-limit table, middleware, separate datastore, etc.) is **deferred** with reason `introduces new dependency: <X>`, even if its severity passes the gate. The user opts into these by re-invoking with `allow_new_deps: true`. The intent is: don't grow the architecture without explicit permission, even when the finding is real.
+
+3. **Round size cap.** A single round's fixes cannot grow the target file by more than ~50% of its starting line count, or 200 lines absolute, whichever is larger. If proposed fixes exceed the cap, the orchestrator applies the highest-severity ones first and defers the rest with reason `round size cap reached`. The cap is per-round, so the next round can apply more if the previous one filled the budget.
+
+Items judged noise (e.g., reviewer disagreement with house style, false positives) are also **deferred**, not silently dropped. Record each deferred item with a one-line reason: noise, sub-threshold severity, new dependency, size cap, or product/architecture decision.
 
 ### 5. Round summary
 
@@ -107,7 +121,8 @@ Append a short markdown block to running output:
 - Reviewers: <list of agents dispatched>
 - Findings: C critical, H high, M medium, L low, X nit
 - Fixes applied: K commits (<sha1>..<shaN>)
-- Deferred: D items (see below)
+- Suggestions: S items (sub-threshold severity; not applied)
+- Deferred: D items (see below; reasons: noise / new dependency / size cap / product decision)
 ```
 
 The convergence flag is one of:
@@ -229,7 +244,7 @@ Append the round summary block (defined under Loop Mechanics, step 5) after each
 
 After the last round completes, emit a fresh top-level report below the running output. The report is a new document — not a replacement for the per-round blocks already printed during execution.
 
-`Findings addressed` in the Total section equals the post-dedup count of unique findings surfaced across all rounds, minus the count of deferred items. Use this structure:
+`Findings addressed` in the Total section equals the post-dedup count of unique findings auto-applied across all rounds. `Suggestions` and `Deferred` are tracked separately. Use this structure:
 
 ```
 # review-anvil report
@@ -238,10 +253,12 @@ After the last round completes, emit a fresh top-level report below the running 
 **Rounds:** <N>
 **Mix per round:** <e.g. "2 codex-exec + 1 claude-exec">
 **Focus:** <comma-separated focus list actually used>
+**Auto-fix policy:** min severity = <medium>, allow_new_deps = <false>
 
 ## Round 1 — <convergence flag>
 - Findings: C critical, H high, M medium, L low, X nit
 - Fixes applied: K commits (<sha1>..<shaK>)
+- Suggestions: S items
 - Deferred: D items
 
 ## Round 2 — <convergence flag>
@@ -250,13 +267,18 @@ After the last round completes, emit a fresh top-level report below the running 
 ## Total
 - Total commits: T
 - Findings addressed: A
+- Suggestions surfaced: S
 - Findings deferred: D
 - Tuning suggestion: <one line, e.g. "round 3 was clean — `rounds=2`
   likely sufficient next time"; omit if no clean rounds occurred>
 
+## Suggestions
+For each sub-threshold finding (severity below `min_fix_severity`):
+- **[severity] area** — what (consider re-running with `min_fix_severity: <severity>` to apply)
+
 ## Deferred items
 For each deferred item across all rounds:
-- **[severity] area** — what (deferred because: reason)
+- **[severity] area** — what (deferred because: reason — e.g. introduces new dependency: <X>; size cap reached; product/architecture decision)
 ```
 
 ### Tuning suggestion rule
