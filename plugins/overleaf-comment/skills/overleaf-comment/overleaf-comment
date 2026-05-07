@@ -254,35 +254,31 @@ inject_helpers() {
 }
 inject_helpers
 
-# Confirm the tab is actually foreground. Chrome's background-tab throttling
-# is the difference between this skill working and timing out, so fail fast
-# rather than running through every item only to time out. Return a
-# primitive string from the page (cdp.mjs would otherwise pretty-print an
-# object with `JSON.stringify(val, null, 2)`, which inserts space after the
-# colon and breaks naïve substring checks).
-VIS="$("$CDP" eval "$TARGET" 'document.hidden ? "hidden" : "visible"' 2>&1 || true)"
+# One-shot preflight: tab visibility + active user + UI language in a
+# single cdp eval. Returns line-delimited values to avoid having to parse
+# cdp.mjs's pretty-printed JSON.
+PREFLIGHT_OUT="$("$CDP" eval "$TARGET" '(() => {
+  const p = window.__overleaf.preflight();
+  return [p.hidden ? "hidden" : "visible", p.user || "", p.lang || ""].join("\n");
+})()' 2>&1 || true)"
+VIS="$(printf '%s\n' "$PREFLIGHT_OUT" | sed -n '1p')"
+PFUSER="$(printf '%s\n' "$PREFLIGHT_OUT" | sed -n '2p')"
+PFLANG="$(printf '%s\n' "$PREFLIGHT_OUT" | sed -n '3p')"
+
 if [ "$VIS" = "hidden" ]; then
   echo "overleaf-comment: Overleaf tab still reports document.hidden=true after Page.bringToFront." >&2
   echo "  Chrome throttles setTimeout in background tabs; manually focus the tab and re-run." >&2
   exit 75   # EX_TEMPFAIL
 fi
 
-# Identity preflight: surface the active Overleaf account so the user can
-# notice if they are about to post under the wrong identity. Best-effort —
-# Overleaf may not expose the account in any of the known signals.
-USER_PROBE="$("$CDP" eval "$TARGET" 'window.__overleaf.activeUser()' 2>&1 || true)"
-case "$USER_PROBE" in
-  null|undefined|"") echo "overleaf-comment: posting as Overleaf account: <unknown>" >&2 ;;
-  *) echo "overleaf-comment: posting as Overleaf account: $USER_PROBE" >&2 ;;
+case "$PFUSER" in
+  ""|null|undefined) echo "overleaf-comment: posting as Overleaf account: <unknown>" >&2 ;;
+  *) echo "overleaf-comment: posting as Overleaf account: $PFUSER" >&2 ;;
 esac
 
-# Localization preflight: helpers match English strings. Warn if the UI is
-# set to another language so the user has a chance to switch before timing
-# out on every item.
-LANG_PROBE="$("$CDP" eval "$TARGET" 'window.__overleaf.uiLanguage()' 2>&1 || true)"
-case "$LANG_PROBE" in
+case "$PFLANG" in
   ""|en) : ;;
-  *) echo "overleaf-comment: warning — Overleaf UI language is '$LANG_PROBE'; this skill needs English UI strings." >&2 ;;
+  *) echo "overleaf-comment: warning — Overleaf UI language is '$PFLANG'; this skill needs English UI strings." >&2 ;;
 esac
 
 # Pre-flight: dismiss any "Out of sync" modal before starting.
