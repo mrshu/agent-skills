@@ -14,6 +14,11 @@
 #
 # <target> is a unique CDP target prefix from `cdp list` (e.g. 6172EEAA).
 # The Overleaf tab must already be open and logged in.
+#
+# Architecture: helpers are injected once into the tab, then the wrapper
+# iterates plan items one cdp eval at a time. Each eval finishes well under
+# chrome-cdp's 15 s Runtime.evaluate ceiling, and results stream to stdout
+# as they happen so partial progress is always visible.
 
 set -euo pipefail
 
@@ -24,18 +29,24 @@ HELPERS="$SCRIPT_DIR/page-helpers.js"
 # Resolve cdp.mjs from the chrome-cdp skill in priority order.
 # ---------------------------------------------------------------------------
 resolve_cdp() {
-  if [ -n "${CDP_BIN:-}" ] && [ -x "$CDP_BIN" ]; then
-    echo "$CDP_BIN"; return
+  if [ -n "${CDP_BIN:-}" ]; then
+    if [ -x "$CDP_BIN" ]; then
+      echo "$CDP_BIN"; return
+    fi
+    echo "overleaf-comment: CDP_BIN points to '$CDP_BIN' but it is not executable." >&2
+    exit 2
   fi
   if command -v cdp.mjs >/dev/null 2>&1; then
     command -v cdp.mjs; return
   fi
+  shopt -s nullglob
   local candidates=(
     "$HOME/.claude/skills/chrome-cdp/scripts/cdp.mjs"
     "$HOME"/.claude/plugins/*/skills/chrome-cdp/scripts/cdp.mjs
     "$SCRIPT_DIR/../../../chrome-cdp/skills/chrome-cdp/scripts/cdp.mjs"
-    "$SCRIPT_DIR/../../../chrome-cdp/scripts/cdp.mjs"
+    "${CLAUDE_PLUGIN_ROOT:-/var/empty}/../chrome-cdp/skills/chrome-cdp/scripts/cdp.mjs"
   )
+  shopt -u nullglob
   for c in "${candidates[@]}"; do
     [ -x "$c" ] && { echo "$c"; return; }
   done
@@ -44,19 +55,32 @@ resolve_cdp() {
 
 CDP="$(resolve_cdp)"
 if [ -z "$CDP" ]; then
-  cat >&2 <<EOF
+  cat >&2 <<'EOF'
 overleaf-comment: chrome-cdp not found.
 
 Install the chrome-cdp skill (or set CDP_BIN=/path/to/cdp.mjs).
-Searched: \$CDP_BIN, PATH, ~/.claude/skills/chrome-cdp/, ~/.claude/plugins/*/skills/chrome-cdp/, sibling skills.
+Searched: $CDP_BIN, PATH, ~/.claude/skills/chrome-cdp/, ~/.claude/plugins/*/skills/chrome-cdp/, sibling skills.
 EOF
   exit 2
 fi
 
-usage() {
-  sed -n '2,17p' "$0" | sed 's/^# \?//'
-  exit "${1:-0}"
-}
+USAGE_TEXT='overleaf-comment — bulk-post Overleaf comments from a JSON plan via CDP.
+
+Usage:
+  overleaf-comment <target> <plan.json>
+  overleaf-comment --url <project-url> <plan.json>
+  overleaf-comment --list
+
+Plan format (JSON array of {file, line, text}):
+  [
+    {"file": "main.tex", "line": 8, "text": "..."},
+    {"file": "parts/200-discussion.tex", "line": 108, "text": "..."}
+  ]
+
+<target> is a unique CDP target prefix from `cdp list` (e.g. 6172EEAA).
+The Overleaf tab must already be open and logged in.'
+
+usage() { printf '%s\n' "$USAGE_TEXT"; exit "${1:-0}"; }
 
 # ---------------------------------------------------------------------------
 # Parse args
@@ -85,8 +109,13 @@ done
 # --list: show overleaf project tabs, exit
 # ---------------------------------------------------------------------------
 if [ "$LIST" = 1 ]; then
-  "$CDP" list | grep -i overleaf || {
-    echo "overleaf-comment: no Overleaf tabs found in browser." >&2
+  CDP_OUT="$("$CDP" list)" || {
+    echo "overleaf-comment: failed to query browser via cdp.mjs" >&2
+    echo "$CDP_OUT" >&2
+    exit 1
+  }
+  printf '%s\n' "$CDP_OUT" | grep -F 'overleaf.com/project/' || {
+    echo "overleaf-comment: no Overleaf project tabs are open." >&2
     exit 1
   }
   exit 0
@@ -96,19 +125,30 @@ fi
 # Resolve target from --url if needed
 # ---------------------------------------------------------------------------
 if [ -z "$TARGET" ] && [ -n "$URL" ]; then
-  # Extract project id from URL (handles trailing path/segments).
-  PID="$(echo "$URL" | sed -nE 's#.*/project/([0-9a-f]+).*#\1#p')"
+  PID="$(echo "$URL" | sed -nE 's#.*/project/([0-9a-fA-F]+).*#\1#p' | tr 'A-F' 'a-f')"
   if [ -z "$PID" ]; then
     echo "overleaf-comment: could not extract project id from --url $URL" >&2
     exit 2
   fi
-  # Match any tab whose URL contains the project id.
-  TARGET="$("$CDP" list | awk -v pid="$PID" '$0 ~ pid { print $1; exit }')"
-  if [ -z "$TARGET" ]; then
+  CDP_OUT="$("$CDP" list)" || {
+    echo "overleaf-comment: failed to query browser via cdp.mjs" >&2
+    echo "$CDP_OUT" >&2
+    exit 1
+  }
+  MATCHES="$(printf '%s\n' "$CDP_OUT" | awk -v pid="$PID" 'index($0, pid) {print $1}')"
+  N_MATCHES="$(printf '%s\n' "$MATCHES" | grep -c . || true)"
+  if [ "$N_MATCHES" -eq 0 ]; then
     echo "overleaf-comment: no open tab matches project id $PID" >&2
     echo "Open the project in your browser first, then re-run." >&2
     exit 1
   fi
+  if [ "$N_MATCHES" -gt 1 ]; then
+    echo "overleaf-comment: $N_MATCHES tabs match project id $PID:" >&2
+    printf '%s\n' "$CDP_OUT" | awk -v pid="$PID" 'index($0, pid)' >&2
+    echo "Pass one of the prefixes above explicitly instead of --url." >&2
+    exit 1
+  fi
+  TARGET="$MATCHES"
 fi
 
 if [ -z "$TARGET" ] || [ -z "$PLAN" ]; then
@@ -122,33 +162,124 @@ if [ ! -f "$PLAN" ]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Sanity-check plan JSON
+# Validate the plan and emit a tab-separated work list to a temp file.
+# Each work line is one of:
+#   OPEN<TAB><file-display><TAB><JS-string-literal-of-file>
+#   POST<TAB><line-number><TAB><JS-string-literal-of-text>
+# Both string literals are produced by json.dumps(), so they are safe to
+# concatenate directly into a JS expression.
 # ---------------------------------------------------------------------------
-if ! python3 -c "
+WORK="$(mktemp -t overleaf-comment.XXXXXX)" || {
+  echo "overleaf-comment: could not create temp file" >&2; exit 2;
+}
+trap 'rm -f "$WORK"' EXIT
+
+if ! python3 - "$PLAN" "$WORK" <<'PY'
 import json, sys
-plan = json.load(open('$PLAN'))
-assert isinstance(plan, list), 'plan must be a JSON array'
+src, dst = sys.argv[1], sys.argv[2]
+try:
+    with open(src) as f:
+        plan = json.load(f)
+except Exception as e:
+    print(f"overleaf-comment: invalid plan JSON: {e}", file=sys.stderr)
+    sys.exit(2)
+if not isinstance(plan, list):
+    print("overleaf-comment: plan must be a JSON array", file=sys.stderr)
+    sys.exit(2)
+out = []
 for i, it in enumerate(plan):
-    for k in ('file', 'line', 'text'):
-        assert k in it, f'item {i} missing key: {k}'
-    assert isinstance(it['line'], int), f'item {i}: line must be int'
-print(f'plan: {len(plan)} items', file=sys.stderr)
-" 2>&1; then
-  echo "overleaf-comment: invalid plan JSON" >&2
+    if not isinstance(it, dict):
+        print(f"overleaf-comment: item {i} is not an object", file=sys.stderr)
+        sys.exit(2)
+    for k in ("file", "line", "text"):
+        if k not in it:
+            print(f"overleaf-comment: item {i} missing key: {k}", file=sys.stderr)
+            sys.exit(2)
+    file_val, line_val, text_val = it["file"], it["line"], it["text"]
+    if not isinstance(file_val, str) or not file_val:
+        print(f"overleaf-comment: item {i}: file must be a non-empty string", file=sys.stderr)
+        sys.exit(2)
+    if not isinstance(line_val, int) or isinstance(line_val, bool) or line_val < 1:
+        print(f"overleaf-comment: item {i}: line must be an integer >= 1", file=sys.stderr)
+        sys.exit(2)
+    if not isinstance(text_val, str) or not text_val.strip():
+        print(f"overleaf-comment: item {i}: text must be a non-empty string", file=sys.stderr)
+        sys.exit(2)
+    out.append((file_val, line_val, text_val))
+prev_file = None
+with open(dst, "w") as g:
+    for file_val, line_val, text_val in out:
+        if file_val != prev_file:
+            g.write("OPEN\t" + file_val + "\t" + json.dumps(file_val) + "\n")
+            prev_file = file_val
+        g.write("POST\t" + str(line_val) + "\t" + json.dumps(text_val) + "\n")
+print(f"plan: {len(plan)} items", file=sys.stderr)
+PY
+then
   exit 2
 fi
 
 # ---------------------------------------------------------------------------
-# Run: inject helpers + run plan in one CDP eval
+# Bring the tab to the foreground. Chrome aggressively throttles setTimeout
+# (and other async APIs) on background tabs, which causes our DOM-polling
+# helpers to hang for many seconds and trip chrome-cdp's 15 s eval timeout.
+# Page.bringToFront makes the tab visible so timers run at full speed.
+# ---------------------------------------------------------------------------
+"$CDP" evalraw "$TARGET" Page.bringToFront >/dev/null 2>&1 || true
+
+# ---------------------------------------------------------------------------
+# Inject helpers once.
 # ---------------------------------------------------------------------------
 HELPERS_JS="$(cat "$HELPERS")"
-PLAN_JSON="$(cat "$PLAN")"
+"$CDP" eval "$TARGET" "$HELPERS_JS" >/dev/null
 
-# Single eval: install helpers, set plan, await run().
-EXPR=$'(async () => {\n'
-EXPR+="${HELPERS_JS}"$'\n'
-EXPR+=$'window.__overleafPlan = '"${PLAN_JSON}"$';\n'
-EXPR+=$'return await window.__overleaf.run(window.__overleafPlan);\n'
-EXPR+=$'})()'
+# Confirm the tab is actually visible. If the user has another browser
+# window in front we cannot fix that, but we can warn so the timeouts
+# below have a clearer diagnosis.
+VIS="$("$CDP" eval "$TARGET" '({hidden: document.hidden, visibility: document.visibilityState})' 2>&1 || true)"
+if echo "$VIS" | grep -q '"visibility":"hidden"\|hidden":true'; then
+  echo "overleaf-comment: warning — Overleaf tab still reports document.hidden=true." >&2
+  echo "  Chrome throttles setTimeout in background tabs; bring the tab to the front." >&2
+fi
 
-"$CDP" eval "$TARGET" "$EXPR"
+# Pre-flight: dismiss any "Out of sync" modal before starting.
+PREFLIGHT="$("$CDP" eval "$TARGET" '(async () => await window.__overleaf.dismissModals())()' 2>&1 || true)"
+if [ "$PREFLIGHT" = "reloaded" ]; then
+  echo "overleaf-comment: editor was 'Out of sync' — clicked Reload editor." >&2
+  echo "Wait for the editor to settle, then re-run with the same plan." >&2
+  exit 75   # EX_TEMPFAIL
+fi
+
+# ---------------------------------------------------------------------------
+# Iterate the work list, streaming results to stdout.
+# ---------------------------------------------------------------------------
+exit_code=0
+file_failed=0
+while IFS=$'\t' read -r kind a b; do
+  case "$kind" in
+    OPEN)
+      result="$("$CDP" eval "$TARGET" "(async () => await window.__overleaf.openFile($b))()" 2>&1 || true)"
+      printf '[%s] %s\n' "$a" "$result"
+      if [[ "$result" == OK:* ]]; then
+        file_failed=0
+      else
+        file_failed=1
+        exit_code=1
+      fi
+      ;;
+    POST)
+      if [ "$file_failed" = 1 ]; then
+        printf '  L%s: SKIP: file open failed\n' "$a"
+        exit_code=1
+        continue
+      fi
+      result="$("$CDP" eval "$TARGET" "(async () => await window.__overleaf.post($a, $b))()" 2>&1 || true)"
+      printf '  L%s: %s\n' "$a" "$result"
+      if [[ "$result" != OK:* ]]; then
+        exit_code=1
+      fi
+      ;;
+  esac
+done < "$WORK"
+
+exit "$exit_code"
