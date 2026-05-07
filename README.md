@@ -17,6 +17,7 @@ Then install plugins:
 /plugin install codex-exec
 /plugin install claude-exec
 /plugin install review-anvil
+/plugin install overleaf-comment
 ```
 
 ## Plugins
@@ -64,6 +65,21 @@ Iterative multi-agent review-and-fix loop. Wraps the *"let's do three rounds of 
 - `Skill review-anvil` — run with all defaults against auto-detected target
 - `Skill review-anvil "5 rounds, 2 codex + 1 claude, focus: async correctness, target: PR #42"` — fully specified
 - `Skill review-anvil "1 round, only: security, target: src/auth/"` — narrow focus, single pass
+
+### overleaf-comment
+
+Bulk-post Overleaf comments from a JSON plan. Drives the user's already-logged-in browser tab via Chrome DevTools Protocol, so no API keys / no test accounts. Break-even is around 5 comments — under that, type them by hand.
+
+- `overleaf-comment --list` — show open Overleaf project tabs
+- `overleaf-comment <target> plan.json` — post the plan against a tab prefix from `--list`
+- `overleaf-comment --url https://www.overleaf.com/project/<id> plan.json` — auto-resolve the tab from the project URL
+
+Plan items are `{file, line, text}`. Failed/skipped items are written to `<plan>.residual.json` so a retry is one command.
+
+**Requirements:**
+- A `chrome-cdp` skill installation (auto-discovered or via `$CDP_BIN`)
+- Brave / Chrome / Chromium running with `--remote-debugging-port=9222`
+- The Overleaf project tab open and logged in, with commenting permission
 
 ### wshot
 
