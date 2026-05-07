@@ -1,0 +1,42 @@
+[
+  {
+    "file": "main.tex",
+    "line": 1,
+    "text": "Top-level review summary lands here. Use the first non-empty line of the document as a place to leave a high-level note that frames the rest of the comments."
+  },
+  {
+    "file": "main.tex",
+    "line": 12,
+    "text": "Grammar / wording: 'lead' should be 'led' (past tense)."
+  },
+  {
+    "file": "sections/introduction.tex",
+    "line": 4,
+    "text": "Missing citation — the claim that 'X is widely accepted' needs a reference. Suggest citing Smith et al. (2024) or the original survey."
+  },
+  {
+    "file": "sections/methods.tex",
+    "line": 27,
+    "text": "Methodological gap: the sample size justification is missing. State the power analysis (or report the effect size you can detect at the chosen N) so reviewers can judge whether the negative result is conclusive."
+  },
+  {
+    "file": "sections/results.tex",
+    "line": 53,
+    "text": "Statistical reporting: this difference is reported as a point estimate. Add a 95% confidence interval (bootstrap is fine) and the p-value of the paired test, otherwise the comparison cannot be evaluated.\n\nAlso consider whether the comparison is significant after Bonferroni / Benjamini–Hochberg correction across the table."
+  },
+  {
+    "file": "sections/discussion.tex",
+    "line": 88,
+    "text": "Limitation worth surfacing: the analysis assumes IID samples but the dataset has known temporal autocorrelation. Either acknowledge this in the limitations paragraph or run a sensitivity check with a block-bootstrap."
+  },
+  {
+    "file": "sections/discussion.tex",
+    "line": 102,
+    "text": "Threats-to-validity section is only one paragraph. Standard expectations: contamination/leakage, grader/annotator reliability, single-seed variance, generalization to non-test populations, ethics/dual-use. Promote into a labelled subsection."
+  },
+  {
+    "file": "appendix.tex",
+    "line": 14,
+    "text": "Reproducibility: the model snapshot date and decoding parameters (temperature, top_p, max tokens, retry policy) are not recorded here. Add a table — without these the experiment is not reproducible across API versions."
+  }
+]

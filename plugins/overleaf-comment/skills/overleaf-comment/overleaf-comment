@@ -1,0 +1,154 @@
+#!/usr/bin/env bash
+# overleaf-comment — bulk-post Overleaf comments from a JSON plan via CDP.
+#
+# Usage:
+#   overleaf-comment <target> <plan.json>
+#   overleaf-comment --url <project-url> <plan.json>
+#   overleaf-comment --list
+#
+# Plan format (JSON array):
+#   [
+#     {"file": "main.tex", "line": 8, "text": "..."},
+#     {"file": "parts/200-discussion.tex", "line": 108, "text": "..."}
+#   ]
+#
+# <target> is a unique CDP target prefix from `cdp list` (e.g. 6172EEAA).
+# The Overleaf tab must already be open and logged in.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+HELPERS="$SCRIPT_DIR/page-helpers.js"
+
+# ---------------------------------------------------------------------------
+# Resolve cdp.mjs from the chrome-cdp skill in priority order.
+# ---------------------------------------------------------------------------
+resolve_cdp() {
+  if [ -n "${CDP_BIN:-}" ] && [ -x "$CDP_BIN" ]; then
+    echo "$CDP_BIN"; return
+  fi
+  if command -v cdp.mjs >/dev/null 2>&1; then
+    command -v cdp.mjs; return
+  fi
+  local candidates=(
+    "$HOME/.claude/skills/chrome-cdp/scripts/cdp.mjs"
+    "$HOME"/.claude/plugins/*/skills/chrome-cdp/scripts/cdp.mjs
+    "$SCRIPT_DIR/../../../chrome-cdp/skills/chrome-cdp/scripts/cdp.mjs"
+    "$SCRIPT_DIR/../../../chrome-cdp/scripts/cdp.mjs"
+  )
+  for c in "${candidates[@]}"; do
+    [ -x "$c" ] && { echo "$c"; return; }
+  done
+  echo ""
+}
+
+CDP="$(resolve_cdp)"
+if [ -z "$CDP" ]; then
+  cat >&2 <<EOF
+overleaf-comment: chrome-cdp not found.
+
+Install the chrome-cdp skill (or set CDP_BIN=/path/to/cdp.mjs).
+Searched: \$CDP_BIN, PATH, ~/.claude/skills/chrome-cdp/, ~/.claude/plugins/*/skills/chrome-cdp/, sibling skills.
+EOF
+  exit 2
+fi
+
+usage() {
+  sed -n '2,17p' "$0" | sed 's/^# \?//'
+  exit "${1:-0}"
+}
+
+# ---------------------------------------------------------------------------
+# Parse args
+# ---------------------------------------------------------------------------
+TARGET=""
+URL=""
+PLAN=""
+LIST=0
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -h|--help) usage 0 ;;
+    --list) LIST=1; shift ;;
+    --url) URL="$2"; shift 2 ;;
+    --) shift; break ;;
+    -*) echo "overleaf-comment: unknown flag: $1" >&2; usage 2 ;;
+    *)
+      if [ -z "$TARGET" ] && [ -z "$URL" ]; then TARGET="$1"
+      elif [ -z "$PLAN" ]; then PLAN="$1"
+      else echo "overleaf-comment: unexpected arg: $1" >&2; usage 2
+      fi
+      shift ;;
+  esac
+done
+
+# ---------------------------------------------------------------------------
+# --list: show overleaf project tabs, exit
+# ---------------------------------------------------------------------------
+if [ "$LIST" = 1 ]; then
+  "$CDP" list | grep -i overleaf || {
+    echo "overleaf-comment: no Overleaf tabs found in browser." >&2
+    exit 1
+  }
+  exit 0
+fi
+
+# ---------------------------------------------------------------------------
+# Resolve target from --url if needed
+# ---------------------------------------------------------------------------
+if [ -z "$TARGET" ] && [ -n "$URL" ]; then
+  # Extract project id from URL (handles trailing path/segments).
+  PID="$(echo "$URL" | sed -nE 's#.*/project/([0-9a-f]+).*#\1#p')"
+  if [ -z "$PID" ]; then
+    echo "overleaf-comment: could not extract project id from --url $URL" >&2
+    exit 2
+  fi
+  # Match any tab whose URL contains the project id.
+  TARGET="$("$CDP" list | awk -v pid="$PID" '$0 ~ pid { print $1; exit }')"
+  if [ -z "$TARGET" ]; then
+    echo "overleaf-comment: no open tab matches project id $PID" >&2
+    echo "Open the project in your browser first, then re-run." >&2
+    exit 1
+  fi
+fi
+
+if [ -z "$TARGET" ] || [ -z "$PLAN" ]; then
+  echo "overleaf-comment: <target> and <plan.json> are required (or --url and <plan.json>)" >&2
+  usage 2
+fi
+
+if [ ! -f "$PLAN" ]; then
+  echo "overleaf-comment: plan not found: $PLAN" >&2
+  exit 2
+fi
+
+# ---------------------------------------------------------------------------
+# Sanity-check plan JSON
+# ---------------------------------------------------------------------------
+if ! python3 -c "
+import json, sys
+plan = json.load(open('$PLAN'))
+assert isinstance(plan, list), 'plan must be a JSON array'
+for i, it in enumerate(plan):
+    for k in ('file', 'line', 'text'):
+        assert k in it, f'item {i} missing key: {k}'
+    assert isinstance(it['line'], int), f'item {i}: line must be int'
+print(f'plan: {len(plan)} items', file=sys.stderr)
+" 2>&1; then
+  echo "overleaf-comment: invalid plan JSON" >&2
+  exit 2
+fi
+
+# ---------------------------------------------------------------------------
+# Run: inject helpers + run plan in one CDP eval
+# ---------------------------------------------------------------------------
+HELPERS_JS="$(cat "$HELPERS")"
+PLAN_JSON="$(cat "$PLAN")"
+
+# Single eval: install helpers, set plan, await run().
+EXPR=$'(async () => {\n'
+EXPR+="${HELPERS_JS}"$'\n'
+EXPR+=$'window.__overleafPlan = '"${PLAN_JSON}"$';\n'
+EXPR+=$'return await window.__overleaf.run(window.__overleafPlan);\n'
+EXPR+=$'})()'
+
+"$CDP" eval "$TARGET" "$EXPR"

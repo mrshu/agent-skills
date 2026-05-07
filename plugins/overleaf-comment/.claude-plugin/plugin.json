@@ -1,0 +1,9 @@
+{
+  "name": "overleaf-comment",
+  "version": "0.1.0",
+  "description": "Bulk-post Overleaf comments from a JSON plan via Chrome DevTools Protocol. Uses the chrome-cdp skill to drive an existing logged-in browser tab.",
+  "author": {
+    "name": "mrshu"
+  },
+  "keywords": ["overleaf", "latex", "review", "comments", "cdp"]
+}
