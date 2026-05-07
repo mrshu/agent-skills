@@ -25,6 +25,18 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 HELPERS="$SCRIPT_DIR/page-helpers.js"
 
+# Hostnames whose `/project/<hex>` URLs identify Overleaf project tabs.
+# Override (e.g. self-hosted Overleaf) by setting OVERLEAF_HOSTS to a
+# space-separated list, or by passing --url which is host-agnostic.
+OVERLEAF_HOSTS="${OVERLEAF_HOSTS:-overleaf.com www.overleaf.com}"
+
+# python3 is required for plan validation. Probe up front so the user gets a
+# clear message rather than a "command not found" deep inside a heredoc.
+command -v python3 >/dev/null 2>&1 || {
+  echo "overleaf-comment: python3 is required (used for plan validation)." >&2
+  exit 2
+}
+
 # ---------------------------------------------------------------------------
 # Resolve cdp.mjs from the chrome-cdp skill in priority order.
 # ---------------------------------------------------------------------------
@@ -39,18 +51,19 @@ resolve_cdp() {
   if command -v cdp.mjs >/dev/null 2>&1; then
     command -v cdp.mjs; return
   fi
-  shopt -s nullglob
-  local candidates=(
-    "$HOME/.claude/skills/chrome-cdp/scripts/cdp.mjs"
-    "$HOME"/.claude/plugins/*/skills/chrome-cdp/scripts/cdp.mjs
-    "$SCRIPT_DIR/../../../chrome-cdp/skills/chrome-cdp/scripts/cdp.mjs"
-    "${CLAUDE_PLUGIN_ROOT:-/var/empty}/../chrome-cdp/skills/chrome-cdp/scripts/cdp.mjs"
+  # Use a subshell so `nullglob` does not leak into the caller's environment.
+  (
+    shopt -s nullglob
+    local candidates=(
+      "$HOME/.claude/skills/chrome-cdp/scripts/cdp.mjs"
+      "$HOME"/.claude/plugins/*/skills/chrome-cdp/scripts/cdp.mjs
+      "$SCRIPT_DIR/../../../chrome-cdp/skills/chrome-cdp/scripts/cdp.mjs"
+      "${CLAUDE_PLUGIN_ROOT:-/var/empty}/../chrome-cdp/skills/chrome-cdp/scripts/cdp.mjs"
+    )
+    for c in "${candidates[@]}"; do
+      [ -x "$c" ] && { echo "$c"; exit 0; }
+    done
   )
-  shopt -u nullglob
-  for c in "${candidates[@]}"; do
-    [ -x "$c" ] && { echo "$c"; return; }
-  done
-  echo ""
 }
 
 CDP="$(resolve_cdp)"
@@ -106,37 +119,54 @@ while [ $# -gt 0 ]; do
 done
 
 # ---------------------------------------------------------------------------
-# --list: show overleaf project tabs, exit
+# --list: show overleaf project tabs, exit. Filter by host so self-hosted
+# Overleaf instances (set OVERLEAF_HOSTS) are recognised.
 # ---------------------------------------------------------------------------
 if [ "$LIST" = 1 ]; then
-  CDP_OUT="$("$CDP" list)" || {
-    echo "overleaf-comment: failed to query browser via cdp.mjs" >&2
-    echo "$CDP_OUT" >&2
+  CDP_OUT="$("$CDP" list 2>&1)" || {
+    echo "overleaf-comment: failed to query browser via cdp.mjs:" >&2
+    printf '%s\n' "$CDP_OUT" >&2
     exit 1
   }
-  printf '%s\n' "$CDP_OUT" | grep -F 'overleaf.com/project/' || {
-    echo "overleaf-comment: no Overleaf project tabs are open." >&2
+  # Build a regex of `<host>/project/` for each configured host.
+  filter=""
+  for h in $OVERLEAF_HOSTS; do
+    filter="${filter:+$filter|}$h/project/"
+  done
+  matches="$(printf '%s\n' "$CDP_OUT" | grep -E "($filter)" || true)"
+  if [ -z "$matches" ]; then
+    echo "overleaf-comment: no Overleaf project tabs are open" >&2
+    echo "  (looked for hosts: $OVERLEAF_HOSTS — override with OVERLEAF_HOSTS env var)" >&2
     exit 1
-  }
+  fi
+  printf '%s\n' "$matches"
   exit 0
 fi
 
 # ---------------------------------------------------------------------------
-# Resolve target from --url if needed
+# Resolve target from --url if needed. Match only against the URL column of
+# `cdp list` so a stray project id appearing in another tab's title can't
+# false-positive.
 # ---------------------------------------------------------------------------
+if [ -n "$URL" ] && [ -n "$TARGET" ]; then
+  echo "overleaf-comment: --url and <target> are mutually exclusive." >&2
+  exit 2
+fi
 if [ -z "$TARGET" ] && [ -n "$URL" ]; then
   PID="$(echo "$URL" | sed -nE 's#.*/project/([0-9a-fA-F]+).*#\1#p' | tr 'A-F' 'a-f')"
   if [ -z "$PID" ]; then
     echo "overleaf-comment: could not extract project id from --url $URL" >&2
     exit 2
   fi
-  CDP_OUT="$("$CDP" list)" || {
-    echo "overleaf-comment: failed to query browser via cdp.mjs" >&2
-    echo "$CDP_OUT" >&2
+  CDP_OUT="$("$CDP" list 2>&1)" || {
+    echo "overleaf-comment: failed to query browser via cdp.mjs:" >&2
+    printf '%s\n' "$CDP_OUT" >&2
     exit 1
   }
-  MATCHES="$(printf '%s\n' "$CDP_OUT" | awk -v pid="$PID" 'index($0, pid) {print $1}')"
-  N_MATCHES="$(printf '%s\n' "$MATCHES" | grep -c . || true)"
+  # `cdp list` prints `<prefix>  <title>  <url>` with the URL last; awk's
+  # last field ($NF) reliably extracts it.
+  MATCHES="$(printf '%s\n' "$CDP_OUT" | awk -v pat="/project/$PID" '$NF ~ pat {print $1}')"
+  N_MATCHES="$(printf '%s\n' "$MATCHES" | grep -c . || echo 0)"
   if [ "$N_MATCHES" -eq 0 ]; then
     echo "overleaf-comment: no open tab matches project id $PID" >&2
     echo "Open the project in your browser first, then re-run." >&2
@@ -144,7 +174,7 @@ if [ -z "$TARGET" ] && [ -n "$URL" ]; then
   fi
   if [ "$N_MATCHES" -gt 1 ]; then
     echo "overleaf-comment: $N_MATCHES tabs match project id $PID:" >&2
-    printf '%s\n' "$CDP_OUT" | awk -v pid="$PID" 'index($0, pid)' >&2
+    printf '%s\n' "$CDP_OUT" | awk -v pat="/project/$PID" '$NF ~ pat' >&2
     echo "Pass one of the prefixes above explicitly instead of --url." >&2
     exit 1
   fi
@@ -153,7 +183,7 @@ fi
 
 if [ -z "$TARGET" ] || [ -z "$PLAN" ]; then
   echo "overleaf-comment: <target> and <plan.json> are required (or --url and <plan.json>)" >&2
-  usage 2
+  usage 2 >&2
 fi
 
 if [ ! -f "$PLAN" ]; then
@@ -169,10 +199,10 @@ fi
 # Both string literals are produced by json.dumps(), so they are safe to
 # concatenate directly into a JS expression.
 # ---------------------------------------------------------------------------
-WORK="$(mktemp -t overleaf-comment.XXXXXX)" || {
+WORK="$(mktemp "${TMPDIR:-/tmp}/overleaf-comment.XXXXXX")" || {
   echo "overleaf-comment: could not create temp file" >&2; exit 2;
 }
-trap 'rm -f "$WORK"' EXIT
+trap 'rm -f "$WORK" "${RESIDUAL:-}"' EXIT
 
 if ! python3 - "$PLAN" "$WORK" <<'PY'
 import json, sys
@@ -228,19 +258,53 @@ fi
 "$CDP" evalraw "$TARGET" Page.bringToFront >/dev/null 2>&1 || true
 
 # ---------------------------------------------------------------------------
-# Inject helpers once.
+# Inject helpers and verify they are reachable.
 # ---------------------------------------------------------------------------
 HELPERS_JS="$(cat "$HELPERS")"
-"$CDP" eval "$TARGET" "$HELPERS_JS" >/dev/null
+inject_helpers() {
+  if ! "$CDP" eval "$TARGET" "$HELPERS_JS" >/dev/null 2>"$WORK.err"; then
+    echo "overleaf-comment: failed to inject helpers into the tab:" >&2
+    cat "$WORK.err" >&2
+    rm -f "$WORK.err"
+    exit 1
+  fi
+  rm -f "$WORK.err"
+  PROBE="$("$CDP" eval "$TARGET" 'typeof window.__overleaf' 2>&1 || true)"
+  if [ "$PROBE" != "object" ]; then
+    echo "overleaf-comment: helpers did not register on the tab (got: $PROBE)" >&2
+    echo "  This usually means the tab navigated or reloaded between injections." >&2
+    exit 1
+  fi
+}
+inject_helpers
 
-# Confirm the tab is actually visible. If the user has another browser
-# window in front we cannot fix that, but we can warn so the timeouts
-# below have a clearer diagnosis.
+# Confirm the tab is actually foreground. Chrome's background-tab throttling
+# is the difference between this skill working and timing out, so fail fast
+# rather than running through every item only to time out.
 VIS="$("$CDP" eval "$TARGET" '({hidden: document.hidden, visibility: document.visibilityState})' 2>&1 || true)"
 if echo "$VIS" | grep -q '"visibility":"hidden"\|hidden":true'; then
-  echo "overleaf-comment: warning — Overleaf tab still reports document.hidden=true." >&2
-  echo "  Chrome throttles setTimeout in background tabs; bring the tab to the front." >&2
+  echo "overleaf-comment: Overleaf tab still reports document.hidden=true after Page.bringToFront." >&2
+  echo "  Chrome throttles setTimeout in background tabs; manually focus the tab and re-run." >&2
+  exit 75   # EX_TEMPFAIL
 fi
+
+# Identity preflight: surface the active Overleaf account so the user can
+# notice if they are about to post under the wrong identity. Best-effort —
+# Overleaf may not expose the account in any of the known signals.
+USER_PROBE="$("$CDP" eval "$TARGET" 'window.__overleaf.activeUser()' 2>&1 || true)"
+case "$USER_PROBE" in
+  null|undefined|"") echo "overleaf-comment: posting as Overleaf account: <unknown>" >&2 ;;
+  *) echo "overleaf-comment: posting as Overleaf account: $USER_PROBE" >&2 ;;
+esac
+
+# Localization preflight: helpers match English strings. Warn if the UI is
+# set to another language so the user has a chance to switch before timing
+# out on every item.
+LANG_PROBE="$("$CDP" eval "$TARGET" 'window.__overleaf.uiLanguage()' 2>&1 || true)"
+case "$LANG_PROBE" in
+  ""|en) : ;;
+  *) echo "overleaf-comment: warning — Overleaf UI language is '$LANG_PROBE'; this skill needs English UI strings." >&2 ;;
+esac
 
 # Pre-flight: dismiss any "Out of sync" modal before starting.
 PREFLIGHT="$("$CDP" eval "$TARGET" '(async () => await window.__overleaf.dismissModals())()' 2>&1 || true)"
@@ -251,13 +315,31 @@ if [ "$PREFLIGHT" = "reloaded" ]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Iterate the work list, streaming results to stdout.
+# Iterate the work list, streaming results to stdout. Track per-item
+# status so a residual plan can be emitted at the end for re-running just
+# the failed/skipped items.
 # ---------------------------------------------------------------------------
 exit_code=0
 file_failed=0
+ok_count=0
+fail_count=0
+skip_count=0
+current_file=""
+declare -a residual_files=()
+declare -a residual_lines=()
+declare -a residual_texts=()
+
+push_residual() {
+  residual_files+=("$1")
+  residual_lines+=("$2")
+  residual_texts+=("$3")
+}
+
 while IFS=$'\t' read -r kind a b; do
   case "$kind" in
     OPEN)
+      current_file="$a"
+      current_file_js="$b"
       result="$("$CDP" eval "$TARGET" "(async () => await window.__overleaf.openFile($b))()" 2>&1 || true)"
       printf '[%s] %s\n' "$a" "$result"
       if [[ "$result" == OK:* ]]; then
@@ -270,16 +352,64 @@ while IFS=$'\t' read -r kind a b; do
     POST)
       if [ "$file_failed" = 1 ]; then
         printf '  L%s: SKIP: file open failed\n' "$a"
+        skip_count=$((skip_count + 1))
+        push_residual "$current_file" "$a" "$b"
         exit_code=1
         continue
       fi
       result="$("$CDP" eval "$TARGET" "(async () => await window.__overleaf.post($a, $b))()" 2>&1 || true)"
       printf '  L%s: %s\n' "$a" "$result"
-      if [[ "$result" != OK:* ]]; then
+      if [[ "$result" == RELOADED:* ]]; then
+        echo "overleaf-comment: editor reloaded mid-run — aborting." >&2
+        push_residual "$current_file" "$a" "$b"
+        exit_code=75
+        break
+      fi
+      if [[ "$result" == OK:* ]]; then
+        ok_count=$((ok_count + 1))
+      else
+        fail_count=$((fail_count + 1))
+        push_residual "$current_file" "$a" "$b"
         exit_code=1
       fi
       ;;
   esac
 done < "$WORK"
+
+# ---------------------------------------------------------------------------
+# Summary + residual plan emission.
+# ---------------------------------------------------------------------------
+total=$((ok_count + fail_count + skip_count))
+printf 'summary: %d ok / %d fail / %d skip (%d total)\n' \
+  "$ok_count" "$fail_count" "$skip_count" "$total" >&2
+
+if [ "${#residual_files[@]}" -gt 0 ]; then
+  RESIDUAL="${PLAN%.json}.residual.json"
+  # Don't overwrite a plan we don't own — fall back to a sibling temp file
+  # if the destination already exists with different content.
+  if [ -e "$RESIDUAL" ] && [ "$RESIDUAL" = "$PLAN" ]; then
+    RESIDUAL="${PLAN}.residual.json"
+  fi
+  # `residual_texts` hold the JSON-encoded text (with its surrounding quotes)
+  # because that is what the bash loop fed back into `cdp eval`. json.loads
+  # it once before re-emitting the plan so the saved file round-trips
+  # exactly to the original input shape.
+  python3 - "$RESIDUAL" "${#residual_files[@]}" "${residual_files[@]}" \
+    "${residual_lines[@]}" "${residual_texts[@]}" <<'PY'
+import json, sys
+dst = sys.argv[1]
+n = int(sys.argv[2])
+files = sys.argv[3:3+n]
+lines = [int(x) for x in sys.argv[3+n:3+2*n]]
+texts = [json.loads(t) for t in sys.argv[3+2*n:3+3*n]]
+plan = [{"file": f, "line": l, "text": t} for f, l, t in zip(files, lines, texts)]
+with open(dst, "w") as g:
+    json.dump(plan, g, indent=2, ensure_ascii=False)
+    g.write("\n")
+PY
+  echo "overleaf-comment: residual plan written to $RESIDUAL ($fail_count failed + $skip_count skipped)" >&2
+  # Don't auto-clean the residual file; the user may want to re-run with it.
+  trap 'rm -f "$WORK"' EXIT
+fi
 
 exit "$exit_code"
