@@ -40,6 +40,12 @@
       "source": "./plugins/review-anvil",
       "description": "Iterative multi-agent review-and-fix loop. Dispatch N rounds of parallel codex-exec/claude-exec reviewers, synthesize findings, apply fixes with logically-separated commits.",
       "version": "0.1.0"
+    },
+    {
+      "name": "overleaf-comment",
+      "source": "./plugins/overleaf-comment",
+      "description": "Bulk-post Overleaf comments from a JSON plan via Chrome DevTools Protocol. Uses the chrome-cdp skill to drive an existing logged-in browser tab.",
+      "version": "0.1.0"
     }
   ]
 }
