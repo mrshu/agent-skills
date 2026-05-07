@@ -106,17 +106,37 @@ while [ $# -gt 0 ]; do
   case "$1" in
     -h|--help) usage 0 ;;
     --list) LIST=1; shift ;;
-    --url) URL="$2"; shift 2 ;;
+    --url)
+      if [ $# -lt 2 ] || [ -z "${2:-}" ]; then
+        echo "overleaf-comment: --url requires a value" >&2
+        usage 2 >&2
+      fi
+      URL="$2"; shift 2 ;;
     --) shift; break ;;
-    -*) echo "overleaf-comment: unknown flag: $1" >&2; usage 2 ;;
+    -*) echo "overleaf-comment: unknown flag: $1" >&2; usage 2 >&2 ;;
     *)
-      if [ -z "$TARGET" ] && [ -z "$URL" ]; then TARGET="$1"
+      # Always assign positionals in order TARGET → PLAN (regardless of
+      # whether --url was already passed) so the explicit "mutually
+      # exclusive" check below can fire with a clear message.
+      if [ -z "$TARGET" ]; then TARGET="$1"
       elif [ -z "$PLAN" ]; then PLAN="$1"
-      else echo "overleaf-comment: unexpected arg: $1" >&2; usage 2
+      else echo "overleaf-comment: unexpected arg: $1" >&2; usage 2 >&2
       fi
       shift ;;
   esac
 done
+
+if [ -n "$URL" ] && [ -n "$TARGET" ]; then
+  # When --url is set, the first positional was meant to be the plan; if a
+  # second positional also showed up, the user gave both --url AND a target
+  # prefix.
+  if [ -n "$PLAN" ]; then
+    echo "overleaf-comment: --url and <target> are mutually exclusive" >&2
+    exit 2
+  fi
+  PLAN="$TARGET"
+  TARGET=""
+fi
 
 # ---------------------------------------------------------------------------
 # --list: show overleaf project tabs, exit. Filter by host so self-hosted
@@ -128,12 +148,13 @@ if [ "$LIST" = 1 ]; then
     printf '%s\n' "$CDP_OUT" >&2
     exit 1
   }
-  # Build a regex of `<host>/project/` for each configured host.
-  filter=""
-  for h in $OVERLEAF_HOSTS; do
-    filter="${filter:+$filter|}$h/project/"
-  done
-  matches="$(printf '%s\n' "$CDP_OUT" | grep -E "($filter)" || true)"
+  # Match by literal substring (`awk index()`) instead of building a regex
+  # from user input, so dots in hostnames stay literal and a stray
+  # OVERLEAF_HOSTS value can't inject regex metacharacters.
+  matches="$(printf '%s\n' "$CDP_OUT" | awk -v hosts="$OVERLEAF_HOSTS" '
+    BEGIN { n = split(hosts, h, " "); for (i=1; i<=n; i++) p[i] = h[i] "/project/" }
+    { for (i=1; i<=n; i++) if (index($0, p[i])) { print; next } }
+  ')"
   if [ -z "$matches" ]; then
     echo "overleaf-comment: no Overleaf project tabs are open" >&2
     echo "  (looked for hosts: $OVERLEAF_HOSTS — override with OVERLEAF_HOSTS env var)" >&2
@@ -144,14 +165,10 @@ if [ "$LIST" = 1 ]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Resolve target from --url if needed. Match only against the URL column of
-# `cdp list` so a stray project id appearing in another tab's title can't
-# false-positive.
+# Resolve target from --url if needed. Match against the URL column of
+# `cdp list` via `index()` so a stray project id appearing in another
+# tab's title can't false-positive.
 # ---------------------------------------------------------------------------
-if [ -n "$URL" ] && [ -n "$TARGET" ]; then
-  echo "overleaf-comment: --url and <target> are mutually exclusive." >&2
-  exit 2
-fi
 if [ -z "$TARGET" ] && [ -n "$URL" ]; then
   PID="$(echo "$URL" | sed -nE 's#.*/project/([0-9a-fA-F]+).*#\1#p' | tr 'A-F' 'a-f')"
   if [ -z "$PID" ]; then
@@ -163,18 +180,20 @@ if [ -z "$TARGET" ] && [ -n "$URL" ]; then
     printf '%s\n' "$CDP_OUT" >&2
     exit 1
   }
-  # `cdp list` prints `<prefix>  <title>  <url>` with the URL last; awk's
-  # last field ($NF) reliably extracts it.
-  MATCHES="$(printf '%s\n' "$CDP_OUT" | awk -v pat="/project/$PID" '$NF ~ pat {print $1}')"
-  N_MATCHES="$(printf '%s\n' "$MATCHES" | grep -c . || echo 0)"
-  if [ "$N_MATCHES" -eq 0 ]; then
+  # `cdp list` prints `<prefix>  <title>  <url>` with the URL last.
+  MATCHES="$(printf '%s\n' "$CDP_OUT" | awk -v pat="/project/$PID" 'index($NF, pat) {print $1}')"
+  # `wc -l` always prints exactly one number; piping through `tr` collapses
+  # the leading whitespace BSD wc emits.
+  N_MATCHES="$(printf '%s' "$MATCHES" | grep -c . 2>/dev/null || true)"
+  N_MATCHES="${N_MATCHES:-0}"
+  if [ "$N_MATCHES" = "0" ]; then
     echo "overleaf-comment: no open tab matches project id $PID" >&2
     echo "Open the project in your browser first, then re-run." >&2
     exit 1
   fi
-  if [ "$N_MATCHES" -gt 1 ]; then
+  if [ "$N_MATCHES" != "1" ]; then
     echo "overleaf-comment: $N_MATCHES tabs match project id $PID:" >&2
-    printf '%s\n' "$CDP_OUT" | awk -v pat="/project/$PID" '$NF ~ pat' >&2
+    printf '%s\n' "$CDP_OUT" | awk -v pat="/project/$PID" 'index($NF, pat)' >&2
     echo "Pass one of the prefixes above explicitly instead of --url." >&2
     exit 1
   fi
@@ -193,61 +212,18 @@ fi
 
 # ---------------------------------------------------------------------------
 # Validate the plan and emit a tab-separated work list to a temp file.
-# Each work line is one of:
-#   OPEN<TAB><file-display><TAB><JS-string-literal-of-file>
-#   POST<TAB><line-number><TAB><JS-string-literal-of-text>
-# Both string literals are produced by json.dumps(), so they are safe to
-# concatenate directly into a JS expression.
+# Heavy lifting is in plan_tools.py (see that file for the work-list
+# format).
 # ---------------------------------------------------------------------------
 WORK="$(mktemp "${TMPDIR:-/tmp}/overleaf-comment.XXXXXX")" || {
   echo "overleaf-comment: could not create temp file" >&2; exit 2;
 }
-trap 'rm -f "$WORK" "${RESIDUAL:-}"' EXIT
+RESIDUAL_NDJSON="$(mktemp "${TMPDIR:-/tmp}/overleaf-comment.XXXXXX")" || {
+  echo "overleaf-comment: could not create temp file" >&2; exit 2;
+}
+trap 'rm -f "$WORK" "$WORK.err" "$RESIDUAL_NDJSON"' EXIT
 
-if ! python3 - "$PLAN" "$WORK" <<'PY'
-import json, sys
-src, dst = sys.argv[1], sys.argv[2]
-try:
-    with open(src) as f:
-        plan = json.load(f)
-except Exception as e:
-    print(f"overleaf-comment: invalid plan JSON: {e}", file=sys.stderr)
-    sys.exit(2)
-if not isinstance(plan, list):
-    print("overleaf-comment: plan must be a JSON array", file=sys.stderr)
-    sys.exit(2)
-out = []
-for i, it in enumerate(plan):
-    if not isinstance(it, dict):
-        print(f"overleaf-comment: item {i} is not an object", file=sys.stderr)
-        sys.exit(2)
-    for k in ("file", "line", "text"):
-        if k not in it:
-            print(f"overleaf-comment: item {i} missing key: {k}", file=sys.stderr)
-            sys.exit(2)
-    file_val, line_val, text_val = it["file"], it["line"], it["text"]
-    if not isinstance(file_val, str) or not file_val:
-        print(f"overleaf-comment: item {i}: file must be a non-empty string", file=sys.stderr)
-        sys.exit(2)
-    if not isinstance(line_val, int) or isinstance(line_val, bool) or line_val < 1:
-        print(f"overleaf-comment: item {i}: line must be an integer >= 1", file=sys.stderr)
-        sys.exit(2)
-    if not isinstance(text_val, str) or not text_val.strip():
-        print(f"overleaf-comment: item {i}: text must be a non-empty string", file=sys.stderr)
-        sys.exit(2)
-    out.append((file_val, line_val, text_val))
-prev_file = None
-with open(dst, "w") as g:
-    for file_val, line_val, text_val in out:
-        if file_val != prev_file:
-            g.write("OPEN\t" + file_val + "\t" + json.dumps(file_val) + "\n")
-            prev_file = file_val
-        g.write("POST\t" + str(line_val) + "\t" + json.dumps(text_val) + "\n")
-print(f"plan: {len(plan)} items", file=sys.stderr)
-PY
-then
-  exit 2
-fi
+python3 "$SCRIPT_DIR/plan_tools.py" validate "$PLAN" "$WORK" || exit "$?"
 
 # ---------------------------------------------------------------------------
 # Bring the tab to the foreground. Chrome aggressively throttles setTimeout
@@ -280,9 +256,12 @@ inject_helpers
 
 # Confirm the tab is actually foreground. Chrome's background-tab throttling
 # is the difference between this skill working and timing out, so fail fast
-# rather than running through every item only to time out.
-VIS="$("$CDP" eval "$TARGET" '({hidden: document.hidden, visibility: document.visibilityState})' 2>&1 || true)"
-if echo "$VIS" | grep -q '"visibility":"hidden"\|hidden":true'; then
+# rather than running through every item only to time out. Return a
+# primitive string from the page (cdp.mjs would otherwise pretty-print an
+# object with `JSON.stringify(val, null, 2)`, which inserts space after the
+# colon and breaks naïve substring checks).
+VIS="$("$CDP" eval "$TARGET" 'document.hidden ? "hidden" : "visible"' 2>&1 || true)"
+if [ "$VIS" = "hidden" ]; then
   echo "overleaf-comment: Overleaf tab still reports document.hidden=true after Page.bringToFront." >&2
   echo "  Chrome throttles setTimeout in background tabs; manually focus the tab and re-run." >&2
   exit 75   # EX_TEMPFAIL
@@ -315,30 +294,27 @@ if [ "$PREFLIGHT" = "reloaded" ]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Iterate the work list, streaming results to stdout. Track per-item
-# status so a residual plan can be emitted at the end for re-running just
-# the failed/skipped items.
+# Iterate the work list, streaming results to stdout. Failed / skipped
+# items are appended to RESIDUAL_NDJSON as one JSON object per line; at
+# the end plan_tools.py turns that into a proper residual plan file.
 # ---------------------------------------------------------------------------
 exit_code=0
 file_failed=0
 ok_count=0
 fail_count=0
 skip_count=0
-current_file=""
-declare -a residual_files=()
-declare -a residual_lines=()
-declare -a residual_texts=()
+current_file_js=""
 
+# Append one residual entry. All values are already JSON-encoded by the
+# work-list emitter, so a literal printf produces a valid JSON line.
 push_residual() {
-  residual_files+=("$1")
-  residual_lines+=("$2")
-  residual_texts+=("$3")
+  printf '{"file":%s,"line":%s,"text":%s}\n' \
+    "$current_file_js" "$1" "$2" >> "$RESIDUAL_NDJSON"
 }
 
 while IFS=$'\t' read -r kind a b; do
   case "$kind" in
     OPEN)
-      current_file="$a"
       current_file_js="$b"
       result="$("$CDP" eval "$TARGET" "(async () => await window.__overleaf.openFile($b))()" 2>&1 || true)"
       printf '[%s] %s\n' "$a" "$result"
@@ -353,7 +329,7 @@ while IFS=$'\t' read -r kind a b; do
       if [ "$file_failed" = 1 ]; then
         printf '  L%s: SKIP: file open failed\n' "$a"
         skip_count=$((skip_count + 1))
-        push_residual "$current_file" "$a" "$b"
+        push_residual "$a" "$b"
         exit_code=1
         continue
       fi
@@ -361,7 +337,7 @@ while IFS=$'\t' read -r kind a b; do
       printf '  L%s: %s\n' "$a" "$result"
       if [[ "$result" == RELOADED:* ]]; then
         echo "overleaf-comment: editor reloaded mid-run — aborting." >&2
-        push_residual "$current_file" "$a" "$b"
+        push_residual "$a" "$b"
         exit_code=75
         break
       fi
@@ -369,7 +345,7 @@ while IFS=$'\t' read -r kind a b; do
         ok_count=$((ok_count + 1))
       else
         fail_count=$((fail_count + 1))
-        push_residual "$current_file" "$a" "$b"
+        push_residual "$a" "$b"
         exit_code=1
       fi
       ;;
@@ -383,33 +359,26 @@ total=$((ok_count + fail_count + skip_count))
 printf 'summary: %d ok / %d fail / %d skip (%d total)\n' \
   "$ok_count" "$fail_count" "$skip_count" "$total" >&2
 
-if [ "${#residual_files[@]}" -gt 0 ]; then
-  RESIDUAL="${PLAN%.json}.residual.json"
-  # Don't overwrite a plan we don't own — fall back to a sibling temp file
-  # if the destination already exists with different content.
-  if [ -e "$RESIDUAL" ] && [ "$RESIDUAL" = "$PLAN" ]; then
+# Emit a residual plan if any items did not post.
+if [ -s "$RESIDUAL_NDJSON" ]; then
+  # `${PLAN%.json}.residual.json` strips a single trailing `.json`. If
+  # PLAN doesn't end in `.json` the result equals `${PLAN}.residual.json`
+  # — fine.
+  case "$PLAN" in
+    *.json) RESIDUAL="${PLAN%.json}.residual.json" ;;
+    *)      RESIDUAL="${PLAN}.residual.json" ;;
+  esac
+  # If a residual from a previous run is already there, back it up rather
+  # than silently overwriting.
+  if [ -e "$RESIDUAL" ] && [ "$RESIDUAL" != "$PLAN" ]; then
+    mv "$RESIDUAL" "$RESIDUAL.$(date +%s).bak"
+  fi
+  # Refuse to overwrite the input plan itself.
+  if [ "$RESIDUAL" = "$PLAN" ]; then
     RESIDUAL="${PLAN}.residual.json"
   fi
-  # `residual_texts` hold the JSON-encoded text (with its surrounding quotes)
-  # because that is what the bash loop fed back into `cdp eval`. json.loads
-  # it once before re-emitting the plan so the saved file round-trips
-  # exactly to the original input shape.
-  python3 - "$RESIDUAL" "${#residual_files[@]}" "${residual_files[@]}" \
-    "${residual_lines[@]}" "${residual_texts[@]}" <<'PY'
-import json, sys
-dst = sys.argv[1]
-n = int(sys.argv[2])
-files = sys.argv[3:3+n]
-lines = [int(x) for x in sys.argv[3+n:3+2*n]]
-texts = [json.loads(t) for t in sys.argv[3+2*n:3+3*n]]
-plan = [{"file": f, "line": l, "text": t} for f, l, t in zip(files, lines, texts)]
-with open(dst, "w") as g:
-    json.dump(plan, g, indent=2, ensure_ascii=False)
-    g.write("\n")
-PY
+  python3 "$SCRIPT_DIR/plan_tools.py" residual "$RESIDUAL_NDJSON" "$RESIDUAL"
   echo "overleaf-comment: residual plan written to $RESIDUAL ($fail_count failed + $skip_count skipped)" >&2
-  # Don't auto-clean the residual file; the user may want to re-run with it.
-  trap 'rm -f "$WORK"' EXIT
 fi
 
 exit "$exit_code"

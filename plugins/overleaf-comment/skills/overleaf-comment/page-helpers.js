@@ -9,18 +9,21 @@
 (() => {
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-  // Scope all DOM queries that look for buttons by name to a panel so we
-  // don't accidentally click a Cancel/Reload/Comment button somewhere else
-  // in Overleaf's chrome (rename modal, share dialog, billing CTA…).
+  // Scope DOM queries for Submit/Cancel buttons to the review-panel form
+  // that wraps the new-comment textarea. We deliberately do NOT fall back
+  // to `document` when no form exists — a stray Cancel/Comment button in
+  // some other Overleaf modal (rename file, share dialog, billing CTA) is
+  // worse than reporting "panel not found". The selector chain prefers
+  // `form.review-panel-entry-content` (the actual current Overleaf
+  // container) and falls back to historical class names so a future
+  // redesign isn't an instant break.
   const REVIEW_PANEL_SEL =
-    ".review-panel-add-comment, .review-panel-new-thread, .review-panel-redesign-popup";
-  function findInPanelOrDoc(selectorOrPredicate) {
+    "form.review-panel-entry-content, .review-panel-add-comment, " +
+    ".review-panel-new-thread, .review-panel-redesign-popup";
+  function findInPanel(predicate) {
     const panel = document.querySelector(REVIEW_PANEL_SEL);
-    const root = panel || document;
-    if (typeof selectorOrPredicate === "string") {
-      return root.querySelector(selectorOrPredicate);
-    }
-    return [...root.querySelectorAll("button")].find(selectorOrPredicate);
+    if (!panel) return null;
+    return [...panel.querySelectorAll("button")].find(predicate);
   }
 
   // The main editing surface: prefer the editor inside Overleaf's IDE panel
@@ -89,22 +92,24 @@
   }
 
   // Probe the active Overleaf account, if Overleaf exposes it. Returns null
-  // when none of the known signals are present (Overleaf can change these,
-  // so callers must tolerate null).
+  // when none of the known signals yield a usable identifier. Display label
+  // only — the cookie sent on the comment-create POST is what actually
+  // authorises the post; keep these in mind as best-effort observation.
   function activeUser() {
     // 1) Overleaf's MetaProvider sets a meta tag on initial render.
     const meta = document.querySelector('meta[name="ol-user"]');
     if (meta && meta.content) {
       try {
         const parsed = JSON.parse(meta.content);
-        return parsed.email || parsed.first_name || null;
+        const id = parsed.email || parsed.first_name;
+        if (id) return id;
       } catch (_) {}
     }
     // 2) Some Overleaf builds expose window.user.
     if (window.user && (window.user.email || window.user.first_name)) {
       return window.user.email || window.user.first_name;
     }
-    // 3) Newer dashboards have an avatar with a `data-` attribute.
+    // 3) Newer dashboards have an avatar with a data- attribute.
     const avatar = document.querySelector(
       '[data-user-email], [data-test-selector="avatar"]',
     );
@@ -188,15 +193,13 @@
       lastLines = v.state.doc.lines;
       const marker = v.state.doc.line(1).text + "|" + v.state.doc.lines;
       if (marker !== beforeMarker && activeTreeItemMatches(basename)) {
-        // Wait for the toolbar Add-comment button to actually be available
-        // (instead of a fixed sleep). The Overleaf review-panel toolbar
-        // re-binds asynchronously after a file swap, and on a slow build
-        // the previous fixed 1.2 s wasn't always enough. Polling means
-        // we wait exactly as long as needed and no more.
-        for (let j = 0; j < 30; j++) {
-          await sleep(80);
-          if (await ensureAddCommentVisible({ probeOnly: true })) break;
-        }
+        // Empirically the review-panel toolbar takes ~1 s to rebind after a
+        // file swap; without this settle the first post() can hang. Polling
+        // for the Add-comment button being *enabled* doesn't work — that
+        // requires an active CodeMirror selection, which `post()` only
+        // sets up later — so the probe always exhausts. A fixed sleep is
+        // the right tool here.
+        await sleep(1200);
         return "OK: " + name + " (" + v.state.doc.lines + " lines)";
       }
     }
@@ -225,17 +228,14 @@
   }
 
   // Reveal the visible "Add comment" button. If the toolbar overflow has
-  // collapsed it, click the "More editor toolbar items" toggle first so the
-  // button is rendered into a visible popover. Returns the visible button
-  // or null. With { probeOnly: true } the function does not toggle the
-  // overflow popover (so it can be polled cheaply during settling).
-  async function ensureAddCommentVisible(opts) {
-    const probeOnly = !!(opts && opts.probeOnly);
+  // collapsed it, click the "More editor toolbar items" toggle first so
+  // the button is rendered into a visible popover. Returns the visible
+  // button or null.
+  async function ensureAddCommentVisible() {
     let visible = [...document.querySelectorAll('button[aria-label="Add comment"]')].find(
       (b) => !isButtonDisabled(b),
     );
     if (visible) return visible;
-    if (probeOnly) return null;
 
     const overflowToggle = document.querySelector(
       'button[aria-label*="More editor" i], .ol-cm-toolbar-overflow-toggle',
@@ -253,27 +253,35 @@
     return null;
   }
 
-  // Dismiss any half-open comment dialog before / after a failed post so the
-  // next iteration starts clean. Scoped to the review-panel container so we
-  // do not click a stray Cancel button in some other Overleaf modal.
+  // Dismiss any half-open comment dialog so the next iteration starts clean.
+  // Strictly scoped to the review-panel container — if the panel is not in
+  // the DOM there is nothing for us to dismiss, and clicking a stray Cancel
+  // button elsewhere on the page would do real harm.
   function closeOpenCommentDialog() {
-    const cancel = findInPanelOrDoc(
+    const cancel = findInPanel(
       (b) => b.offsetParent && b.textContent.trim() === "Cancel",
     );
     if (cancel) cancel.click();
   }
 
   // Distinguish between common causes of "Add comment unavailable" so the
-  // operator gets actionable diagnosis instead of a panic message.
+  // operator gets actionable diagnosis. Mirrors isButtonDisabled (so the
+  // toolbar-overflow case — button present but `offsetParent === null` —
+  // is classified correctly rather than "selection cleared").
   function diagnoseAddCommentUnavailable() {
     const addBtns = [...document.querySelectorAll('button[aria-label="Add comment"]')];
     if (addBtns.length === 0) {
-      // No button in DOM at all — strongest signal that this Overleaf project
-      // doesn't expose comment-creation (free-tier, viewer-only share,
-      // archived).
       return "FAIL: comments are not available on this project (free-tier without comments, viewer-only share, or archived)";
     }
-    if (addBtns.every((b) => b.disabled || b.getAttribute("aria-disabled") === "true")) {
+    if (addBtns.every(isButtonDisabled)) {
+      // All candidate buttons are unavailable in some way. Distinguish the
+      // common subcases.
+      const allHidden = addBtns.every(
+        (b) => b.offsetParent === null || b.getBoundingClientRect().width === 0,
+      );
+      if (allHidden) {
+        return "FAIL: add-comment button is hidden (collapsed in toolbar overflow and not reachable, or editor pane too narrow)";
+      }
       return "FAIL: add-comment button present but disabled — selection may have been cleared, or Overleaf is in a non-comment-capable mode (e.g. compare/history)";
     }
     if (uiLanguage() && uiLanguage() !== "en") {
@@ -338,11 +346,11 @@
     setter.call(ta, text);
     ta.dispatchEvent(new Event("input", { bubbles: true }));
 
-    // Search Submit/Cancel buttons within the review panel only — Overleaf
-    // renders many other buttons in the page chrome whose text might also
-    // be "Comment" or "Cancel", and a global query would misroute clicks.
+    // Search Submit/Cancel within the review panel — Overleaf renders
+    // other buttons in the page chrome whose text might also be "Comment"
+    // or "Cancel". A global query would misroute clicks.
     const findSubmit = () =>
-      findInPanelOrDoc((b) => b.offsetParent && b.textContent.trim() === "Comment");
+      findInPanel((b) => b.offsetParent && b.textContent.trim() === "Comment");
 
     let submit = findSubmit();
     for (let i = 0; i < 20 && isButtonDisabled(submit); i++) {
