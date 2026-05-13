@@ -1,0 +1,267 @@
+#!/usr/bin/env bash
+# gdocs-comment — bulk-post Google Docs comments from a JSON plan via CDP.
+#
+# Usage:
+#   gdocs-comment <target> <plan.json>
+#   gdocs-comment --url <doc-url> <plan.json>
+#   gdocs-comment --list
+#   gdocs-comment --dry-run <plan.json>
+#
+# Plan format (JSON array of {anchor, text, mentions?}):
+#   [
+#     {"anchor": "training sessions", "text": "...", "mentions": ["a@b.com"]},
+#     {"anchor": "Accommodation can be easily arranged", "text": "..."}
+#   ]
+#
+# <target> is a unique CDP target prefix from `cdp list` (e.g. 312C822D).
+# The Google Doc tab must already be open and logged in.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+POST_MJS="$SCRIPT_DIR/gdocs-post.mjs"
+
+# Hostnames whose `/document/d/<id>` URLs identify Google Docs tabs.
+GDOCS_HOSTS="${GDOCS_HOSTS:-docs.google.com}"
+
+command -v node >/dev/null 2>&1 || {
+  echo "gdocs-comment: node (>= 22) is required." >&2
+  exit 2
+}
+
+# ---------------------------------------------------------------------------
+# Resolve cdp.mjs from the chrome-cdp skill (same lookup as overleaf-comment).
+# ---------------------------------------------------------------------------
+resolve_cdp() {
+  if [ -n "${CDP_BIN:-}" ]; then
+    if [ -x "$CDP_BIN" ]; then echo "$CDP_BIN"; return; fi
+    echo "gdocs-comment: CDP_BIN points to '$CDP_BIN' but it is not executable." >&2
+    exit 2
+  fi
+  if command -v cdp.mjs >/dev/null 2>&1; then command -v cdp.mjs; return; fi
+  (
+    shopt -s nullglob
+    local candidates=(
+      "$HOME/.claude/skills/chrome-cdp/scripts/cdp.mjs"
+      "$HOME"/.claude/plugins/*/skills/chrome-cdp/scripts/cdp.mjs
+      "$HOME/.claude-rc/skills/chrome-cdp/scripts/cdp.mjs"
+      "$SCRIPT_DIR/../../../chrome-cdp/skills/chrome-cdp/scripts/cdp.mjs"
+      "${CLAUDE_PLUGIN_ROOT:-/var/empty}/../chrome-cdp/skills/chrome-cdp/scripts/cdp.mjs"
+    )
+    for c in "${candidates[@]}"; do
+      [ -x "$c" ] && { echo "$c"; exit 0; }
+    done
+  )
+}
+
+USAGE_TEXT='gdocs-comment — bulk-post Google Docs comments from a JSON plan via CDP.
+
+Usage:
+  gdocs-comment <target> <plan.json>
+  gdocs-comment --url <doc-url> <plan.json>
+  gdocs-comment --list
+  gdocs-comment --dry-run <plan.json>
+
+Plan format (JSON array of {anchor, text, mentions?}):
+  [
+    {"anchor": "training sessions", "text": "...", "mentions": ["a@b.com"]},
+    {"anchor": "Accommodation can be easily arranged", "text": "..."}
+  ]
+
+<target> is a unique CDP target prefix from `cdp list` (e.g. 312C822D).
+The Google Doc tab must already be open and logged in.'
+
+usage() { printf '%s\n' "$USAGE_TEXT"; exit "${1:-0}"; }
+
+# ---------------------------------------------------------------------------
+# Parse args. Flags go into named vars; positionals collect into an array
+# and are resolved explicitly afterwards (per mode), which beats the prior
+# post-hoc reshuffle that mis-categorised some combinations like
+# `--dry-run target plan.json`.
+# ---------------------------------------------------------------------------
+URL=""
+LIST=0
+DRY_RUN=0
+POS=()
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -h|--help) usage 0 ;;
+    --list) LIST=1; shift ;;
+    --dry-run) DRY_RUN=1; shift ;;
+    --url)
+      if [ $# -lt 2 ] || [ -z "${2:-}" ]; then
+        echo "gdocs-comment: --url requires a value" >&2
+        usage 2 >&2
+      fi
+      URL="$2"; shift 2 ;;
+    --) shift; while [ $# -gt 0 ]; do POS+=("$1"); shift; done ;;
+    -*) echo "gdocs-comment: unknown flag: $1" >&2; usage 2 >&2 ;;
+    *)  POS+=("$1"); shift ;;
+  esac
+done
+
+# Resolve positionals → TARGET, PLAN based on which mode the user picked.
+# `--list` takes no positionals. `--dry-run` and `--url` take just <plan>.
+# Default mode takes <target> <plan>.
+TARGET=""
+PLAN=""
+if [ "$LIST" = 1 ]; then
+  if [ "${#POS[@]}" -ne 0 ]; then
+    echo "gdocs-comment: --list takes no positional arguments" >&2; exit 2
+  fi
+elif [ "$DRY_RUN" = 1 ]; then
+  if [ "${#POS[@]}" -ne 1 ]; then
+    echo "gdocs-comment: --dry-run takes exactly one positional argument (<plan.json>)" >&2; exit 2
+  fi
+  PLAN="${POS[0]}"
+elif [ -n "$URL" ]; then
+  if [ "${#POS[@]}" -ne 1 ]; then
+    echo "gdocs-comment: --url takes exactly one positional argument (<plan.json>)" >&2; exit 2
+  fi
+  PLAN="${POS[0]}"
+else
+  if [ "${#POS[@]}" -ne 2 ]; then
+    echo "gdocs-comment: expected <target> <plan.json> (or --url/--list/--dry-run)" >&2; exit 2
+  fi
+  TARGET="${POS[0]}"; PLAN="${POS[1]}"
+fi
+
+# ---------------------------------------------------------------------------
+# --dry-run: validate plan only. Single node invocation; the validator
+# prints "N items OK" so we don't need a separate `count` call.
+# ---------------------------------------------------------------------------
+if [ "$DRY_RUN" = 1 ]; then
+  exec node "$POST_MJS" validate "$PLAN" --print-count
+fi
+
+CDP="$(resolve_cdp)"
+if [ -z "$CDP" ]; then
+  cat >&2 <<'EOF'
+gdocs-comment: chrome-cdp not found.
+
+Install the chrome-cdp skill (or set CDP_BIN=/path/to/cdp.mjs).
+Searched: $CDP_BIN, PATH, ~/.claude/skills/chrome-cdp/, ~/.claude/plugins/*/skills/chrome-cdp/, sibling skills.
+EOF
+  exit 2
+fi
+
+# ---------------------------------------------------------------------------
+# --list: show Google Doc tabs, exit
+# ---------------------------------------------------------------------------
+if [ "$LIST" = 1 ]; then
+  CDP_OUT="$("$CDP" list 2>&1)" || {
+    echo "gdocs-comment: failed to query browser via cdp.mjs:" >&2
+    printf '%s\n' "$CDP_OUT" >&2
+    exit 1
+  }
+  # Match only the URL field ($NF — `cdp list` prints `<prefix>  <title>  <url>`,
+  # URL is always last). Matching the full line picks up tabs whose *title*
+  # happens to contain the host string, which can quietly include
+  # non-Docs tabs the user has open (browser history, search results, etc.).
+  matches="$(printf '%s\n' "$CDP_OUT" | awk -v hosts="$GDOCS_HOSTS" '
+    BEGIN { n = split(hosts, h, " "); for (i=1; i<=n; i++) p[i] = h[i] "/document/d/" }
+    { for (i=1; i<=n; i++) if (index($NF, p[i])) { print; next } }
+  ')"
+  if [ -z "$matches" ]; then
+    echo "gdocs-comment: no Google Docs tabs are open" >&2
+    echo "  (looked for hosts: $GDOCS_HOSTS — override with GDOCS_HOSTS env var)" >&2
+    exit 1
+  fi
+  printf '%s\n' "$matches"
+  exit 0
+fi
+
+# ---------------------------------------------------------------------------
+# Resolve target from --url. Doc IDs are alnum + `_-`; anchor on
+# `/document/d/<id>` to avoid matching ids that appear in other tabs' titles.
+# ---------------------------------------------------------------------------
+if [ -z "$TARGET" ] && [ -n "$URL" ]; then
+  DID="$(echo "$URL" | sed -nE 's#.*/document/d/([A-Za-z0-9_-]+).*#\1#p')"
+  if [ -z "$DID" ]; then
+    echo "gdocs-comment: could not extract document id from --url $URL" >&2; exit 2
+  fi
+  CDP_OUT="$("$CDP" list 2>&1)" || {
+    echo "gdocs-comment: failed to query browser via cdp.mjs:" >&2
+    printf '%s\n' "$CDP_OUT" >&2
+    exit 1
+  }
+  MATCHES="$(printf '%s\n' "$CDP_OUT" | awk -v pat="/document/d/$DID" 'index($NF, pat) {print $1}')"
+  N_MATCHES="$(printf '%s' "$MATCHES" | grep -c . 2>/dev/null || true)"
+  N_MATCHES="${N_MATCHES:-0}"
+  if [ "$N_MATCHES" = "0" ]; then
+    echo "gdocs-comment: no open tab matches document id $DID" >&2
+    echo "Open the doc in your browser first, then re-run." >&2
+    exit 1
+  fi
+  if [ "$N_MATCHES" != "1" ]; then
+    echo "gdocs-comment: $N_MATCHES tabs match document id $DID:" >&2
+    printf '%s\n' "$CDP_OUT" | awk -v pat="/document/d/$DID" 'index($NF, pat)' >&2
+    echo "Pass one of the prefixes above explicitly instead of --url." >&2
+    exit 1
+  fi
+  TARGET="$MATCHES"
+fi
+
+if [ -z "$TARGET" ] || [ -z "$PLAN" ]; then
+  echo "gdocs-comment: <target> and <plan.json> are required (or --url and <plan.json>)" >&2
+  usage 2 >&2
+fi
+
+[ -f "$PLAN" ] || { echo "gdocs-comment: plan not found: $PLAN" >&2; exit 2; }
+
+# Validate the plan up front so we fail fast on bad input.
+node "$POST_MJS" validate "$PLAN" || exit "$?"
+
+# Start (or attach to) the per-tab daemon — this is the chrome-cdp call that
+# triggers the "Allow debugging?" prompt the first time. After this returns,
+# the daemon's Unix socket exists in chrome-cdp's runtime dir; gdocs-post.mjs
+# globs there to resolve the prefix to a full target id itself.
+"$CDP" evalraw "$TARGET" Page.bringToFront >/dev/null 2>&1 || true
+
+# Best-effort identity preflight: who is logged in on the doc?
+# Scope to the Google account-chooser surface in the top-right (whose
+# aria-label always contains both "Google" and a parenthesised email
+# in every locale we've seen). Earlier versions matched any aria-label
+# containing '@', which would incorrectly pick up addresses from existing
+# comments by collaborators.
+WHO="$("$CDP" eval "$TARGET" '(function() {
+  const sel = "header [aria-label*=\"@\"], #docs-titlebar-container [aria-label*=\"@\"], div[role=\"banner\"] [aria-label*=\"@\"]";
+  for (const el of document.querySelectorAll(sel)) {
+    const al = el.getAttribute("aria-label") || "";
+    // The account chip aria-label has the shape "<word> Google: <name> (email)"
+    // (or vice versa) — email always inside parentheses.
+    const m = al.match(/\(([\w.+-]+@[\w-]+(?:\.[\w-]+)+)\)/);
+    if (m) return m[1];
+  }
+  return "";
+})()' 2>/dev/null || true)"
+case "$WHO" in
+  ""|null|undefined) echo "gdocs-comment: posting as Google account: <unknown>" >&2 ;;
+  *) echo "gdocs-comment: posting as Google account: $WHO" >&2 ;;
+esac
+
+# ---------------------------------------------------------------------------
+# Run the core script. Residual path mirrors overleaf-comment.
+# ---------------------------------------------------------------------------
+case "$PLAN" in
+  *.json) RESIDUAL="${PLAN%.json}.residual.json" ;;
+  *)      RESIDUAL="${PLAN}.residual.json" ;;
+esac
+if [ -e "$RESIDUAL" ] && [ "$RESIDUAL" != "$PLAN" ]; then
+  mv "$RESIDUAL" "$RESIDUAL.$(date +%s).bak"
+fi
+
+# `set -e` would abort the wrapper the moment node exits non-zero,
+# skipping the residual-cleanup branch below. Capture the exit code
+# explicitly so both the success and failure paths run their
+# bookkeeping.
+RC=0
+node "$POST_MJS" "$TARGET" "$PLAN" "$RESIDUAL" || RC=$?
+
+# On clean success there's nothing in residual to keep — gdocs-post.mjs
+# only writes the file when at least one item failed.
+if [ -f "$RESIDUAL" ] && [ "$RC" = 0 ]; then
+  rm -f "$RESIDUAL"
+fi
+
+exit "$RC"

@@ -1,0 +1,16 @@
+[
+  {
+    "anchor": "Introduction",
+    "text": "Could we add a one-paragraph motivation here? The doc dives into specifics before saying why this matters.",
+    "mentions": ["alice@example.com"]
+  },
+  {
+    "anchor": "TBD",
+    "text": "Tracking: please replace every TBD with concrete content before the Friday review.",
+    "mentions": ["alice@example.com", "bob@example.com"]
+  },
+  {
+    "anchor": "Open questions",
+    "text": "Suggestion: number each question so we can reference them in the meeting."
+  }
+]

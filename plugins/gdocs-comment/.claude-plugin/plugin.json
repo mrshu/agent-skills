@@ -1,0 +1,9 @@
+{
+  "name": "gdocs-comment",
+  "version": "0.1.0",
+  "description": "Bulk-post anchored comments (with @-mentions) to Google Docs from a JSON plan via Chrome DevTools Protocol. Uses the chrome-cdp skill to drive an existing logged-in browser tab.",
+  "author": {
+    "name": "mrshu"
+  },
+  "keywords": ["google-docs", "docs", "review", "comments", "cdp"]
+}
