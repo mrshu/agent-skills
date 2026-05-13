@@ -45,6 +45,8 @@ resolve_cdp() {
       "$HOME/.claude/skills/chrome-cdp/scripts/cdp.mjs"
       "$HOME"/.claude/plugins/*/skills/chrome-cdp/scripts/cdp.mjs
       "$HOME/.claude-rc/skills/chrome-cdp/scripts/cdp.mjs"
+      "$HOME/.agents/skills/chrome-cdp/scripts/cdp.mjs"
+      "$HOME/.codex/skills/chrome-cdp/scripts/cdp.mjs"
       "$SCRIPT_DIR/../../../chrome-cdp/skills/chrome-cdp/scripts/cdp.mjs"
       "${CLAUDE_PLUGIN_ROOT:-/var/empty}/../chrome-cdp/skills/chrome-cdp/scripts/cdp.mjs"
     )
@@ -140,7 +142,7 @@ if [ -z "$CDP" ]; then
 gdocs-comment: chrome-cdp not found.
 
 Install the chrome-cdp skill (or set CDP_BIN=/path/to/cdp.mjs).
-Searched: $CDP_BIN, PATH, ~/.claude/skills/chrome-cdp/, ~/.claude/plugins/*/skills/chrome-cdp/, sibling skills.
+Searched: $CDP_BIN, PATH, ~/.claude/skills/chrome-cdp/, ~/.claude/plugins/*/skills/chrome-cdp/, ~/.claude-rc/skills/chrome-cdp/, ~/.agents/skills/chrome-cdp/, ~/.codex/skills/chrome-cdp/, sibling plugin paths, $CLAUDE_PLUGIN_ROOT.
 EOF
   exit 2
 fi
