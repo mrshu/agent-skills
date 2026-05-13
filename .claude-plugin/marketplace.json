@@ -46,6 +46,12 @@
       "source": "./plugins/overleaf-comment",
       "description": "Bulk-post Overleaf comments from a JSON plan via Chrome DevTools Protocol. Uses the chrome-cdp skill to drive an existing logged-in browser tab.",
       "version": "0.1.0"
+    },
+    {
+      "name": "gdocs-comment",
+      "source": "./plugins/gdocs-comment",
+      "description": "Bulk-post anchored Google Docs comments (with @-mentions) from a JSON plan via Chrome DevTools Protocol. Uses the chrome-cdp skill to drive an existing logged-in browser tab.",
+      "version": "0.1.0"
     }
   ]
 }
