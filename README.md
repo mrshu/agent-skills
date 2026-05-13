@@ -18,6 +18,7 @@ Then install plugins:
 /plugin install claude-exec
 /plugin install review-anvil
 /plugin install overleaf-comment
+/plugin install gdocs-comment
 ```
 
 ## Plugins
@@ -80,6 +81,23 @@ Plan items are `{file, line, text}`. Failed/skipped items are written to `<plan>
 - A `chrome-cdp` skill installation (auto-discovered or via `$CDP_BIN`)
 - Brave / Chrome / Chromium running with `--remote-debugging-port=9222`
 - The Overleaf project tab open and logged in, with commenting permission
+
+### gdocs-comment
+
+Bulk-post anchored Google Docs comments (with `@-mentions`) from a JSON plan. Drives the user's already-logged-in browser tab via Chrome DevTools Protocol — no Drive API keys, no OAuth dance. Break-even is around 5 comments — under that, type them by hand.
+
+- `gdocs-comment --list` — show open Google Docs tabs
+- `gdocs-comment <target> plan.json` — post the plan against a tab prefix from `--list`
+- `gdocs-comment --url https://docs.google.com/document/d/<id>/edit plan.json` — auto-resolve the tab from the document URL
+- `gdocs-comment --dry-run plan.json` — validate the plan without posting
+
+Plan items are `{anchor, text, mentions?}` — `anchor` is a substring of the doc body, and the comment is anchored to the first match. Failed items are written to `<plan>.residual.json` for one-command retry.
+
+**Requirements:**
+- A `chrome-cdp` skill installation (auto-discovered or via `$CDP_BIN`)
+- Chrome / Brave / Edge with remote debugging enabled
+- The Google Doc tab open and logged in, with comment permission
+- Node.js 22+
 
 ### wshot
 
