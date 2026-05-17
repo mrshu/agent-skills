@@ -69,3 +69,10 @@ A summary, identity preflight, and any FAIL diagnostics go to stderr.
 - Pegged to Overleaf's current React UI; selectors and strings are gathered at the top of `page-helpers.js` for easy re-targeting on a redesign.
 - Posts under whichever account the tab is logged in as; the wrapper prints `posting as Overleaf account: <email>` before running so you can verify.
 - Don't type or click in the Overleaf editor while a run is in progress.
+
+## File type support
+
+Comments land on any file Overleaf renders in CodeMirror — including `.tex`, `.bib`, `.bst`, `.cls`, `.sty`. The skill auto-selects one of two paths:
+
+- **Toolbar path** (used on `.tex`): selects the line and clicks the static "Add comment" button.
+- **Popover path** (used elsewhere, e.g. `.bib`): Overleaf suppresses the toolbar button for non-tex modes but still mounts a floating Add-comment popover on a trusted PointerEvent-driven selection. The wrapper synthesises a real mouse drag via CDP `Input.dispatchMouseEvent` to trigger the popover, then clicks through. The fallback fires automatically when the toolbar button is absent — no plan changes required.

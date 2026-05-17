@@ -330,6 +330,41 @@ while IFS=$'\t' read -r kind a b; do
         continue
       fi
       result="$("$CDP" eval "$TARGET" "(async () => await window.__overleaf.post($a, $b))()" 2>&1 || true)"
+
+      # Files where the static toolbar Add-comment button is absent
+      # (.bib / .bst / .cls / .sty …) require a real PointerEvent-driven
+      # selection to mount Overleaf's floating Add-comment popover. The
+      # page helper returns DRAG_NEEDED:{x1,x2,y,line}; the wrapper
+      # synthesises the mouse drag via CDP Input domain and then calls
+      # completePopoverPost which finishes the post.
+      if [[ "$result" == DRAG_NEEDED:* ]]; then
+        coords="${result#DRAG_NEEDED:}"
+        x1=$(printf '%s' "$coords" | python3 -c 'import sys,json;d=json.load(sys.stdin);print(d["x1"])' 2>/dev/null || echo "")
+        x2=$(printf '%s' "$coords" | python3 -c 'import sys,json;d=json.load(sys.stdin);print(d["x2"])' 2>/dev/null || echo "")
+        y=$(printf '%s' "$coords" | python3 -c 'import sys,json;d=json.load(sys.stdin);print(d["y"])' 2>/dev/null || echo "")
+        if [ -z "$x1" ] || [ -z "$x2" ] || [ -z "$y" ]; then
+          printf '  L%s: FAIL: helper returned malformed DRAG_NEEDED coords\n' "$a"
+          fail_count=$((fail_count + 1))
+          push_residual "$a" "$b"
+          exit_code=1
+          continue
+        fi
+        x_mid=$(( (x1 + x2) / 2 ))
+        # Trusted mouse drag: press at line start, move to mid then end,
+        # release at end. The intermediate move is what flips Overleaf's
+        # selection state from "click" to "drag" — without it the
+        # popover sometimes doesn't mount.
+        "$CDP" evalraw "$TARGET" Input.dispatchMouseEvent \
+          "{\"type\":\"mousePressed\",\"x\":$x1,\"y\":$y,\"button\":\"left\",\"clickCount\":1}" >/dev/null 2>&1
+        "$CDP" evalraw "$TARGET" Input.dispatchMouseEvent \
+          "{\"type\":\"mouseMoved\",\"x\":$x_mid,\"y\":$y,\"button\":\"left\",\"buttons\":1}" >/dev/null 2>&1
+        "$CDP" evalraw "$TARGET" Input.dispatchMouseEvent \
+          "{\"type\":\"mouseMoved\",\"x\":$x2,\"y\":$y,\"button\":\"left\",\"buttons\":1}" >/dev/null 2>&1
+        "$CDP" evalraw "$TARGET" Input.dispatchMouseEvent \
+          "{\"type\":\"mouseReleased\",\"x\":$x2,\"y\":$y,\"button\":\"left\",\"clickCount\":1}" >/dev/null 2>&1
+        result="$("$CDP" eval "$TARGET" "(async () => await window.__overleaf.completePopoverPost($a, $b))()" 2>&1 || true)"
+      fi
+
       printf '  L%s: %s\n' "$a" "$result"
       if [[ "$result" == RELOADED:* ]]; then
         echo "overleaf-comment: editor reloaded mid-run — aborting." >&2

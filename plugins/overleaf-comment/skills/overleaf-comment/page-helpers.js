@@ -314,6 +314,117 @@
     return "FAIL: add-comment button unavailable (selection cleared or modal in flight)";
   }
 
+  // Compute the on-screen pixel range for `line` so the wrapper can
+  // synthesise a real Input.dispatchMouseEvent drag. CodeMirror 6
+  // `coordsAtPos` returns viewport-relative CSS pixels — exactly what the
+  // CDP Input domain expects.
+  //
+  // Edge cases handled:
+  //   - Long soft-wrapped lines whose `from` and `to` coords are on
+  //     different visual rows. We deliberately stay on the FIRST visual
+  //     row of the line by using only `from` coords for y and a bounded
+  //     horizontal drag, so the synthesised drag is always a single-row
+  //     horizontal sweep (CodeMirror clips to line content if the drag
+  //     overshoots the visible text).
+  //   - Line rendered near the top of the viewport: Overleaf's
+  //     Add-comment popover renders ABOVE the selection and is
+  //     suppressed when there's no room. We scroll the line into the
+  //     middle of the editor before measuring.
+  async function lineDragCoords(view, ln) {
+    let from = view.coordsAtPos(ln.from);
+    if (!from) return null;
+    // Reserve ~80 px above for the popover to render. If the line sits
+    // too close to the viewport top, scroll the editor down so the line
+    // ends up roughly mid-editor, then re-measure.
+    if (from.top < 80) {
+      const target = window.innerHeight / 2 - from.top;
+      view.scrollDOM.scrollTop -= target;
+      await sleep(80);
+      from = view.coordsAtPos(ln.from);
+      if (!from) return null;
+    }
+    const y = Math.round((from.top + from.bottom) / 2);
+    if (y < 0 || y > window.innerHeight - 20) return null;
+    const editorRight = view.scrollDOM.getBoundingClientRect().right;
+    const x1 = Math.round(from.left + 2);
+    // A 200 px sweep is more than enough to mount the popover (Overleaf
+    // listens for non-empty selection) without crossing visual rows.
+    const x2 = Math.min(x1 + 200, Math.round(editorRight - 20));
+    if (x2 - x1 < 20) return null;
+    return { x1, x2, y };
+  }
+
+  // Complete a post when the wrapper has already done a real mouse-drag
+  // selection. Polls for the floating "Add comment" popover button (which
+  // Overleaf mounts only after a trusted PointerEvent-driven selection),
+  // clicks it, fills the textarea, submits.
+  async function completePopoverPost(line, text) {
+    if ((await dismissModals()) === "reloaded") {
+      return "RELOADED: editor reloaded mid-run";
+    }
+    // Poll for the popover Add-comment button. The popover mounts within
+    // ~100ms of mouseUp; budget 2s to absorb slow paints.
+    let addBtn = null;
+    for (let i = 0; i < 20; i++) {
+      await sleep(100);
+      addBtn = [...document.querySelectorAll(SEL.addComment)].find(
+        (b) => b.offsetParent !== null && b.getBoundingClientRect().width > 0,
+      );
+      if (addBtn) break;
+    }
+    if (!addBtn) {
+      return "FAIL: popover Add-comment button did not appear after mouse drag";
+    }
+    addBtn.click();
+    return await fillAndSubmit(line, text);
+  }
+
+  // Shared submit logic — used by both the toolbar (post) and popover
+  // (completePopoverPost) paths once the Add-comment button has been clicked.
+  async function fillAndSubmit(line, text) {
+    let ta = null;
+    for (let i = 0; i < 25; i++) {
+      await sleep(80);
+      ta = document.querySelector(SEL.commentTextarea);
+      if (ta) break;
+    }
+    if (!ta) return "FAIL: comment textarea did not appear";
+
+    ta.focus();
+    const setter = Object.getOwnPropertyDescriptor(
+      HTMLTextAreaElement.prototype,
+      "value",
+    ).set;
+    setter.call(ta, text);
+    ta.dispatchEvent(new Event("input", { bubbles: true }));
+
+    const findSubmit = () =>
+      findInPanel((b) => b.offsetParent && b.textContent.trim() === TXT.submit);
+
+    let submit = findSubmit();
+    for (let i = 0; i < 20 && isButtonDisabled(submit); i++) {
+      await sleep(100);
+      submit = findSubmit();
+    }
+    if (!submit) {
+      closeOpenCommentDialog();
+      return "FAIL: no submit button found";
+    }
+    if (isButtonDisabled(submit)) {
+      closeOpenCommentDialog();
+      return "FAIL: submit stayed disabled after typing";
+    }
+    submit.click();
+
+    for (let i = 0; i < 15; i++) {
+      await sleep(80);
+      if (!document.querySelector(SEL.commentTextarea)) {
+        return "OK: line " + line;
+      }
+    }
+    return "FAIL: textarea did not close after submit — comment may have landed server-side; verify before retrying";
+  }
+
   async function post(line, text) {
     // Re-check for an "Out of sync" modal that may have appeared since the
     // wrapper's pre-flight check. If we click Reload editor, the page
@@ -352,62 +463,31 @@
       addBtn = await ensureAddCommentVisible();
       if (addBtn) break;
     }
-    if (!addBtn) return diagnoseAddCommentUnavailable();
-    addBtn.click();
-
-    // Poll for the textarea to appear.
-    let ta = null;
-    for (let i = 0; i < 25; i++) {
-      await sleep(80);
-      ta = document.querySelector(SEL.commentTextarea);
-      if (ta) break;
-    }
-    if (!ta) {
-      // No textarea opened — there is no dialog state to clean up.
-      return "FAIL: comment textarea did not appear";
-    }
-
-    ta.focus();
-    const setter = Object.getOwnPropertyDescriptor(
-      HTMLTextAreaElement.prototype,
-      "value",
-    ).set;
-    setter.call(ta, text);
-    ta.dispatchEvent(new Event("input", { bubbles: true }));
-
-    // Search Submit/Cancel within the review panel — Overleaf renders
-    // other buttons in the page chrome whose text might also be "Comment"
-    // or "Cancel". A global query would misroute clicks.
-    const findSubmit = () =>
-      findInPanel((b) => b.offsetParent && b.textContent.trim() === TXT.submit);
-
-    let submit = findSubmit();
-    for (let i = 0; i < 20 && isButtonDisabled(submit); i++) {
-      await sleep(100);
-      submit = findSubmit();
-    }
-    if (!submit) {
-      closeOpenCommentDialog();
-      return "FAIL: no submit button found";
-    }
-    if (isButtonDisabled(submit)) {
-      closeOpenCommentDialog();
-      return "FAIL: submit stayed disabled after typing";
-    }
-    submit.click();
-
-    // Wait until the textarea is gone (Overleaf removes it on successful
-    // submit). On lingering textarea, do NOT click Cancel: Submit fired,
-    // the comment may already have landed server-side, and Cancel could
-    // either be a no-op or, in some Overleaf versions, discard the saved
-    // comment. Report a yellow-flag FAIL and let the operator decide.
-    for (let i = 0; i < 15; i++) {
-      await sleep(80);
-      if (!document.querySelector(SEL.commentTextarea)) {
-        return "OK: line " + line;
+    if (!addBtn) {
+      // The static toolbar button doesn't exist for this file type
+      // (e.g. .bib, .bst, .cls — Overleaf suppresses the review toolbar).
+      // Overleaf DOES still mount a floating Add-comment popover when text
+      // is selected via a trusted PointerEvent — but `cm.dispatch` doesn't
+      // trigger the popover listener. Hand off to the wrapper, which
+      // synthesises a real Input.dispatchMouseEvent drag and then calls
+      // `completePopoverPost`.
+      const noToolbarBtn =
+        document.querySelectorAll(SEL.addComment).length === 0;
+      if (noToolbarBtn) {
+        const coords = await lineDragCoords(view, ln);
+        if (coords) {
+          return (
+            "DRAG_NEEDED:" +
+            JSON.stringify({ x1: coords.x1, x2: coords.x2, y: coords.y, line: line })
+          );
+        }
+        // Coords unavailable means the line is off-screen even after
+        // scrollIntoView — fall through to the generic diagnostic.
       }
+      return diagnoseAddCommentUnavailable();
     }
-    return "FAIL: textarea did not close after submit — comment may have landed server-side; verify before retrying";
+    addBtn.click();
+    return await fillAndSubmit(line, text);
   }
 
   // One-shot startup probe: returns the active user, the UI language, and
@@ -421,7 +501,7 @@
     };
   }
 
-  window.__overleaf = { post, openFile, dismissModals, activeUser, uiLanguage, preflight };
+  window.__overleaf = { post, completePopoverPost, openFile, dismissModals, activeUser, uiLanguage, preflight };
 })();
 
 "overleaf helpers installed";
