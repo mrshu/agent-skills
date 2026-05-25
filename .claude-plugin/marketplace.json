@@ -48,6 +48,12 @@
       "version": "0.1.0"
     },
     {
+      "name": "overleaf-compile",
+      "source": "./plugins/overleaf-compile",
+      "description": "Recompile an Overleaf project and extract its build logs/errors/warnings in a standardized format via Chrome DevTools Protocol. Uses the chrome-cdp skill to drive an existing logged-in browser tab.",
+      "version": "0.1.0"
+    },
+    {
       "name": "gdocs-comment",
       "source": "./plugins/gdocs-comment",
       "description": "Bulk-post anchored Google Docs comments (with @-mentions) from a JSON plan via Chrome DevTools Protocol. Uses the chrome-cdp skill to drive an existing logged-in browser tab.",
