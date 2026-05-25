@@ -18,6 +18,7 @@ Then install plugins:
 /plugin install claude-exec
 /plugin install review-anvil
 /plugin install overleaf-comment
+/plugin install overleaf-compile
 /plugin install gdocs-comment
 ```
 
@@ -81,6 +82,23 @@ Plan items are `{file, line, text}`. Failed/skipped items are written to `<plan>
 - A `chrome-cdp` skill installation (auto-discovered or via `$CDP_BIN`)
 - Brave / Chrome / Chromium running with `--remote-debugging-port=9222`
 - The Overleaf project tab open and logged in, with commenting permission
+
+### overleaf-compile
+
+Recompile an Overleaf project and extract its build logs/errors/warnings in a standardized format — closing a push → compile → debug loop. API-first: calls Overleaf's internal compile endpoint from inside the logged-in tab and fetches the raw `output.log` / `output.blg`, so the diagnostics are complete (not the truncated logs pane).
+
+- `overleaf-compile --list` — show open Overleaf project tabs
+- `overleaf-compile <target>` — recompile and emit standardized JSON logs
+- `overleaf-compile --url https://www.overleaf.com/project/<id>` — auto-resolve the tab
+- `overleaf-compile <target> --errors-only --format compiler` — fast human-readable triage
+
+Entries are `{level, file, line, message, source, count}` with `level ∈ error|warning|typesetting|info|bib-*`. Note that Overleaf's `status: "success"` only means *a PDF was produced* — the exit code (and parsed `errors` count) is the real verdict. `--clear-cache` recompiles from scratch; `--out-dir` saves the raw artifacts; `--no-recompile` reads the on-screen logs pane without compiling.
+
+**Requirements:**
+- A `chrome-cdp` skill installation (auto-discovered or via `$CDP_BIN`)
+- Brave / Chrome / Chromium running with `--remote-debugging-port=9222`
+- The Overleaf project tab open and logged in
+- `python3` on PATH (log parsing)
 
 ### gdocs-comment
 
