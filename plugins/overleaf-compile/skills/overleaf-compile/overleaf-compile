@@ -239,28 +239,44 @@ OPTS_JSON="$(printf '{"clearCache":%s,"draft":%s,"stopOnFirstError":%s}' \
   "$([ "$DRAFT" = 1 ] && echo true || echo false)" \
   "$([ "$STOP_ON_FIRST" = 1 ] && echo true || echo false)")"
 
-STARTED="$("$CDP" eval "$TARGET" "window.__olCompile.start($OPTS_JSON)" 2>&1 || true)"
-if [ "$STARTED" != "STARTED" ]; then
-  echo "overleaf-compile: could not start compile (got: $STARTED)" >&2; exit 1
-fi
-echo "overleaf-compile: compile started; polling (timeout ${TIMEOUT}s)…" >&2
+# Single round trip for typical compiles: startAndWait runs compile+fetch in
+# the page and awaits it, capped by an in-page budget kept below chrome-cdp's
+# ~15s eval ceiling. Only a compile that exceeds that budget falls back to a
+# fast (250ms) poll loop. This removes ~1s of poll-granularity waste and ~25
+# redundant CDP round trips on the common path.
+BUDGET_MS=13000
+[ "$TIMEOUT" -lt 13 ] 2>/dev/null && BUDGET_MS=$(( TIMEOUT * 1000 ))
+echo "overleaf-compile: compiling (timeout ${TIMEOUT}s)…" >&2
 
-deadline=$(( $(date +%s) + TIMEOUT ))
-done_flag="false"
-while [ "$(date +%s)" -lt "$deadline" ]; do
-  STATUS_JSON="$("$CDP" eval "$TARGET" 'window.__olCompile.poll()' 2>&1 || true)"
-  done_flag="$(printf '%s' "$STATUS_JSON" | python3 -c 'import sys,json;
-try: print("true" if json.load(sys.stdin).get("done") else "false")
-except Exception: print("err")' 2>/dev/null || echo err)"
-  [ "$done_flag" = "true" ] && break
-  "$CDP" eval "$TARGET" 'new Promise(r=>setTimeout(()=>r("t"),1000))' >/dev/null 2>&1 || true
-done
+STATUS_JSON="$("$CDP" eval "$TARGET" "window.__olCompile.startAndWait($OPTS_JSON, $BUDGET_MS)" 2>&1 || true)"
 
-if [ "$done_flag" != "true" ]; then
-  echo "overleaf-compile: compile did not finish within ${TIMEOUT}s (status=timeout)." >&2
-  echo "  Increase --timeout, or check the Overleaf tab for a stuck compile." >&2
-  exit 75   # EX_TEMPFAIL
+# is the compile still running past the in-page budget?
+if printf '%s' "$STATUS_JSON" | python3 -c 'import sys,json
+try: sys.exit(0 if json.load(sys.stdin).get("pending") else 1)
+except Exception: sys.exit(1)' 2>/dev/null; then
+  echo "overleaf-compile: long compile; polling…" >&2
+  deadline=$(( $(date +%s) + TIMEOUT ))
+  done_flag="false"
+  while [ "$(date +%s)" -lt "$deadline" ]; do
+    "$CDP" eval "$TARGET" 'new Promise(r=>setTimeout(()=>r(1),250))' >/dev/null 2>&1 || true
+    STATUS_JSON="$("$CDP" eval "$TARGET" 'window.__olCompile.poll()' 2>&1 || true)"
+    if printf '%s' "$STATUS_JSON" | python3 -c 'import sys,json
+try: sys.exit(0 if json.load(sys.stdin).get("done") else 1)
+except Exception: sys.exit(1)' 2>/dev/null; then done_flag="true"; break; fi
+  done
+  if [ "$done_flag" != "true" ]; then
+    echo "overleaf-compile: compile did not finish within ${TIMEOUT}s (status=timeout)." >&2
+    echo "  Increase --timeout, or check the Overleaf tab for a stuck compile." >&2
+    exit 75   # EX_TEMPFAIL
+  fi
 fi
+
+# A well-formed response carries "done"/"status"; anything else means the
+# helper call itself failed (e.g. tab navigated, helpers gone).
+case "$STATUS_JSON" in
+  *'"done"'*|*'"status"'*) : ;;
+  *) echo "overleaf-compile: unexpected compile response: $STATUS_JSON" >&2; exit 1 ;;
+esac
 
 printf '%s' "$STATUS_JSON" > "$META_FILE"
 

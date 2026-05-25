@@ -10,12 +10,14 @@
 // work at all: the page holds the session cookie and the ol-csrfToken meta
 // tag. The bash wrapper has neither.
 //
-// A compile of a real paper can take much longer than chrome-cdp's 15 s
-// Runtime.evaluate ceiling, so the work is split into a fire-and-poll shape:
-//   start()  -> kicks the compile off, returns immediately
-//   poll()   -> cheap status read (no raw log text), called in a loop
-//   raw(w)   -> returns the stored raw output.log / output.blg once done
-// Each call stays well under the eval ceiling regardless of compile time.
+// Typical compiles finish well within chrome-cdp's 15 s Runtime.evaluate
+// ceiling, so the fast path is a single awaited call:
+//   startAndWait(opts, budgetMs) -> runs compile+fetch, AWAITS it, returns
+//        the status JSON in one round trip. If the compile exceeds budgetMs
+//        it returns {pending:true} and keeps running in the background.
+//   poll() -> cheap status read (no raw log text); the wrapper's fallback
+//        loop for the rare compile that blew past the budget.
+//   raw(w) -> returns the stored raw output.log / output.blg once done.
 //
 // The namespace is deliberately __olCompile (not __overleaf) so this can
 // coexist with the overleaf-comment skill's helpers in the same tab.
@@ -162,46 +164,62 @@
       rawBlg: "",
     };
 
-    if (logFile) {
-      const r = await fetchOutput(logFile, clsiServerId, pdfDomain);
-      result.logHttp = r.http;
-      result.rawLog = r.text;
+    // Fetch both artifacts concurrently — they are independent GETs to the
+    // same CLSI node, so serializing them just adds a round trip.
+    const [logRes, blgRes] = await Promise.all([
+      logFile ? fetchOutput(logFile, clsiServerId, pdfDomain) : Promise.resolve(null),
+      blgFile ? fetchOutput(blgFile, clsiServerId, pdfDomain) : Promise.resolve(null),
+    ]);
+    if (logRes) {
+      result.logHttp = logRes.http;
+      result.rawLog = logRes.text;
     }
-    if (blgFile) {
-      const r = await fetchOutput(blgFile, clsiServerId, pdfDomain);
-      result.blgHttp = r.http;
-      result.rawBlg = r.text;
+    if (blgRes) {
+      result.blgHttp = blgRes.http;
+      result.rawBlg = blgRes.text;
     }
     result.logBytes = result.rawLog.length;
     result.blgBytes = result.rawBlg.length;
     return result;
   }
 
-  // Fire-and-poll: kick the compile off and stash the eventual result on the
-  // namespace. Returns synchronously so the eval call returns instantly.
-  function start(opts) {
-    const o = opts || {};
+  // Single-round-trip path. Runs the whole compile+fetch and AWAITS it, so
+  // for a typical (<budgetMs) compile the wrapper gets the result in one CDP
+  // call — no poll loop, no 1s-granularity waste. The wait is capped at
+  // budgetMs (kept below chrome-cdp's ~15s eval ceiling); on timeout we
+  // return {pending:true} while the compile keeps running in the background
+  // (its result still lands on _job), so the wrapper can fall back to
+  // poll()/raw(). Returns a Promise<string> (JSON), which cdp.mjs awaits.
+  function startAndWait(opts, budgetMs) {
     const startedAt = Date.now();
     window.__olCompile._job = { done: false, startedAt };
-    runCompile(o)
-      .then((res) => {
+    const job = runCompile(opts || {}).then(
+      (res) => {
         const ms = Date.now() - startedAt;
         window.__olCompile._job = res.error
           ? { done: true, ms, error: res.error }
           : Object.assign(res, { ms });
-      })
-      .catch((e) => {
+        return window.__olCompile._job;
+      },
+      (e) => {
         window.__olCompile._job = {
           done: true,
           ms: Date.now() - startedAt,
           error: String(e),
         };
-      });
-    return "STARTED";
+        return window.__olCompile._job;
+      },
+    );
+    const timeout = new Promise((r) => setTimeout(() => r(null), budgetMs || 13000));
+    return Promise.race([job, timeout]).then((j) => {
+      if (!j) return JSON.stringify({ done: false, pending: true });
+      const { rawLog, rawBlg, ...rest } = j;
+      return JSON.stringify(rest);
+    });
   }
 
-  // Cheap status read for the wrapper's poll loop. Strips the raw log blobs
-  // so the eval payload stays tiny.
+  // Cheap status read for the wrapper's poll-loop fallback. Strips the raw log
+  // blobs so the eval payload stays tiny.
   function poll() {
     const j = window.__olCompile._job;
     if (!j) return JSON.stringify({ done: false, error: "no job started" });
@@ -249,7 +267,7 @@
     return JSON.stringify(out);
   }
 
-  window.__olCompile = { start, poll, raw, domEntries, ctx, _job: null };
+  window.__olCompile = { startAndWait, poll, raw, domEntries, ctx, _job: null };
 })();
 
 "olcompile helpers installed";
