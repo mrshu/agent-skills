@@ -1,0 +1,304 @@
+#!/usr/bin/env bash
+# overleaf-compile — recompile an Overleaf project and extract its build
+# logs/errors/warnings in a standardized format, via CDP.
+#
+# Usage:
+#   overleaf-compile <target> [options]
+#   overleaf-compile --url <project-url> [options]
+#   overleaf-compile --list
+#
+# <target> is a unique CDP target prefix from `cdp list` (e.g. 60D065AD).
+# The Overleaf tab must already be open and logged in.
+#
+# Options:
+#   --format json|compiler   output format (default: json)
+#   --errors-only            show only errors (LaTeX + bib)
+#   --info                   include low-value Package/Font "Info:" lines
+#   --no-dedup               keep every identical log entry (default: collapse + count)
+#   --raw-tail N             include the last N lines of output.log (json only)
+#   --clear-cache            recompile from scratch (drop the build cache first)
+#   --draft                  draft-mode compile (skip image rendering; faster)
+#   --stop-on-first-error    ask the compiler to halt at the first error
+#   --no-recompile           do NOT compile; read the logs pane already on screen
+#   --out-dir DIR            also save raw output.log / output.blg into DIR
+#   --timeout SECONDS        max wait for a compile to finish (default: 180)
+#
+# Architecture: page-helpers.js is injected once, then the wrapper kicks off
+# the compile and polls (the compile can exceed chrome-cdp's 15 s eval
+# ceiling), pulls the raw output.log / output.blg back out of the page, and
+# pipes them through parse_log.py. Mechanism is API-first: the helper calls
+# Overleaf's internal POST /project/:id/compile and fetches the build's raw
+# log artifacts; the DOM logs pane is used only on --no-recompile.
+#
+# Sync assumption: this compiles whatever source Overleaf currently holds. If
+# you publish by pushing to Overleaf's own git remote, the project is already
+# current and no sync step is needed. (GitHub-mirror projects that require a
+# manual pull are out of scope.)
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+HELPERS="$SCRIPT_DIR/page-helpers.js"
+PARSER="$SCRIPT_DIR/parse_log.py"
+
+# Hostnames whose `/project/<hex>` URLs identify Overleaf project tabs.
+# Override (e.g. self-hosted Overleaf) via OVERLEAF_HOSTS (space-separated),
+# or pass --url which is host-agnostic.
+OVERLEAF_HOSTS="${OVERLEAF_HOSTS:-overleaf.com www.overleaf.com}"
+
+command -v python3 >/dev/null 2>&1 || {
+  echo "overleaf-compile: python3 is required (used for log parsing)." >&2
+  exit 2
+}
+
+# ---------------------------------------------------------------------------
+# Resolve cdp.mjs from the chrome-cdp skill in priority order.
+# ---------------------------------------------------------------------------
+resolve_cdp() {
+  if [ -n "${CDP_BIN:-}" ]; then
+    if [ -x "$CDP_BIN" ]; then echo "$CDP_BIN"; return; fi
+    echo "overleaf-compile: CDP_BIN points to '$CDP_BIN' but it is not executable." >&2
+    exit 2
+  fi
+  if command -v cdp.mjs >/dev/null 2>&1; then command -v cdp.mjs; return; fi
+  (
+    shopt -s nullglob
+    local candidates=(
+      "$HOME/.claude/skills/chrome-cdp/scripts/cdp.mjs"
+      "$HOME"/.claude/plugins/*/skills/chrome-cdp/scripts/cdp.mjs
+      "$SCRIPT_DIR/../../../chrome-cdp/skills/chrome-cdp/scripts/cdp.mjs"
+      "${CLAUDE_PLUGIN_ROOT:-/var/empty}/../chrome-cdp/skills/chrome-cdp/scripts/cdp.mjs"
+    )
+    for c in "${candidates[@]}"; do
+      [ -x "$c" ] && { echo "$c"; exit 0; }
+    done
+  )
+}
+
+CDP="$(resolve_cdp)"
+if [ -z "$CDP" ]; then
+  cat >&2 <<'EOF'
+overleaf-compile: chrome-cdp not found.
+
+Install the chrome-cdp skill (or set CDP_BIN=/path/to/cdp.mjs).
+Searched: $CDP_BIN, PATH, ~/.claude/skills/chrome-cdp/, ~/.claude/plugins/*/skills/chrome-cdp/, sibling skills.
+EOF
+  exit 2
+fi
+
+USAGE_TEXT='overleaf-compile — recompile an Overleaf project and extract its logs via CDP.
+
+Usage:
+  overleaf-compile <target> [options]
+  overleaf-compile --url <project-url> [options]
+  overleaf-compile --list
+
+Options:
+  --format json|compiler   output format (default: json)
+  --errors-only            show only errors (LaTeX + bib)
+  --info                   include low-value Package/Font "Info:" lines
+  --no-dedup               keep every identical log entry
+  --raw-tail N             include last N lines of output.log (json only)
+  --clear-cache            recompile from scratch
+  --draft                  draft-mode compile (faster, skips images)
+  --stop-on-first-error    halt at the first error
+  --no-recompile           read the on-screen logs pane without compiling
+  --out-dir DIR            also save raw output.log / output.blg into DIR
+  --timeout SECONDS        max wait for a compile (default: 180)
+
+<target> is a unique CDP target prefix from `cdp list` (e.g. 60D065AD).'
+
+usage() { printf '%s\n' "$USAGE_TEXT"; exit "${1:-0}"; }
+
+# ---------------------------------------------------------------------------
+# Parse args
+# ---------------------------------------------------------------------------
+TARGET=""; URL=""; LIST=0
+FORMAT="json"; NO_DEDUP=0; RAW_TAIL=0; CLEAR_CACHE=0; DRAFT=0
+STOP_ON_FIRST=0; NO_RECOMPILE=0; OUT_DIR=""; TIMEOUT=180; INFO=0; ERRORS_ONLY=0
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -h|--help) usage 0 ;;
+    --list) LIST=1; shift ;;
+    --url)
+      [ $# -ge 2 ] && [ -n "${2:-}" ] || { echo "overleaf-compile: --url requires a value" >&2; usage 2 >&2; }
+      URL="$2"; shift 2 ;;
+    --format)
+      [ $# -ge 2 ] || { echo "overleaf-compile: --format requires a value" >&2; usage 2 >&2; }
+      case "$2" in json|compiler) FORMAT="$2" ;; *) echo "overleaf-compile: --format must be json or compiler" >&2; exit 2 ;; esac
+      shift 2 ;;
+    --no-dedup) NO_DEDUP=1; shift ;;
+    --info) INFO=1; shift ;;
+    --errors-only) ERRORS_ONLY=1; shift ;;
+    --raw-tail)
+      [ $# -ge 2 ] || { echo "overleaf-compile: --raw-tail requires a value" >&2; usage 2 >&2; }
+      RAW_TAIL="$2"; shift 2 ;;
+    --clear-cache) CLEAR_CACHE=1; shift ;;
+    --draft) DRAFT=1; shift ;;
+    --stop-on-first-error) STOP_ON_FIRST=1; shift ;;
+    --no-recompile) NO_RECOMPILE=1; shift ;;
+    --out-dir)
+      [ $# -ge 2 ] || { echo "overleaf-compile: --out-dir requires a value" >&2; usage 2 >&2; }
+      OUT_DIR="$2"; shift 2 ;;
+    --timeout)
+      [ $# -ge 2 ] || { echo "overleaf-compile: --timeout requires a value" >&2; usage 2 >&2; }
+      TIMEOUT="$2"; shift 2 ;;
+    --) shift; break ;;
+    -*) echo "overleaf-compile: unknown flag: $1" >&2; usage 2 >&2 ;;
+    *)
+      if [ -z "$TARGET" ]; then TARGET="$1"
+      else echo "overleaf-compile: unexpected arg: $1" >&2; usage 2 >&2
+      fi
+      shift ;;
+  esac
+done
+
+# ---------------------------------------------------------------------------
+# --list: show Overleaf project tabs, exit.
+# ---------------------------------------------------------------------------
+if [ "$LIST" = 1 ]; then
+  CDP_OUT="$("$CDP" list 2>&1)" || { echo "overleaf-compile: failed to query browser via cdp.mjs:" >&2; printf '%s\n' "$CDP_OUT" >&2; exit 1; }
+  matches="$(printf '%s\n' "$CDP_OUT" | awk -v hosts="$OVERLEAF_HOSTS" '
+    BEGIN { n = split(hosts, h, " "); for (i=1; i<=n; i++) p[i] = h[i] "/project/" }
+    { for (i=1; i<=n; i++) if (index($0, p[i])) { print; next } }')"
+  if [ -z "$matches" ]; then
+    echo "overleaf-compile: no Overleaf project tabs are open" >&2
+    echo "  (looked for hosts: $OVERLEAF_HOSTS — override with OVERLEAF_HOSTS env var)" >&2
+    exit 1
+  fi
+  printf '%s\n' "$matches"; exit 0
+fi
+
+# ---------------------------------------------------------------------------
+# Resolve target from --url if needed.
+# ---------------------------------------------------------------------------
+if [ -z "$TARGET" ] && [ -n "$URL" ]; then
+  PID="$(echo "$URL" | sed -nE 's#.*/project/([0-9a-fA-F]+).*#\1#p' | tr 'A-F' 'a-f')"
+  [ -n "$PID" ] || { echo "overleaf-compile: could not extract project id from --url $URL" >&2; exit 2; }
+  CDP_OUT="$("$CDP" list 2>&1)" || { echo "overleaf-compile: failed to query browser via cdp.mjs:" >&2; printf '%s\n' "$CDP_OUT" >&2; exit 1; }
+  MATCHES="$(printf '%s\n' "$CDP_OUT" | awk -v pat="/project/$PID" 'index($NF, pat) {print $1}')"
+  N_MATCHES="$(printf '%s' "$MATCHES" | grep -c . 2>/dev/null || true)"; N_MATCHES="${N_MATCHES:-0}"
+  if [ "$N_MATCHES" = "0" ]; then
+    echo "overleaf-compile: no open tab matches project id $PID" >&2
+    echo "Open the project in your browser first, then re-run." >&2; exit 1
+  fi
+  if [ "$N_MATCHES" != "1" ]; then
+    echo "overleaf-compile: $N_MATCHES tabs match project id $PID:" >&2
+    printf '%s\n' "$CDP_OUT" | awk -v pat="/project/$PID" 'index($NF, pat)' >&2
+    echo "Pass one of the prefixes above explicitly instead of --url." >&2; exit 1
+  fi
+  TARGET="$MATCHES"
+fi
+
+[ -n "$TARGET" ] || { echo "overleaf-compile: <target> is required (or --url)" >&2; usage 2 >&2; }
+
+# ---------------------------------------------------------------------------
+# Temp working files (raw artifacts + status). Cleaned on exit unless the
+# user asked to keep them via --out-dir.
+# ---------------------------------------------------------------------------
+WORK="$(mktemp -d "${TMPDIR:-/tmp}/overleaf-compile.XXXXXX")" || { echo "overleaf-compile: could not create temp dir" >&2; exit 2; }
+trap 'rm -rf "$WORK"' EXIT
+LOG_FILE="$WORK/output.log"; BLG_FILE="$WORK/output.blg"
+META_FILE="$WORK/meta.json"; DOM_FILE="$WORK/dom.json"
+
+# Foreground the tab — Chrome throttles timers (and our fetch/poll loop) on
+# backgrounded tabs, which trips chrome-cdp's eval ceiling.
+"$CDP" evalraw "$TARGET" Page.bringToFront >/dev/null 2>&1 || true
+
+# Inject helpers and verify they registered.
+HELPERS_JS="$(cat "$HELPERS")"
+if ! "$CDP" eval "$TARGET" "$HELPERS_JS" >/dev/null 2>"$WORK/err"; then
+  echo "overleaf-compile: failed to inject helpers into the tab:" >&2; cat "$WORK/err" >&2; exit 1
+fi
+PROBE="$("$CDP" eval "$TARGET" 'typeof window.__olCompile' 2>&1 || true)"
+if [ "$PROBE" != "object" ]; then
+  echo "overleaf-compile: helpers did not register on the tab (got: $PROBE)" >&2
+  echo "  The tab may have navigated or reloaded between injections." >&2; exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# --no-recompile: scrape the on-screen logs pane, normalize, done.
+# ---------------------------------------------------------------------------
+if [ "$NO_RECOMPILE" = 1 ]; then
+  "$CDP" eval "$TARGET" 'window.__olCompile.domEntries()' > "$DOM_FILE" 2>"$WORK/err" || {
+    echo "overleaf-compile: failed to read logs pane:" >&2; cat "$WORK/err" >&2; exit 1; }
+  PARSE_ARGS=(--dom "$DOM_FILE" --format "$FORMAT")
+  [ "$NO_DEDUP" = 1 ] && PARSE_ARGS+=(--no-dedup)
+  [ "$INFO" = 1 ] && PARSE_ARGS+=(--info)
+  [ "$ERRORS_ONLY" = 1 ] && PARSE_ARGS+=(--errors-only)
+  echo "overleaf-compile: read on-screen logs pane (no recompile). Note: Overleaf truncates long messages; recompile for full-fidelity logs." >&2
+  set +e; python3 "$PARSER" "${PARSE_ARGS[@]}"; rc=$?; set -e
+  exit "$rc"
+fi
+
+# ---------------------------------------------------------------------------
+# Kick off the compile, then poll until done or --timeout.
+# ---------------------------------------------------------------------------
+OPTS_JSON="$(printf '{"clearCache":%s,"draft":%s,"stopOnFirstError":%s}' \
+  "$([ "$CLEAR_CACHE" = 1 ] && echo true || echo false)" \
+  "$([ "$DRAFT" = 1 ] && echo true || echo false)" \
+  "$([ "$STOP_ON_FIRST" = 1 ] && echo true || echo false)")"
+
+STARTED="$("$CDP" eval "$TARGET" "window.__olCompile.start($OPTS_JSON)" 2>&1 || true)"
+if [ "$STARTED" != "STARTED" ]; then
+  echo "overleaf-compile: could not start compile (got: $STARTED)" >&2; exit 1
+fi
+echo "overleaf-compile: compile started; polling (timeout ${TIMEOUT}s)…" >&2
+
+deadline=$(( $(date +%s) + TIMEOUT ))
+done_flag="false"
+while [ "$(date +%s)" -lt "$deadline" ]; do
+  STATUS_JSON="$("$CDP" eval "$TARGET" 'window.__olCompile.poll()' 2>&1 || true)"
+  done_flag="$(printf '%s' "$STATUS_JSON" | python3 -c 'import sys,json;
+try: print("true" if json.load(sys.stdin).get("done") else "false")
+except Exception: print("err")' 2>/dev/null || echo err)"
+  [ "$done_flag" = "true" ] && break
+  "$CDP" eval "$TARGET" 'new Promise(r=>setTimeout(()=>r("t"),1000))' >/dev/null 2>&1 || true
+done
+
+if [ "$done_flag" != "true" ]; then
+  echo "overleaf-compile: compile did not finish within ${TIMEOUT}s (status=timeout)." >&2
+  echo "  Increase --timeout, or check the Overleaf tab for a stuck compile." >&2
+  exit 75   # EX_TEMPFAIL
+fi
+
+printf '%s' "$STATUS_JSON" > "$META_FILE"
+
+# Surface an explicit transport/auth error from the page if there was one.
+ERR="$(python3 -c 'import sys,json;
+try: print(json.load(open(sys.argv[1])).get("error") or "")
+except Exception: print("")' "$META_FILE" 2>/dev/null || true)"
+if [ -n "$ERR" ]; then
+  echo "overleaf-compile: $ERR" >&2; exit 1
+fi
+
+# Pull the raw artifacts back out of the page into temp files.
+"$CDP" eval "$TARGET" 'window.__olCompile.raw("log")' > "$LOG_FILE" 2>/dev/null || true
+"$CDP" eval "$TARGET" 'window.__olCompile.raw("blg")' > "$BLG_FILE" 2>/dev/null || true
+
+# Optionally persist the raw artifacts for the user.
+if [ -n "$OUT_DIR" ]; then
+  mkdir -p "$OUT_DIR"
+  [ -s "$LOG_FILE" ] && cp "$LOG_FILE" "$OUT_DIR/output.log"
+  [ -s "$BLG_FILE" ] && cp "$BLG_FILE" "$OUT_DIR/output.blg"
+  cp "$META_FILE" "$OUT_DIR/compile-meta.json"
+  echo "overleaf-compile: raw artifacts saved to $OUT_DIR" >&2
+fi
+
+# ---------------------------------------------------------------------------
+# Parse + emit. The parser prints a one-line verdict to stderr and returns
+# non-zero iff it found real errors; we pass that exit code straight through:
+#   0 = no errors found · 1 = at least one error · 75 = temp/transport issue.
+# ---------------------------------------------------------------------------
+OL_STATUS="$(python3 -c 'import sys,json; print(json.load(open(sys.argv[1])).get("status","?"))' "$META_FILE" 2>/dev/null || echo '?')"
+echo "overleaf-compile: Overleaf status=$OL_STATUS (means 'PDF produced', not 'error-free')." >&2
+
+PARSE_ARGS=(--log "$LOG_FILE" --meta "$META_FILE" --format "$FORMAT")
+[ -s "$BLG_FILE" ] && PARSE_ARGS+=(--blg "$BLG_FILE")
+[ "$NO_DEDUP" = 1 ] && PARSE_ARGS+=(--no-dedup)
+[ "$INFO" = 1 ] && PARSE_ARGS+=(--info)
+[ "$ERRORS_ONLY" = 1 ] && PARSE_ARGS+=(--errors-only)
+[ "$RAW_TAIL" -gt 0 ] 2>/dev/null && PARSE_ARGS+=(--raw-tail "$RAW_TAIL")
+
+set +e; python3 "$PARSER" "${PARSE_ARGS[@]}"; rc=$?; set -e
+exit "$rc"

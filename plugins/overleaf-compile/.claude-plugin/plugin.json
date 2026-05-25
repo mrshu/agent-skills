@@ -1,0 +1,9 @@
+{
+  "name": "overleaf-compile",
+  "version": "0.1.0",
+  "description": "Recompile an Overleaf project and extract its build logs/errors/warnings in a standardized format, via Chrome DevTools Protocol against an already-logged-in browser tab.",
+  "author": {
+    "name": "mrshu"
+  },
+  "keywords": ["overleaf", "latex", "compile", "recompile", "logs", "errors", "warnings", "pdflatex", "biber", "cdp"]
+}
