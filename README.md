@@ -64,9 +64,13 @@ Delegate code review, plan review, and deep exploration tasks to **Claude Code C
 
 Iterative multi-agent review-and-fix loop. Wraps the *"let's do three rounds of fix/review"* pattern: dispatch parallel `codex-exec` and `claude-exec` reviewers, synthesize their findings, apply fixes with logically-separated commits, and repeat. Defaults to 3 rounds × 3 reviewers (2 codex + 1 claude). Configurable rounds, agent count/mix, focus, and target.
 
-- `Skill review-anvil` — run with all defaults against auto-detected target
-- `Skill review-anvil "5 rounds, 2 codex + 1 claude, focus: async correctness, target: PR #42"` — fully specified
-- `Skill review-anvil "1 round, only: security, target: src/auth/"` — narrow focus, single pass
+Ships three slash commands:
+
+- `/review-anvil` — full fix/review loop. Edits files and commits. The default productive path.
+- `/review-anvil-review` — review-only pass. No edits, no commits. Defaults to 1 round; bump it for reviewer redundancy.
+- `/review-anvil-pr <pr-number-or-url>` — review a GitHub PR and post the synthesized report back as a `gh pr comment` so the author is notified. Always read-only.
+
+Also callable directly as `Skill review-anvil "<free-form args>"` — see SKILL.md for the parameter surface (`rounds`, `agents`, `focus`, `target`, `min_fix_severity`, `allow_new_deps`, `commit_mode`, `post_to_pr`).
 
 ### overleaf-comment
 
