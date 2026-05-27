@@ -7,6 +7,18 @@ description: Iteratively refine code via N rounds of parallel subagent review an
 
 Wrap a code change in **N rounds of parallel reviewer subagents + orchestrator-applied fixes**. Each round = (parallel review by M agents) → (you synthesize findings) → (you apply fixes, commit) → next round.
 
+## Slash-command wrappers
+
+The plugin ships thin command wrappers in `plugins/review-anvil/commands/`. Each one is a free-form pass-through to this skill with one or two parameters pinned:
+
+| Command | Pins | Use it when |
+|---|---|---|
+| `/review-anvil` | nothing — full skill arg surface | You want the default fix/commit loop. |
+| `/review-anvil-review` | `commit_mode=none`, default `rounds=1` | You want a read-only review pass — no edits, no commits. |
+| `/review-anvil-pr <N>` | `commit_mode=none`, `target=PR #N`, `post_to_pr=N` | You want to review a GitHub PR and post the synthesized report back as a PR comment (so the author is notified). |
+
+All other parameters (rounds, agents, focus, min_fix_severity, …) flow through unchanged from the user's free-form args after the pinned ones.
+
 ## How to Use
 
 The user invokes the skill with a free-form args string. Parse it to extract these parameters:
@@ -19,6 +31,8 @@ The user invokes the skill with a free-form args string. Parse it to extract the
 | `target` | auto-detect | "PR #42", "branch", "uncommitted", "src/auth/", "last 3 commits" |
 | `allow_new_deps` | `false` | "allow new deps", "allow new dependencies" — auto-apply fixes that introduce new imports/subsystems instead of deferring them |
 | `min_fix_severity` | `medium` | "auto-fix high and above", "fix only critical", `min_fix_severity: high` — minimum severity for auto-fix; lower findings are listed but not applied |
+| `commit_mode` | `per_fix` | `per_fix` (current behaviour: one commit per fix-group), `none` (review-only: no edits, no commits — used by `/review-anvil-review` and `/review-anvil-pr`). Plain-English: "review only", "don't commit", "no fixes". |
+| `post_to_pr` | unset | Integer PR number. When set, after the final report is rendered, the skill posts the report as a `gh pr comment <N> --body-file <path>` so the PR author is notified. Used by `/review-anvil-pr`. |
 
 ### Parsing rules
 
@@ -29,6 +43,29 @@ The user invokes the skill with a free-form args string. Parse it to extract the
   2. Else, if the current branch differs from `main`, use the branch-vs-main diff (`git diff main...HEAD`).
   3. Else, use uncommitted changes (`git diff` and `git diff --cached`).
 - If the args string is missing or empty, use all defaults.
+
+### Commit modes
+
+The skill has two operating modes, selected by `commit_mode`:
+
+- **`per_fix` (default)** — full loop: review → synthesize → **apply fixes** → **commit** → next round. Each round leaves new commits in the worktree.
+- **`none` (review-only)** — review → synthesize → next round. **No edits, no commits, no staging.** Each round reviews the *same* baseline state (since nothing changes between rounds), so `rounds > 1` only buys reviewer redundancy, not iterative refinement. The natural default for `commit_mode=none` is `rounds=1`.
+
+When `commit_mode=none`:
+- Skip Loop Mechanics §4 entirely.
+- Round summary "Fixes applied" line becomes `Fixes applied: 0 (review-only)`.
+- Findings are still grouped/severity-sorted and surfaced; the auto-fix policy still classifies items as "would-apply", "suggestions", and "deferred" so the user can see what *would* have happened.
+- The final report omits commit SHAs and the "Tuning suggestion" line; instead it ends with a "Would-apply summary" block listing the fixes that would have been made.
+
+### Posting to a PR
+
+When `post_to_pr=<N>` is set, after the final report is rendered:
+
+1. Write the full report to a temp file (e.g. `$(mktemp -t review-anvil-pr-<N>.md)`).
+2. Run `gh pr comment <N> --body-file <path>` to post it as a top-level PR comment (the PR author is notified by GitHub).
+3. Surface the resulting comment URL back to the user.
+
+If `gh` is not installed or the PR is not accessible, print the report inline and a single-line warning explaining the post failed — do not abort the run.
 
 ### Example invocations
 
@@ -93,6 +130,8 @@ If a reviewer's output is unparseable, label its findings "unstructured" and pas
 
 ### 4. Apply fixes
 
+**Skip this step entirely when `commit_mode=none`.** In review-only mode, jump straight to step 5 — no edits, no staging, no commits. The auto-fix policy below is still evaluated *in the abstract* so the final report can show the user which items *would* have been applied vs. deferred, but no files are touched.
+
 Make the edits as the orchestrator. Group fixes by topic and **commit one logical fix-group per commit**, conventional-commit style:
 
 - `fix(area): <what>` — for bug/correctness fixes
@@ -120,7 +159,8 @@ Append a short markdown block to running output:
 ### Round N — <convergence flag>
 - Reviewers: <list of agents dispatched>
 - Findings: C critical, H high, M medium, L low, X nit
-- Fixes applied: K commits (<sha1>..<shaN>)
+- Fixes applied: K commits (<sha1>..<shaN>)   # or "0 (review-only)" when commit_mode=none
+- Would-apply: W items                         # only printed when commit_mode=none
 - Suggestions: S items (sub-threshold severity; not applied)
 - Deferred: D items (see below; reasons: noise / new dependency / size cap / product decision)
 ```
@@ -134,7 +174,7 @@ The convergence flag is one of:
 
 If the round number is less than `rounds`, start the next round (back to step 1). Round N+1 reviews the new state — its prior-round summary input includes the commits from round N.
 
-After the final round, emit the **Final Report** described under "Output Format."
+After the final round, emit the **Final Report** described under "Output Format." If `post_to_pr` is set, also post the report to the named PR (see "Posting to a PR" above).
 
 ### Failure handling
 
@@ -253,7 +293,9 @@ After the last round completes, emit a fresh top-level report below the running 
 **Rounds:** <N>
 **Mix per round:** <e.g. "2 codex-exec + 1 claude-exec">
 **Focus:** <comma-separated focus list actually used>
+**Commit mode:** <per_fix | none>
 **Auto-fix policy:** min severity = <medium>, allow_new_deps = <false>
+**Posted to:** <gh PR comment URL, only when post_to_pr was set>
 
 ## Round 1 — <convergence flag>
 - Findings: C critical, H high, M medium, L low, X nit
