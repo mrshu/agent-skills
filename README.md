@@ -68,7 +68,7 @@ Ships three slash commands:
 
 - `/review-anvil` — full fix/review loop. Edits files and commits. The default productive path.
 - `/review-anvil-review` — review-only pass. No edits, no commits. Defaults to 1 round; bump it for reviewer redundancy.
-- `/review-anvil-pr <pr-number-or-url>` — review a GitHub PR and post the synthesized report back as a `gh pr comment` so the author is notified. Always read-only.
+- `/review-anvil-pr <pr-number-or-url>` — review a GitHub PR and post the synthesized report back as a PR comment so the author is notified. Always read-only. The posting step uses whatever GitHub interface the host provides (`gh` CLI → GitHub MCP → REST API fallback chain).
 
 Also callable directly as `Skill review-anvil "<free-form args>"` — see SKILL.md for the parameter surface (`rounds`, `agents`, `focus`, `target`, `min_fix_severity`, `allow_new_deps`, `commit_mode`, `post_to_pr`).
 

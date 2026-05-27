@@ -32,14 +32,14 @@ The user invokes the skill with a free-form args string. Parse it to extract the
 | `allow_new_deps` | `false` | "allow new deps", "allow new dependencies" — auto-apply fixes that introduce new imports/subsystems instead of deferring them |
 | `min_fix_severity` | `medium` | "auto-fix high and above", "fix only critical", `min_fix_severity: high` — minimum severity for auto-fix; lower findings are listed but not applied |
 | `commit_mode` | `per_fix` | `per_fix` (current behaviour: one commit per fix-group), `none` (review-only: no edits, no commits — used by `/review-anvil-review` and `/review-anvil-pr`). Plain-English: "review only", "don't commit", "no fixes". |
-| `post_to_pr` | unset | PR locator — accepts `<N>` (bare number, current repo), `<owner>/<repo>#<N>`, or a full GitHub PR URL. When set, after the final report is rendered, the skill posts the report as a `gh pr comment <locator> --body-file <path>` (passing the URL or adding `-R <owner>/<repo>` as needed). Used by `/review-anvil-pr`. **Requires** `commit_mode=none` and `target` referencing the same PR — see "Cross-parameter validation" below. |
+| `post_to_pr` | unset | PR locator — accepts `<N>` (bare number, current repo), `<owner>/<repo>#<N>`, or a full GitHub PR URL. When set, after the final report is rendered, the skill posts the report as a top-level comment on the named PR via the host's GitHub interface (see "Posting to a PR" — `gh` is the default implementation but not required). Used by `/review-anvil-pr`. **Requires** `commit_mode=none` and `target` referencing the same PR — see "Cross-parameter validation" below. |
 
 ### Parsing rules
 
 - `agents` may be a single number (use the default mix policy below) **or** a plain-English mix. If a mix is given, honor it exactly. The mix may name `codex`/`codex-exec` or `claude`/`claude-exec`.
 - `focus` defaults are *appended* to user input. If the user prefixes their focus with `only:`, replace defaults with their list.
 - `target` auto-detection precedence (when not specified):
-  1. Currently checked-out PR (run `gh pr view --json number,headRefName 2>/dev/null`); if a PR is found, use its diff.
+  1. Currently checked-out PR — detect via the host's GitHub interface (e.g. `gh pr view --json number,headRefName 2>/dev/null`, a GitHub MCP query, or a REST `GET /repos/{owner}/{repo}/commits/{branch}/pulls` lookup); if a PR is found, use its diff.
   2. Else, if the current branch differs from `main`, use the branch-vs-main diff (`git diff main...HEAD`).
   3. Else, use uncommitted changes (`git diff` and `git diff --cached`).
 - If the args string is missing or empty, use all defaults.
@@ -70,19 +70,26 @@ When `commit_mode=none`:
 
 ### Posting to a PR
 
+`review-anvil` does not depend on any specific GitHub client. It specifies *what* needs to happen — post a markdown comment to the named PR and recover the comment URL — and lets the orchestrator choose *how* based on what the host environment provides.
+
 When `post_to_pr=<locator>` is set, after the final report is rendered:
 
 1. Write the full report to a temp file (e.g. `$(mktemp -t review-anvil-pr.md)`).
-2. Post it as a top-level PR comment using the locator form that preserves repository identity:
-   - If `<locator>` is a URL, run `gh pr comment <url> --body-file <path>`.
-   - If `<locator>` is `<owner>/<repo>#<N>`, run `gh pr comment <N> -R <owner>/<repo> --body-file <path>`.
-   - If `<locator>` is a bare integer, run `gh pr comment <N> --body-file <path>` (operates against the current repo — only safe when the working directory is the right checkout).
-3. Recover the resulting comment URL. `gh pr comment` does not print the URL on stdout, so query it after the post:
-   - `gh api "repos/<owner>/<repo>/issues/<N>/comments" --jq '.[-1].html_url'` (resolve `<owner>/<repo>` from the locator or `gh repo view --json owner,name`).
-   - If the query fails, report `posted (URL unavailable)` rather than inventing a link.
-4. Surface the comment URL (or the fallback string) back to the user.
+2. Resolve the locator into `owner`, `repo`, and `number`:
+   - URL form (`https://github.com/<owner>/<repo>/pull/<N>`) — parse all three.
+   - Slug form (`<owner>/<repo>#<N>`) — parse all three.
+   - Bare integer (`<N>`) — resolve `owner`/`repo` from the working directory (e.g. `git config --get remote.origin.url` and parse, or query the host's GitHub interface). Bare integers are only safe when the working directory is the intended checkout; warn if there is no clear default repo.
+3. Post the report body as a top-level PR comment using **one** of the strategies below, in this priority order — the first one whose dependencies are satisfied wins:
 
-If `gh` is not installed or the post fails for any reason, print the report inline and a single-line warning explaining the failure — do not abort the run.
+   1. **`gh` CLI (default).** Run `gh pr comment <locator> --body-file <path>` (URL passthrough) or `gh pr comment <N> -R <owner>/<repo> --body-file <path>`. Recover the URL via `gh api "repos/<owner>/<repo>/issues/<N>/comments" --jq '.[-1].html_url'` (the `comment` subcommand does not print the URL).
+   2. **GitHub MCP / host-provided integration.** If the host harness exposes a GitHub MCP server (or any other tool whose contract is "comment on a PR"), prefer it — it usually handles auth and rate-limiting transparently and returns the URL directly.
+   3. **GitHub REST API directly.** `POST https://api.github.com/repos/<owner>/<repo>/issues/<N>/comments` with `Authorization: Bearer <token>` and `Content-Type: application/json`, body `{"body": <report>}`. The response JSON contains `html_url`. The token can come from `$GITHUB_TOKEN`, `$GH_TOKEN`, or `gh auth token` — try in that order. Use `curl` or any HTTP client the orchestrator has.
+
+   Picking a strategy is an orchestrator decision based on host capability, not a user-facing knob. The user opts in via `post_to_pr`; the implementation is invisible to them.
+
+4. Surface the resulting comment URL back to the user. If the chosen strategy cannot return a URL, report `posted (URL unavailable)` rather than inventing a link.
+
+If every available strategy fails (no `gh`, no MCP, no usable token), print the report inline and a single-line warning explaining the failure — do not abort the run.
 
 ### Example invocations
 
@@ -313,7 +320,7 @@ After the last round completes, emit a fresh top-level report below the running 
 **Focus:** <comma-separated focus list actually used>
 **Commit mode:** <per_fix | none>
 **Auto-fix policy:** min severity = <medium>, allow_new_deps = <false>
-**Posted to:** <gh PR comment URL, only when post_to_pr was set>
+**Posted to:** <PR comment URL (or "posted (URL unavailable)"), only when post_to_pr was set>
 
 ## Round 1 — <convergence flag>
 - Findings: C critical, H high, M medium, L low, X nit
