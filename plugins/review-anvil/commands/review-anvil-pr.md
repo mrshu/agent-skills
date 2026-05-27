@@ -1,34 +1,26 @@
 ---
-description: Read-only review of a GitHub PR with the synthesized report posted back as a PR comment (notifies the author).
-argument-hint: <pr-number-or-url> [rounds] [N codex + M claude] [focus: ...] [only: ...]
+description: Read-only review of a code-review unit (GitHub PR, GitLab MR, Gitea PR, …) with the synthesized report posted back as a comment (notifies the author).
+argument-hint: <locator> [rounds: N] [N codex + M claude] [focus: ...] [only: ...]
 ---
 
-Invoke the `review-anvil` skill in **review-only mode** against a specific PR. The skill posts the synthesized report back to that PR via the host's GitHub interface (see SKILL.md → "Posting to a PR" for the strategy chain — `gh`, GitHub MCP, or raw REST API). This command does **not** prescribe a GitHub client; it only forwards the PR locator and lets the skill pick.
+Thin wrapper around the `review-anvil` skill. Parses the first token as a review-unit locator, pins the safety params, and forwards to the skill. All other behavior — locator grammar, forge detection, posting strategy chain, validation — is defined in SKILL.md and inherited by this wrapper.
 
-Steps:
+**Pins (non-overridable):** `commit_mode: none`, `target: <locator>`, `post_to_review: <locator>`
+**Defaults (user can override):** `rounds: 2`
 
-1. Parse the first whitespace-delimited token of `$ARGUMENTS` as the PR identifier. Accept any of: a bare number (`42`), an `<owner>/<repo>#<N>` slug, or a full PR URL (`https://github.com/<owner>/<repo>/pull/<N>`). Keep the full form — the skill's posting step needs `owner`/`repo` for any non-default-repo target.
-2. If no PR identifier is supplied, abort with: `usage: /review-anvil-pr <pr-number-or-url> [extra args]`.
-3. Assemble the skill arg string per SKILL.md → "Wrapper pins vs. wrapper defaults":
-   - **Pins (prepend, non-overridable):** `commit_mode: none`, `target: PR #<locator>`, `post_to_pr: <locator>` (carry the full locator — URL, slug, or bare number as supplied)
-   - **User args:** the rest of `$ARGUMENTS` after the PR identifier
-   - **Default (append, user can override):** `rounds: 2`
-   Concretely: `commit_mode: none, target: PR #<locator>, post_to_pr: <locator>, <user-args>, rounds: 2`
-4. Invoke: `Skill review-anvil` with the assembled arg string.
+Assembly (per SKILL.md → "Wrapper pins vs. wrapper defaults"):
 
-The skill is responsible for:
-- Resolving the locator into `owner`/`repo`/`number` (URL parse, slug parse, or remote inference for bare numbers).
-- Running the full review loop with no edits/commits.
-- After the final round, posting the report to the PR via whichever strategy the host environment supports (`gh` → GitHub MCP → REST API), and surfacing the resulting comment URL — or `posted (URL unavailable)` if the chosen strategy cannot return one.
-- Falling back to inline-only review with a one-line warning if every posting strategy fails.
+```
+commit_mode: none, target: <locator>, post_to_review: <locator>, <user-args>, rounds: 2
+```
+
+The `<locator>` is the *first* whitespace-delimited token of `$ARGUMENTS`. The same locator string is used for both `target` and `post_to_review` so the skill's cross-parameter validation can compare canonical forms (see SKILL.md → "Resolving the locator"). If no locator is supplied, abort with: `usage: /review-anvil-pr <locator> [extra args]`.
 
 Examples:
 
-- `/review-anvil-pr 42` → 2 rounds on PR 42 of the current repo, default mix, default focus, post synthesis back to PR.
-- `/review-anvil-pr acme/widgets#137 rounds: 1` → single-round quick review of PR 137 in acme/widgets (no working-dir dependency), posted back.
-- `/review-anvil-pr https://github.com/acme/widgets/pull/137 only: security, 3 codex + 1 claude` → security-only review with a heavier reviewer mix.
+- `/review-anvil-pr 42` → bare integer; resolved against the current repo's default remote (see SKILL.md → "Bare-integer safety").
+- `/review-anvil-pr acme/widgets#137 rounds: 1` → bare slug; defaults to github.com.
+- `/review-anvil-pr gitlab.com:acme/widgets#137` → host-qualified slug; review and post on GitLab.
+- `/review-anvil-pr https://github.com/acme/widgets/pull/137 only: security, 3 codex + 1 claude` → full URL; security-only review with a heavier reviewer mix.
 
-Notes:
-
-- Never include `commit_mode: per_fix` here — `/review-anvil-pr` is intentionally read-only because the PR's branch may not be checked out locally and pushing commits to someone else's PR is rarely the intent. The pin guarantees this even if `$ARGUMENTS` tries to override it.
-- This command does not preflight the PR's reachability — the skill's posting step degrades gracefully if posting fails, so a separate preflight would only duplicate that logic and couple the wrapper to a specific GitHub client.
+Despite the `-pr` suffix, the wrapper accepts any forge URL the skill knows about (GitHub PR, GitLab MR, Gitea/Forgejo PR; v1 fully specifies GitHub and aborts during locator resolution for unsupported forges).

@@ -15,7 +15,7 @@ The plugin ships thin command wrappers in `plugins/review-anvil/commands/`. Each
 |---|---|---|
 | `/review-anvil` | nothing — full skill arg surface | You want the default fix/commit loop. |
 | `/review-anvil-review` | `commit_mode=none`, default `rounds=1` | You want a read-only review pass — no edits, no commits. |
-| `/review-anvil-pr <N>` | `commit_mode=none`, `target=PR #N`, `post_to_pr=N` | You want to review a GitHub PR and post the synthesized report back as a PR comment (so the author is notified). |
+| `/review-anvil-pr <locator>` | `commit_mode=none`, `target=<locator>`, `post_to_review=<locator>` | You want to review a code-review unit (GitHub PR, GitLab MR, Gitea PR, etc.) and post the synthesized report back as a comment so the author is notified. Despite the `-pr` suffix, the locator may point to any supported forge — see "Posting the report back" for the forge-detection rules. |
 
 All other parameters (rounds, agents, focus, min_fix_severity, …) flow through unchanged from the user's free-form args after the pinned ones.
 
@@ -32,7 +32,21 @@ The user invokes the skill with a free-form args string. Parse it to extract the
 | `allow_new_deps` | `false` | "allow new deps", "allow new dependencies" — auto-apply fixes that introduce new imports/subsystems instead of deferring them |
 | `min_fix_severity` | `medium` | "auto-fix high and above", "fix only critical", `min_fix_severity: high` — minimum severity for auto-fix; lower findings are listed but not applied |
 | `commit_mode` | `per_fix` | `per_fix` (current behaviour: one commit per fix-group), `none` (review-only: no edits, no commits — used by `/review-anvil-review` and `/review-anvil-pr`). Plain-English: "review only", "don't commit", "no fixes". |
-| `post_to_pr` | unset | PR locator — accepts `<N>` (bare number, current repo), `<owner>/<repo>#<N>`, or a full GitHub PR URL. When set, after the final report is rendered, the skill posts the report as a top-level comment on the named PR via the host's GitHub interface (see "Posting to a PR" — `gh` is the default implementation but not required). Used by `/review-anvil-pr`. **Requires** `commit_mode=none` and `target` referencing the same PR — see "Cross-parameter validation" below. |
+| `post_to_review` | unset | Code-review locator — accepts a full review-unit URL (GitHub PR, GitLab MR, Gitea PR, etc.), a `<host>:<owner>/<repo>#<N>` slug, an `<owner>/<repo>#<N>` slug (defaults to `github.com` for backwards compatibility), or a bare `<N>` (resolved against the current working directory's default remote — see "Resolving the locator"). When set, after the final report is rendered, the skill posts the report as a top-level comment on the named review unit via whichever interface the host supports for that forge — see "Posting the report back". Used by `/review-anvil-pr`. **Requires** `commit_mode=none` and `target` referencing the same review unit — see "Cross-parameter validation" below. |
+
+### Parsing semantics
+
+The argument string is parsed **left-to-right** with **first-occurrence-wins** precedence per canonical parameter. Concretely:
+
+1. **Tokenize** the args into comma-separated segments.
+2. **Canonicalize** each segment to a `(parameter, value)` pair:
+   - Explicit `key: value` segments map directly (`commit_mode: none` → `(commit_mode, none)`).
+   - Plain-English forms map to their canonical parameter (`"review only"`, `"don't commit"`, `"no fixes"` → `(commit_mode, none)`; `"3 codex + 1 claude"` → `(agents, "3 codex + 1 claude")`; etc.). All recognized aliases live in the parameter table's "Plain-English forms" column.
+   - Unrecognized segments are noted but ignored.
+3. **Apply first-occurrence-wins**: for each canonical parameter, the *first* `(parameter, value)` pair in source order is authoritative. Subsequent pairs for the same parameter are dropped with a one-line warning (`warning: user-supplied <param>=<value> ignored — earlier value <param>=<earlier> wins`).
+4. **Fill in defaults**: any parameter not set after parsing takes its default from the parameter table.
+
+This makes wrapper "pins" (assembled as `<pin>, <user-args>`) authoritative without any extra mechanism: the wrapper's pin is just the first occurrence, and the user's later attempt is a dropped duplicate.
 
 ### Parsing rules
 
@@ -43,17 +57,16 @@ The user invokes the skill with a free-form args string. Parse it to extract the
   2. Else, if the current branch differs from `main`, use the branch-vs-main diff (`git diff main...HEAD`).
   3. Else, use uncommitted changes (`git diff` and `git diff --cached`).
 - If the args string is missing or empty, use all defaults.
-- **Wrapper pins vs. wrapper defaults.** Slash-command wrappers (`/review-anvil-review`, `/review-anvil-pr`, …) may pre-set parameters in two ways:
-  - **Pins** (safety-critical): assembled as `<pin>, <user-args>` so the pin is the *first* occurrence of that parameter in the parsed string. First-occurrence-wins parsing makes pins non-overridable. Example: `/review-anvil-review` pins `commit_mode: none`; a trailing `commit_mode: per_fix` is ignored.
-  - **Defaults** (suggestion): assembled as `<user-args>, <default>` so the user's value (parsed first) wins if supplied, and the default only fills in when the user is silent. Example: `/review-anvil-review` defaults `rounds: 1`; the user can pass `rounds: 3` to override.
-  Surface a one-line warning when a user-supplied parameter is dropped because of a pin (e.g. `warning: user-supplied commit_mode=per_fix ignored — pinned by /review-anvil-pr`).
+- **Wrapper pins vs. wrapper defaults.** Slash-command wrappers (`/review-anvil-review`, `/review-anvil-pr`, …) leverage the parsing semantics above to pre-set parameters in two ways:
+  - **Pins** (safety-critical): assembled as `<pin>, <user-args>`. Because parsing is first-occurrence-wins, the pin is authoritative; any later duplicate from the user is dropped with a warning. The wrapper's warning string should include the wrapper name (e.g. `warning: user-supplied commit_mode=per_fix ignored — pinned by /review-anvil-pr`).
+  - **Defaults** (suggestion): assembled as `<user-args>, <default>`. The user's value (parsed first) wins; the default fills in only when the user is silent.
 
 ### Cross-parameter validation
 
 Before round 1, reject the following combinations with an explanatory error:
 
-- `post_to_pr` set **and** `commit_mode != none`. Posting a synthesized report to a PR while also editing/committing locally is ambiguous: the commits may not be on the PR branch, may not be pushed, and the report's content depends on the worktree state at synthesis time. Require `commit_mode=none` whenever `post_to_pr` is set, unless the user explicitly opts in by setting both `post_to_pr` *and* `commit_mode=per_fix` *and* `target: PR #<N>` matching the post target (in which case the orchestrator warns once and proceeds).
-- `post_to_pr` set **and** the parsed `target` is not a PR, or is a PR with a different number. Refuse to post a review of target A to PR B.
+- `post_to_review` set **and** `commit_mode != none`. Posting a synthesized report to a review unit while also editing/committing locally is ambiguous: the commits may not be on the review branch, may not be pushed, and the report content depends on the worktree state at synthesis time. Require `commit_mode=none` whenever `post_to_review` is set, full stop. No opt-in exception — a future "review-and-push" mode would be a dedicated wrapper, not a knob on this one.
+- `post_to_review` set **and** `target` does not resolve to the same review unit. Both `target` and `post_to_review` must resolve to the same canonical `<host>:<owner>/<repo>#<N>` triple; reject otherwise. Refuse to post a review of unit A to unit B, even if the numeric IDs happen to match across repositories or forges.
 
 ### Commit modes
 
@@ -68,28 +81,63 @@ When `commit_mode=none`:
 - Findings are still grouped/severity-sorted and surfaced; the auto-fix policy still classifies items as "would-apply", "suggestions", and "deferred" so the user can see what *would* have happened.
 - The final report omits commit SHAs and the "Tuning suggestion" line; instead it ends with a "Would-apply summary" block listing the fixes that would have been made.
 
-### Posting to a PR
+### Posting the report back
 
-`review-anvil` does not depend on any specific GitHub client. It specifies *what* needs to happen — post a markdown comment to the named PR and recover the comment URL — and lets the orchestrator choose *how* based on what the host environment provides.
+`review-anvil` does not depend on any specific forge or client. It specifies *what* needs to happen — post a markdown comment to the named code-review unit and recover the comment URL — and lets the orchestrator choose *how* based on the locator's forge and the host's capabilities.
 
-When `post_to_pr=<locator>` is set, after the final report is rendered:
+#### Resolving the locator
 
-1. Write the full report to a temp file (e.g. `$(mktemp -t review-anvil-pr.md)`).
-2. Resolve the locator into `owner`, `repo`, and `number`:
-   - URL form (`https://github.com/<owner>/<repo>/pull/<N>`) — parse all three.
-   - Slug form (`<owner>/<repo>#<N>`) — parse all three.
-   - Bare integer (`<N>`) — resolve `owner`/`repo` from the working directory (e.g. `git config --get remote.origin.url` and parse, or query the host's GitHub interface). Bare integers are only safe when the working directory is the intended checkout; warn if there is no clear default repo.
-3. Post the report body as a top-level PR comment using **one** of the strategies below, in this priority order — the first one whose dependencies are satisfied wins:
+When `post_to_review=<locator>` is set, parse it into a canonical `<host>:<owner>/<repo>#<N>` triple. Supported locator shapes:
 
-   1. **`gh` CLI (default).** Run `gh pr comment <locator> --body-file <path>` (URL passthrough) or `gh pr comment <N> -R <owner>/<repo> --body-file <path>`. Recover the URL via `gh api "repos/<owner>/<repo>/issues/<N>/comments" --jq '.[-1].html_url'` (the `comment` subcommand does not print the URL).
-   2. **GitHub MCP / host-provided integration.** If the host harness exposes a GitHub MCP server (or any other tool whose contract is "comment on a PR"), prefer it — it usually handles auth and rate-limiting transparently and returns the URL directly.
-   3. **GitHub REST API directly.** `POST https://api.github.com/repos/<owner>/<repo>/issues/<N>/comments` with `Authorization: Bearer <token>` and `Content-Type: application/json`, body `{"body": <report>}`. The response JSON contains `html_url`. The token can come from `$GITHUB_TOKEN`, `$GH_TOKEN`, or `gh auth token` — try in that order. Use `curl` or any HTTP client the orchestrator has.
+- **Full URL.** Detect the forge from the host:
+  - `github.com` / GitHub Enterprise — GitHub PR (`/<owner>/<repo>/pull/<N>`).
+  - `gitlab.com` / self-hosted GitLab — GitLab MR (`/<owner>/<repo>/-/merge_requests/<N>`).
+  - `gitea.io`, `codeberg.org`, other Gitea/Forgejo hosts — Gitea PR (`/<owner>/<repo>/pulls/<N>`).
+  - Unknown host — abort with "unsupported forge: <host>".
+- **Host-qualified slug.** `<host>:<owner>/<repo>#<N>` — e.g. `gitlab.com:acme/widgets#137`.
+- **Bare slug.** `<owner>/<repo>#<N>` — defaults to `github.com` for backwards compatibility. Surface a one-line note (`assuming github.com; pass <host>:<owner>/<repo>#<N> to disambiguate`).
+- **Bare integer `<N>`.** Resolve `<host>` and `<owner>/<repo>` from the working directory:
+  - `git config --get remote.origin.url` → parse host + owner/repo.
+  - If no clear default remote, abort with "bare-integer locator requires a default remote; pass a URL or `<host>:<owner>/<repo>#<N>` instead".
+  - **Wrong-checkout safety** (see "Bare-integer safety" below): when the locator is bare, verify the resolved review unit's head branch matches `git rev-parse --abbrev-ref HEAD` *or* echo the resolved canonical form (`posting to <host>:<owner>/<repo>#<N> — <title>`) and require it to be on the same review unit `target` is reviewing.
 
-   Picking a strategy is an orchestrator decision based on host capability, not a user-facing knob. The user opts in via `post_to_pr`; the implementation is invisible to them.
+Both `target` and `post_to_review` resolve through this same grammar; the canonical triple is what cross-parameter validation compares.
 
-4. Surface the resulting comment URL back to the user. If the chosen strategy cannot return a URL, report `posted (URL unavailable)` rather than inventing a link.
+#### Posting strategies
 
-If every available strategy fails (no `gh`, no MCP, no usable token), print the report inline and a single-line warning explaining the failure — do not abort the run.
+Once the locator is resolved, dispatch the post by forge. For each forge, strategies are **tried in priority order with fallthrough on any runtime failure** (auth error, network error, 4xx/5xx, missing scope, etc.). The strategy chain is not an up-front pick — if strategy K fails after being attempted, try strategy K+1; only fall back to inline-only output when *every* strategy has been attempted and failed. Each attempt logs `strategy <name>: <ok|failed (<reason>)>` so the user can see what was tried.
+
+**Readiness predicates** (what counts as "available to try"):
+- A CLI strategy is available if its binary is on `PATH`. Authentication state is *not* a readiness check — auth failures are runtime failures and trigger fallthrough.
+- An MCP / host-integration strategy is available if the host has registered the required tool.
+- A REST strategy is available if at least one credential source resolves to a non-empty token.
+
+##### GitHub (v1 — fully specified)
+
+In `host = github.com` (or GitHub Enterprise), the strategy order is:
+
+1. **`gh` CLI (preferred when the host has it).** Run `gh pr comment <url-or-locator> --body-file <path>` (URL passthrough) or `gh pr comment <N> -R <owner>/<repo> --body-file <path>`. To recover the URL without racing other comments, embed a unique marker in the report body (e.g. an HTML comment `<!-- review-anvil-marker: <UUIDv4> -->` near the top) and look it up after posting: `gh api "repos/<owner>/<repo>/issues/<N>/comments" --paginate --jq '[.[] | select(.body | contains("<UUIDv4>"))][0].html_url'`. The marker scheme is race-free even if other comments are posted between `gh pr comment` and the lookup.
+2. **GitHub MCP / host-provided integration.** If the host harness exposes a GitHub MCP server (or any tool whose contract is "comment on a PR" — including custom connectors), use it. MCP tools that create comments typically return the comment object directly, so the URL comes back without a separate lookup. **Policy override:** if the repo's `AGENTS.md` / `CLAUDE.md` forbids MCP for GitHub interactions, the orchestrator must skip this strategy. Honor any documented disable signal (e.g. `REVIEW_ANVIL_DISABLE_MCP=1`, `AGENTS.md` statement, host config).
+3. **GitHub REST API directly.** `POST https://api.github.com/repos/<owner>/<repo>/issues/<N>/comments` with `Authorization: Bearer <token>` and `Content-Type: application/json`, body `{"body": <report>}`. The response JSON contains `html_url` — use it directly. Token sources in order: `$GITHUB_TOKEN`, `$GH_TOKEN`, then `gh auth token` *only if* `gh` is present on `PATH` (otherwise skip — this scenario means strategy 1 was not even available, so `gh auth token` won't run either).
+
+##### Other forges (v1 — sketched, not implemented)
+
+The same shape applies to GitLab, Gitea/Forgejo, Bitbucket, Gerrit, etc.: locator → forge detection → forge-specific strategy chain (CLI → MCP → REST). v1 only fully specifies GitHub; adding a new forge means writing a new "##### <forge>" subsection with concrete CLI invocation, MCP tool name, and REST endpoint. Until then, locators pointing at unsupported forges abort during resolution rather than producing a half-working post.
+
+#### Result reporting
+
+After all strategies have been attempted:
+- On success: surface the comment URL. If the successful strategy could not return a URL (extremely rare with the marker scheme above; impossible-by-design for strategies 2 and 3), report `posted (URL unavailable)` rather than inventing a link.
+- On total failure (every strategy attempted and failed): print the report inline and a single-line warning summarizing which strategies were tried and how each failed — do not abort the run.
+
+#### Bare-integer safety
+
+Bare-integer locators are convenient but easy to misdirect when the working directory has a "clear but wrong" default remote (a fork, an accidentally-`cd`'d checkout, etc.). To prevent silently posting to the wrong public review unit:
+
+1. Resolve the bare integer through the working-directory remote (as above).
+2. Fetch the review unit's head branch (e.g. `gh pr view <N> --json headRefName` or its MCP/REST equivalent) and compare to `git rev-parse --abbrev-ref HEAD`. If they match, proceed.
+3. If they don't match, refuse to proceed *unless* the orchestrator also has independent confirmation (e.g. `target` was explicitly set to the same locator, signaling the user knows what they're posting to). Print the resolved canonical form (`<host>:<owner>/<repo>#<N> — <title>`) in any abort or warning message so the wrong-PR case is obvious.
+4. Always echo the canonical form once just before posting, regardless of locator shape, so the user has a last chance to spot a misdirection.
 
 ### Example invocations
 
@@ -198,7 +246,7 @@ The convergence flag is one of:
 
 If the round number is less than `rounds`, start the next round (back to step 1). Round N+1 reviews the new state — its prior-round summary input includes the commits from round N.
 
-After the final round, emit the **Final Report** described under "Output Format." If `post_to_pr` is set, also post the report to the named PR (see "Posting to a PR" above).
+After the final round, emit the **Final Report** described under "Output Format." If `post_to_review` is set, also post the report to the named review unit (see "Posting the report back" above).
 
 ### Failure handling
 
@@ -320,7 +368,7 @@ After the last round completes, emit a fresh top-level report below the running 
 **Focus:** <comma-separated focus list actually used>
 **Commit mode:** <per_fix | none>
 **Auto-fix policy:** min severity = <medium>, allow_new_deps = <false>
-**Posted to:** <PR comment URL (or "posted (URL unavailable)"), only when post_to_pr was set>
+**Posted to:** <comment URL (or "posted (URL unavailable)"), only when post_to_review was set>
 
 ## Round 1 — <convergence flag>
 - Findings: C critical, H high, M medium, L low, X nit

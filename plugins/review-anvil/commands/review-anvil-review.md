@@ -1,25 +1,24 @@
 ---
 description: Read-only review pass — N rounds of parallel codex-exec + claude-exec reviewers, no edits, no commits.
-argument-hint: [rounds] [N codex + M claude] [focus: ...] [only: ...] [target: ...]
+argument-hint: [rounds: N] [N codex + M claude] [focus: ...] [only: ...] [target: ...]
 ---
 
-Invoke the `review-anvil` skill with `commit_mode=none` pinned and `rounds=1` as the default. Pass through any remaining free-form arguments the user supplied.
+Thin wrapper around the `review-anvil` skill. Pins read-only mode, forwards everything else. See SKILL.md → "Wrapper pins vs. wrapper defaults" for assembly semantics.
 
-Concretely:
+**Pin (non-overridable):** `commit_mode: none`
+**Default (user can override):** `rounds: 1`
 
-- Read the args as a free-form string: `$ARGUMENTS`
-- Assemble the skill arg string in this exact order so the skill's first-occurrence-wins parser respects both safety pins and overridable defaults (see SKILL.md → "Wrapper pins vs. wrapper defaults"):
-  - **Pin (prepend):** `commit_mode: none`
-  - **User args:** `$ARGUMENTS`
-  - **Default (append):** `rounds: 1`
-- Concretely: `commit_mode: none, $ARGUMENTS, rounds: 1`
-- Invoke: `Skill review-anvil` with the assembled arg string. A trailing `commit_mode: per_fix` in `$ARGUMENTS` will be ignored (with a one-line warning); a user-supplied `rounds: N` wins over the appended default.
+Assembly:
 
-Examples of what the user might type:
+```
+commit_mode: none, <user-args>, rounds: 1
+```
+
+Examples:
 
 - `/review-anvil-review` → 1 round, default mix, auto-detected target, no commits.
-- `/review-anvil-review 2 rounds, focus: security` → 2 rounds of reviewer redundancy on the security axis, no commits.
-- `/review-anvil-review target: PR #42, only: production blast-radius` → review PR 42 for prod-readiness only, no commits.
-- `/review-anvil-review 3 claude reviewers, target: src/auth/` → 1 round × 3 claude-exec reviewers on src/auth/, no commits.
+- `/review-anvil-review rounds: 2, focus: security` → 2 rounds of reviewer redundancy on the security axis.
+- `/review-anvil-review target: PR #42, only: production blast-radius` → review PR 42 for prod-readiness only.
+- `/review-anvil-review 3 claude reviewers, target: src/auth/` → 1 round × 3 claude-exec reviewers on src/auth/.
 
-The skill will emit the standard final report inline. Because `commit_mode=none`, the report includes a "Would-apply" block showing which findings *would* have been auto-fixed if the user re-runs without `-review`.
+The skill emits the standard final report inline. Because `commit_mode=none`, the report includes a "Would-apply summary" block listing the fixes that would have been auto-applied if the user re-runs without `-review`.
