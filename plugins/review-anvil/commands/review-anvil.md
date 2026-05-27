@@ -19,4 +19,4 @@ Examples:
 - `/review-anvil only: security, fix only critical` → narrow focus, severity gate raised to critical.
 - `/review-anvil allow new deps, focus: production blast-radius` → opt into the prod-hardening pass.
 
-See `Skill review-anvil` / SKILL.md for the full parameter surface (`rounds`, `agents`, `focus`, `target`, `min_fix_severity`, `allow_new_deps`, `commit_mode`, `post_to_review`).
+See `Skill review-anvil` / SKILL.md for the full parameter surface (`rounds`, `agents`, `focus`, `target`, `min_fix_severity`, `allow_new_deps`, `commit_mode`, `report_path`).

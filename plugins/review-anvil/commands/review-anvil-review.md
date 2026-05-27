@@ -5,14 +5,13 @@ argument-hint: [rounds: N] [N codex + M claude] [focus: ...] [only: ...] [target
 
 Thin wrapper around the `review-anvil` skill. Pins read-only mode, forwards everything else. See SKILL.md → "Wrapper pins vs. wrapper defaults" for assembly semantics.
 
-**Pin (non-overridable):** `commit_mode: none`
+**Pin (rejected if user tries to redefine):** `commit_mode`
 **Default (user can override):** `rounds: 1`
 
-Assembly:
+### Steps
 
-```
-commit_mode: none, <user-args>, rounds: 1
-```
+1. Scan `$ARGUMENTS` with the regex `(^|[[:space:],])commit_mode[[:space:]]*:`. If matched, abort with: `error: commit_mode is pinned by /review-anvil-review and cannot be overridden in args`.
+2. Invoke `Skill review-anvil "commit_mode: none, <user-args>, rounds: 1"`.
 
 Examples:
 
