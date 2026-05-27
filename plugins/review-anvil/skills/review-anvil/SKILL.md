@@ -32,7 +32,7 @@ The user invokes the skill with a free-form args string. Parse it to extract the
 | `allow_new_deps` | `false` | "allow new deps", "allow new dependencies" — auto-apply fixes that introduce new imports/subsystems instead of deferring them |
 | `min_fix_severity` | `medium` | "auto-fix high and above", "fix only critical", `min_fix_severity: high` — minimum severity for auto-fix; lower findings are listed but not applied |
 | `commit_mode` | `per_fix` | `per_fix` (current behaviour: one commit per fix-group), `none` (review-only: no edits, no commits — used by `/review-anvil-review` and `/review-anvil-pr`). Plain-English: "review only", "don't commit", "no fixes". |
-| `post_to_pr` | unset | Integer PR number. When set, after the final report is rendered, the skill posts the report as a `gh pr comment <N> --body-file <path>` so the PR author is notified. Used by `/review-anvil-pr`. |
+| `post_to_pr` | unset | PR locator — accepts `<N>` (bare number, current repo), `<owner>/<repo>#<N>`, or a full GitHub PR URL. When set, after the final report is rendered, the skill posts the report as a `gh pr comment <locator> --body-file <path>` (passing the URL or adding `-R <owner>/<repo>` as needed). Used by `/review-anvil-pr`. **Requires** `commit_mode=none` and `target` referencing the same PR — see "Cross-parameter validation" below. |
 
 ### Parsing rules
 
@@ -43,6 +43,17 @@ The user invokes the skill with a free-form args string. Parse it to extract the
   2. Else, if the current branch differs from `main`, use the branch-vs-main diff (`git diff main...HEAD`).
   3. Else, use uncommitted changes (`git diff` and `git diff --cached`).
 - If the args string is missing or empty, use all defaults.
+- **Wrapper pins vs. wrapper defaults.** Slash-command wrappers (`/review-anvil-review`, `/review-anvil-pr`, …) may pre-set parameters in two ways:
+  - **Pins** (safety-critical): assembled as `<pin>, <user-args>` so the pin is the *first* occurrence of that parameter in the parsed string. First-occurrence-wins parsing makes pins non-overridable. Example: `/review-anvil-review` pins `commit_mode: none`; a trailing `commit_mode: per_fix` is ignored.
+  - **Defaults** (suggestion): assembled as `<user-args>, <default>` so the user's value (parsed first) wins if supplied, and the default only fills in when the user is silent. Example: `/review-anvil-review` defaults `rounds: 1`; the user can pass `rounds: 3` to override.
+  Surface a one-line warning when a user-supplied parameter is dropped because of a pin (e.g. `warning: user-supplied commit_mode=per_fix ignored — pinned by /review-anvil-pr`).
+
+### Cross-parameter validation
+
+Before round 1, reject the following combinations with an explanatory error:
+
+- `post_to_pr` set **and** `commit_mode != none`. Posting a synthesized report to a PR while also editing/committing locally is ambiguous: the commits may not be on the PR branch, may not be pushed, and the report's content depends on the worktree state at synthesis time. Require `commit_mode=none` whenever `post_to_pr` is set, unless the user explicitly opts in by setting both `post_to_pr` *and* `commit_mode=per_fix` *and* `target: PR #<N>` matching the post target (in which case the orchestrator warns once and proceeds).
+- `post_to_pr` set **and** the parsed `target` is not a PR, or is a PR with a different number. Refuse to post a review of target A to PR B.
 
 ### Commit modes
 
@@ -59,13 +70,19 @@ When `commit_mode=none`:
 
 ### Posting to a PR
 
-When `post_to_pr=<N>` is set, after the final report is rendered:
+When `post_to_pr=<locator>` is set, after the final report is rendered:
 
-1. Write the full report to a temp file (e.g. `$(mktemp -t review-anvil-pr-<N>.md)`).
-2. Run `gh pr comment <N> --body-file <path>` to post it as a top-level PR comment (the PR author is notified by GitHub).
-3. Surface the resulting comment URL back to the user.
+1. Write the full report to a temp file (e.g. `$(mktemp -t review-anvil-pr.md)`).
+2. Post it as a top-level PR comment using the locator form that preserves repository identity:
+   - If `<locator>` is a URL, run `gh pr comment <url> --body-file <path>`.
+   - If `<locator>` is `<owner>/<repo>#<N>`, run `gh pr comment <N> -R <owner>/<repo> --body-file <path>`.
+   - If `<locator>` is a bare integer, run `gh pr comment <N> --body-file <path>` (operates against the current repo — only safe when the working directory is the right checkout).
+3. Recover the resulting comment URL. `gh pr comment` does not print the URL on stdout, so query it after the post:
+   - `gh api "repos/<owner>/<repo>/issues/<N>/comments" --jq '.[-1].html_url'` (resolve `<owner>/<repo>` from the locator or `gh repo view --json owner,name`).
+   - If the query fails, report `posted (URL unavailable)` rather than inventing a link.
+4. Surface the comment URL (or the fallback string) back to the user.
 
-If `gh` is not installed or the PR is not accessible, print the report inline and a single-line warning explaining the post failed — do not abort the run.
+If `gh` is not installed or the post fails for any reason, print the report inline and a single-line warning explaining the failure — do not abort the run.
 
 ### Example invocations
 
@@ -267,6 +284,7 @@ If you find nothing worth raising, return an empty findings block:
 - The assembled prompt is passed to the `codex-exec` or `claude-exec` skill (per Loop Mechanics §2). Those skills handle the underlying CLI invocation — review-anvil never calls `claude -p` or `codex exec` directly.
 - Reviewers must return **prose findings only**. The skill rejects (or simply ignores) any embedded patches.
 - The PRIOR ROUNDS lines are constructed directly from each prior round's summary (Loop Mechanics §5) — include all five severity counts in the form `Round N: C critical / H high / M medium / L low / X nit; K fixes applied (<sha1>..<shaN>); D deferred.`
+- **In `commit_mode=none` (review-only)**, no findings are addressed between rounds, so the "Do not repeat issues already addressed in prior rounds" instruction in the task block does not apply — every round reviews the same baseline. For review-only multi-round runs, replace the PRIOR ROUNDS block with: `PRIOR ROUNDS\nNone — review-only mode; this is an independent reviewer pass.` and drop the "addressed in prior rounds" line from the task block. Multi-round review-only is purely for reviewer redundancy.
 
 ## Output Format
 
@@ -299,7 +317,9 @@ After the last round completes, emit a fresh top-level report below the running 
 
 ## Round 1 — <convergence flag>
 - Findings: C critical, H high, M medium, L low, X nit
-- Fixes applied: K commits (<sha1>..<shaK>)
+- Fixes applied: K commits (<sha1>..<shaK>)         # commit_mode=per_fix
+  # OR: Fixes applied: 0 (review-only)              # commit_mode=none
+- Would-apply: W items                              # only when commit_mode=none
 - Suggestions: S items
 - Deferred: D items
 
@@ -307,12 +327,14 @@ After the last round completes, emit a fresh top-level report below the running 
 …
 
 ## Total
-- Total commits: T
-- Findings addressed: A
+- Total commits: T                                  # commit_mode=per_fix only — omit in review-only
+- Findings addressed: A                             # commit_mode=per_fix; "Findings would-apply: A" in review-only
 - Suggestions surfaced: S
 - Findings deferred: D
 - Tuning suggestion: <one line, e.g. "round 3 was clean — `rounds=2`
   likely sufficient next time"; omit if no clean rounds occurred>
+  # In commit_mode=none, omit Tuning suggestion entirely — convergence
+  # is meaningless when no fixes are applied between rounds.
 
 ## Suggestions
 For each sub-threshold finding (severity below `min_fix_severity`):
@@ -321,6 +343,10 @@ For each sub-threshold finding (severity below `min_fix_severity`):
 ## Deferred items
 For each deferred item across all rounds:
 - **[severity] area** — what (deferred because: reason — e.g. introduces new dependency: <X>; size cap reached; product/architecture decision)
+
+## Would-apply summary (commit_mode=none only)
+For each finding the auto-fix policy would have applied (severity ≥ min_fix_severity, no new deps, within size cap):
+- **[severity] area** — what (would commit as `<type>(<area>): <subject>`)
 ```
 
 ### Tuning suggestion rule

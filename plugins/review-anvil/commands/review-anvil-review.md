@@ -8,8 +8,12 @@ Invoke the `review-anvil` skill with `commit_mode=none` pinned and `rounds=1` as
 Concretely:
 
 - Read the args as a free-form string: `$ARGUMENTS`
-- Build the skill arg string by **prepending** `commit_mode: none, rounds: 1, ` and then concatenating `$ARGUMENTS`. (If the user explicitly supplied `rounds: N` in their args, their value wins because their string is parsed after — this is fine; the default-rounds line above is just for the no-args case.)
-- Invoke: `Skill review-anvil` with the assembled arg string.
+- Assemble the skill arg string in this exact order so the skill's first-occurrence-wins parser respects both safety pins and overridable defaults (see SKILL.md → "Wrapper pins vs. wrapper defaults"):
+  - **Pin (prepend):** `commit_mode: none`
+  - **User args:** `$ARGUMENTS`
+  - **Default (append):** `rounds: 1`
+- Concretely: `commit_mode: none, $ARGUMENTS, rounds: 1`
+- Invoke: `Skill review-anvil` with the assembled arg string. A trailing `commit_mode: per_fix` in `$ARGUMENTS` will be ignored (with a one-line warning); a user-supplied `rounds: N` wins over the appended default.
 
 Examples of what the user might type:
 
