@@ -68,9 +68,9 @@ Ships three slash commands:
 
 - `/review-anvil` — full fix/review loop. Edits files and commits. The default productive path.
 - `/review-anvil-review` — review-only pass. No edits, no commits. Defaults to 1 round; bump it for reviewer redundancy.
-- `/review-anvil-pr <pr-number-or-url>` — review a GitHub PR (github.com or GitHub Enterprise) and post the synthesized report back as a PR comment so the author is notified. Always read-only. The posting step uses whatever GitHub interface the host provides (`gh` CLI → GitHub MCP → REST API fallback chain, with create-then-recover-URL semantics to avoid double-posting). Multi-forge support (GitLab MR, Gitea PR, …) is a v2 concern.
+- `/review-anvil-pr <pr-url-or-slug>` — review a GitHub PR (github.com or GitHub Enterprise) and post the synthesized report back as a PR comment so the author is notified. Always read-only. Requires `gh` on PATH; all GitHub-specific logic lives in a `set -euo pipefail` shell helper (`scripts/pr-helper.sh`) so the skill itself stays forge-agnostic. Multi-forge support (GitLab MR, Gitea PR, …) is a v2 concern.
 
-Also callable directly as `Skill review-anvil "<free-form args>"` — see SKILL.md for the parameter surface (`rounds`, `agents`, `focus`, `target`, `min_fix_severity`, `allow_new_deps`, `commit_mode`, `post_to_review`).
+Also callable directly as `Skill review-anvil "<free-form args>"` — see SKILL.md for the parameter surface (`rounds`, `agents`, `focus`, `target`, `min_fix_severity`, `allow_new_deps`, `commit_mode`, `report_path`).
 
 ### overleaf-comment
 

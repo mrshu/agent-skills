@@ -1,7 +1,7 @@
 {
   "name": "review-anvil",
-  "version": "0.2.0",
-  "description": "Iterative multi-agent review-and-fix loop. Dispatch N rounds of parallel codex-exec/claude-exec reviewers, synthesize findings, optionally apply fixes with logically-separated commits or run review-only. Ships /review-anvil, /review-anvil-review, and /review-anvil-pr slash commands.",
+  "version": "0.3.0",
+  "description": "Iterative multi-agent review-and-fix loop. Dispatch N rounds of parallel codex-exec/claude-exec reviewers, synthesize findings, optionally apply fixes with logically-separated commits or run review-only. Ships /review-anvil, /review-anvil-review, and /review-anvil-pr slash commands; PR posting is delegated to a `set -euo pipefail` shell helper.",
   "author": {
     "name": "mrshu"
   },
