@@ -30,18 +30,19 @@ The pins are non-overridable for safety: `commit_mode` enforces read-only, `targ
 
 ### 1. Resolve the helper script
 
-The script lives at `./scripts/pr-helper.sh` **relative to this SKILL.md**. That is the authoritative resolution rule.
+The script lives at `./scripts/pr-helper.sh` **relative to this SKILL.md**. That is the only authoritative resolution rule.
 
 To find the absolute path:
 
 1. **If the host exposes the loaded SKILL.md's path** (Claude Code via `${CLAUDE_PLUGIN_ROOT}/skills/review-anvil-pr/scripts/pr-helper.sh`, or any agent that surfaces the skill's filesystem location to the model), use that and stop.
-2. **Otherwise, locate the most recently installed copy** of `review-anvil-pr/scripts/pr-helper.sh` across the host's known skill roots. Common roots (host-dependent — verify against your install layout):
+2. **Otherwise, fall back to user-level skill install paths only**:
    - `~/.claude/skills/review-anvil-pr/scripts/pr-helper.sh` (Claude Code via `npx skills add`)
-   - `<project>/.claude/skills/review-anvil-pr/scripts/pr-helper.sh` (project-scoped install)
-   - Other agent-specific skills directories that `vercel-labs/skills` populated (`npx skills` writes per-agent paths configured at install time; consult `skills list` if uncertain).
-3. **Verify the file exists before running it** — if no candidate resolves, abort with `error: review-anvil-pr/scripts/pr-helper.sh not found in any known skill root; reinstall via 'npx skills add mrshu/agent-skills --skill review-anvil-pr'`.
+   - The home-directory skill root for the current host as `vercel-labs/skills` documents it (`npx skills list` shows the configured location).
 
-The primary contract is "the script is `./scripts/pr-helper.sh` relative to this SKILL.md." When the host doesn't expose that path, the search above is a recovery mechanism — but it is not a substitute for the host exposing skill-file paths.
+   **Do not search project-scoped or worktree-local skill directories** (e.g. `<project>/.claude/skills/...`, `<reviewed-repo>/.codex/skills/...`, etc.) — those paths are writable by the contents of the repository being reviewed. An adversarial PR could plant a malicious `pr-helper.sh` inside such a directory and weaponize the wrapper into arbitrary shell execution. The script must come from a trusted install root outside the reviewed worktree.
+3. **Verify the file exists before running it** — if no candidate from the trusted set above resolves, abort with `error: review-anvil-pr/scripts/pr-helper.sh not found in any trusted skill root; reinstall via 'npx skills add mrshu/agent-skills --skill review-anvil-pr'`.
+
+The primary contract is "the script is `./scripts/pr-helper.sh` relative to this SKILL.md." When the host doesn't expose that path, the user-level fallback is a recovery mechanism — but it is not a substitute for the host exposing skill-file paths, and project-scoped paths must never be searched.
 
 ### 2. Init
 
