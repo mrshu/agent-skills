@@ -20,9 +20,11 @@ Use this skill when:
 
 ## How It Works
 
-**If the Agent tool is available** (Claude Code): use it. The Agent tool streams output natively — the user sees progress as the sub-agent works, with no timeout or buffering issues.
+> **In Claude Code, ALWAYS use the Agent tool. Do not shell out to `claude -p`.** The Bash-`claude -p` path is the cross-agent fallback for environments without the Agent tool (Codex CLI, Cursor, OpenCode, …) — it is NOT a shortcut from inside Claude Code itself.
 
-**If the Agent tool is NOT available** (other environments): fall back to `claude -p` via the Bash tool. See the [CLI Fallback](#cli-fallback) section for the correct invocation pattern.
+**If the Agent tool is available** (Claude Code): use it. The Agent tool streams output natively (the user sees progress as the sub-agent works, with no buffering), has **no artificial `--max-turns` ceiling**, and inherits the running session's environment without spawning a new claude process. The CLI fallback has none of those properties.
+
+**If the Agent tool is NOT available** (Codex CLI, other non-Claude environments): fall back to `claude -p` via the Bash tool. See the [CLI Fallback](#cli-fallback) section for the correct invocation pattern.
 
 ---
 
@@ -106,9 +108,14 @@ Use this when the Agent tool is not available (e.g., Codex, other non-Claude env
 ### Invocation Rules
 
 1. **Never use `--permission-mode plan`.** It redirects output to an internal plan file instead of stdout, producing empty or 1-line output. Use `--allowedTools` to restrict tools instead.
-2. **Always use `--max-turns`** to prevent the sub-claude from exhausting all turns on tool calls without producing a text response. Use `--max-turns 3` for reviews, `--max-turns 5` for deep digs, or `--tools "" --max-turns 1` for prompt-only (no file access).
+2. **Always use `--max-turns`**, sized to the task. The sub-claude needs turns for tool calls (Read, Glob, Grep, Bash) before producing its final text response — too-low limits cut it off mid-investigation. Empirically calibrated values:
+   - **Prompt-only review (no file access)**: `--tools "" --max-turns 1`
+   - **Targeted small review** (one file, no exploration): `--max-turns 3-5`
+   - **Branch / PR diff review** (read the diff, possibly cross-check a few files): `--max-turns 15-20`. The default `--max-turns 8` is often too low — review-anvil reviewers hit this limit in production and lose their output. Use 20 unless you have a specific reason for less.
+   - **Deep codebase exploration** (multi-file synthesis): `--max-turns 20-30`.
+   - When in doubt, lean higher. A turn is a tool call or response — there's no cost from setting a generous ceiling that's never hit.
 3. **When using `--allowedTools`, pipe the prompt via stdin** — `--allowedTools` is a variadic flag that consumes all subsequent positional arguments, including the prompt. Use `echo 'prompt' | claude -p ...`.
-4. **When NOT using `--allowedTools`, pass the prompt as a positional argument** — `claude -p --max-turns 3 'prompt'` works fine.
+4. **When NOT using `--allowedTools`, pass the prompt as a positional argument** — `claude -p --max-turns 20 'prompt'` works fine.
 5. **Always add `2>&1`** at the end of the command to capture stderr alongside stdout.
 6. **Always use `--no-session-persistence`** to avoid littering the user's session history with sub-agent sessions.
 7. **Write long prompts to a temp file** and pass via stdin redirect (`< /tmp/claude-prompt.txt`). Do not use inline HEREDOCs like `$(cat <<'EOF'...)` — they break in some shell environments.
@@ -116,13 +123,13 @@ Use this when the Agent tool is not available (e.g., Codex, other non-Claude env
 ### Commands
 
 ```bash
-# Review current branch against main (with --allowedTools, prompt via stdin)
+# Branch / PR diff review with --max-turns 20 (right-sized for a real review)
 echo 'Review the changes on this branch compared to main. Run `git diff main...HEAD` to see the full diff. Be a strict reviewer: check for correctness, edge cases, security issues, and code clarity. Reference specific files and lines.' \
-  | claude -p --max-turns 3 --no-session-persistence \
+  | claude -p --max-turns 20 --no-session-persistence \
     --allowedTools "Bash(git:*)" "Read" "Glob" "Grep" 2>&1
 
-# Simpler review without tool restrictions (prompt as positional arg)
-claude -p --max-turns 3 --no-session-persistence \
+# Quick focused review (small surface, no codebase exploration)
+claude -p --max-turns 5 --no-session-persistence \
   'Review the changes on this branch vs main. Focus on error handling and security. Run `git diff main...HEAD`.' \
   2>&1
 
@@ -142,6 +149,15 @@ claude -p --allowedTools "Read Glob Grep" 'Review...'
 
 # BAD: No --max-turns — sub-claude may exhaust turns on tool calls
 claude -p 'Review...'
+
+# BAD: --max-turns too low for a real review — sub-claude is cut off
+# mid-investigation, returns "Reached max turns (3)" with no findings
+claude -p --max-turns 3 'Review this PR's full diff and synthesize findings'
+
+# BAD: running claude -p from inside Claude Code itself — spawns a new
+# claude process when the Agent tool would have streamed natively and
+# had no max-turns limit
+# (in Claude Code, use the Agent tool with subagent_type "general-purpose")
 
 # BAD: HEREDOC expansion — breaks in Bash tool shell
 claude -p "$(cat <<'EOF'

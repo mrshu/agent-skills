@@ -33,7 +33,7 @@
       "name": "claude-exec",
       "source": "./plugins/claude-exec",
       "description": "Delegate code review, plan review, and deep exploration tasks to Claude Code CLI from Codex or other agents",
-      "version": "0.1.0"
+      "version": "1.2.0"
     },
     {
       "name": "review-anvil",
