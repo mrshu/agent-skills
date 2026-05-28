@@ -22,16 +22,30 @@ The user provides a PR locator as the first argument:
 
 ## How to invoke
 
+### 0. Reject overrides of pinned params
+
+Before any work, scan the user's extra args for any attempt to redefine pinned parameters:
+
+```
+(^|[[:space:],])(commit_mode|target|report_path)[[:space:]]*:
+```
+
+If any match, abort with `error: <param> is pinned by review-anvil-pr and cannot be overridden`. The pins are non-overridable for safety: `commit_mode` enforces read-only, `target` and `report_path` are mechanically tied to the user's locator. Defense-in-depth against the engine's prose parser being talked into accepting overrides.
+
 ### 1. Resolve the helper script
 
-The script lives at `./scripts/pr-helper.sh` relative to this SKILL.md. Depending on how the skill was installed, the absolute path is one of:
+The script lives at `./scripts/pr-helper.sh` **relative to this SKILL.md**. That is the authoritative resolution rule.
 
-- `${CLAUDE_PLUGIN_ROOT}/skills/review-anvil-pr/scripts/pr-helper.sh` — Claude Code via `/plugin install`
-- `~/.claude/skills/review-anvil-pr/scripts/pr-helper.sh` — Claude Code via `npx skills add` (global)
-- `~/.codex/skills/review-anvil-pr/scripts/pr-helper.sh` — Codex CLI via `npx skills add`
-- `<project>/.<agent>/skills/review-anvil-pr/scripts/pr-helper.sh` — project-scoped install in other agents
+To find the absolute path:
 
-Find the file by trying these paths in order, or by locating the SKILL.md the agent loaded and resolving `./scripts/pr-helper.sh` relative to it.
+1. **If the host exposes the loaded SKILL.md's path** (Claude Code via `${CLAUDE_PLUGIN_ROOT}/skills/review-anvil-pr/scripts/pr-helper.sh`, or any agent that surfaces the skill's filesystem location to the model), use that and stop.
+2. **Otherwise, locate the most recently installed copy** of `review-anvil-pr/scripts/pr-helper.sh` across the host's known skill roots. Common roots (host-dependent — verify against your install layout):
+   - `~/.claude/skills/review-anvil-pr/scripts/pr-helper.sh` (Claude Code via `npx skills add`)
+   - `<project>/.claude/skills/review-anvil-pr/scripts/pr-helper.sh` (project-scoped install)
+   - Other agent-specific skills directories that `vercel-labs/skills` populated (`npx skills` writes per-agent paths configured at install time; consult `skills list` if uncertain).
+3. **Verify the file exists before running it** — if no candidate resolves, abort with `error: review-anvil-pr/scripts/pr-helper.sh not found in any known skill root; reinstall via 'npx skills add mrshu/agent-skills --skill review-anvil-pr'`.
+
+The primary contract is "the script is `./scripts/pr-helper.sh` relative to this SKILL.md." When the host doesn't expose that path, the search above is a recovery mechanism — but it is not a substitute for the host exposing skill-file paths.
 
 ### 2. Init
 
