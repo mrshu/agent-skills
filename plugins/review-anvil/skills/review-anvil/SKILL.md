@@ -63,7 +63,13 @@ This makes preset-skill "pins" (assembled as `<pin>, <user-args>`) authoritative
 
 Before round 1, reject:
 
-- `commit_mode=per_fix` **and** `target` classifies as a GitHub PR locator (URL `https://<host>/<owner>/<repo>/pull/<N>`, slug `<owner>/<repo>#<N>`, or the plain-English form `PR #<N>` which normalizes to a bare-integer locator against the current repo's default remote). The orchestrator is about to write fix commits to the local working tree, but the reviewers see the PR's diff — there is no guarantee that the local checkout corresponds to that PR. Without this check, an invocation like `target: PR #42` from an unrelated branch would commit fixes for PR #42 onto whatever local branch happens to be HEAD. Refuse unless (a) `git rev-parse --abbrev-ref HEAD` matches the PR's head branch, **and** (b) the resolved `<owner>/<repo>` matches the working-directory remote. The fix is to either `gh pr checkout <N>` (or equivalent) or switch to `commit_mode=none` for a read-only review of a PR you aren't tracking locally.
+- `commit_mode=per_fix` **and** `target` classifies as a GitHub PR locator (URL `https://<host>/<owner>/<repo>/pull/<N>`, slug `<owner>/<repo>#<N>`, or the plain-English form `PR #<N>` which normalizes to a bare-integer locator against the current repo's default remote). The orchestrator is about to write fix commits to the local working tree, but the reviewers see the PR's diff — there is no guarantee that the local checkout corresponds to that PR's *current* state. Without this check, an invocation like `target: PR #42` from an unrelated branch (or a stale checkout of the same branch) would commit fixes for PR #42 onto a different baseline than the reviewers analyzed. Refuse unless **all four** conditions hold:
+  1. `git rev-parse --abbrev-ref HEAD` matches the PR's `headRefName` (same branch name).
+  2. `git rev-parse HEAD` matches the PR's current `headRefOid` (same commit — protects against stale local branches that diverge from the PR's tip).
+  3. The resolved `<owner>/<repo>` matches a configured remote of the working directory — either `origin` or any other remote (`upstream`, etc.) — to handle fork+upstream layouts. Compare with normalized URLs (lowercase host, strip trailing `.git`).
+  4. The worktree and index are clean (`git status --porcelain` returns no output) — protects against partial fixes leaking from previous work.
+
+  The fix is to either `gh pr checkout <N>` (or equivalent fresh checkout) and ensure clean state, or switch to `commit_mode=none` for a read-only review of a PR you aren't tracking locally.
 
 ### Commit modes
 
@@ -363,7 +369,7 @@ Look at the convergence flags across rounds:
 
 ### Missing reviewer dependency
 
-`review-anvil` dispatches `codex-exec` and `claude-exec` subagents — both must be installed for the skill to function. If `Skill codex-exec` or `Skill claude-exec` fails to resolve, the dispatched reviewer will error out. Before round 1, confirm both are available; if either is missing, abort with: "review-anvil requires codex-exec and claude-exec; install them via `/plugin install codex-exec` and `/plugin install claude-exec`."
+`review-anvil` dispatches `codex-exec` and `claude-exec` subagents — both must be installed for the skill to function. If `Skill codex-exec` or `Skill claude-exec` fails to resolve, the dispatched reviewer will error out. Before round 1, confirm both are available; if either is missing, abort with: "review-anvil requires the codex-exec and claude-exec skills from the mrshu-skills marketplace. Install via your host's skill installer — e.g. Claude Code: `/plugin install codex-exec@mrshu-skills` and `/plugin install claude-exec@mrshu-skills`; cross-agent (Codex CLI, Cursor, OpenCode, …): `npx skills add mrshu/agent-skills --skill codex-exec --skill claude-exec`."
 
 ### Empty or trivial target
 
