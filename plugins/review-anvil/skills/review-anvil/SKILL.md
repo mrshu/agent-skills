@@ -57,19 +57,42 @@ This makes preset-skill "pins" (assembled as `<pin>, <user-args>`) authoritative
   2. Else, if the current branch differs from `main`, use the branch-vs-main diff (`git diff main...HEAD`).
   3. Else, use uncommitted changes (`git diff` and `git diff --cached`).
 - If the args string is missing or empty, use all defaults.
-- **Preset skill conventions.** Preset skills (`review-anvil-readonly`, `review-anvil-pr`) activate this engine with a fixed set of parameters. A preset's SKILL.md instructs the agent to assemble the argument string with safety-critical params first (`commit_mode: none, target: <locator>, …, <user-args>, rounds: <default>`). The engine's first-occurrence-wins parser then makes the preset's values authoritative whenever the user's pass-through args try to override them. Presets should not allow the user to override `commit_mode`, `target`, or `report_path` — the agent enforces this by reading the preset's SKILL.md before assembling args. The engine's cross-parameter validation (below) is the final safety net regardless of how args got assembled.
+- **Preset skill conventions.** Preset skills (`review-anvil-readonly`, `review-anvil-pr`) activate this engine with a fixed set of parameters. A preset's SKILL.md instructs the agent to assemble the argument string with safety-critical params first (`commit_mode: none, target: <locator>, …, <user-args>, rounds: <default>`). The engine's first-occurrence-wins parser then makes the preset's values authoritative whenever the user's pass-through args try to override them. The engine's cross-parameter validation (below) is the final safety net regardless of how args got assembled.
+
+- **Preset pin-rejection (defense in depth).** Each preset declares a list of pinned params it considers non-overridable. Before assembling the argument string, the preset scans `$ARGUMENTS` for user-supplied attempts to redefine any pinned param and aborts with a clear error. The canonical detection algorithm (preset SKILL.mds reference this rather than restating it):
+  1. Split `$ARGUMENTS` on top-level commas (do not descend into quoted strings or nested values).
+  2. For each segment, strip leading/trailing whitespace and extract the part before the first `:` as the key candidate.
+  3. Lowercase the key (the engine parser canonicalizes keys case-insensitively; the rejection check must match).
+  4. If the lowercased key exactly matches a pinned param name (e.g. `commit_mode`, `target`, `report_path`), abort with: `error: <param> is pinned by <preset-name> and cannot be overridden in args`.
+
+  This segment-based approach avoids the false positives of a naive substring/regex match — a value like `focus: "target: PR safety"` contains the substring `target:` inside the focus value, but its segment key is `focus`, so the check correctly passes.
+
+  Presets whose host can't parse segments (very rare) may fall back to a whitespace-tolerant ERE: `(^|[[:space:],])(?i)(commit_mode|target|report_path)[[:space:]]*:` — but the segment approach is preferred.
 
 ### Cross-parameter validation
 
 Before round 1, reject:
 
 - `commit_mode=per_fix` **and** `target` classifies as a GitHub PR locator (URL `https://<host>/<owner>/<repo>/pull/<N>`, slug `<owner>/<repo>#<N>`, or the plain-English form `PR #<N>` which normalizes to a bare-integer locator against the current repo's default remote). The orchestrator is about to write fix commits to the local working tree, but the reviewers see the PR's diff — there is no guarantee that the local checkout corresponds to that PR's *current* state. Without this check, an invocation like `target: PR #42` from an unrelated branch (or a stale checkout of the same branch) would commit fixes for PR #42 onto a different baseline than the reviewers analyzed. Refuse unless **all four** conditions hold:
-  1. `git rev-parse --abbrev-ref HEAD` matches the PR's `headRefName` (same branch name).
+  1. `git rev-parse --abbrev-ref HEAD` matches the PR's `headRefName` (same branch name). Detached HEAD counts as a failed check.
   2. `git rev-parse HEAD` matches the PR's current `headRefOid` (same commit — protects against stale local branches that diverge from the PR's tip).
-  3. The resolved `<owner>/<repo>` matches a configured remote of the working directory — either `origin` or any other remote (`upstream`, etc.) — to handle fork+upstream layouts. Compare with normalized URLs (lowercase host, strip trailing `.git`).
+  3. The resolved PR locator `<owner>/<repo>` matches a configured remote of the working directory — either `origin` or any other remote (`upstream`, etc.) — to handle fork+upstream layouts. Compare on a canonical `(host, owner, repo)` tuple parsed from each remote URL via this normalization:
+     - `https://<host>/<owner>/<repo>(.git)?` → `(host, owner, repo)`
+     - `ssh://git@<host>/<owner>/<repo>(.git)?` → `(host, owner, repo)`
+     - `git@<host>:<owner>/<repo>(.git)?` (scp-style) → `(host, owner, repo)`
+     - Lowercase `<host>`; strip trailing `.git`; compare `<owner>` and `<repo>` case-insensitively (GitHub treats these case-insensitively).
   4. The worktree and index are clean (`git status --porcelain` returns no output) — protects against partial fixes leaking from previous work.
 
-  The fix is to either `gh pr checkout <N>` (or equivalent fresh checkout) and ensure clean state, or switch to `commit_mode=none` for a read-only review of a PR you aren't tracking locally.
+  **Fail closed on unverifiable conditions.** If any required value cannot be fetched, parsed, or normalized (no `gh`/MCP/REST available for the head-SHA lookup; `git rev-parse` failure; malformed remote URL; etc.), treat the check as failed — do not skip the condition. The abort message must name which condition could not be evaluated and why (`could not verify condition 2 (headRefOid): gh auth status failed`), so the user knows what to fix.
+
+  **Recovery instructions, triaged by failure mode** (the orchestrator already has both SHAs and `git status` output, so the triage is cheap):
+  - Condition 1 fails: switch to the PR's head branch (`gh pr checkout <N>` or `git checkout <headRefName>`).
+  - Condition 2 fails *and* local HEAD is a **descendant** of `headRefOid` (i.e. user has unpushed local commits, the most common case from a fresh rebase): instruct `git push` first, then re-run. **Do not** suggest `gh pr checkout` here — it would clobber the unpushed work.
+  - Condition 2 fails *and* local HEAD is an **ancestor** of `headRefOid` (local is behind the published PR): instruct `git pull` or `gh pr checkout <N>`.
+  - Condition 2 fails *and* the two SHAs diverge (neither is an ancestor of the other): instruct the user to reconcile manually (rebase/merge) and re-run.
+  - Condition 3 fails: instruct the user to add the PR's remote (`git remote add <name> <url>`).
+  - Condition 4 fails: instruct `git stash` or commit pending work first.
+  - In any case, the universal escape hatch is `commit_mode=none` for a read-only review.
 
 ### Commit modes
 
@@ -121,8 +144,10 @@ Run the loop **once per round** for `rounds` total. Within a round:
 Capture the current state of the diff/branch/PR at the start of the round so all reviewers see the same input. Concretely:
 
 - For non-PR targets (branch, uncommitted, path): run the appropriate `git diff …` command(s) to materialize the diff as text.
-- For PR targets (canonical `<owner>/<repo>#<N>`): fetch the PR's diff via the host's GitHub interface — `gh pr diff <N> -R <owner>/<repo>`, or the equivalent MCP / REST call (`GET /repos/{owner}/{repo}/pulls/{N}` with `Accept: application/vnd.github.v3.diff`). Do **not** assume the local working tree's diff is the same as the PR's diff; the user may be on a different branch.
-- Note the commit SHA at round start (`git rev-parse HEAD`) so the round summary can reference the exact baseline. For PR targets, also record the PR's head SHA from the same fetch.
+- For PR targets (canonical `<owner>/<repo>#<N>`):
+  - **`commit_mode=none` (review-only):** fetch the PR's diff via the host's GitHub interface — `gh pr diff <N> -R <owner>/<repo>`, or the equivalent MCP / REST call (`GET /repos/{owner}/{repo}/pulls/{N}` with `Accept: application/vnd.github.v3.diff`). Do **not** assume the local working tree's diff is the same as the PR's diff; the user may be on a different branch.
+  - **`commit_mode=per_fix`:** R3-F4 has already verified the local checkout matches the PR's head exactly (same branch, same HEAD SHA, configured remote, clean worktree). For **round 1**, use the same PR-diff fetch as in review-only mode — that is the canonical baseline the PR has been published against. For **rounds 2..N**, switch to the local branch-vs-PR-base diff (`git diff <PR-base>...HEAD`, where `<PR-base>` is the PR's `baseRefOid` recorded at round 0). Round 1's fix commits live in the local HEAD but not on the remote PR; if rounds 2+ kept fetching from GitHub they would review stale state and reviewers would re-flag findings already addressed.
+- Note the commit SHA at round start (`git rev-parse HEAD`) so the round summary can reference the exact baseline. For PR targets, also record the PR's `baseRefOid` and round-0 `headRefOid` from the initial fetch — `<PR-base>` stays fixed across rounds (it's the merge base on the target branch), `headRefOid` updates after each round's commits.
 
 ### 2. Dispatch reviewers in parallel
 
