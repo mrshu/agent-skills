@@ -151,7 +151,7 @@ If parallel dispatch is genuinely impossible in a given host, fall back to seria
 
 When all reviewers return, merge their findings:
 
-- **Dedup** overlapping issues (same area + same root cause). Keep the highest-severity instance and note which reviewers raised it.
+- **Dedup** overlapping issues. Prefer `(file, line, root cause)` as the dedup key when both fields are present; fall back to `(area, root cause)` when they're not. Keep the highest-severity instance and note which reviewers raised it. Preserve `file` and `line` on the surviving instance — if two reviewers flag the same root cause at different file/line anchors, keep both anchors as `file_alternates: [...]` on the merged finding (downstream consumers can pick).
 - **Group** by severity (`critical` → `nit`), then by topic within severity.
 - **Drop** any item already addressed in this round's earlier fixes (defensive — shouldn't normally happen in v1 since fixes happen after synthesis).
 
@@ -206,7 +206,22 @@ The convergence flag is one of:
 
 If the round number is less than `rounds`, start the next round (back to step 1). Round N+1 reviews the new state — its prior-round summary input includes the commits from round N.
 
-After the final round, emit the **Final Report** described under "Output Format." If `report_path` is set, also write the rendered report to that file (creating parent dirs) and print the path on the skill's last output line — downstream consumers pick the file up for posting.
+After the final round, emit the **Final Report** described under "Output Format." If `report_path` is set:
+
+1. Write the rendered report to that file (creating parent dirs).
+2. Write a sibling **inline-comments JSON artifact** at `<report_path>.inline.json` containing the array of GitHub PR review comment payloads for findings that have both `file` and `line` populated. Format:
+   ```json
+   [
+     {"path": "src/auth.ts", "line": 50, "side": "RIGHT", "body": "**[high] auth** — Missing CSRF check.\n\nWhy: ...\n\nSuggested fix: ..."},
+     {"path": "src/db.ts", "start_line": 100, "line": 110, "side": "RIGHT", "start_side": "RIGHT", "body": "..."}
+   ]
+   ```
+   - Findings with only `line: <N>` produce `{"line": N, "side": "RIGHT"}`.
+   - Findings with `line: <N>-<M>` produce `{"start_line": N, "line": M, "side": "RIGHT", "start_side": "RIGHT"}`.
+   - Findings without `file` and `line` are NOT included (they remain in the markdown report body).
+   - If no findings have anchors, the JSON file contains the empty array `[]`.
+   - The `body` of each entry is a self-contained mini-report (severity + area + what + why + suggested_fix) so GitHub's inline-comment UI is informative without needing to consult the top-level body.
+3. Print the report path on the skill's last output line — downstream consumers pick it up. The sibling `.inline.json` is implied by the convention; consumers that care look for it adjacent to the report.
 
 ### Failure handling
 
@@ -274,6 +289,13 @@ For each issue, return a structured finding with these keys:
 - why: one-to-three-sentence explanation of why it matters
 - suggested_fix: PROSE description of how to fix (no patches, no code
   blocks unless quoting a single short line for clarity)
+- file: (OPTIONAL) repo-relative path to the file the finding is
+  about, e.g. "src/auth.ts". Omit for findings without a specific
+  file anchor (architectural / overview observations).
+- line: (OPTIONAL) line number on the "new" side of the diff, or a
+  range `<start>-<end>` for multi-line findings, e.g. "42" or
+  "42-50". Omit if `file` is omitted or if the finding isn't
+  anchorable to a specific line.
 
 Output format: a markdown report. End the report with a fenced
 ```findings block containing one YAML list item per finding, like:
@@ -281,6 +303,8 @@ Output format: a markdown report. End the report with a fenced
   ```findings
   - severity: high
     area: auth
+    file: src/auth.ts
+    line: 42-50
     what: ...
     why: ...
     suggested_fix: ...

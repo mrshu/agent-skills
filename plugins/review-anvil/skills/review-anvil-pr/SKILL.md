@@ -90,11 +90,16 @@ The engine runs the review loop, writes the final report to `<REPORT_PATH>`, and
 bash <helper-path> post "$HOST" "$OWNER" "$REPO" "$N" "$MARKER" "$REPORT_PATH"
 ```
 
-The script atomically prepends the marker UUID to the report, posts via `gh pr comment`, then recovers the comment URL via paginated marker lookup (with one retry after ~2s to absorb GitHub's read-after-write lag). On success it prints the URL; on URL-recovery failure it prints `posted (URL unavailable)`.
+The script chooses between two posting strategies based on whether the engine emitted an inline-comments artifact:
+
+- **Hybrid review (preferred when findings have file/line anchors).** If `<REPORT_PATH>.inline.json` exists and is non-empty, the script assembles a PR review payload (`{event: COMMENT, body: <report>, comments: [...]}`) and submits it via `gh api /repos/{O}/{R}/pulls/{N}/reviews`. This produces ONE review event in the PR timeline with a top-level summary body AND inline review comments anchored to specific files+lines — the native GitHub review UX. The API response's `html_url` is used directly (no marker lookup needed).
+- **Top-level fallback.** If `<REPORT_PATH>.inline.json` is absent or empty (no findings had `file`+`line`), or if the PR-review API call fails (most common cause: reviewer-supplied line numbers aren't in the PR's diff), the script falls back to `gh pr comment --body-file <REPORT_PATH>` and recovers the URL via paginated marker lookup with one retry for read-after-write lag.
+
+In both paths, the marker UUID is prepended to the report body atomically before posting, so URL recovery via marker remains possible even on the fallback path.
 
 ### 5. Report back
 
-Surface the URL (or fallback string) to the user. If the helper script exited non-zero from `post`, surface its stderr; the report still exists on disk at `<REPORT_PATH>` for manual posting.
+Surface the URL (or `posted (URL unavailable)`) to the user. If the helper script exited non-zero from `post`, surface its stderr; the report still exists on disk at `<REPORT_PATH>` for manual posting.
 
 ## Examples
 

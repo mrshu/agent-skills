@@ -124,7 +124,54 @@ cmd_post() {
     } > "$tmp"
     mv "$tmp" "$report_path"
 
-    # Post.
+    # If a sibling .inline.json exists with a non-empty array of inline
+    # comment payloads, submit as a PR review (one timeline event with
+    # both a top-level body and inline-anchored comments). Otherwise
+    # fall back to a top-level comment via gh pr comment + marker URL
+    # recovery.
+    local inline_json="${report_path}.inline.json"
+    local has_inline=0
+    if [[ -f "$inline_json" ]]; then
+        # Treat empty array / whitespace-only / missing-file as "no inline".
+        if [[ -n "$(tr -d '[:space:]' <"$inline_json")" ]] \
+           && [[ "$(tr -d '[:space:]' <"$inline_json")" != "[]" ]]; then
+            has_inline=1
+        fi
+    fi
+
+    if [[ "$has_inline" -eq 1 ]]; then
+        # Build the review payload: {body, event, comments}. Use jq to
+        # assemble JSON safely (handles quoting, multiline body, etc.).
+        command -v jq >/dev/null 2>&1 \
+            || die "jq required to submit inline-comment reviews (it ships with gh; ensure it is on PATH)"
+        local review_payload
+        review_payload=$(jq -n --rawfile body "$report_path" --slurpfile comments "$inline_json" \
+            '{event: "COMMENT", body: $body, comments: $comments[0]}')
+
+        # Submit the review. The response JSON contains html_url
+        # directly — no marker lookup needed on this path.
+        local response url
+        if ! response=$(printf '%s' "$review_payload" | gh api \
+                          "repos/${owner}/${repo}/pulls/${n}/reviews" \
+                          -X POST --input - 2>&1); then
+            # Fall through to the top-level fallback rather than aborting:
+            # inline-comment submission can fail when reviewer-supplied
+            # file/line refs aren't actually in the PR's diff. The
+            # user still wants their report posted somewhere.
+            printf 'warning: PR-review submission failed (%s); falling back to top-level comment\n' \
+                "$(printf '%s' "$response" | head -n1)" >&2
+        else
+            url=$(printf '%s' "$response" | jq -r '.html_url // empty' 2>/dev/null || true)
+            if [[ -n "$url" ]]; then
+                printf '%s\n' "$url"
+            else
+                printf 'posted (URL unavailable)\n'
+            fi
+            return 0
+        fi
+    fi
+
+    # Fallback path: top-level comment + marker URL recovery.
     if ! gh pr comment "$n" -R "$owner/$repo" --body-file "$report_path" >/dev/null 2>&1; then
         die "gh pr comment failed for $owner/$repo#$n on host=$host"
     fi
