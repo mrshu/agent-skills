@@ -7,17 +7,17 @@ description: Iteratively refine code via N rounds of parallel subagent review an
 
 Wrap a code change in **N rounds of parallel reviewer subagents + orchestrator-applied fixes**. Each round = (parallel review by M agents) → (you synthesize findings) → (you apply fixes, commit) → next round.
 
-## Slash-command wrappers
+## Preset skills
 
-The plugin ships thin command wrappers in `plugins/review-anvil/commands/`. Each one is a free-form pass-through to this skill with one or two parameters pinned:
+This is the **engine** skill. Two preset skills in the same plugin wrap common invocation patterns:
 
-| Command | Pins | Use it when |
+| Preset skill | Pins | Use it when |
 |---|---|---|
-| `/review-anvil` | nothing — full skill arg surface | You want the default fix/commit loop. |
-| `/review-anvil-review` | `commit_mode=none`, default `rounds=1` | You want a read-only review pass — no edits, no commits. |
-| `/review-anvil-pr <locator>` | `commit_mode=none`, `target=<locator>`, `report_path=.review-anvil/final-report-<UUID>.md` | You want to review a GitHub PR (github.com or GitHub Enterprise) and post the synthesized report back as a PR comment so the author is notified. The wrapper handles posting via `gh`; the skill itself does not know about GitHub. |
+| `review-anvil` (this engine) | nothing — full parameter surface available | The agent wants the default fix/commit loop, or a custom param combination not covered by the presets. |
+| `review-anvil-readonly` | `commit_mode=none`, default `rounds=1` | The user wants a read-only review pass — no edits, no commits. |
+| `review-anvil-pr <locator>` | `commit_mode=none`, `target=<locator>`, `report_path=.review-anvil/final-report-<UUID>.md` | The user wants to review a GitHub PR and post the synthesized report back as a PR comment. The preset orchestrates `scripts/pr-helper.sh` (which lives under that preset skill's directory) for the GitHub-specific bits. |
 
-All other parameters (rounds, agents, focus, min_fix_severity, …) flow through unchanged from the user's free-form args after the pinned ones.
+Presets are cross-agent: each is a separate `skills/<name>/SKILL.md` with a `description` that triggers activation for its intent. The Claude Code plugin used to ship slash-command wrappers (`/review-anvil`, `/review-anvil-review`, `/review-anvil-pr`) over the same flows; v0.4 dropped those in favor of the cross-agent skill split.
 
 ## How to Use
 
@@ -31,8 +31,8 @@ The user invokes the skill with a free-form args string. Parse it to extract the
 | `target` | auto-detect | "PR #42", "branch", "uncommitted", "src/auth/", "last 3 commits" |
 | `allow_new_deps` | `false` | "allow new deps", "allow new dependencies" — auto-apply fixes that introduce new imports/subsystems instead of deferring them |
 | `min_fix_severity` | `medium` | "auto-fix high and above", "fix only critical", `min_fix_severity: high` — minimum severity for auto-fix; lower findings are listed but not applied |
-| `commit_mode` | `per_fix` | `per_fix` (current behaviour: one commit per fix-group), `none` (review-only: no edits, no commits — used by `/review-anvil-review` and `/review-anvil-pr`). Plain-English: "review only", "don't commit", "no fixes". |
-| `report_path` | unset | Absolute or relative file path. When set, the skill writes the final report to this file (creating parent dirs) in addition to printing it inline. The skill's last printed line is exactly the path (no quoting, no trailing whitespace) so wrappers can pick it up. Used by `/review-anvil-pr` to hand the report off to a post-processing script that posts it as a PR comment. |
+| `commit_mode` | `per_fix` | `per_fix` (current behaviour: one commit per fix-group), `none` (review-only: no edits, no commits — used by the `review-anvil-readonly` and `review-anvil-pr` preset skills). Plain-English: "review only", "don't commit", "no fixes". |
+| `report_path` | unset | Absolute or relative file path. When set, the skill writes the final report to this file (creating parent dirs) in addition to printing it inline. The skill's last printed line is exactly the path (no quoting, no trailing whitespace) so downstream consumers can pick it up. Used by `review-anvil-pr` to hand the report off to a post-processing script that posts it as a PR comment. |
 
 ### Parsing semantics
 
@@ -46,7 +46,7 @@ The argument string is parsed **left-to-right** with **first-occurrence-wins** p
 3. **Apply first-occurrence-wins**: for each canonical parameter, the *first* `(parameter, value)` pair in source order is authoritative. Subsequent pairs for the same parameter are dropped with a one-line warning (`warning: user-supplied <param>=<value> ignored — earlier value <param>=<earlier> wins`).
 4. **Fill in defaults**: any parameter not set after parsing takes its default from the parameter table.
 
-This makes wrapper "pins" (assembled as `<pin>, <user-args>`) authoritative without any extra mechanism: the wrapper's pin is just the first occurrence, and the user's later attempt is a dropped duplicate.
+This makes preset-skill "pins" (assembled as `<pin>, <user-args>`) authoritative without any extra mechanism: the preset's pin is just the first occurrence, and the user's later attempt is a dropped duplicate.
 
 ### Parsing rules
 
@@ -57,15 +57,13 @@ This makes wrapper "pins" (assembled as `<pin>, <user-args>`) authoritative with
   2. Else, if the current branch differs from `main`, use the branch-vs-main diff (`git diff main...HEAD`).
   3. Else, use uncommitted changes (`git diff` and `git diff --cached`).
 - If the args string is missing or empty, use all defaults.
-- **Wrapper pins vs. wrapper defaults.** Slash-command wrappers (`/review-anvil-review`, `/review-anvil-pr`, …) pre-set parameters in two ways:
-  - **Pins** (safety-critical): the wrapper **scans `$ARGUMENTS` for any attempt to redefine a pinned parameter and aborts with an explanatory error before invoking the skill.** Use a whitespace-tolerant regex like `(^|[[:space:],])<param>[[:space:]]*:` so `commit_mode: ...` and `commit_mode : ...` are both caught. Belt-and-braces against the skill's LLM-driven parser being talked into accepting overrides — pin authority no longer relies on parser semantics.
-  - **Defaults** (suggestion): assembled as `<user-args>, <default>`. First-occurrence-wins parsing means the user's value (parsed first) takes precedence; the default fills in only when the user is silent.
+- **Preset skill conventions.** Preset skills (`review-anvil-readonly`, `review-anvil-pr`) activate this engine with a fixed set of parameters. A preset's SKILL.md instructs the agent to assemble the argument string with safety-critical params first (`commit_mode: none, target: <locator>, …, <user-args>, rounds: <default>`). The engine's first-occurrence-wins parser then makes the preset's values authoritative whenever the user's pass-through args try to override them. Presets should not allow the user to override `commit_mode`, `target`, or `report_path` — the agent enforces this by reading the preset's SKILL.md before assembling args. The engine's cross-parameter validation (below) is the final safety net regardless of how args got assembled.
 
 ### Cross-parameter validation
 
 Before round 1, reject:
 
-- `commit_mode=per_fix` **and** `target` classifies as a GitHub PR locator (URL `https://<host>/<owner>/<repo>/pull/<N>`, slug `<owner>/<repo>#<N>`, or the plain-English form `PR #<N>` which normalizes to a bare-integer locator against the current repo's default remote). The orchestrator is about to write fix commits to the local working tree, but the reviewers see the PR's diff — there is no guarantee that the local checkout corresponds to that PR. Without this check, `/review-anvil target: PR #42` from an unrelated branch would commit fixes for PR #42 onto whatever local branch happens to be HEAD. Refuse unless (a) `git rev-parse --abbrev-ref HEAD` matches the PR's head branch, **and** (b) the resolved `<owner>/<repo>` matches the working-directory remote. The fix is to either `gh pr checkout <N>` (or equivalent) or switch to `commit_mode=none` for a read-only review of a PR you aren't tracking locally.
+- `commit_mode=per_fix` **and** `target` classifies as a GitHub PR locator (URL `https://<host>/<owner>/<repo>/pull/<N>`, slug `<owner>/<repo>#<N>`, or the plain-English form `PR #<N>` which normalizes to a bare-integer locator against the current repo's default remote). The orchestrator is about to write fix commits to the local working tree, but the reviewers see the PR's diff — there is no guarantee that the local checkout corresponds to that PR. Without this check, an invocation like `target: PR #42` from an unrelated branch would commit fixes for PR #42 onto whatever local branch happens to be HEAD. Refuse unless (a) `git rev-parse --abbrev-ref HEAD` matches the PR's head branch, **and** (b) the resolved `<owner>/<repo>` matches the working-directory remote. The fix is to either `gh pr checkout <N>` (or equivalent) or switch to `commit_mode=none` for a read-only review of a PR you aren't tracking locally.
 
 ### Commit modes
 
@@ -82,7 +80,7 @@ When `commit_mode=none`:
 
 ### Posting reports externally
 
-The skill does not post anywhere. When a wrapper wants to forward the final report to an external system (e.g. `/review-anvil-pr` posts to a GitHub PR), it sets `report_path` so the skill writes the report to a known file, and the wrapper invokes its own post-processing script after the skill returns. See `plugins/review-anvil/scripts/pr-helper.sh` for the GitHub PR posting flow and `plugins/review-anvil/commands/review-anvil-pr.md` for how the wrapper drives it.
+The engine does not post anywhere. When a downstream consumer (a preset skill, an agent script, an automation) wants to forward the final report somewhere, it sets `report_path` so the engine writes the report to a known file, and the consumer handles posting after the engine returns. The `review-anvil-pr` preset skill is the reference implementation for this pattern — see its `SKILL.md` + `scripts/pr-helper.sh`. Other downstream consumers (post to Slack, email, etc.) follow the same shape.
 
 ### Example invocations
 
@@ -184,7 +182,7 @@ Append a short markdown block to running output:
 - Deferred: D items (see below; reasons: noise / new dependency / size cap / product decision)
 ```
 
-Each pinned parameter carries an inline `[pin]` annotation in the Parameters line. Pin authority is enforced by the wrapper (it rejects any `$ARGUMENTS` that tries to redefine a pinned param — see "Wrapper pins vs. wrapper defaults"), so there is no "dropped overrides" case to log: a user override of a pin causes the wrapper to abort before the skill is invoked.
+Each pinned parameter carries an inline `[pin]` annotation in the Parameters line. Pin authority comes from the preset skill's argument assembly (it places pinned values first in the string, and first-occurrence-wins parsing makes them authoritative — see "Preset skill conventions"). The cross-parameter validation block above is the final safety net regardless of how args got assembled.
 
 The convergence flag is one of:
 - `clean` — no findings at all
@@ -195,7 +193,7 @@ The convergence flag is one of:
 
 If the round number is less than `rounds`, start the next round (back to step 1). Round N+1 reviews the new state — its prior-round summary input includes the commits from round N.
 
-After the final round, emit the **Final Report** described under "Output Format." If `report_path` is set, also write the rendered report to that file (creating parent dirs) and print the path on the skill's last output line — wrappers downstream pick the file up for posting.
+After the final round, emit the **Final Report** described under "Output Format." If `report_path` is set, also write the rendered report to that file (creating parent dirs) and print the path on the skill's last output line — downstream consumers pick the file up for posting.
 
 ### Failure handling
 
