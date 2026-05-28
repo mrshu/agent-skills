@@ -64,13 +64,14 @@ Delegate code review, plan review, and deep exploration tasks to **Claude Code C
 
 Iterative multi-agent review-and-fix loop. Wraps the *"let's do three rounds of fix/review"* pattern: dispatch parallel `codex-exec` and `claude-exec` reviewers, synthesize their findings, apply fixes with logically-separated commits, and repeat. Defaults to 3 rounds × 3 reviewers (2 codex + 1 claude). Configurable rounds, agent count/mix, focus, and target.
 
-The plugin ships **three cross-agent skills** under `plugins/review-anvil/skills/`:
+The plugin ships **four cross-agent skills** under `plugins/review-anvil/skills/`:
 
 - **`review-anvil`** — the engine. The actual review loop with the full parameter surface (`rounds`, `agents`, `focus`, `target`, `min_fix_severity`, `allow_new_deps`, `commit_mode`, `report_path`). The default mode is fix-and-commit (`commit_mode=per_fix`).
 - **`review-anvil-readonly`** — preset. Read-only review pass: activates the engine with `commit_mode=none` and a default of `rounds=1`. No edits, no commits.
-- **`review-anvil-pr`** — preset. Reviews a GitHub PR (github.com or GitHub Enterprise) and posts the synthesized report back as a PR comment. Pairs the engine in read-only mode with a `set -euo pipefail` shell helper (`scripts/pr-helper.sh`, which lives under this skill) for locator parsing, `gh` preflight, marker-based URL recovery, and posting. Requires `gh` on PATH. Multi-forge support (GitLab MR, Gitea PR, …) is a v2 concern.
+- **`review-anvil-pr`** — preset. **Read-only** review of a GitHub PR (github.com or GitHub Enterprise) with the synthesized report posted back as a PR comment. Pairs the engine in read-only mode with a `set -euo pipefail` shell helper (`scripts/pr-helper.sh`) for locator parsing, `gh` preflight, marker-based URL recovery, and posting. Auto-detects the PR from the current branch when no locator is passed. Requires `gh` on PATH.
+- **`review-anvil-improve-pr`** — preset. **Productive** PR loop: review + apply fix commits across N rounds + `git push` back to the PR. Reuses the same `pr-helper.sh` (with a `verify-checkout` subcommand) to confirm the local checkout matches the PR's head, clean worktree, etc. Targets the local branch directly (`<base>...HEAD`) to bypass the engine's "PR-target / per_fix incompatibility" rule. Auto-detects PR from current branch when no locator is passed. Requires `gh` on PATH; you must be on the PR's branch with a clean worktree.
 
-Three skills (not three slash commands) because skills are the cross-agent abstraction — anything that supports `Skill <name>` (Claude Code, Codex CLI, Cursor, OpenCode, Continue, Cline, Gemini CLI, …) can activate any of these by description match. The `npx skills add mrshu/agent-skills --skill review-anvil --skill review-anvil-readonly --skill review-anvil-pr` install carries the helper script under `review-anvil-pr/scripts/` along with the SKILL.md.
+Four skills (not four slash commands) because skills are the cross-agent abstraction — anything that supports `Skill <name>` (Claude Code, Codex CLI, Cursor, OpenCode, Continue, Cline, Gemini CLI, …) can activate any of these by description match. The `npx skills add mrshu/agent-skills --all` install carries all four SKILL.mds and the shared helper script under `review-anvil-pr/scripts/`. Multi-forge support (GitLab MR, Gitea PR, …) is a v2 concern.
 
 In Claude Code, you can also invoke directly as `Skill review-anvil "<free-form args>"` — see `skills/review-anvil/SKILL.md` for the full parameter surface.
 
