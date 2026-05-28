@@ -12,8 +12,12 @@ Thin preset that runs the multi-agent review loop without applying any fixes. Ac
 The agent reads the user's request, then activates `review-anvil` with this argument string:
 
 ```
-commit_mode: none, rounds: 1, <pass-through any args the user specified>
+commit_mode: none, <pass-through any args the user specified>, rounds: 1
 ```
+
+**Assembly order matters.** The engine parses left-to-right with first-occurrence-wins precedence. Pinned values (`commit_mode: none`) go *before* user args so the pin is authoritative. Defaults the user can override (`rounds: 1`) go *after* user args so any user-supplied `rounds: N` wins.
+
+Before assembling, **scan the pass-through args for any attempt to redefine the pin** with regex `(^|[[:space:],])commit_mode[[:space:]]*:` — if matched, abort with `error: commit_mode is pinned by review-anvil-readonly and cannot be overridden`. Defense-in-depth against the first-occurrence-wins parser being talked into accepting overrides.
 
 Pass-through args the user may specify (each documented in the engine's SKILL.md):
 
