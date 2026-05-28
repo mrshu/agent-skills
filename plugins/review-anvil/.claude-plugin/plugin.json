@@ -1,9 +1,9 @@
 {
   "name": "review-anvil",
-  "version": "0.3.0",
-  "description": "Iterative multi-agent review-and-fix loop. Dispatch N rounds of parallel codex-exec/claude-exec reviewers, synthesize findings, optionally apply fixes with logically-separated commits or run review-only. Ships /review-anvil, /review-anvil-review, and /review-anvil-pr slash commands; PR posting is delegated to a `set -euo pipefail` shell helper.",
+  "version": "0.4.0",
+  "description": "Iterative multi-agent code review. Three cross-agent skills: review-anvil (engine — N rounds of parallel codex-exec/claude-exec reviewers, synthesize findings, optionally apply fix commits), review-anvil-readonly (engine with commit_mode=none), review-anvil-pr (engine + posts the synthesized report to a GitHub PR comment via a `set -euo pipefail` shell helper).",
   "author": {
     "name": "mrshu"
   },
-  "keywords": ["review", "code-review", "iterative", "multi-agent", "codex-exec", "claude-exec", "rounds", "review-only", "pr-review", "slash-commands"]
+  "keywords": ["review", "code-review", "iterative", "multi-agent", "codex-exec", "claude-exec", "rounds", "review-only", "pr-review", "cross-agent"]
 }

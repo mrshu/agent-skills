@@ -64,13 +64,15 @@ Delegate code review, plan review, and deep exploration tasks to **Claude Code C
 
 Iterative multi-agent review-and-fix loop. Wraps the *"let's do three rounds of fix/review"* pattern: dispatch parallel `codex-exec` and `claude-exec` reviewers, synthesize their findings, apply fixes with logically-separated commits, and repeat. Defaults to 3 rounds × 3 reviewers (2 codex + 1 claude). Configurable rounds, agent count/mix, focus, and target.
 
-Ships three slash commands:
+The plugin ships **three cross-agent skills** under `plugins/review-anvil/skills/`:
 
-- `/review-anvil` — full fix/review loop. Edits files and commits. The default productive path.
-- `/review-anvil-review` — review-only pass. No edits, no commits. Defaults to 1 round; bump it for reviewer redundancy.
-- `/review-anvil-pr <pr-url-or-slug>` — review a GitHub PR (github.com or GitHub Enterprise) and post the synthesized report back as a PR comment so the author is notified. Always read-only. Requires `gh` on PATH; all GitHub-specific logic lives in a `set -euo pipefail` shell helper (`scripts/pr-helper.sh`) so the skill itself stays forge-agnostic. Multi-forge support (GitLab MR, Gitea PR, …) is a v2 concern.
+- **`review-anvil`** — the engine. The actual review loop with the full parameter surface (`rounds`, `agents`, `focus`, `target`, `min_fix_severity`, `allow_new_deps`, `commit_mode`, `report_path`). The default mode is fix-and-commit (`commit_mode=per_fix`).
+- **`review-anvil-readonly`** — preset. Read-only review pass: activates the engine with `commit_mode=none` and a default of `rounds=1`. No edits, no commits.
+- **`review-anvil-pr`** — preset. Reviews a GitHub PR (github.com or GitHub Enterprise) and posts the synthesized report back as a PR comment. Pairs the engine in read-only mode with a `set -euo pipefail` shell helper (`scripts/pr-helper.sh`, which lives under this skill) for locator parsing, `gh` preflight, marker-based URL recovery, and posting. Requires `gh` on PATH. Multi-forge support (GitLab MR, Gitea PR, …) is a v2 concern.
 
-Also callable directly as `Skill review-anvil "<free-form args>"` — see SKILL.md for the parameter surface (`rounds`, `agents`, `focus`, `target`, `min_fix_severity`, `allow_new_deps`, `commit_mode`, `report_path`).
+Three skills (not three slash commands) because skills are the cross-agent abstraction — anything that supports `Skill <name>` (Claude Code, Codex CLI, Cursor, OpenCode, Continue, Cline, Gemini CLI, …) can activate any of these by description match. The `npx skills add mrshu/agent-skills --skill review-anvil --skill review-anvil-readonly --skill review-anvil-pr` install carries the helper script under `review-anvil-pr/scripts/` along with the SKILL.md.
+
+In Claude Code, you can also invoke directly as `Skill review-anvil "<free-form args>"` — see `skills/review-anvil/SKILL.md` for the full parameter surface.
 
 ### overleaf-comment
 
