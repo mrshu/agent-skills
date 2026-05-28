@@ -30,6 +30,16 @@ set -euo pipefail
 
 die() { printf 'pr-helper: %s\n' "$*" >&2; exit 1; }
 
+# Remove the report markdown + sibling inline JSON, and try to rmdir
+# the parent directory. Called only on successful post paths (failures
+# leave the artifacts in place so the user can inspect / post manually).
+# rmdir fails quietly if other runs have artifacts in the same dir.
+cleanup_post_artifacts() {
+    local report_path="$1"
+    rm -f "$report_path" "${report_path}.inline.json"
+    rmdir "$(dirname "$report_path")" 2>/dev/null || true
+}
+
 cmd_init() {
     local locator="${1:-}"
     command -v gh >/dev/null 2>&1 || die "install gh first; the review-anvil-pr skill requires gh"
@@ -162,6 +172,7 @@ cmd_post() {
                 "$(printf '%s' "$response" | head -n1)" >&2
         else
             url=$(printf '%s' "$response" | jq -r '.html_url // empty' 2>/dev/null || true)
+            cleanup_post_artifacts "$report_path"
             if [[ -n "$url" ]]; then
                 printf '%s\n' "$url"
             else
@@ -186,6 +197,7 @@ cmd_post() {
         [[ "$attempt" -eq 1 ]] && sleep 2
     done
 
+    cleanup_post_artifacts "$report_path"
     if [[ -n "$url" ]]; then
         printf '%s\n' "$url"
     else

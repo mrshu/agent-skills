@@ -39,7 +39,7 @@
       "name": "review-anvil",
       "source": "./plugins/review-anvil",
       "description": "Iterative multi-agent code review. Four cross-agent skills: review-anvil (engine — N rounds of parallel codex-exec/claude-exec reviewers, synthesize findings, optionally apply fix commits), review-anvil-readonly (engine with commit_mode=none), review-anvil-pr (read-only PR review with hybrid posting — inline review comments for file-anchored findings + top-level summary for the rest), review-anvil-improve-pr (productive PR loop — review + apply fix commits across N rounds + git push back to the PR). PR posting and verification delegated to a `set -euo pipefail` shell helper.",
-      "version": "0.6.0"
+      "version": "0.6.1"
     },
     {
       "name": "overleaf-comment",

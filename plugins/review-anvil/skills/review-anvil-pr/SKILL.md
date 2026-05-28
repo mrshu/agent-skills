@@ -97,6 +97,8 @@ The script chooses between two posting strategies based on whether the engine em
 
 In both paths, the marker UUID is prepended to the report body atomically before posting, so URL recovery via marker remains possible even on the fallback path.
 
+**Cleanup on success.** After a successful post (either path), the helper removes `<REPORT_PATH>` and `<REPORT_PATH>.inline.json`, and attempts to `rmdir` the parent directory (succeeds only if empty — concurrent runs are unaffected). On any abort (`die`), the artifacts are left in place so the user can inspect or post manually.
+
 ### 5. Report back
 
 Surface the URL (or `posted (URL unavailable)`) to the user. If the helper script exited non-zero from `post`, surface its stderr; the report still exists on disk at `<REPORT_PATH>` for manual posting.
