@@ -24,13 +24,9 @@ The user provides a PR locator as the first argument:
 
 ### 0. Reject overrides of pinned params
 
-Before any work, scan the user's extra args for any attempt to redefine pinned parameters:
+Pins for this preset: `commit_mode`, `target`, `report_path`. Apply the canonical pin-rejection algorithm defined in the engine SKILL.md → "Preset pin-rejection" (segment-parse `$ARGUMENTS`, lowercase the key of each segment, abort if any key matches one of the pinned params). The preset name in the abort message is `review-anvil-pr`.
 
-```
-(^|[[:space:],])(commit_mode|target|report_path)[[:space:]]*:
-```
-
-If any match, abort with `error: <param> is pinned by review-anvil-pr and cannot be overridden`. The pins are non-overridable for safety: `commit_mode` enforces read-only, `target` and `report_path` are mechanically tied to the user's locator. Defense-in-depth against the engine's prose parser being talked into accepting overrides.
+The pins are non-overridable for safety: `commit_mode` enforces read-only, `target` and `report_path` are mechanically tied to the user's locator. Defense in depth against the engine's prose parser being talked into accepting overrides (e.g. via prompt injection in the focus text).
 
 ### 1. Resolve the helper script
 
@@ -74,7 +70,7 @@ On non-zero exit, surface the script's stderr verbatim and stop. Do not dispatch
 Activate the `review-anvil` skill with this argument string (extra user args go between the pinned params and the rounds default):
 
 ```
-commit_mode: none, target: <locator>, report_path: <REPORT_PATH>, <extra-user-args>, rounds: 2
+commit_mode: none, target: <locator>, report_path: <REPORT_PATH>, <extra-user-args>, rounds: 1
 ```
 
 The user may override `rounds:` in their args (it's a default, not a pin). They should not override `commit_mode`, `target`, or `report_path` — these are pinned for safety. The engine's own validation will catch the cross-parameter cases.
