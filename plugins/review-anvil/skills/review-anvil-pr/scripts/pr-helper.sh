@@ -246,22 +246,24 @@ cmd_verify_checkout() {
         die "gh auth status failed for host=$host; run 'gh auth login' (or set GH_TOKEN/GITHUB_TOKEN)"
     fi
 
-    # Fetch the PR's head/base refs + title in one call (verify reachability + capture fields).
-    # Output looks like: <headRefName>\t<headRefOid>\t<baseRefName>\t<title>
+    # Fetch the PR's head/base refs + title + author in one call (verify
+    # reachability + capture fields).
+    # Output looks like: <headRefName>\t<headRefOid>\t<baseRefName>\t<title>\t<author>
     local pr_fields
     if ! pr_fields=$(gh pr view "$n" -R "$owner/$repo" \
-                       --json headRefName,headRefOid,baseRefName,title \
-                       --jq '[.headRefName, .headRefOid, .baseRefName, .title] | @tsv' 2>&1); then
+                       --json headRefName,headRefOid,baseRefName,title,author \
+                       --jq '[.headRefName, .headRefOid, .baseRefName, .title, .author.login] | @tsv' 2>&1); then
         sleep 2
         if ! pr_fields=$(gh pr view "$n" -R "$owner/$repo" \
-                           --json headRefName,headRefOid,baseRefName,title \
-                           --jq '[.headRefName, .headRefOid, .baseRefName, .title] | @tsv' 2>&1); then
+                           --json headRefName,headRefOid,baseRefName,title,author \
+                           --jq '[.headRefName, .headRefOid, .baseRefName, .title, .author.login] | @tsv' 2>&1); then
             die "gh pr view failed for $owner/$repo#$n on host=$host: $pr_fields"
         fi
     fi
-    local head_branch head_sha base_branch title
-    IFS=$'\t' read -r head_branch head_sha base_branch title <<<"$pr_fields"
+    local head_branch head_sha base_branch title author
+    IFS=$'\t' read -r head_branch head_sha base_branch title author <<<"$pr_fields"
     [[ -n "$title" ]] || title='(title unavailable)'
+    [[ -n "$author" ]] || author='(unknown)'
 
     # Verify we are in a git worktree.
     git rev-parse --git-dir >/dev/null 2>&1 || die "not inside a git worktree; check out the PR's branch first (gh pr checkout $n -R $owner/$repo)"
@@ -302,6 +304,17 @@ cmd_verify_checkout() {
         fi
     fi
 
+    # Generate marker UUID + absolute report path (same scheme as cmd_init
+    # so the post-summary step can post the engine's final report back
+    # to the PR with race-free URL recovery).
+    command -v uuidgen >/dev/null 2>&1 || die "uuidgen not available"
+    local anchor
+    anchor=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+    local marker report_path
+    marker=$(uuidgen | tr '[:upper:]' '[:lower:]')
+    mkdir -p "$anchor/.review-anvil"
+    report_path="$anchor/.review-anvil/final-report-${marker}.md"
+
     printf 'HOST=%s\n' "$host"
     printf 'OWNER=%s\n' "$owner"
     printf 'REPO=%s\n' "$repo"
@@ -309,12 +322,68 @@ cmd_verify_checkout() {
     printf 'HEAD_BRANCH=%s\n' "$head_branch"
     printf 'BASE_BRANCH=%s\n' "$base_branch"
     printf 'TITLE=%s\n' "$title"
+    printf 'AUTHOR=%s\n' "$author"
+    printf 'MARKER=%s\n' "$marker"
+    printf 'REPORT_PATH=%s\n' "$report_path"
+}
+
+cmd_post_summary() {
+    local host="${1:-}" owner="${2:-}" repo="${3:-}" n="${4:-}" marker="${5:-}" report_path="${6:-}" author="${7:-}"
+    for v in host owner repo n marker report_path author; do
+        [[ -n "${!v}" ]] || die "post-summary: missing <$v>"
+    done
+    [[ -f "$report_path" ]] || die "report file not found: $report_path"
+
+    export GH_HOST="$host"
+
+    # Prepend marker + cc header to the report. Atomic rewrite.
+    local at_mention
+    if [[ "$author" == "(unknown)" || -z "$author" ]]; then
+        at_mention=''
+    else
+        at_mention="cc @${author}"
+    fi
+    local tmp="${report_path}.tmp"
+    {
+        printf '<!-- review-anvil-marker: %s -->\n' "$marker"
+        printf 'review-anvil-improve-pr applied fix commits to this PR'
+        [[ -n "$at_mention" ]] && printf '. %s' "$at_mention"
+        printf '.\n\n---\n\n'
+        cat "$report_path"
+    } > "$tmp"
+    mv "$tmp" "$report_path"
+
+    # Post as a top-level PR comment (NOT a PR review with inline
+    # comments — the fixes were applied as commits, so inline comments
+    # saying "this is wrong" would be misleading; a single summary
+    # comment is the right shape).
+    if ! gh pr comment "$n" -R "$owner/$repo" --body-file "$report_path" >/dev/null 2>&1; then
+        die "gh pr comment failed for $owner/$repo#$n on host=$host"
+    fi
+
+    # Recover URL via marker lookup (one retry for read-after-write lag).
+    local url
+    for attempt in 1 2; do
+        url=$(gh api "repos/${owner}/${repo}/issues/${n}/comments" --paginate \
+              --jq ".[] | select(.body | contains(\"$marker\")) | .html_url" 2>/dev/null \
+              | head -n1 || true)
+        [[ -n "$url" ]] && break
+        [[ "$attempt" -eq 1 ]] && sleep 2
+    done
+
+    cleanup_post_artifacts "$report_path"
+    if [[ -n "$url" ]]; then
+        printf '%s\n' "$url"
+    else
+        printf 'posted (URL unavailable)\n'
+    fi
 }
 
 case "${1:-}" in
     init)             shift; cmd_init "$@" ;;
     post)             shift; cmd_post "$@" ;;
     verify-checkout)  shift; cmd_verify_checkout "$@" ;;
-    "")               die "usage: pr-helper.sh {init [<locator>] | post <host> <owner> <repo> <n> <marker> <report_path> | verify-checkout [<locator>]}" ;;
+    post-summary)     shift; cmd_post_summary "$@" ;;
+    "")               die "usage: pr-helper.sh {init [<locator>] | post <host> <owner> <repo> <n> <marker> <report_path> | verify-checkout [<locator>] | post-summary <host> <owner> <repo> <n> <marker> <report_path> <author>}" ;;
     *)                die "unknown subcommand: $1" ;;
 esac
