@@ -67,7 +67,7 @@ This makes preset-skill "pins" (assembled as `<pin>, <user-args>`) authoritative
 
   This segment-based approach avoids the false positives of a naive substring/regex match — a value like `focus: "target: PR safety"` contains the substring `target:` inside the focus value, but its segment key is `focus`, so the check correctly passes.
 
-  Presets whose host can't parse segments (very rare) may fall back to a whitespace-tolerant ERE: `(^|[[:space:],])(?i)(commit_mode|target|report_path)[[:space:]]*:` — but the segment approach is preferred.
+  Segment splitting is universally implementable (every host that can run a skill can split a string on commas). There is no regex fallback: a fallback that scans raw text re-introduces the substring false-positive class this algorithm exists to eliminate, and a host that genuinely cannot perform the segment split cannot meaningfully enforce pin safety in the first place. If a preset finds itself unable to apply this algorithm in a given environment, it must abort with `error: pin-rejection unavailable in this environment; refusing to invoke engine without pin enforcement` — not degrade to a less safe alternative.
 
 ### Cross-parameter validation
 
@@ -85,14 +85,18 @@ Before round 1, reject:
 
   **Fail closed on unverifiable conditions.** If any required value cannot be fetched, parsed, or normalized (no `gh`/MCP/REST available for the head-SHA lookup; `git rev-parse` failure; malformed remote URL; etc.), treat the check as failed — do not skip the condition. The abort message must name which condition could not be evaluated and why (`could not verify condition 2 (headRefOid): gh auth status failed`), so the user knows what to fix.
 
-  **Recovery instructions, triaged by failure mode** (the orchestrator already has both SHAs and `git status` output, so the triage is cheap):
-  - Condition 1 fails: switch to the PR's head branch (`gh pr checkout <N>` or `git checkout <headRefName>`).
-  - Condition 2 fails *and* local HEAD is a **descendant** of `headRefOid` (i.e. user has unpushed local commits, the most common case from a fresh rebase): instruct `git push` first, then re-run. **Do not** suggest `gh pr checkout` here — it would clobber the unpushed work.
-  - Condition 2 fails *and* local HEAD is an **ancestor** of `headRefOid` (local is behind the published PR): instruct `git pull` or `gh pr checkout <N>`.
-  - Condition 2 fails *and* the two SHAs diverge (neither is an ancestor of the other): instruct the user to reconcile manually (rebase/merge) and re-run.
-  - Condition 3 fails: instruct the user to add the PR's remote (`git remote add <name> <url>`).
-  - Condition 4 fails: instruct `git stash` or commit pending work first.
-  - In any case, the universal escape hatch is `commit_mode=none` for a read-only review.
+  **Evaluate all four conditions before aborting (no short-circuit).** Co-failures are common in practice (e.g. unpushed rebase + dirty worktree); the user benefits from seeing the full picture in one shot rather than chasing one error per re-run.
+
+  **Recovery instructions, ordered for safe sequencing** (the orchestrator already has both SHAs and `git status` output, so the triage is cheap). When emitting the abort, list every failed (or unverifiable) condition and present the recovery steps in this fixed order, which matches the safe execution sequence:
+
+  1. **Condition 4 first (worktree)** — clean state before any branch/SHA operation: instruct `git stash` (preserves work) or `git commit` (commits in-progress work) first. Stash-then-other-ops is the conservative default.
+  2. **Condition 3 next (remote)** — fix the remote topology so subsequent branch/checkout operations resolve correctly: instruct `git remote add <name> <url>` for the PR's `<owner>/<repo>`.
+  3. **Condition 1 (branch)** — switch to the PR's head branch: `gh pr checkout <N> -R <owner>/<repo>` (use the repo-qualified form when the user might be in a fork checkout). This step is safe to do after worktree is clean and remote exists.
+  4. **Condition 2 (SHA)** — only meaningful once branch + remote are aligned:
+     - HEAD is a **descendant** of `headRefOid` (unpushed local commits, most commonly from a fresh rebase): `git push` first, then re-run. **Do not** suggest `gh pr checkout` here — it would clobber the unpushed work.
+     - HEAD is an **ancestor** of `headRefOid` (local is behind the published PR): `git pull` or `gh pr checkout <N>`.
+     - SHAs diverge (neither ancestor): reconcile manually (rebase/merge) and re-run.
+  5. **Universal escape hatch:** `commit_mode=none` for a read-only review, applicable regardless of which conditions failed.
 
 ### Commit modes
 
@@ -146,8 +150,10 @@ Capture the current state of the diff/branch/PR at the start of the round so all
 - For non-PR targets (branch, uncommitted, path): run the appropriate `git diff …` command(s) to materialize the diff as text.
 - For PR targets (canonical `<owner>/<repo>#<N>`):
   - **`commit_mode=none` (review-only):** fetch the PR's diff via the host's GitHub interface — `gh pr diff <N> -R <owner>/<repo>`, or the equivalent MCP / REST call (`GET /repos/{owner}/{repo}/pulls/{N}` with `Accept: application/vnd.github.v3.diff`). Do **not** assume the local working tree's diff is the same as the PR's diff; the user may be on a different branch.
-  - **`commit_mode=per_fix`:** R3-F4 has already verified the local checkout matches the PR's head exactly (same branch, same HEAD SHA, configured remote, clean worktree). For **round 1**, use the same PR-diff fetch as in review-only mode — that is the canonical baseline the PR has been published against. For **rounds 2..N**, switch to the local branch-vs-PR-base diff (`git diff <PR-base>...HEAD`, where `<PR-base>` is the PR's `baseRefOid` recorded at round 0). Round 1's fix commits live in the local HEAD but not on the remote PR; if rounds 2+ kept fetching from GitHub they would review stale state and reviewers would re-flag findings already addressed.
-- Note the commit SHA at round start (`git rev-parse HEAD`) so the round summary can reference the exact baseline. For PR targets, also record the PR's `baseRefOid` and round-0 `headRefOid` from the initial fetch — `<PR-base>` stays fixed across rounds (it's the merge base on the target branch), `headRefOid` updates after each round's commits.
+  - **`commit_mode=per_fix`:** R3-F4 has already verified the local checkout matches the PR's head exactly (same branch, same HEAD SHA, configured remote, clean worktree). Use the local `git diff <PR-base>...HEAD` (three-dot diff) from **round 1 onward** — `<PR-base>` is defined precisely below. Three-dot diff syntax is functionally equivalent to GitHub's PR diff when R3-F4 holds and the base object is available locally, with the advantage of producing identical output across all rounds (no source-shift between round 1 and round 2+) and naturally reflecting the fix commits round N applied without needing to push.
+- `<PR-base>` is **the PR's `baseRefOid` as returned by the host GitHub interface at round 0** — i.e. the SHA at the tip of the PR's base branch at the most recent PR sync. Capture it once before round 1 (`gh pr view <N> -R <owner>/<repo> --json baseRefOid --jq '.baseRefOid'`) and reuse across all rounds. This is **not** `git merge-base baseRefOid HEAD` — three-dot diff syntax computes the merge base internally, so passing `baseRefOid` directly is correct.
+- **Before round 1 in per_fix mode**, ensure `<PR-base>` is locally materialized: `git cat-file -e <baseRefOid> 2>/dev/null || git fetch <remote-name> <baseRefOid>` (find `<remote-name>` from the R3-F4 remote-match step). If the fetch fails, abort with `error: PR base ref <baseRefOid> not available locally; the per_fix loop requires it for diff computation. Run 'git fetch <remote>' manually or switch to commit_mode=none.`
+- Note the commit SHA at round start (`git rev-parse HEAD`) so the round summary can reference the exact baseline. For PR targets, also record `baseRefOid` and round-0 `headRefOid` from the initial fetch — `<PR-base>` stays fixed across rounds, `headRefOid` updates after each round's commits.
 
 ### 2. Dispatch reviewers in parallel
 
@@ -394,7 +400,11 @@ Look at the convergence flags across rounds:
 
 ### Missing reviewer dependency
 
-`review-anvil` dispatches `codex-exec` and `claude-exec` subagents — both must be installed for the skill to function. If `Skill codex-exec` or `Skill claude-exec` fails to resolve, the dispatched reviewer will error out. Before round 1, confirm both are available; if either is missing, abort with: "review-anvil requires the codex-exec and claude-exec skills from the mrshu-skills marketplace. Install via your host's skill installer — e.g. Claude Code: `/plugin install codex-exec@mrshu-skills` and `/plugin install claude-exec@mrshu-skills`; cross-agent (Codex CLI, Cursor, OpenCode, …): `npx skills add mrshu/agent-skills --skill codex-exec --skill claude-exec`."
+`review-anvil` dispatches `codex-exec` and/or `claude-exec` subagents according to the resolved reviewer mix. Validate only the backends the mix actually uses — not both unconditionally. Concretely, after resolving the mix (from the `agents` parameter or the default-mix table), enumerate the backends it names and check that each required Skill resolves before round 1. If any required reviewer skill is missing, abort with:
+
+> "review-anvil requires the `<missing-skill>` skill from the mrshu-skills marketplace. Install via your host's skill installer — e.g. Claude Code: `/plugin install <missing-skill>@mrshu-skills`; cross-agent (Codex CLI, Cursor, OpenCode, …): `npx skills add mrshu/agent-skills --skill <missing-skill>`."
+
+For example, a request like `Skill review-anvil "3 codex reviewers"` resolves to `3 codex-exec`, so only `codex-exec` need be installed; missing `claude-exec` is irrelevant for that run. A request with the default mix (2 codex + 1 claude) requires both. This matters for cross-agent use cases where the user has opted into a single-backend setup (e.g. Codex-only hosts).
 
 ### Empty or trivial target
 
