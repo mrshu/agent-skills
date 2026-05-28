@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # pr-helper.sh — GitHub PR locator parsing, preflight, and report posting
-# for the review-anvil plugin's /review-anvil-pr wrapper.
+# for the review-anvil-pr skill. Co-located with the skill so it travels
+# across agents via `npx skills add mrshu/agent-skills --skill review-anvil-pr`.
 #
 # Two subcommands:
 #
@@ -50,7 +51,7 @@ cmd_init() {
         die "unrecognized locator: $locator"
     fi
 
-    command -v gh >/dev/null 2>&1 || die "install gh first; /review-anvil-pr requires gh"
+    command -v gh >/dev/null 2>&1 || die "install gh first; the review-anvil-pr skill requires gh"
     command -v uuidgen >/dev/null 2>&1 || die "uuidgen not available"
 
     export GH_HOST="$host"
