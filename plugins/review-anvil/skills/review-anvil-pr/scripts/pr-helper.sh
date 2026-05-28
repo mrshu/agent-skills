@@ -60,21 +60,30 @@ cmd_init() {
         die "gh auth status failed for host=$host; run 'gh auth login' (or set GH_TOKEN/GITHUB_TOKEN)"
     fi
 
-    local view title
-    if ! view=$(gh pr view "$n" -R "$owner/$repo" --json number,headRefName,title 2>&1); then
+    # Verify PR reachability AND extract the title in one network call,
+    # using gh's built-in jq (no sed regex or python3 dependency).
+    local title
+    if ! title=$(gh pr view "$n" -R "$owner/$repo" --json title --jq '.title' 2>&1); then
         # one retry for transient failure
         sleep 2
-        if ! view=$(gh pr view "$n" -R "$owner/$repo" --json number,headRefName,title 2>&1); then
-            die "gh pr view failed for $owner/$repo#$n on host=$host: $view"
+        if ! title=$(gh pr view "$n" -R "$owner/$repo" --json title --jq '.title' 2>&1); then
+            die "gh pr view failed for $owner/$repo#$n on host=$host: $title"
         fi
     fi
-    title=$(printf '%s' "$view" | sed -n 's/.*"title":"\(.*\)","number".*/\1/p')
-    [[ -n "$title" ]] || title=$(printf '%s' "$view" | python3 -c 'import sys,json; print(json.load(sys.stdin)["title"])' 2>/dev/null || printf '(title unavailable)')
+    [[ -n "$title" ]] || title='(title unavailable)'
 
-    mkdir -p .review-anvil
+    # Anchor the report path inside the repo's worktree, not whatever
+    # CWD the orchestrator happens to be in. Falls back to CWD if we
+    # are not inside a git worktree (degenerate but tolerated).
+    local anchor
+    anchor=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
     local marker report_path
     marker=$(uuidgen | tr '[:upper:]' '[:lower:]')
-    report_path=".review-anvil/final-report-${marker}.md"
+    mkdir -p "$anchor/.review-anvil"
+    # Emit an absolute path so the engine writes to and the post step
+    # reads from the same file regardless of CWD changes between
+    # invocations.
+    report_path="$anchor/.review-anvil/final-report-${marker}.md"
 
     printf 'HOST=%s\n' "$host"
     printf 'OWNER=%s\n' "$owner"
