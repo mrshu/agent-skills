@@ -74,7 +74,7 @@ Activate the `review-anvil` skill with this argument string (extra user args go 
 commit_mode: none, target: <locator>, report_path: <REPORT_PATH>, <extra-user-args>, rounds: 1
 ```
 
-The user may override `rounds:` in their args (it's a default, not a pin). They should not override `commit_mode`, `target`, or `report_path` — these are pinned for safety. The engine's own validation will catch the cross-parameter cases.
+The user may override `rounds:` in their args (it's a default, not a pin). They should not override `commit_mode`, `target`, or `report_path` — these are pinned for safety; the step-0 segment-rejection above blocks override attempts.
 
 The engine runs the review loop, writes the final report to `<REPORT_PATH>`, and prints that path on its last output line.
 
@@ -93,7 +93,7 @@ Surface the URL (or fallback string) to the user. If the helper script exited no
 ## Constraints
 
 - Requires `gh` on `PATH` and `uuidgen`. The script aborts with a clear error if either is missing.
-- Read-only by design — the PR's branch may not be checked out locally, and pushing fix commits to a PR you don't own is rarely the intent. If you want fix-and-commit on a PR you have locally, activate `review-anvil` directly with `commit_mode=per_fix` (the engine's cross-parameter validation will require the local checkout to match).
+- Read-only by design — the PR's branch may not be checked out locally, and pushing fix commits to a PR you don't own is rarely the intent. If you want to fix-and-commit on a PR you have checked out, activate `review-anvil` directly with `target: branch` (your checked-out PR branch) and `commit_mode=per_fix` — the local working tree becomes the source of truth and the diff against the merge base is unambiguous.
 - Supports github.com and GitHub Enterprise — the script extracts the host from the URL and sets `GH_HOST` internally for all `gh` invocations.
 - Bare-integer PR locators are rejected — pass a URL or `<owner>/<repo>#<N>` slug to be unambiguous about repo identity.
 

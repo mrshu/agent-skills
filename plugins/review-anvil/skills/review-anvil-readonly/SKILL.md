@@ -35,4 +35,4 @@ After the engine completes, surface the synthesized report inline. **Do not** fo
 
 ## Engine reference
 
-See [`../review-anvil/SKILL.md`](../review-anvil/SKILL.md) for: full parameter surface, mix policy, focus options, reviewer prompt template, final report format, and cross-parameter validation. This preset is a one-line argument addition; all behavior comes from the engine.
+See [`../review-anvil/SKILL.md`](../review-anvil/SKILL.md) for: full parameter surface, mix policy, focus options, reviewer prompt template, and final report format. This preset is a one-line argument addition; all behavior comes from the engine.
