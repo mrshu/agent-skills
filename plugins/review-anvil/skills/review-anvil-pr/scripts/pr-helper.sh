@@ -32,7 +32,23 @@ die() { printf 'pr-helper: %s\n' "$*" >&2; exit 1; }
 
 cmd_init() {
     local locator="${1:-}"
-    [[ -n "$locator" ]] || die "init: missing <locator>"
+    command -v gh >/dev/null 2>&1 || die "install gh first; the review-anvil-pr skill requires gh"
+    command -v uuidgen >/dev/null 2>&1 || die "uuidgen not available"
+
+    # If the user supplied no locator, try to detect the PR for the
+    # currently checked-out branch. `gh pr view` (no args) uses the
+    # repo inferred from the working directory's git remote and the
+    # current branch's tracking info — this is the natural "review
+    # the PR I'm on" workflow.
+    if [[ -z "$locator" ]]; then
+        local detected
+        if detected=$(gh pr view --json url --jq '.url' 2>/dev/null) && [[ -n "$detected" ]]; then
+            locator="$detected"
+            printf 'auto-detected PR: %s\n' "$locator" >&2
+        else
+            die "no <locator> supplied and no PR detected for the current branch — pass a URL or <owner>/<repo>#<N>, or check out the PR's branch first"
+        fi
+    fi
 
     local host owner repo n
     if [[ "$locator" =~ ^https?://([^/]+)/([^/]+)/([^/]+)/pull/([0-9]+)/?$ ]]; then
@@ -46,13 +62,10 @@ cmd_init() {
         repo="${BASH_REMATCH[2]}"
         n="${BASH_REMATCH[3]}"
     elif [[ "$locator" =~ ^[0-9]+$ ]]; then
-        die "bare integer rejected — pass a URL or <owner>/<repo>#<N>"
+        die "bare integer rejected — pass a URL or <owner>/<repo>#<N>, or omit the locator to auto-detect from the current branch"
     else
         die "unrecognized locator: $locator"
     fi
-
-    command -v gh >/dev/null 2>&1 || die "install gh first; the review-anvil-pr skill requires gh"
-    command -v uuidgen >/dev/null 2>&1 || die "uuidgen not available"
 
     export GH_HOST="$host"
 
