@@ -133,19 +133,31 @@ Capture the current state of the diff/branch/PR at the start of the round so all
 
 ### 2. Dispatch reviewers in parallel
 
-**Do not invoke any reviewer mechanism directly.** Instead, delegate to the **`codex-exec`** and **`claude-exec`** skills — one invocation per reviewer in the mix. Those skills already encapsulate how to dispatch their underlying CLI (Agent tool when the host harness has one, `claude -p` / `codex exec` shell fallback otherwise). `review-anvil` only orchestrates rounds and synthesis; it does not pick the dispatch mechanism.
+Pick the dispatch mechanism by host. The right choice matters: the wrong path costs you streaming output, runs into artificial `--max-turns` limits, or wastes a new process when an in-session subagent would do.
 
-For each reviewer in the mix, invoke the appropriate skill:
+#### In Claude Code (the primary host)
 
-- **codex-exec reviewer:** invoke the `codex-exec` skill with the assembled **Reviewer Prompt Template** below as the review prompt.
-- **claude-exec reviewer:** invoke the `claude-exec` skill with the same prompt.
+**Use the Agent tool for `claude-exec` reviewers. Use Bash with `codex exec` for `codex-exec` reviewers. Do NOT use `claude -p` via Bash — that path is for non-Claude hosts only.**
 
-All M invocations within a round must run in parallel. Never serialize reviewers within a round. The exact parallel-dispatch mechanism depends on the host:
+- **`claude-exec` reviewers**: dispatch via the **Agent tool** with `subagent_type: "general-purpose"`. The Agent tool streams output natively (the user sees progress, not a buffered dump), has no artificial `--max-turns` ceiling (so reviewers that explore the codebase don't get cut off — round 1 of an early review-anvil-on-itself run hit `--max-turns 8` and lost the reviewer's output), and inherits the running session's environment without spawning a new process. Pass the assembled **Reviewer Prompt Template** as the `prompt`. Set `run_in_background: true` so multiple reviewers within a round run in parallel.
 
-- If the host has an `Agent`/`Task` tool: send a single message with M tool calls, each one invoking `codex-exec` or `claude-exec` with the prompt.
-- If the host has only shell access: launch M background shell processes (e.g., `codex exec '...' &`, `claude -p '...' &`) and `wait`. Both `codex-exec` and `claude-exec` document the exact CLI invocations.
+- **`codex-exec` reviewers**: dispatch via **Bash** with `codex exec --sandbox read-only -C <project-dir> '<prompt>'`. Claude Code has no Codex-equivalent Agent tool. Use `run_in_background: true` for parallel dispatch.
 
-If parallel dispatch is genuinely impossible in a given host, fall back to serial invocation but report this in the round summary so the user can switch hosts for future runs.
+- **Parallel dispatch**: send all M reviewers in a *single message* with multiple tool calls (a mix of Agent and Bash, each with `run_in_background: true`). The harness notifies you when each completes; do not poll.
+
+#### In Codex CLI or other agents without Claude Code's Agent tool
+
+- **`claude-exec` reviewers**: shell out to `claude -p --max-turns 20 --model opus '<prompt>'` via the host's bash. Set `--max-turns` high enough to absorb tool-use loops — `8` (the default in some setups) is often too low for a reviewer that needs to read multiple files; `20` is the empirically safe number from this plugin's own development.
+
+- **`codex-exec` reviewers**: same `codex exec --sandbox read-only -C <project-dir> '<prompt>'` invocation.
+
+- **Parallel dispatch**: launch all M as background shell processes (`... &`) and `wait`.
+
+#### Last resort
+
+If parallel dispatch is genuinely impossible in a given host (no Agent tool, no background bash), fall back to serial invocation but **report this in the round summary** so the user can switch hosts for future runs. Serial reviewers undermine the cross-reviewer dedup story (reviewers see the same baseline but at different wall-clock times) — it's a degraded mode, not the design.
+
+The `codex-exec` and `claude-exec` skills in this marketplace document the same recipes from the reviewer-skill side; the canonical dispatch lives here.
 
 ### 3. Synthesize
 
@@ -320,7 +332,7 @@ If you find nothing worth raising, return an empty findings block:
 ### Filling in the template
 
 - The orchestrator constructs the full prompt by concatenating the context block (with placeholders filled) and the task block verbatim.
-- The assembled prompt is passed to the `codex-exec` or `claude-exec` skill (per Loop Mechanics §2). Those skills handle the underlying CLI invocation — review-anvil never calls `claude -p` or `codex exec` directly.
+- The assembled prompt is passed to whatever dispatch mechanism Loop Mechanics §2 specifies for the current host — Agent tool with `subagent_type: "general-purpose"` for claude-exec reviewers in Claude Code; Bash `codex exec` for codex-exec reviewers everywhere; Bash `claude -p` for claude-exec reviewers in non-Claude-Code hosts.
 - Reviewers must return **prose findings only**. The skill rejects (or simply ignores) any embedded patches.
 - The PRIOR ROUNDS lines are constructed directly from each prior round's summary (Loop Mechanics §5) — include all five severity counts in the form `Round N: C critical / H high / M medium / L low / X nit; K fixes applied (<sha1>..<shaN>); D deferred.`
 - **In `commit_mode=none` (review-only)**, no findings are addressed between rounds, so the "Do not repeat issues already addressed in prior rounds" instruction in the task block does not apply — every round reviews the same baseline. For review-only multi-round runs, replace the PRIOR ROUNDS block with: `PRIOR ROUNDS\nNone — review-only mode; this is an independent reviewer pass.` and drop the "addressed in prior rounds" line from the task block. Multi-round review-only is purely for reviewer redundancy.
