@@ -172,6 +172,24 @@ Surface the engine's final report inline. Echo a two-line summary:
 - The PR must be one you have push access to. `git push` will fail with a normal git error if not — the script doesn't pre-check push permissions.
 - Supports github.com and GitHub Enterprise — same handling as `review-anvil-pr`.
 
+## Recovery: dangling "starting" comment
+
+The two-step `post-start` / `post-update` flow has one failure mode the previous one-shot didn't: if the orchestrator crashes (or the agent host loses context, or the user interrupts) **between step 3 and step 6**, the PR is left with a "starting" comment that promises an edit-that-never-comes. The fix commits may or may not have been pushed depending on where the crash happened.
+
+This is rare but recoverable. If you find a dangling starting comment:
+
+1. Find the comment URL on the PR. The body starts with `<!-- review-anvil-marker: <UUID> -->` and `review-anvil-improve-pr started on this PR.` The numeric comment ID is at the end of the URL (`...#issuecomment-<ID>`).
+2. Edit the comment manually with `gh api`:
+   ```bash
+   gh api repos/<owner>/<repo>/issues/comments/<COMMENT_ID> -X PATCH \
+     -F body="review-anvil-improve-pr failed: orchestrator did not complete. No reliable summary available."
+   ```
+   Or use the GitHub web UI's "Edit" menu on the comment.
+
+If the orchestrator is still alive and the engine completed but step 6 was somehow skipped, the report is still on disk at the path printed by step 4 — you can paste it into the edit body verbatim.
+
+If the engine never ran (crash between steps 3 and 4), nothing was pushed; just edit the comment to a "did not complete" note as above.
+
 ## Pairing
 
 Depends on the `review-anvil` engine AND the `review-anvil-pr` preset (whose `scripts/pr-helper.sh` this skill reuses). All three ship in the same plugin and should be installed together (`npx skills add mrshu/agent-skills --skill review-anvil --skill review-anvil-pr --skill review-anvil-improve-pr`, or just `--all`).
