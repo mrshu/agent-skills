@@ -327,55 +327,118 @@ cmd_verify_checkout() {
     printf 'REPORT_PATH=%s\n' "$report_path"
 }
 
-cmd_post_summary() {
-    local host="${1:-}" owner="${2:-}" repo="${3:-}" n="${4:-}" marker="${5:-}" report_path="${6:-}" author="${7:-}"
-    for v in host owner repo n marker report_path author; do
-        [[ -n "${!v}" ]] || die "post-summary: missing <$v>"
+# Helper: build the "@author" cc tail.
+_cc_tail() {
+    local author="$1"
+    if [[ "$author" == "(unknown)" || -z "$author" ]]; then
+        printf ''
+    else
+        printf '. cc @%s' "$author"
+    fi
+}
+
+cmd_post_start() {
+    # Create the initial "starting" PR comment for review-anvil-improve-pr.
+    # The agent should call cmd_post_update later to PATCH-edit this same
+    # comment with the final summary (success) or failure summary.
+    local host="${1:-}" owner="${2:-}" repo="${3:-}" n="${4:-}" marker="${5:-}" author="${6:-}"
+    for v in host owner repo n marker author; do
+        [[ -n "${!v}" ]] || die "post-start: missing <$v>"
     done
-    [[ -f "$report_path" ]] || die "report file not found: $report_path"
 
     export GH_HOST="$host"
 
-    # Prepend marker + cc header to the report. Atomic rewrite.
-    local at_mention
-    if [[ "$author" == "(unknown)" || -z "$author" ]]; then
-        at_mention=''
-    else
-        at_mention="cc @${author}"
-    fi
-    local tmp="${report_path}.tmp"
+    local started_at
+    started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+    local tmp
+    tmp=$(mktemp -t review-anvil-start.XXXXXX)
     {
         printf '<!-- review-anvil-marker: %s -->\n' "$marker"
-        printf 'review-anvil-improve-pr applied fix commits to this PR'
-        [[ -n "$at_mention" ]] && printf '. %s' "$at_mention"
-        printf '.\n\n---\n\n'
-        cat "$report_path"
+        printf 'review-anvil-improve-pr started on this PR%s.\n\n' "$(_cc_tail "$author")"
+        printf "I'll run a multi-agent review loop on this PR's diff against its base branch, applying fix commits to this branch as I go, then push everything back. I'll edit this comment with the synthesized report (or a failure summary) when done.\n\n"
+        printf 'Started: %s\n' "$started_at"
     } > "$tmp"
-    mv "$tmp" "$report_path"
 
-    # Post as a top-level PR comment (NOT a PR review with inline
-    # comments — the fixes were applied as commits, so inline comments
-    # saying "this is wrong" would be misleading; a single summary
-    # comment is the right shape).
-    if ! gh pr comment "$n" -R "$owner/$repo" --body-file "$report_path" >/dev/null 2>&1; then
+    if ! gh pr comment "$n" -R "$owner/$repo" --body-file "$tmp" >/dev/null 2>&1; then
+        rm -f "$tmp"
         die "gh pr comment failed for $owner/$repo#$n on host=$host"
     fi
+    rm -f "$tmp"
 
-    # Recover URL via marker lookup (one retry for read-after-write lag).
-    local url
+    # Look up the comment we just created by marker, capture id + url.
+    local comment_data id url
     for attempt in 1 2; do
-        url=$(gh api "repos/${owner}/${repo}/issues/${n}/comments" --paginate \
-              --jq ".[] | select(.body | contains(\"$marker\")) | .html_url" 2>/dev/null \
-              | head -n1 || true)
-        [[ -n "$url" ]] && break
+        comment_data=$(gh api "repos/${owner}/${repo}/issues/${n}/comments" --paginate \
+                       --jq ".[] | select(.body | contains(\"$marker\")) | [.id, .html_url] | @tsv" 2>/dev/null \
+                       | head -n1 || true)
+        [[ -n "$comment_data" ]] && break
         [[ "$attempt" -eq 1 ]] && sleep 2
     done
+    [[ -n "$comment_data" ]] \
+        || die "posted starting comment but could not recover its ID via marker lookup; the comment exists on the PR but post-update will not be able to edit it"
+    IFS=$'\t' read -r id url <<<"$comment_data"
+
+    printf 'COMMENT_ID=%s\n' "$id"
+    printf 'COMMENT_URL=%s\n' "$url"
+    printf 'STARTED_AT=%s\n' "$started_at"
+}
+
+cmd_post_update() {
+    # Edit (PATCH) an existing review-anvil-improve-pr comment with the
+    # final summary. Replaces the body entirely — the "starting" text
+    # from post-start is gone, only the final summary remains.
+    local host="${1:-}" owner="${2:-}" repo="${3:-}" comment_id="${4:-}" marker="${5:-}" report_path="${6:-}" author="${7:-}" outcome="${8:-}" started_at="${9:-}"
+    for v in host owner repo comment_id marker report_path author outcome; do
+        [[ -n "${!v}" ]] || die "post-update: missing <$v>"
+    done
+    [[ -f "$report_path" ]] || die "report file not found: $report_path"
+    [[ "$outcome" == "success" || "$outcome" == "failure" ]] \
+        || die "post-update: outcome must be 'success' or 'failure', got '$outcome'"
+
+    export GH_HOST="$host"
+    command -v jq >/dev/null 2>&1 \
+        || die "jq required to PATCH-encode the comment body (it ships with gh; ensure it is on PATH)"
+
+    local completed_at
+    completed_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+    local tmp
+    tmp=$(mktemp -t review-anvil-update.XXXXXX)
+    {
+        printf '<!-- review-anvil-marker: %s -->\n' "$marker"
+        if [[ "$outcome" == "success" ]]; then
+            printf 'review-anvil-improve-pr completed on this PR%s.\n\n---\n\n' "$(_cc_tail "$author")"
+        else
+            printf 'review-anvil-improve-pr **failed** on this PR%s.\n\n---\n\n' "$(_cc_tail "$author")"
+        fi
+        cat "$report_path"
+        printf '\n\n---\n\n'
+        [[ -n "$started_at" ]] && printf 'Started: %s; ' "$started_at"
+        printf 'Completed: %s (outcome: %s)\n' "$completed_at" "$outcome"
+    } > "$tmp"
+
+    # PATCH the existing comment. Use jq --rawfile to build the JSON
+    # body so multi-line content + special characters round-trip safely.
+    local patch_payload
+    patch_payload=$(jq -n --rawfile body "$tmp" '{body: $body}')
+    if ! printf '%s' "$patch_payload" | gh api \
+                "repos/${owner}/${repo}/issues/comments/${comment_id}" \
+                -X PATCH --input - >/dev/null 2>&1; then
+        rm -f "$tmp"
+        die "gh api PATCH failed for comment $comment_id on $owner/$repo on host=$host"
+    fi
+    rm -f "$tmp"
+
+    # The URL of the edited comment is the same as the starting one.
+    local url
+    url=$(gh api "repos/${owner}/${repo}/issues/comments/${comment_id}" --jq '.html_url' 2>/dev/null || true)
 
     cleanup_post_artifacts "$report_path"
     if [[ -n "$url" ]]; then
         printf '%s\n' "$url"
     else
-        printf 'posted (URL unavailable)\n'
+        printf 'updated (URL unavailable)\n'
     fi
 }
 
@@ -383,7 +446,8 @@ case "${1:-}" in
     init)             shift; cmd_init "$@" ;;
     post)             shift; cmd_post "$@" ;;
     verify-checkout)  shift; cmd_verify_checkout "$@" ;;
-    post-summary)     shift; cmd_post_summary "$@" ;;
-    "")               die "usage: pr-helper.sh {init [<locator>] | post <host> <owner> <repo> <n> <marker> <report_path> | verify-checkout [<locator>] | post-summary <host> <owner> <repo> <n> <marker> <report_path> <author>}" ;;
+    post-start)       shift; cmd_post_start "$@" ;;
+    post-update)      shift; cmd_post_update "$@" ;;
+    "")               die "usage: pr-helper.sh {init [<locator>] | post <host> <owner> <repo> <n> <marker> <report_path> | verify-checkout [<locator>] | post-start <host> <owner> <repo> <n> <marker> <author> | post-update <host> <owner> <repo> <comment_id> <marker> <report_path> <author> <success|failure> [<started_at>]}" ;;
     *)                die "unknown subcommand: $1" ;;
 esac
