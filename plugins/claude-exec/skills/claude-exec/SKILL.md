@@ -108,28 +108,29 @@ Use this when the Agent tool is not available (e.g., Codex, other non-Claude env
 ### Invocation Rules
 
 1. **Never use `--permission-mode plan`.** It redirects output to an internal plan file instead of stdout, producing empty or 1-line output. Use `--allowedTools` to restrict tools instead.
-2. **Always use `--max-turns`**, sized to the task. The sub-claude needs turns for tool calls (Read, Glob, Grep, Bash) before producing its final text response — too-low limits cut it off mid-investigation. Empirically calibrated values:
-   - **Prompt-only review (no file access)**: `--tools "" --max-turns 1`
-   - **Targeted small review** (one file, no exploration): `--max-turns 3-5`
-   - **Branch / PR diff review** (read the diff, possibly cross-check a few files): `--max-turns 15-20`. The default `--max-turns 8` is often too low — review-anvil reviewers hit this limit in production and lose their output. Use 20 unless you have a specific reason for less.
-   - **Deep codebase exploration** (multi-file synthesis): `--max-turns 20-30`.
-   - When in doubt, lean higher. A turn is a tool call or response — there's no cost from setting a generous ceiling that's never hit.
+2. **Set `--max-turns` as a backstop, never as an effort estimate.** A sub-claude that hits the turn cap mid-investigation returns "Reached max turns" with no findings — its entire run is wasted, which is strictly worse than letting it take longer. Task-sized caps keep biting in practice: the default 8 in some setups is far too low, and even 20 was hit in production by review-anvil reviewers reading callers and tests around a diff. So:
+   - **Prompt-only review (no file access)**: `--tools "" --max-turns 1` — the one case where a tight cap is correct.
+   - **Anything that explores files** (diff review, codebase exploration): `--max-turns 100`. This is a runaway-loop backstop that should never bind on legitimate work, set explicitly only because some host setups default to 8. Bound the run's *duration* with a wall-clock watchdog (Rule 8), not with turns.
+   - There's no cost to a generous ceiling that's never hit; there's total cost to a tight one that is.
 3. **When using `--allowedTools`, pipe the prompt via stdin** — `--allowedTools` is a variadic flag that consumes all subsequent positional arguments, including the prompt. Use `echo 'prompt' | claude -p ...`.
 4. **When NOT using `--allowedTools`, pass the prompt as a positional argument** — `claude -p --max-turns 20 'prompt'` works fine.
 5. **Always add `2>&1`** at the end of the command to capture stderr alongside stdout.
 6. **Always use `--no-session-persistence`** to avoid littering the user's session history with sub-agent sessions.
 7. **Write long prompts to a temp file** and pass via stdin redirect (`< /tmp/claude-prompt.txt`). Do not use inline HEREDOCs like `$(cat <<'EOF'...)` — they break in some shell environments.
+8. **Never background a bare `claude -p ... > out.md 2>&1` and wait on the file.** In `-p` text mode nothing is printed until the final answer, so the output file sits at 0 bytes whether the run is working, hung, or dead — a production review-anvil run waited many minutes on exactly that. Run it under a watchdog with a hard timeout, check the exit status afterwards, and **treat an empty output file as an explicit failure**, not something to keep waiting on. The review-anvil engine ships the canonical wrapper (`review-anvil/scripts/run-reviewer.sh`: hard timeout → TERM/KILL, `STATUS=ok|timeout|empty|failed` classification, stderr kept in `<out>.err`); reuse it, or replicate its contract with `timeout <secs> claude -p ...` plus an exit-status and non-empty-output check.
 
 ### Commands
 
 ```bash
-# Branch / PR diff review with --max-turns 20 (right-sized for a real review)
+# Branch / PR diff review — generous turn backstop, duration bounded by
+# the watchdog (Rule 8), not by turns
 echo 'Review the changes on this branch compared to main. Run `git diff main...HEAD` to see the full diff. Be a strict reviewer: check for correctness, edge cases, security issues, and code clarity. Reference specific files and lines.' \
-  | claude -p --max-turns 20 --no-session-persistence \
+  | claude -p --max-turns 100 --no-session-persistence \
     --allowedTools "Bash(git:*)" "Read" "Glob" "Grep" 2>&1
 
-# Quick focused review (small surface, no codebase exploration)
-claude -p --max-turns 5 --no-session-persistence \
+# Quick focused review — same backstop; a tight cap saves nothing and
+# can throw the whole run away
+claude -p --max-turns 100 --no-session-persistence \
   'Review the changes on this branch vs main. Focus on error handling and security. Run `git diff main...HEAD`.' \
   2>&1
 
@@ -147,11 +148,13 @@ claude -p --permission-mode plan 'Review...'
 # BAD: --allowedTools eats the positional prompt — prompt is lost
 claude -p --allowedTools "Read Glob Grep" 'Review...'
 
-# BAD: No --max-turns — sub-claude may exhaust turns on tool calls
+# BAD: No --max-turns — some host setups default the cap to 8, which
+# cuts a real review off mid-investigation
 claude -p 'Review...'
 
-# BAD: --max-turns too low for a real review — sub-claude is cut off
-# mid-investigation, returns "Reached max turns (3)" with no findings
+# BAD: --max-turns sized to the task — any cap the run actually hits
+# throws away the entire investigation ("Reached max turns", no findings).
+# Caps are runaway backstops (100), not effort estimates (3, 20)
 claude -p --max-turns 3 'Review this PR's full diff and synthesize findings'
 
 # BAD: running claude -p from inside Claude Code itself — spawns a new
@@ -167,6 +170,12 @@ EOF
 
 # BAD: Missing 2>&1 — stderr errors are invisible
 claude -p --max-turns 3 'Review...'
+
+# BAD: backgrounded with output redirected to a file and no timeout —
+# text mode prints nothing until the final answer, so a hung run and a
+# working run both look like a 0-byte file; there is no signal to act on
+claude -p --max-turns 20 ... < prompt.txt > out.md 2>&1 &
+# (wrap in a watchdog instead — see Invocation Rule 8)
 ```
 
 ### CLI Options
@@ -175,7 +184,7 @@ claude -p --max-turns 3 'Review...'
 |---|---|
 | `-p, --print` | Non-interactive mode — print response and exit (required for delegation) |
 | `--model <model>` | Override model (e.g., `--model sonnet`, `--model opus`) |
-| `--max-turns <n>` | Limit tool-use turns. Use 1 for prompt-only, 3 for reviews, 5 for deep digs |
+| `--max-turns <n>` | Turn-cap backstop. Use 1 for prompt-only, 100 for anything that explores files (see Invocation Rule 2) |
 | `--tools ""` | Disable all tools — forces a single-turn text response |
 | `--allowedTools "..."` | Restrict to specific tools. **Variadic — must pipe prompt via stdin when used** |
 | `--no-session-persistence` | Don't save the sub-agent session to disk |
