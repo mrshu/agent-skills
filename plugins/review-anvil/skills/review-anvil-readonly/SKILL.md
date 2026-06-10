@@ -17,7 +17,7 @@ commit_mode: none, <pass-through any args the user specified>, rounds: 1
 
 **Assembly order matters.** The engine parses left-to-right with first-occurrence-wins precedence. Pinned values (`commit_mode: none`) go *before* user args so the pin is authoritative. Defaults the user can override (`rounds: 1`) go *after* user args so any user-supplied `rounds: N` wins.
 
-**Pin-rejection (defense in depth).** Pins for this preset: `commit_mode`. Before assembling, apply the canonical pin-rejection algorithm defined in the engine SKILL.md → "Preset pin-rejection" (segment-parse `$ARGUMENTS`, lowercase the key of each segment, abort if any key matches `commit_mode`). The preset name in the abort message is `review-anvil-readonly`.
+**Pin-rejection (defense in depth).** Pins for this preset: `commit_mode`. Before assembling, apply the canonical pin-rejection algorithm defined in the engine SKILL.md → "Parsing" (pin-rejection) (segment-parse `$ARGUMENTS`, lowercase the key of each segment, abort if any key matches `commit_mode`). The preset name in the abort message is `review-anvil-readonly`.
 
 Pass-through args the user may specify (each documented in the engine's SKILL.md):
 

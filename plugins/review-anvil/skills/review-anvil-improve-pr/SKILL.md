@@ -30,7 +30,7 @@ The helper script aborts cleanly if the current checkout doesn't match the named
 
 ### 0. Reject overrides of pinned params
 
-Pins for this preset: `commit_mode`, `target`, `report_path`. Apply the canonical pin-rejection algorithm defined in the engine SKILL.md → "Preset pin-rejection" (segment-parse `$ARGUMENTS`, lowercase the key of each segment, abort if any key matches one of the pinned params). The preset name in the abort message is `review-anvil-improve-pr`.
+Pins for this preset: `commit_mode`, `target`, `report_path`. Apply the canonical pin-rejection algorithm defined in the engine SKILL.md → "Parsing" (pin-rejection) (segment-parse `$ARGUMENTS`, lowercase the key of each segment, abort if any key matches one of the pinned params). The preset name in the abort message is `review-anvil-improve-pr`.
 
 The pins are non-overridable for safety: `commit_mode=per_fix` is the whole point of this preset (read-only is what `review-anvil-pr` is for), `target=<base>...HEAD` is mechanically tied to the verified PR, and `report_path` is the file the post-summary step needs to read after the engine finishes.
 
