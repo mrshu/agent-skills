@@ -38,7 +38,7 @@ die() { printf 'pr-helper: %s\n' "$*" >&2; exit 1; }
 # rmdir fails quietly if other runs have artifacts in the same dir.
 cleanup_post_artifacts() {
     local report_path="$1"
-    rm -f "$report_path" "${report_path}.inline.json"
+    rm -f "$report_path" "${report_path}.inline.json" "${report_path}.approval.json" "${report_path}.followups.json"
     rmdir "$(dirname "$report_path")" 2>/dev/null || true
 }
 
@@ -405,6 +405,17 @@ cmd_post() {
     # fall back to a top-level comment via gh pr comment + marker URL
     # recovery.
     local inline_json="${report_path}.inline.json"
+    local approval_json="${report_path}.approval.json"
+    local review_event="COMMENT"
+    if [[ -f "$approval_json" ]]; then
+        command -v jq >/dev/null 2>&1 \
+            || die "jq required to read approval decision (ensure it is on PATH)"
+        review_event=$(jq -r '.event // "COMMENT"' "$approval_json" 2>/dev/null || printf 'COMMENT')
+        case "$review_event" in
+            APPROVE|COMMENT) ;;
+            *) die "invalid review event in $approval_json: $review_event (expected APPROVE or COMMENT)" ;;
+        esac
+    fi
     local has_inline=0
     if [[ -f "$inline_json" ]]; then
         # Treat empty array / whitespace-only / missing-file as "no inline".
@@ -431,8 +442,8 @@ cmd_post() {
         command -v jq >/dev/null 2>&1 \
             || die "jq required to submit inline-comment reviews (it ships with gh; ensure it is on PATH)"
         local review_payload
-        review_payload=$(jq -n --rawfile body "$report_path" --slurpfile comments "$inline_json" \
-            '{event: "COMMENT", body: $body, comments: $comments[0]}')
+        review_payload=$(jq -n --rawfile body "$report_path" --arg event "$review_event" --slurpfile comments "$inline_json" \
+            '{event: $event, body: $body, comments: $comments[0]}')
 
         # Submit the review. The response JSON contains html_url
         # directly — no marker lookup needed on this path.
@@ -444,8 +455,8 @@ cmd_post() {
             # inline-comment submission can fail when reviewer-supplied
             # file/line refs aren't actually in the PR's diff. The
             # user still wants their report posted somewhere.
-            printf 'warning: PR-review submission failed (%s); falling back to top-level comment\n' \
-                "$(printf '%s' "$response" | head -n1)" >&2
+            printf 'warning: PR-review submission failed (%s); falling back to %s without inline comments\n' \
+                "$(printf '%s' "$response" | head -n1)" "$review_event" >&2
         else
             url=$(printf '%s' "$response" | jq -r '.html_url // empty' 2>/dev/null || true)
             cleanup_post_artifacts "$report_path"
@@ -456,6 +467,26 @@ cmd_post() {
             fi
             return 0
         fi
+    fi
+
+    if [[ "$review_event" == "APPROVE" ]]; then
+        command -v jq >/dev/null 2>&1 \
+            || die "jq required to submit approval reviews (ensure it is on PATH)"
+        local approval_payload response url
+        approval_payload=$(jq -n --rawfile body "$report_path" '{event: "APPROVE", body: $body}')
+        if ! response=$(printf '%s' "$approval_payload" | gh api \
+                          "repos/${owner}/${repo}/pulls/${n}/reviews" \
+                          -X POST --input - 2>&1); then
+            die "gh approval review failed for $owner/$repo#$n on host=$host: $(printf '%s' "$response" | head -n1)"
+        fi
+        url=$(printf '%s' "$response" | jq -r '.html_url // empty' 2>/dev/null || true)
+        cleanup_post_artifacts "$report_path"
+        if [[ -n "$url" ]]; then
+            printf '%s\n' "$url"
+        else
+            printf 'approved (URL unavailable)\n'
+        fi
+        return 0
     fi
 
     # Fallback path: top-level comment + marker URL recovery.

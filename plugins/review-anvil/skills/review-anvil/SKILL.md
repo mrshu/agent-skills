@@ -249,8 +249,18 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
    ```
 
    Single line → `{"line": N, "side": "RIGHT"}`; range `<N>-<M>` → `{"start_line": N, "line": M, "side": "RIGHT", "start_side": "RIGHT"}`. Findings without anchors stay in the markdown body only; no anchored findings → `[]`. Each `body` is a self-contained mini-report (severity + area + what + why + suggested_fix).
-3. Print the report path as the last output line; the `.inline.json` is implied by convention.
-4. For out-of-scope follow-ups, write optional sibling `<report_path>.followups.json` using the approval schema above. Automation that files issues may only act on `approval: "auto_approved"` after duplicate search.
+3. Write a sibling `<report_path>.approval.json` so the PR-posting helper can choose the GitHub review event:
+
+   ```json
+   {
+     "event": "APPROVE | COMMENT",
+     "reason": "No blocking in-scope findings; only low/nit suggestions remain."
+   }
+   ```
+
+   Use `APPROVE` for review-only PR runs when all of these hold: at least one reviewer succeeded, dismissed/resolved-thread lookup succeeded, there are no `critical`/`high`/`medium` actionable in-scope findings, no in-scope deferred finding needs author action, and remaining comments are only `low`/`nit` suggestions or out-of-scope follow-ups. Use `COMMENT` otherwise. Out-of-scope follow-ups do not block approval.
+4. Print the report path as the last output line; the `.inline.json` and `.approval.json` files are implied by convention.
+5. For out-of-scope follow-ups, write optional sibling `<report_path>.followups.json` using the approval schema above. Automation that files issues may only act on `approval: "auto_approved"` after duplicate search.
 
 ### Failure handling
 
@@ -432,6 +442,7 @@ After the last round, emit a fresh top-level report (a new document, not a repla
 **Auto-fix policy:** min severity = <medium>, allow_new_deps = <false>
 **Verification:** <verify_cmd used, or "none detected" / "skipped">   # per_fix only
 **Report path:** <only when report_path was set>
+**Review decision:** APPROVE | COMMENT — <one-sentence reason>
 
 ## Scope
 <For PR targets: one sentence summarizing what this PR is trying to change.>

@@ -90,10 +90,11 @@ The engine runs the review loop, writes the final report to `<REPORT_PATH>`, and
 bash <helper-path> post "$HOST" "$OWNER" "$REPO" "$N" "$MARKER" "$REPORT_PATH"
 ```
 
-The script chooses between two posting strategies based on whether the engine emitted an inline-comments artifact:
+The script chooses the GitHub review event from `<REPORT_PATH>.approval.json` (`APPROVE` or `COMMENT`; default `COMMENT` if absent) and then posts the report:
 
-- **Hybrid review (preferred when findings have file/line anchors).** If `<REPORT_PATH>.inline.json` exists and is non-empty, the script assembles a PR review payload (`{event: COMMENT, body: <report>, comments: [...]}`) and submits it via `gh api /repos/{O}/{R}/pulls/{N}/reviews`. This produces ONE review event in the PR timeline with a top-level summary body AND inline review comments anchored to specific files+lines — the native GitHub review UX. The API response's `html_url` is used directly (no marker lookup needed).
-- **Top-level fallback.** If `<REPORT_PATH>.inline.json` is absent or empty (no findings had `file`+`line`), or if the PR-review API call fails (most common cause: reviewer-supplied line numbers aren't in the PR's diff), the script falls back to `gh pr comment --body-file <REPORT_PATH>` and recovers the URL via paginated marker lookup with one retry for read-after-write lag.
+- **Approval / hybrid review.** If the decision is `APPROVE`, the helper submits a GitHub approval review. If `<REPORT_PATH>.inline.json` is non-empty, its comments are included as non-blocking low/nit suggestions; otherwise the approval has only the top-level body. Use this for Option 3: no `critical`/`high`/`medium` actionable in-scope findings, with only low/nit suggestions or out-of-scope follow-ups remaining.
+- **Comment review.** If the decision is `COMMENT` and `<REPORT_PATH>.inline.json` exists and is non-empty, the script assembles a PR review payload (`{event: COMMENT, body: <report>, comments: [...]}`) and submits it via `gh api /repos/{O}/{R}/pulls/{N}/reviews`. This produces ONE review event in the PR timeline with a top-level summary body AND inline review comments anchored to specific files+lines — the native GitHub review UX. The API response's `html_url` is used directly (no marker lookup needed).
+- **Top-level fallback.** If the decision is `COMMENT` and `<REPORT_PATH>.inline.json` is absent or empty (no findings had `file`+`line`), or if the PR-review API call fails (most common cause: reviewer-supplied line numbers aren't in the PR's diff), the script falls back to `gh pr comment --body-file <REPORT_PATH>` and recovers the URL via paginated marker lookup with one retry for read-after-write lag.
 
 In both paths, the marker UUID is prepended to the report body atomically before posting, so URL recovery via marker remains possible even on the fallback path.
 
@@ -101,7 +102,7 @@ In both paths, the marker UUID is prepended to the report body atomically before
 
 **Scope discipline.** The posted review should separate actionable in-scope findings from obvious pre-existing issues. Findings unrelated to the PR's stated purpose should appear, at most, under "Out-of-scope follow-ups" as separate-PR work and should not be emitted as inline actionable comments. Follow-ups are auto-approved only when they are confirmed, high-confidence `critical`/`high` (or clearly reproducible `medium`), not product/style decisions, not already tracked/dismissed, and separable from the current PR; ambiguous ones remain `needs_triage`.
 
-**Cleanup on success.** After a successful post (either path), the helper removes `<REPORT_PATH>` and `<REPORT_PATH>.inline.json`, and attempts to `rmdir` the parent directory (succeeds only if empty — concurrent runs are unaffected). On any abort (`die`), the artifacts are left in place so the user can inspect or post manually.
+**Cleanup on success.** After a successful post (comment or approval), the helper removes `<REPORT_PATH>`, `<REPORT_PATH>.inline.json`, `<REPORT_PATH>.approval.json`, and `<REPORT_PATH>.followups.json`, and attempts to `rmdir` the parent directory (succeeds only if empty — concurrent runs are unaffected). On any abort (`die`), the artifacts are left in place so the user can inspect or post manually.
 
 ### 5. Report back
 
