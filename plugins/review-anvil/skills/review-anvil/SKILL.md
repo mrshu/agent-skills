@@ -254,11 +254,11 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
    ```json
    {
      "event": "APPROVE | COMMENT",
-     "reason": "No blocking in-scope findings; only low/nit suggestions remain."
+     "reason": "No high/critical in-scope findings; medium-and-lower items are left to the author."
    }
    ```
 
-   Use `APPROVE` for review-only PR runs when all of these hold: at least one reviewer succeeded, dismissed/resolved-thread lookup succeeded, there are no `critical`/`high`/`medium` actionable in-scope findings, no in-scope deferred finding needs author action, and remaining comments are only `low`/`nit` suggestions or out-of-scope follow-ups. Use `COMMENT` otherwise. Out-of-scope follow-ups do not block approval.
+   Use `APPROVE` for review-only PR runs when all of these hold: at least one reviewer succeeded, dismissed/resolved-thread lookup succeeded, there are no `critical`/`high` actionable in-scope findings, no `critical`/`high` in-scope deferred finding needs author action, and remaining items are only `medium`/`low`/`nit` findings, suggestions, deferred notes, or out-of-scope follow-ups. Medium-and-lower in-scope findings should still be posted clearly, but the review event is approval: leave those fixes to the author. Use `COMMENT` otherwise. Out-of-scope follow-ups do not block approval.
 4. Print the report path as the last output line; the `.inline.json` and `.approval.json` files are implied by convention.
 5. For out-of-scope follow-ups, write optional sibling `<report_path>.followups.json` using the approval schema above. Automation that files issues may only act on `approval: "auto_approved"` after duplicate search.
 
