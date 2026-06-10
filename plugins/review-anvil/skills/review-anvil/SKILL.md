@@ -32,7 +32,7 @@ Parse the user's free-form args string into:
 | `min_fix_severity` | `medium` | "auto-fix high and above", "fix only critical" — minimum severity for auto-fix; lower findings are listed, not applied |
 | `commit_mode` | `per_fix` | `per_fix` (one commit per fix-group) or `none` ("review only", "don't commit", "no fixes") |
 | `verify_cmd` | auto-detect | "verify with `npm test`", `verify_cmd: none` to skip — build/test command run after each round's fixes (see "Build/test gate"; per_fix only) |
-| `reviewer_timeout` | `900` | "timeout 10 minutes" — hard per-reviewer wall-clock cap in seconds for Bash-dispatched reviewers (see `run-reviewer.sh`) |
+| `reviewer_timeout` | `600` | "timeout 10 minutes" — hard per-reviewer wall-clock cap in seconds for Bash-dispatched reviewers (see `run-reviewer.sh`). Default is ~3× the slowest legitimate reviewer observed in real runs (98–213s); doubled automatically for >5000-line diffs |
 | `report_path` | unset | File path; when set, the engine writes the final report there (creating parent dirs) and prints exactly that path as its last output line so downstream consumers can pick it up |
 
 ### Parsing
@@ -129,7 +129,7 @@ Every shell-dispatched reviewer (codex-exec everywhere; claude-exec outside Clau
 run-reviewer.sh <out_file> <timeout_seconds> -- <command> [args...]
 ```
 
-- Hard wall-clock timeout (`reviewer_timeout`, default 900s): TERM at the deadline, KILL 30s later.
+- Hard wall-clock timeout (`reviewer_timeout`, default 600s): TERM at the deadline, KILL 30s later.
 - Captures exit status; stderr goes to `<out_file>.err` (kept for diagnosis).
 - Prints one classification: `STATUS=ok` | `timeout` | `empty` (exit 0, nothing written) | `failed` (+ `EXIT_CODE=<n>`).
 
@@ -415,7 +415,7 @@ Early exit already stops the loop when a round comes back clean, so the only tun
 |---|---|
 | Missing reviewer backend | Validate only the backends the resolved mix actually names, before round 1. Abort with: "review-anvil requires the `<missing-skill>` skill from the mrshu-skills marketplace. Install via `/plugin install <missing-skill>@mrshu-skills` (Claude Code) or `npx skills add mrshu/agent-skills --skill <missing-skill>` (cross-agent)." |
 | No diff in auto-detected target | Abort: "No target detected — nothing to review." Don't invent work. |
-| Diff > ~5000 lines | Warn in the round status and continue; tell reviewers they may focus on the most impactful slice. |
+| Diff > ~5000 lines | Warn in the round status and continue; tell reviewers they may focus on the most impactful slice; double `reviewer_timeout` (unless the user set it explicitly). |
 | `agents > 8` | Reject before round 1 — more dedup work than signal. |
 | `rounds = 0` | Reject — almost certainly a typo. |
 | Unparseable findings block | Use the prose as free-form findings; no retry; note `<agent>: unstructured findings (parse failed)`. |

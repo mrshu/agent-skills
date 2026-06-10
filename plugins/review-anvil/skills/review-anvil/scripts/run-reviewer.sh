@@ -14,7 +14,7 @@
 #   run-reviewer.sh <out_file> <timeout_seconds> -- <command> [args...]
 #
 # stdin is inherited by <command> — pipe/redirect the reviewer prompt in:
-#   run-reviewer.sh out.md 900 -- claude -p --max-turns 30 ... < prompt.txt
+#   run-reviewer.sh out.md 600 -- claude -p --max-turns 100 ... < prompt.txt
 #
 # <command>'s stdout goes to <out_file>, stderr to <out_file>.err
 # (kept on every outcome so failures are diagnosable).
