@@ -12,7 +12,7 @@ The skill orchestrates six steps:
 1. `scripts/pr-helper.sh verify-checkout [<locator>]` — locator parsing or auto-detect, then verify the local checkout matches the PR's head branch and is in a clean state. Captures the PR's base branch, author, marker UUID, and report path.
 2. `scripts/pr-helper.sh post-start` — post a "starting" top-level PR comment cc'ing the original author, explaining what's about to happen and that the comment will be edited with the final summary. Captures the comment's ID (for the later edit) and start timestamp. The author gets a GitHub notification.
 3. The [`review-anvil`](../review-anvil/SKILL.md) engine in `commit_mode=per_fix` on a branch-vs-base diff (NOT a PR-locator target — the engine's v0.4.1 incompatibility rule forbids that combination; this preset deliberately routes around it by targeting the local branch directly). The engine writes the final synthesized report to `report_path`.
-4. `git push` — once, after all rounds complete and only if the engine reported no failures, to publish the fix commits to the PR.
+4. `git push` — once, after all rounds complete (or converge early) and only if the engine reported no failures and the build/test gate ended green, to publish the fix commits to the PR.
 5. `scripts/pr-helper.sh post-update` — PATCH-edit the starting comment to replace its body with the final report (outcome=success) or a failure summary (outcome=failure). GitHub does NOT notify on edits, so the author isn't pinged again — the original `cc @author` notification at step 2 is the only ping.
 6. Surface the final report inline + the comment URL to the user.
 
@@ -118,11 +118,11 @@ Note: do **not** pin a PR locator as `target` — the engine's "PR-target / per_
 
 The user may override `rounds:` (default is the engine's `rounds: 3` for productive loops). They should not override `commit_mode`, `target`, or `report_path` — these are pinned for safety; the step-0 segment-rejection above blocks override attempts.
 
-The engine runs the multi-round loop, committing fix-groups along the way and writing the final synthesized report to `<REPORT_PATH>` when it's done. If any round fails (reviewer-all-fail, git-commit error), the engine stops the loop and surfaces the failure — **skip the push (step 5) and call `post-update` with `outcome=failure`** (step 6) so the starting comment gets replaced with a failure summary rather than dangling.
+The engine runs the multi-round loop, committing fix-groups along the way and writing the final synthesized report to `<REPORT_PATH>` when it's done. The engine's build/test gate (`verify_cmd`, auto-detected unless the user passes one) runs after each round's fixes, so the report's Verification lines are the evidence the PR author needs to trust the pushed commits — if the engine recorded `Verification: none detected`, that caveat travels to the PR in the posted report. If any round fails (reviewer-all-fail, git-commit error, build/test gate newly red after the revert path), the engine stops the loop and surfaces the failure — **skip the push (step 5) and call `post-update` with `outcome=failure`** (step 6) so the starting comment gets replaced with a failure summary rather than dangling.
 
 ### 5. Push
 
-Only after the engine reports a successful run (all requested rounds completed, no `git commit failed` or `all reviewers failed` errors in the round summaries):
+Only after the engine reports a successful run: all requested rounds completed (or the loop converged early — that counts as success), no `git commit failed` or `all reviewers failed` errors in the round summaries, and **every round's build/test gate ended green** (passed, reverted-to-green, `none detected`, or pre-existing baseline red with no new failures — never newly red):
 
 ```bash
 git push origin "$HEAD_BRANCH"

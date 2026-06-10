@@ -112,6 +112,7 @@ Surface the URL (or `posted (URL unavailable)`) to the user. If the helper scrip
 ## Constraints
 
 - Requires `gh` on `PATH` and `uuidgen`. The script aborts with a clear error if either is missing.
+- What lands on the PR has passed the engine's verification step: `medium`+ findings raised by a single reviewer are confirmed against the actual code before posting, and findings that fail verification appear under "Deferred items" with reason `failed verification` rather than as actionable review comments. False positives posted to a colleague's PR burn trust — the engine treats precision as the product.
 - Read-only by design — the PR's branch may not be checked out locally, and pushing fix commits to a PR you don't own is rarely the intent. If you want to fix-and-commit on a PR you have checked out, activate `review-anvil` directly with `target: branch` (your checked-out PR branch) and `commit_mode=per_fix` — the local working tree becomes the source of truth and the diff against the merge base is unambiguous.
 - Supports github.com and GitHub Enterprise — the script extracts the host from the URL and sets `GH_HOST` internally for all `gh` invocations.
 - Bare-integer PR locators are rejected — pass a URL or `<owner>/<repo>#<N>` slug to be unambiguous about repo identity.

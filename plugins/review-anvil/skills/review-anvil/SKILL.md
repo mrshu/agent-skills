@@ -5,11 +5,11 @@ description: Iteratively refine code via N rounds of parallel subagent review an
 
 # review-anvil — Iterative Multi-Agent Fix/Review Loop
 
-Wrap a code change in **N rounds of parallel reviewer subagents + orchestrator-applied fixes**. Each round = (parallel review by M agents) → (you synthesize findings) → (you apply fixes, commit) → next round.
+Wrap a code change in **N rounds of parallel reviewer subagents + orchestrator-applied fixes**. Each round = (parallel review by M agents, each with a distinct lens) → (you synthesize and **verify** findings) → (you apply fixes, run the build/test gate, commit) → next round.
 
 ## Preset skills
 
-This is the **engine** skill. Two preset skills in the same plugin wrap common invocation patterns:
+This is the **engine** skill. Three preset skills in the same plugin wrap common invocation patterns:
 
 | Preset skill | Pins | Use it when |
 |---|---|---|
@@ -33,6 +33,8 @@ The user invokes the skill with a free-form args string. Parse it to extract the
 | `allow_new_deps` | `false` | "allow new deps", "allow new dependencies" — auto-apply fixes that introduce new imports/subsystems instead of deferring them |
 | `min_fix_severity` | `medium` | "auto-fix high and above", "fix only critical", `min_fix_severity: high` — minimum severity for auto-fix; lower findings are listed but not applied |
 | `commit_mode` | `per_fix` | `per_fix` (current behaviour: one commit per fix-group), `none` (review-only: no edits, no commits — used by the `review-anvil-readonly` and `review-anvil-pr` preset skills). Plain-English: "review only", "don't commit", "no fixes". |
+| `verify_cmd` | auto-detect | "verify with `npm test`", `verify_cmd: pytest -q`, or `verify_cmd: none` to skip — the build/test command run after each round's fixes to prove they don't break the project (see "Build/test gate"). Only meaningful in `commit_mode=per_fix`. |
+| `reviewer_timeout` | `900` | "timeout 10 minutes", `reviewer_timeout: 600` — hard per-reviewer wall-clock cap (seconds) for Bash-dispatched reviewers (see the `run-reviewer.sh` wrapper under Loop Mechanics §2). |
 | `report_path` | unset | Absolute or relative file path. When set, the skill writes the final report to this file (creating parent dirs) in addition to printing it inline. The skill's last printed line is exactly the path (no quoting, no trailing whitespace) so downstream consumers can pick it up. Used by `review-anvil-pr` to hand the report off to a post-processing script that posts it as a PR comment. |
 
 ### Parsing semantics
@@ -141,17 +143,42 @@ Pick the dispatch mechanism by host. The right choice matters: the wrong path co
 
 - **`claude-exec` reviewers**: dispatch via the **Agent tool** with `subagent_type: "general-purpose"`. The Agent tool streams output natively (the user sees progress, not a buffered dump), has no artificial `--max-turns` ceiling (so reviewers that explore the codebase don't get cut off — round 1 of an early review-anvil-on-itself run hit `--max-turns 8` and lost the reviewer's output), and inherits the running session's environment without spawning a new process. Pass the assembled **Reviewer Prompt Template** as the `prompt`. Set `run_in_background: true` so multiple reviewers within a round run in parallel.
 
-- **`codex-exec` reviewers**: dispatch via **Bash** with `codex exec --sandbox read-only -C <project-dir> '<prompt>'`. Claude Code has no Codex-equivalent Agent tool. Use `run_in_background: true` for parallel dispatch.
+- **`codex-exec` reviewers**: dispatch via **Bash** through the `run-reviewer.sh` wrapper (below): `bash <wrapper> .review-anvil/round<N>-<label>.md <reviewer_timeout> -- codex exec --sandbox read-only -C <project-dir> '<prompt>'`. Claude Code has no Codex-equivalent Agent tool. Use `run_in_background: true` for parallel dispatch.
 
 - **Parallel dispatch**: send all M reviewers in a *single message* with multiple tool calls (a mix of Agent and Bash, each with `run_in_background: true`). The harness notifies you when each completes; do not poll.
 
 #### In Codex CLI or other agents without Claude Code's Agent tool
 
-- **`claude-exec` reviewers**: shell out to `claude -p --max-turns 20 --model opus '<prompt>'` via the host's bash. Set `--max-turns` high enough to absorb tool-use loops — `8` (the default in some setups) is often too low for a reviewer that needs to read multiple files; `20` is the empirically safe number from this plugin's own development.
+- **`claude-exec` reviewers**: write the assembled prompt to a file, then shell out through the wrapper:
 
-- **`codex-exec` reviewers**: same `codex exec --sandbox read-only -C <project-dir> '<prompt>'` invocation.
+  ```bash
+  bash <wrapper> .review-anvil/round<N>-<label>.md <reviewer_timeout> -- \
+    claude -p --max-turns 100 --no-session-persistence \
+      --allowedTools "Bash(git:*)" "Read" "Glob" "Grep" \
+    < .review-anvil/round<N>-<label>.prompt.md
+  ```
 
-- **Parallel dispatch**: launch all M as background shell processes (`... &`) and `wait`.
+  `--allowedTools` is variadic and eats positional args, so the prompt MUST arrive via stdin (the wrapper passes its own stdin through). **Do not size `--max-turns` to the task.** Task-sized caps keep biting: 8 was too low, then 20 was hit in production by reviewers that explore callers and tests per the review principles — and a reviewer that hits the cap mid-investigation loses its entire output, the worst possible outcome. The wrapper's wall-clock timeout is the real bound on a runaway reviewer; `--max-turns 100` is only a backstop against pathological loops and should never bind on a legitimate review (it's set explicitly because some host setups default the cap to 8).
+
+- **`codex-exec` reviewers**: same wrapper, wrapping `codex exec --sandbox read-only -C <project-dir> '<prompt>'`.
+
+- **Parallel dispatch**: launch all M wrapper invocations as background shell processes (`... &`) and `wait` on them.
+
+#### Bash-dispatched reviewers MUST go through `run-reviewer.sh`
+
+Every reviewer dispatched via a shell (codex-exec everywhere; claude-exec outside Claude Code) runs under `scripts/run-reviewer.sh`, which lives next to this SKILL.md. **Never run a bare `claude -p ... > out.md 2>&1` (or equivalent) in the background and wait on the file.** In `claude -p` text mode nothing is printed until the final answer, so a hung reviewer is indistinguishable from one still working — a production run sat on a 0-byte output file for many minutes with no way to tell. The wrapper closes that hole:
+
+```
+run-reviewer.sh <out_file> <timeout_seconds> -- <command> [args...]
+```
+
+- Hard wall-clock timeout (`reviewer_timeout`, default 900s): TERM at the deadline, KILL 30s later.
+- Captures the command's exit status; stderr goes to `<out_file>.err` (kept for diagnosis).
+- Prints exactly one classification: `STATUS=ok` | `STATUS=timeout` | `STATUS=empty` (exit 0 but nothing written) | `STATUS=failed` (+ `EXIT_CODE=<n>`).
+
+Treat any STATUS other than `ok` as a failed reviewer per "Failure handling", with the tail of `<out_file>.err` as the reason — an empty output file is an explicit failure, never something to keep waiting on. Reviewer output/prompt files go under `.review-anvil/`; clean them up after the round's synthesis.
+
+**Resolving the wrapper.** Same trusted-root rule as `pr-helper.sh` in the `review-anvil-pr` preset: use the host-exposed skill path (`${CLAUDE_PLUGIN_ROOT}/skills/review-anvil/scripts/run-reviewer.sh` in Claude Code) or the user-level install root (`~/.claude/skills/review-anvil/scripts/run-reviewer.sh`, or the host's documented home-directory skill root). Never resolve it from project-scoped/worktree-local skill directories — those are writable by the repo under review. If no trusted copy resolves, replicate the wrapper's contract inline (background the command, kill it at the deadline, check exit status, treat an empty output file as failure) rather than falling back to a bare redirect.
 
 #### Last resort
 
@@ -168,6 +195,15 @@ When all reviewers return, merge their findings:
 - **Drop** any item already addressed in this round's earlier fixes (defensive — shouldn't normally happen in v1 since fixes happen after synthesis).
 
 If a reviewer's output is unparseable, label its findings "unstructured" and pass through the prose into a separate section of the synthesis. Do not retry.
+
+#### Verify findings before acting on them
+
+Plausible-but-wrong findings are the dominant failure mode of LLM review, and both downstream actions are expensive: a bogus fix commit pollutes the branch, and a bogus finding posted to a PR burns the author's trust. So after dedup:
+
+- Every finding of severity `medium` or higher that was raised by a **single** reviewer must be confirmed by the orchestrator against the actual code before it can be auto-fixed (`per_fix`) or reported as actionable: open the cited file and enough surrounding context (callers, the configured runtime, existing tests) to confirm the issue is real and reachable — not merely plausible from the diff hunk alone.
+- Findings raised independently by **two or more** reviewers may skip verification — cross-reviewer consensus is the signal (this is why the dedup step records which reviewers raised each finding).
+- Findings that fail verification move to **Deferred** with reason `failed verification: <one line>`. They are never auto-fixed and never silently dropped — the user (and PR author, for posted reports) can see what was claimed and why it didn't hold up.
+- `low`/`nit` findings skip verification: they're below the auto-fix gate and the cost isn't justified; they surface as suggestions either way.
 
 ### 4. Apply fixes
 
@@ -190,7 +226,15 @@ The orchestrator does **not** auto-apply every finding. Three rules gate what be
 
 3. **Round size cap.** A single round's fixes cannot grow the target file by more than ~50% of its starting line count, or 200 lines absolute, whichever is larger. If proposed fixes exceed the cap, the orchestrator applies the highest-severity ones first and defers the rest with reason `round size cap reached`. The cap is per-round, so the next round can apply more if the previous one filled the budget.
 
-Items judged noise (e.g., reviewer disagreement with house style, false positives) are also **deferred**, not silently dropped. Record each deferred item with a one-line reason: noise, sub-threshold severity, new dependency, size cap, or product/architecture decision.
+Items judged noise (e.g., reviewer disagreement with house style, false positives) are also **deferred**, not silently dropped. Record each deferred item with a one-line reason: noise, sub-threshold severity, new dependency, size cap, failed verification, or product/architecture decision.
+
+#### Build/test gate (`verify_cmd`)
+
+Fix commits must not leave the branch red — pushing "fixes" that break the build is worse than doing nothing. In `commit_mode=per_fix`:
+
+- **Resolve the command.** `verify_cmd` explicit → use it. `verify_cmd: none` → skip the gate and record `Verification: skipped (user)`. Unset → auto-detect, in order: a test/build command named in repo docs (CLAUDE.md, CONTRIBUTING, README); `package.json` `scripts.test`; a `Makefile` `test` target; pytest/cargo/go-test project config. If nothing is detected, record `Verification: none detected` and proceed — downstream consumers (e.g. `review-anvil-improve-pr`) surface that caveat to the PR author.
+- **Establish the baseline.** Run the command once before round 1. If it already fails at baseline, record that and gate only on *new* failures — don't block the loop on pre-existing red.
+- **Gate each round.** After applying a round's fixes, run the command. On a new failure: make **one** fix-forward attempt if the cause is obvious from the output (commit as `fix(<area>): repair <verify_cmd> failure from round <N> fixes`); otherwise `git revert --no-edit` the round's fix commits and defer the associated findings with reason `fix failed verification`. A round never ends with the gate newly red.
 
 ### 5. Round summary
 
@@ -202,9 +246,10 @@ Append a short markdown block to running output:
 - Reviewers: <list of agents dispatched>
 - Findings: C critical, H high, M medium, L low, X nit
 - Fixes applied: K commits (<sha1>..<shaN>)   # or "0 (review-only)" when commit_mode=none
+- Verification: <cmd> — passed | failed → round reverted | none detected | skipped   # per_fix only
 - Would-apply: W items                         # only printed when commit_mode=none
 - Suggestions: S items (sub-threshold severity; not applied)
-- Deferred: D items (see below; reasons: noise / new dependency / size cap / product decision)
+- Deferred: D items (see below; reasons: noise / new dependency / size cap / failed verification / product decision)
 ```
 
 Each pinned parameter carries an inline `[pin]` annotation in the Parameters line. Pin authority comes from the preset skill's argument assembly (it places pinned values first in the string, and first-occurrence-wins parsing makes them authoritative — see "Preset skill conventions"). The "PR-target / per_fix incompatibility" rule (in "How to Use") is the final safety net for the one dangerous combination.
@@ -217,6 +262,8 @@ The convergence flag is one of:
 ### 6. Continue or finish
 
 If the round number is less than `rounds`, start the next round (back to step 1). Round N+1 reviews the new state — its prior-round summary input includes the commits from round N.
+
+**Early exit on convergence (`per_fix` only).** If a round's convergence flag is `clean` or `nits_only`, stop the loop after that round even if rounds remain — further rounds re-review converged code and mostly produce noise. Note `Converged after round N of R (early exit)` in the final report's Total section. In `commit_mode=none`, multi-round runs exist purely for reviewer redundancy over the same baseline, so early exit does not apply there.
 
 After the final round, emit the **Final Report** described under "Output Format." If `report_path` is set:
 
@@ -237,7 +284,7 @@ After the final round, emit the **Final Report** described under "Output Format.
 
 ### Failure handling
 
-- If a reviewer agent fails or times out, log it in the round summary as `<agent>: failed (<reason>)` and proceed with the others. No retries.
+- If a reviewer agent fails or times out, log it in the round summary as `<agent>: failed (<reason>)` and proceed with the others. No retries. For Bash-dispatched reviewers, "fails or times out" is determined by the `run-reviewer.sh` wrapper's STATUS (`timeout`, `empty`, `failed`) — use the tail of the `.err` file as `<reason>`.
 - If **all** reviewers in a round fail, abort the loop and report what happened. Do not "carry on" with zero findings — that produces a misleading clean signal.
 - If `git commit` fails (pre-commit hook, conflicts), surface the error and stop the loop. Do not bypass hooks.
 
@@ -248,7 +295,30 @@ After the final round, emit the **Final Report** described under "Output Format.
 
 ## Reviewer Prompt Template
 
-Each reviewer subagent receives a self-contained prompt assembled from a **context block** and a **task block**.
+Each reviewer subagent receives a self-contained prompt assembled from a **context block** and a **task block**. The context block carries the reviewer's individual lens; the task block is identical for every reviewer.
+
+### Lens assignment
+
+M identical prompts buy redundancy and dedup work, not coverage — so when M ≥ 2, partition the focus areas into per-reviewer **lenses**. The four default pillars map to four lens packs:
+
+| Lens pack | Covers |
+|---|---|
+| `correctness` | correctness, data flow, edge cases; verify what the layer below actually does in the configured backend/runtime, not what the abstract API promises |
+| `simplicity` | simplicity; "should this code exist?" — question abstractions/layers before reviewing their implementation; dead code; redundant defense-in-depth where one layer is broken |
+| `blast-radius` | production blast-radius: failure modes, fallback paths that swallow errors, operational concerns (logging, config, migrations, rollout) |
+| `maintainability` | maintainability; cross-file consistency (is the same pattern handled differently elsewhere in the repo?); test coverage of the change; `pragma: no cover`/`noqa`/lint-suppression smells |
+
+Assignment by reviewer count:
+
+| M | Lenses |
+|---|---|
+| 1 | all four pillars (no split) |
+| 2 | A: correctness + blast-radius; B: simplicity + maintainability |
+| 3 | A: correctness; B: blast-radius; C: simplicity + maintainability |
+| 4 | one pack each |
+| >4 | cycle through the packs — duplicate assignments add redundancy on top of coverage |
+
+User-supplied `focus:` additions are explicit priorities — append them to **every** reviewer's lens. `only:` with a single topic → all reviewers share it (pure redundancy); `only:` with multiple topics → partition them across reviewers like the pillars.
 
 ### Context block (orchestrator fills in)
 
@@ -260,29 +330,51 @@ TARGET
 feature/auth-rewrite"; or "diff between `main` and `feature/x` (`git diff
 main...HEAD`)"; or "uncommitted changes in src/auth/ (`git diff` +
 `git diff --cached`)". Include the actual diff text or instructions to
-fetch it.}
+fetch it. For PR-locator targets add: "the local checkout may not match
+the PR head — trust the PR diff, and fetch file contents at the PR head
+SHA via `gh` when you need surrounding context."}
 
 PRIOR ROUNDS
-{One line per prior round, e.g.:
-  Round 1: 4 critical / 6 high / 3 medium / 5 nit; 7 fixes applied
-  (commits a1b2c3d..7e8f9a0); 2 deferred.
+{Per prior round: the round's addressed and deferred findings as
+one-line items, so this reviewer can actually avoid re-raising them.
+  Round 1 (7 fixes applied, commits a1b2c3d..7e8f9a0; verification passed):
+    addressed:
+      - [high] auth — missing CSRF check on token refresh
+      - [medium] error-handling — bare except swallows DB errors
+    deferred:
+      - [medium] db — pool sizing (introduces new dependency: pgbouncer)
 If this is round 1, write "None — this is round 1."}
 
-FOCUS
-- Correctness
-- Maintainability
-- Simplicity
-- Production blast-radius (what could blow up in production?)
-{plus any user-supplied additions, or only the user-supplied list when
-they prefixed it with `only:`}
+YOUR LENS
+{This reviewer's lens pack(s) from the assignment table, as bullets,
+plus any user-supplied focus additions.}
+Spend your effort on this lens. The full focus list for the run is:
+{full focus list} — other reviewers cover the rest in parallel;
+findings outside your lens are welcome but secondary.
 ```
 
 ### Task block (fixed boilerplate, identical for every reviewer)
 
 ````
 TASK
-Review the target above. Be very critical. Surface issues across the
-focus areas. IMPORTANT: research only — do not edit any files.
+Review the target above. Be very critical. Surface issues across your
+lens. IMPORTANT: research only — do not edit any files.
+
+Review principles:
+- Do not review the diff in isolation. You have read access to the
+  repository — read the surrounding code, callers, and tests of every
+  changed region before flagging it.
+- Question whether the code should exist at all before reviewing its
+  implementation. "Delete this" is often the best finding.
+- When code builds on a framework primitive, verify what the layer
+  below actually does in the configured backend/runtime, not what the
+  abstract API promises.
+- Scrutinize fallback paths: defensive try/except that swallows a
+  required dependency's errors is worse than crashing.
+- Check cross-file consistency: if the same pattern is handled
+  differently elsewhere in the repo, say so.
+- Only report issues you can defend from the code in front of you.
+  A finding that is merely plausible wastes a verification pass.
 
 Severity guide:
 - critical: data loss, security breach, production crash
@@ -291,8 +383,9 @@ Severity guide:
 - low: style or minor
 - nit: preference
 
-Do not repeat issues already addressed in prior rounds (see PRIOR
-ROUNDS).
+Do not repeat issues already addressed or deferred in prior rounds
+(see PRIOR ROUNDS). Deferrals are deliberate decisions — re-raise one
+only if you believe the deferral reason is wrong, and say why.
 
 For each issue, return a structured finding with these keys:
 - severity: one of critical|high|medium|low|nit
@@ -332,9 +425,9 @@ If you find nothing worth raising, return an empty findings block:
 ### Filling in the template
 
 - The orchestrator constructs the full prompt by concatenating the context block (with placeholders filled) and the task block verbatim.
-- The assembled prompt is passed to whatever dispatch mechanism Loop Mechanics §2 specifies for the current host — Agent tool with `subagent_type: "general-purpose"` for claude-exec reviewers in Claude Code; Bash `codex exec` for codex-exec reviewers everywhere; Bash `claude -p` for claude-exec reviewers in non-Claude-Code hosts.
+- The assembled prompt is passed to whatever dispatch mechanism Loop Mechanics §2 specifies for the current host — Agent tool with `subagent_type: "general-purpose"` for claude-exec reviewers in Claude Code; the `run-reviewer.sh` wrapper around `codex exec` for codex-exec reviewers everywhere; the wrapper around `claude -p` for claude-exec reviewers in non-Claude-Code hosts.
 - Reviewers must return **prose findings only**. The skill rejects (or simply ignores) any embedded patches.
-- The PRIOR ROUNDS lines are constructed directly from each prior round's summary (Loop Mechanics §5) — include all five severity counts in the form `Round N: C critical / H high / M medium / L low / X nit; K fixes applied (<sha1>..<shaN>); D deferred.`
+- The PRIOR ROUNDS block is constructed from each prior round's synthesis: a header line `Round N (K fixes applied, <sha1>..<shaN>; verification <passed|failed → reverted|none detected>):` followed by `addressed:` and `deferred:` sub-lists with one `- [severity] area — what (reason)` line per finding. Severity counts alone are useless to a reviewer told not to repeat issues — it cannot know *which* issues were addressed from counts.
 - **In `commit_mode=none` (review-only)**, no findings are addressed between rounds, so the "Do not repeat issues already addressed in prior rounds" instruction in the task block does not apply — every round reviews the same baseline. For review-only multi-round runs, replace the PRIOR ROUNDS block with: `PRIOR ROUNDS\nNone — review-only mode; this is an independent reviewer pass.` and drop the "addressed in prior rounds" line from the task block. Multi-round review-only is purely for reviewer redundancy.
 
 ## Output Format
@@ -364,12 +457,14 @@ After the last round completes, emit a fresh top-level report below the running 
 **Focus:** <comma-separated focus list actually used>
 **Commit mode:** <per_fix | none>
 **Auto-fix policy:** min severity = <medium>, allow_new_deps = <false>
+**Verification:** <verify_cmd actually used, or "none detected" / "skipped">   # per_fix only
 **Report path:** <only when report_path was set: the absolute path the report was written to>
 
 ## Round 1 — <convergence flag>
 - Findings: C critical, H high, M medium, L low, X nit
 - Fixes applied: K commits (<sha1>..<shaK>)         # commit_mode=per_fix
   # OR: Fixes applied: 0 (review-only)              # commit_mode=none
+- Verification: <cmd> — passed | failed → reverted  # per_fix only
 - Would-apply: W items                              # only when commit_mode=none
 - Suggestions: S items
 - Deferred: D items
@@ -382,8 +477,8 @@ After the last round completes, emit a fresh top-level report below the running 
 - Findings addressed: A                             # commit_mode=per_fix; "Findings would-apply: A" in review-only
 - Suggestions surfaced: S
 - Findings deferred: D
-- Tuning suggestion: <one line, e.g. "round 3 was clean — `rounds=2`
-  likely sufficient next time"; omit if no clean rounds occurred>
+- Converged after round N of R (early exit)         # only when early exit fired
+- Tuning suggestion: <one line; see rule below — omitted in most runs>
   # In commit_mode=none, omit Tuning suggestion entirely — convergence
   # is meaningless when no fixes are applied between rounds.
 
@@ -393,7 +488,7 @@ For each sub-threshold finding (severity below `min_fix_severity`):
 
 ## Deferred items
 For each deferred item across all rounds:
-- **[severity] area** — what (deferred because: reason — e.g. introduces new dependency: <X>; size cap reached; product/architecture decision)
+- **[severity] area** — what (deferred because: reason — e.g. introduces new dependency: <X>; size cap reached; failed verification: <why>; product/architecture decision)
 
 ## Would-apply summary (commit_mode=none only)
 For each finding the auto-fix policy would have applied (severity ≥ min_fix_severity, no new deps, within size cap):
@@ -402,10 +497,10 @@ For each finding the auto-fix policy would have applied (severity ≥ min_fix_se
 
 ### Tuning suggestion rule
 
-Look at the convergence flags across rounds:
+With early exit on convergence (Loop Mechanics §6), the loop stops itself when a round comes back clean — so the only tuning case left is the loop *not* converging:
 
-- If the **last** round was `clean` or `nits_only` and any earlier round was `material_findings`, suggest `rounds = N - 1` (or further if the last two rounds were both clean/nits).
-- If **every** round was `material_findings`, suggest `rounds = N + 1` next time (the loop hadn't converged).
+- If **every** completed round was `material_findings`, suggest `rounds = N + 1` next time (the loop hadn't converged).
+- If early exit fired, the `Converged after round N of R` line already tells the user the effective round count — no separate suggestion needed.
 - Otherwise omit the suggestion.
 
 ## Edge Cases
