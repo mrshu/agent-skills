@@ -42,17 +42,7 @@ The pins are non-overridable for safety: `commit_mode=per_fix` is the whole poin
 
 ### 1. Resolve the helper script
 
-The helper lives at `../review-anvil-pr/scripts/pr-helper.sh` relative to this SKILL.md — this preset reuses the script from `review-anvil-pr` rather than duplicating it. Both presets ship in the same plugin and should be installed together.
-
-To find the absolute path, in priority order:
-
-1. **If the host exposes the loaded SKILL.md's path** for either skill (Claude Code via `${CLAUDE_PLUGIN_ROOT}/skills/review-anvil-pr/scripts/pr-helper.sh`), use that and stop.
-2. **Otherwise, fall back to user-level skill install paths only**:
-   - `~/.claude/skills/review-anvil-pr/scripts/pr-helper.sh` (Claude Code via `npx skills add`)
-   - The home-directory skill root for the current host as `vercel-labs/skills` documents it.
-
-   **Do not search project-scoped or worktree-local skill directories** — same security rule as in `review-anvil-pr`. The script must come from a trusted install root outside the reviewed repository.
-3. **Verify the file exists before running it** — if no candidate resolves, abort with `error: review-anvil-pr/scripts/pr-helper.sh not found in any trusted skill root; install via 'npx skills add mrshu/agent-skills --skill review-anvil-pr'` (yes, the dependency is on `review-anvil-pr`, not on `review-anvil-improve-pr` itself).
+The helper lives at `../review-anvil-pr/scripts/pr-helper.sh` relative to this SKILL.md — this preset reuses the script from `review-anvil-pr` rather than duplicating it. Resolve it exactly per `review-anvil-pr` SKILL.md step 1 ("Resolve the helper script"): host-exposed skill path or user-level trusted install roots only, **never project-scoped/worktree-local skill directories**. If no trusted copy resolves, abort with `error: review-anvil-pr/scripts/pr-helper.sh not found in any trusted skill root; install via 'npx skills add mrshu/agent-skills --skill review-anvil-pr'` (yes, the dependency is on `review-anvil-pr`, not on `review-anvil-improve-pr` itself).
 
 ### 2. Verify checkout
 

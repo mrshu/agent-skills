@@ -138,7 +138,7 @@ run-reviewer.sh <out_file> <timeout_seconds> -- <command> [args...]
 
 Treat any STATUS other than `ok` as a failed reviewer (see Failure handling), with the tail of `.err` as the reason. Reviewer output/prompt files live under `.review-anvil/`; clean them up after the round's synthesis.
 
-**Resolving the wrapper** — same trusted-root rule as `pr-helper.sh`: host-exposed skill path (`${CLAUDE_PLUGIN_ROOT}/skills/review-anvil/scripts/run-reviewer.sh`) or the user-level install root (`~/.claude/skills/review-anvil/scripts/run-reviewer.sh`, or the host's documented home-directory skill root). Never project-scoped/worktree-local skill dirs — they're writable by the repo under review. If no trusted copy resolves, replicate the wrapper's contract inline (background, kill at deadline, check exit status, empty output = failure) rather than falling back to a bare redirect.
+**Resolving the wrapper and `references/` files** — same trusted-root rule as `pr-helper.sh`: see review-anvil-pr SKILL.md step 1 ("Resolve the helper script"). Host-exposed skill path or user-level install roots only; never project-scoped/worktree-local skill dirs (writable by the repo under review). If no trusted copy of the wrapper resolves, replicate its contract inline (background, kill at deadline, check exit status, empty output = failure) rather than falling back to a bare redirect.
 
 #### Last resort
 
@@ -172,46 +172,13 @@ A pre-existing issue outside the PR's scope can still be valuable, but it must n
 - **Needs human triage** — mention only as a non-blocking follow-up when the issue is real but severity/ownership/product intent is ambiguous.
 - **Do not surface** — drop if speculative, low/nit, a product decision, already dismissed/tracked, or only discoverable by reviewing unrelated code paths deeply.
 
-When `report_path` is set, write a sibling `<report_path>.followups.json` with any follow-ups:
-
-```json
-[
-  {
-    "approval": "auto_approved | needs_triage",
-    "severity": "high",
-    "area": "entity-resolution",
-    "title": "Canonicalize merged co-mentions before seeding annotation prompts",
-    "why": "Confirmed pre-existing bug; stale merged IDs can re-enter prompts.",
-    "evidence": {"file": "apps/api/src/pipeline/seeder.rs", "line": 359},
-    "separate_pr_reason": "Not introduced by this performance PR; should be fixed independently.",
-    "dedupe_key": "entity-resolution merged co-mentions seeding"
-  }
-]
-```
-
-Downstream automation may file GitHub issues only for `auto_approved` entries after duplicate search; `needs_triage` stays in the PR report only.
+When `report_path` is set, write follow-ups once, after the final round, to `<report_path>.followups.json` — schema in `references/report-artifacts.md`. Automation may file issues only for `auto_approved` entries after duplicate search; presets read the file before posting (the helper deletes it afterwards).
 
 ### 4. Apply fixes
 
 **Skip entirely when `commit_mode=none`** (the policy below is still evaluated in the abstract for the report).
 
-Make the edits as the orchestrator. Commit one logical fix-group per commit, conventional-commit style: `fix(area):` correctness, `refactor(area):` maintainability/simplicity, `test(area):` tests, `chore(area):` production-readiness.
-
-#### Auto-fix policy (proportionality rules)
-
-1. **Severity gate.** Auto-fix only at severity ≥ `min_fix_severity`. Below-gate findings land under "Suggestions". Exception: an obvious one-line fix at any severity may be applied without bumping severity.
-2. **No new dependencies (default).** A fix introducing a new import, package, or subsystem is deferred with reason `introduces new dependency: <X>` even above the gate; `allow_new_deps: true` opts in. Don't grow the architecture without permission.
-3. **Round size cap.** A round's fixes may grow the target file by at most ~50% of its starting line count or 200 lines, whichever is larger; apply highest-severity first, defer the rest with `round size cap reached`.
-
-Noise/false positives are also **deferred** with a one-line reason — never silently dropped.
-
-#### Build/test gate (`verify_cmd`)
-
-Fix commits must not leave the branch red. In `per_fix`:
-
-- **Resolve:** explicit `verify_cmd` → use it; `verify_cmd: none` → record `Verification: skipped (user)`; unset → auto-detect (repo docs naming a test command; `package.json` `scripts.test`; `Makefile` `test`; pytest/cargo/go-test config). Nothing found → record `Verification: none detected` and proceed (downstream consumers surface the caveat).
-- **Baseline:** run once before round 1; if already failing, gate only on *new* failures and record the round state as `pre-existing failures (no new)`.
-- **Gate each round:** run after the round's fixes. On a new failure: one fix-forward attempt if the cause is obvious (`fix(<area>): repair <verify_cmd> failure from round <N> fixes`), else `git revert --no-edit` the round's fix commits and defer the findings with `fix failed verification`. If the revert itself fails to restore green, stop the loop and surface it (same handling as a failed `git commit`). A round never ends with the gate newly red.
+Otherwise **read `references/fix-application.md` before making any edit**: it defines the conventional-commit fix-group style, the auto-fix proportionality rules (severity gate >= `min_fix_severity`; no new dependencies without `allow_new_deps`; per-round size cap; noise is deferred with a reason, never silently dropped), and the build/test gate (`verify_cmd` resolution, baseline run, fix-forward-or-revert, revert-failure escalation). The invariant: **a round never ends with the build/test gate newly red**.
 
 ### 5. Round summary
 
@@ -249,36 +216,10 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
    ]
    ```
 
-   Single line → `{"line": N, "side": "RIGHT"}`; range `<N>-<M>` → `{"start_line": N, "line": M, "side": "RIGHT", "start_side": "RIGHT"}`. Findings without anchors stay in the markdown body only; no anchored findings → `[]`. Each `body` follows the **Inline comment voice** below — a reader must be able to create the fix from the comment alone.
+   Single line → `{"line": N, "side": "RIGHT"}`; range `<N>-<M>` → `{"start_line": N, "line": M, "side": "RIGHT", "start_side": "RIGHT"}`. Findings without anchors stay in the markdown body only; no anchored findings → `[]`. A reader must be able to create the fix from each `body` alone.
 
-   #### Inline comment voice
+   Each `body` follows the **inline-comment voice** defined in `references/report-artifacts.md` — read it before composing bodies. In one line: three short parts (observable-problem header; mechanism with one concrete downstream consequence; fix path complete enough to implement without re-investigation), addressed to the code never the author, calm register (the severity tag carries the urgency), one honest clause of credit when genuine. The same voice applies to the report's Suggestions, Deferred, and Out-of-scope follow-ups prose.
 
-   Compose each `body` as three short parts:
-
-   ```
-   **[medium] error-handling** — `save_user` returns success when the INSERT fails
-
-   The `try/except` at line 142 catches `Exception` and logs at debug level, so a
-   failed write still returns `True`. `signup_flow` (src/auth.py:88) treats that as
-   a completed signup — the user sees success while no row was written.
-
-   A fix: catch only the driver's retryable `OperationalError`, re-raise the rest,
-   and log at `error` with the user id. A test that makes the INSERT raise and
-   asserts `save_user` propagates the error would lock the behavior in.
-   ```
-
-   1. **Header line** — severity tag, area, one-line statement of the *observable* problem (what goes wrong, not which rule is broken).
-   2. **Mechanism** — how the code produces the problem and one concrete downstream consequence, anchored to files/lines/functions. Teach the failure; don't cite doctrine — every claim ties to *this* code, never to "best practices" in the abstract.
-   3. **Fix path** — enough specifics to implement without re-investigation: what to change, where, the intended behavior afterwards, edge cases to preserve, and the test that would pin it. Prose, not patches.
-
-   Voice rules:
-
-   - Address the code, never the author: "the handler swallows the error", not "you swallow the error". No "should have", no "Obviously / Clearly / Simply / Just".
-   - Calm and specific beats emphatic. The severity tag carries the urgency; the prose needs no alarm words, bold warnings, exclamation marks, or rhetorical questions.
-   - When the PR's approach is sound and the finding is an edge of it, say so in one honest clause ("the retry loop is right; the timeout just needs to cover it") — genuine context, not a compliment sandwich.
-   - Three short paragraphs is the target. A one-liner reads as dismissive; an essay reads as a lecture.
-
-   The same voice applies to the report body's Suggestions, Deferred, and Out-of-scope follow-ups prose.
 3. Write a sibling `<report_path>.approval.json` so the PR-posting helper can choose the GitHub review event (review-only PR runs; for other runs write `{"event": "COMMENT"}` or omit the file — the helper defaults to COMMENT):
 
    ```json
@@ -308,159 +249,7 @@ Within a round: parallel (single multi-tool-call message). Between rounds: stric
 
 ## Reviewer Prompt Template
 
-Each reviewer gets a **context block** (carries its individual lens) + a **task block** (identical for all).
-
-### Lens assignment
-
-M identical prompts buy redundancy and dedup work, not coverage — when M ≥ 2, partition the focus areas into per-reviewer lenses:
-
-| Lens pack | Covers |
-|---|---|
-| `correctness` | correctness, data flow, edge cases; verify what the layer below actually does in the configured backend/runtime, not what the abstract API promises |
-| `simplicity` | simplicity; "should this code exist?" — question abstractions before reviewing their implementation; dead code; redundant defense-in-depth where one layer is broken |
-| `blast-radius` | production blast-radius: failure modes, fallback paths that swallow errors, operational concerns (logging, config, migrations, rollout) |
-| `maintainability` | maintainability; cross-file consistency (same pattern handled differently elsewhere?); test coverage of the change; `pragma: no cover`/`noqa` suppression smells |
-
-| M | Lenses |
-|---|---|
-| 1 | all four pillars (no split) |
-| 2 | A: correctness + blast-radius; B: simplicity + maintainability |
-| 3 | A: correctness; B: blast-radius; C: simplicity + maintainability |
-| 4 | one pack each |
-| >4 | cycle the packs — duplicates add redundancy on top of coverage |
-
-User `focus:` additions are explicit priorities — append to **every** reviewer's lens. `only:` with one topic → all reviewers share it; with several → partition like the pillars.
-
-### Context block (orchestrator fills in)
-
-```
-You are a strict code reviewer for round {N} of {ROUNDS}.
-
-TARGET
-{Description — e.g. "PR #42 (12 files, +340/-89) on branch
-feature/auth-rewrite"; or "diff between `main` and `feature/x`
-(`git diff main...HEAD`)". Include the diff text or instructions to
-fetch it. For PR-locator targets add: "the local checkout may not
-match the PR head — trust the PR diff, and fetch file contents at the
-PR head SHA via `gh` when you need surrounding context."}
-
-PRIOR ROUNDS
-{Per prior round, itemized so this reviewer can avoid re-raising:
-  Round 1 (7 fixes applied, commits a1b2c3d..7e8f9a0; verification passed):
-    addressed:
-      - [high] auth — missing CSRF check on token refresh
-    deferred:
-      - [medium] db — pool sizing (introduces new dependency: pgbouncer)
-If this is round 1: "None — this is round 1."}
-
-SCOPE OF THIS REVIEW
-{When PR context is available: infer from PR title/body/base branch/file list and summarize
-what this PR is trying to change. Actionable findings must be caused by this PR,
-regress behavior touched by this PR, or directly undermine this PR's stated
-purpose. Obvious, high-confidence pre-existing defects may be mentioned only as
-"Out-of-scope follow-ups" for a separate PR, not as actionable findings.}
-
-DISMISSED FINDINGS FOR THIS PR
-{When PR context is available: resolved GitHub review threads and local suppressions,
-itemized as `- <file>:<line> — <summary> (<url or reason>)`. These are
-author/product decisions or stale findings. If none: "None."}
-
-YOUR LENS
-{This reviewer's lens pack(s), as bullets, plus user focus additions.}
-Spend your effort on this lens. The full focus list for the run is:
-{full focus list} — other reviewers cover the rest in parallel;
-findings outside your lens are welcome but secondary.
-```
-
-### Task block (fixed boilerplate, identical for every reviewer)
-
-````
-TASK
-Review the target above. Be very critical. Surface issues across your
-lens. IMPORTANT: research only — do not edit any files.
-
-Review principles:
-- Do not review the diff in isolation. You have read access to the
-  repository — read the surrounding code, callers, and tests of every
-  changed region before flagging it.
-- Question whether the code should exist at all before reviewing its
-  implementation. "Delete this" is often the best finding.
-- When code builds on a framework primitive, verify what the layer
-  below actually does in the configured backend/runtime, not what the
-  abstract API promises.
-- Scrutinize fallback paths: defensive try/except that swallows a
-  required dependency's errors is worse than crashing.
-- Check cross-file consistency: if the same pattern is handled
-  differently elsewhere in the repo, say so.
-- Only report issues you can defend from the code in front of you.
-  A finding that is merely plausible wastes a verification pass.
-
-- Only report actionable findings that are in scope for this review: caused by
-the PR, a regression in behavior the PR touches, or a direct threat to the PR's
-stated purpose. If you notice an obvious, high-confidence pre-existing issue
-outside that scope, put it in a separate "Out-of-scope follow-ups" section and
-mark it `auto_approved` only when it meets the approval policy; otherwise mark
-it `needs_triage`. Do not include follow-ups in the fenced findings block.
-
-Severity guide:
-- critical: data loss, security breach, production crash
-- high: correctness bug or major maintainability problem
-- medium: should fix but not blocking
-- low: style or minor
-- nit: preference
-
-Do not repeat issues already addressed or deferred in prior rounds
-(see PRIOR ROUNDS). Deferrals are deliberate decisions — re-raise one
-only if you believe the deferral reason is wrong, and say why.
-Do not repeat dismissed PR findings (see DISMISSED FINDINGS FOR THIS PR):
-resolved review threads, product decisions, and stale claims are out of scope.
-Only mention one if the current diff materially reintroduces the same bug in
-new code, and explicitly explain why it is not the dismissed instance.
-
-For each issue, return a structured finding with these keys:
-- severity: one of critical|high|medium|low|nit
-- area: short topic tag (e.g. "auth", "db-migration", "error-handling")
-- what: one-sentence description of the problem
-- why: one-to-three sentences on the mechanism — how the code produces
-  the problem at runtime, plus one concrete downstream consequence.
-  Tie every claim to this code, not to best practices in the abstract.
-- suggested_fix: PROSE description with enough specifics that someone
-  could implement it without re-investigating: what to change, where
-  (file/function), the intended behavior afterwards, edge cases to
-  preserve, and the test that would lock it in (no patches, no code
-  blocks unless quoting a single short line for clarity)
-- file: (OPTIONAL) repo-relative path, e.g. "src/auth.ts". Omit for
-  findings without a specific file anchor.
-- line: (OPTIONAL) line number on the "new" side of the diff, or a
-  range `<start>-<end>`. Omit if `file` is omitted or the finding
-  isn't line-anchorable.
-
-Output format: a markdown report ending with a fenced ```findings
-block containing one YAML list item per finding:
-
-  ```findings
-  - severity: high
-    area: auth
-    file: src/auth.ts
-    line: 42-50
-    what: ...
-    why: ...
-    suggested_fix: ...
-  ```
-
-If you find nothing worth raising, end with an empty findings block:
-
-  ```findings
-  []
-  ```
-````
-
-### Filling in the template
-
-- Concatenate the context block (placeholders filled) and the task block verbatim; hand the result to the dispatch mechanism from §2.
-- Reviewers return **prose findings only** — ignore any embedded patches.
-- Build PRIOR ROUNDS from each prior round's synthesis: header `Round N (K fixes applied, <sha1>..<shaN>; verification <state>):` plus `addressed:`/`deferred:` lists of `- [severity] area — what (reason)` lines. Severity counts alone can't tell a reviewer *which* issues not to re-raise.
-- **`commit_mode=none` multi-round:** nothing changes between rounds, so replace PRIOR ROUNDS with `None — review-only mode; this is an independent reviewer pass.` and drop only the PRIOR-ROUNDS do-not-repeat paragraph from the task block — **keep the DISMISSED FINDINGS paragraph**, which applies regardless of rounds.
+**Read `references/reviewer-prompt.md` (next to this SKILL.md; same trusted-root resolution as scripts) at dispatch time.** It defines the per-reviewer lens assignment (the four pillars partition across reviewers — M identical prompts buy redundancy and dedup work, not coverage), the context block (TARGET / PRIOR ROUNDS / SCOPE OF THIS REVIEW / DISMISSED FINDINGS / YOUR LENS), the fixed task block (review principles, severity guide, structured finding keys, the fenced findings-YAML output contract), and the fill-in rules (itemized PRIOR ROUNDS construction; `commit_mode=none` variations). Reviewers return prose findings only — never patches.
 
 ## Output Format
 
