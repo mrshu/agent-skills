@@ -249,7 +249,36 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
    ]
    ```
 
-   Single line → `{"line": N, "side": "RIGHT"}`; range `<N>-<M>` → `{"start_line": N, "line": M, "side": "RIGHT", "start_side": "RIGHT"}`. Findings without anchors stay in the markdown body only; no anchored findings → `[]`. Each `body` is a self-contained mini-report (severity + area + what + why + suggested_fix).
+   Single line → `{"line": N, "side": "RIGHT"}`; range `<N>-<M>` → `{"start_line": N, "line": M, "side": "RIGHT", "start_side": "RIGHT"}`. Findings without anchors stay in the markdown body only; no anchored findings → `[]`. Each `body` follows the **Inline comment voice** below — a reader must be able to create the fix from the comment alone.
+
+   #### Inline comment voice
+
+   Compose each `body` as three short parts:
+
+   ```
+   **[medium] error-handling** — `save_user` returns success when the INSERT fails
+
+   The `try/except` at line 142 catches `Exception` and logs at debug level, so a
+   failed write still returns `True`. `signup_flow` (src/auth.py:88) treats that as
+   a completed signup — the user sees success while no row was written.
+
+   A fix: catch only the driver's retryable `OperationalError`, re-raise the rest,
+   and log at `error` with the user id. A test that makes the INSERT raise and
+   asserts `save_user` propagates the error would lock the behavior in.
+   ```
+
+   1. **Header line** — severity tag, area, one-line statement of the *observable* problem (what goes wrong, not which rule is broken).
+   2. **Mechanism** — how the code produces the problem and one concrete downstream consequence, anchored to files/lines/functions. Teach the failure; don't cite doctrine — every claim ties to *this* code, never to "best practices" in the abstract.
+   3. **Fix path** — enough specifics to implement without re-investigation: what to change, where, the intended behavior afterwards, edge cases to preserve, and the test that would pin it. Prose, not patches.
+
+   Voice rules:
+
+   - Address the code, never the author: "the handler swallows the error", not "you swallow the error". No "should have", no "Obviously / Clearly / Simply / Just".
+   - Calm and specific beats emphatic. The severity tag carries the urgency; the prose needs no alarm words, bold warnings, exclamation marks, or rhetorical questions.
+   - When the PR's approach is sound and the finding is an edge of it, say so in one honest clause ("the retry loop is right; the timeout just needs to cover it") — genuine context, not a compliment sandwich.
+   - Three short paragraphs is the target. A one-liner reads as dismissive; an essay reads as a lecture.
+
+   The same voice applies to the report body's Suggestions, Deferred, and Out-of-scope follow-ups prose.
 3. Write a sibling `<report_path>.approval.json` so the PR-posting helper can choose the GitHub review event (review-only PR runs; for other runs write `{"event": "COMMENT"}` or omit the file — the helper defaults to COMMENT):
 
    ```json
@@ -388,8 +417,13 @@ For each issue, return a structured finding with these keys:
 - severity: one of critical|high|medium|low|nit
 - area: short topic tag (e.g. "auth", "db-migration", "error-handling")
 - what: one-sentence description of the problem
-- why: one-to-three-sentence explanation of why it matters
-- suggested_fix: PROSE description of how to fix (no patches, no code
+- why: one-to-three sentences on the mechanism — how the code produces
+  the problem at runtime, plus one concrete downstream consequence.
+  Tie every claim to this code, not to best practices in the abstract.
+- suggested_fix: PROSE description with enough specifics that someone
+  could implement it without re-investigating: what to change, where
+  (file/function), the intended behavior afterwards, edge cases to
+  preserve, and the test that would lock it in (no patches, no code
   blocks unless quoting a single short line for clarity)
 - file: (OPTIONAL) repo-relative path, e.g. "src/auth.ts". Omit for
   findings without a specific file anchor.
