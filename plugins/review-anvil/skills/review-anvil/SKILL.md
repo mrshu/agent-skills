@@ -93,6 +93,7 @@ Capture the target's state at round start so all reviewers see the same input:
 
 - Non-PR targets (branch, uncommitted, path): materialize the diff with the appropriate `git diff …`.
 - PR targets (always `commit_mode=none`): fetch the PR's diff via `gh pr diff <N> -R <owner>/<repo>` (or equivalent MCP/REST). The local worktree is irrelevant — reviewers see the PR as it exists on GitHub.
+- For PR targets, fetch PR title/body/base branch/file list too, then infer the PR's intended scope in one sentence (e.g. "performance optimization in annotation seeding", "left-sidebar UX reorganization"). Put that scope in every reviewer prompt. A finding is actionable only if the PR introduces/regresses it or if it directly undermines the PR's stated purpose. Obvious, high-confidence pre-existing defects may be mentioned, but only under a separate "Out-of-scope follow-ups" section — never as blockers or inline actionable review comments for the current PR.
 - For PR targets, also fetch resolved review threads before dispatch (`reviewThreads { isResolved path line comments { body url } }`). Treat resolved threads and local suppressions as **dismissed findings**: include their file/line + one-line summaries in every reviewer prompt, and never report them again unless the new diff materially reintroduces the same bug in different code. If this lookup fails, abort rather than posting a review that may repeat dismissed feedback.
 - Note `git rev-parse HEAD` so the round summary can reference the exact baseline (informational-only for PR targets).
 
@@ -279,6 +280,13 @@ PRIOR ROUNDS
       - [medium] db — pool sizing (introduces new dependency: pgbouncer)
 If this is round 1: "None — this is round 1."}
 
+SCOPE OF THIS REVIEW
+{For PR targets only: infer from PR title/body/base branch/file list and summarize
+what this PR is trying to change. Actionable findings must be caused by this PR,
+regress behavior touched by this PR, or directly undermine this PR's stated
+purpose. Obvious, high-confidence pre-existing defects may be mentioned only as
+"Out-of-scope follow-ups" for a separate PR, not as actionable findings.}
+
 DISMISSED FINDINGS FOR THIS PR
 {For PR targets only: resolved GitHub review threads and local suppressions,
 itemized as `- <file>:<line> — <summary> (<url or reason>)`. These are
@@ -313,6 +321,12 @@ Review principles:
   differently elsewhere in the repo, say so.
 - Only report issues you can defend from the code in front of you.
   A finding that is merely plausible wastes a verification pass.
+
+- Only report actionable findings that are in scope for this review: caused by
+the PR, a regression in behavior the PR touches, or a direct threat to the PR's
+stated purpose. If you notice an obvious, high-confidence pre-existing issue
+outside that scope, put it in a separate "Out-of-scope follow-ups" section and
+mark it as separate-PR work; do not include it in the fenced findings block.
 
 Severity guide:
 - critical: data loss, security breach, production crash
@@ -389,6 +403,9 @@ After the last round, emit a fresh top-level report (a new document, not a repla
 **Verification:** <verify_cmd used, or "none detected" / "skipped">   # per_fix only
 **Report path:** <only when report_path was set>
 
+## Scope
+<For PR targets: one sentence summarizing what this PR is trying to change.>
+
 ## Round 1 — <convergence flag>
 <the same lines as the §5 round summary, minus Parameters/Reviewers>
 
@@ -408,6 +425,9 @@ After the last round, emit a fresh top-level report (a new document, not a repla
 
 ## Deferred items
 - **[severity] area** — what (deferred because: <reason — e.g. introduces new dependency: <X>; size cap reached; failed verification: <why>; product decision>)
+
+## Out-of-scope follow-ups
+- **[severity] area** — obvious pre-existing issue noticed during review (separate PR; why it is outside this PR's scope)
 
 ## Would-apply summary                      # commit_mode=none only
 - **[severity] area** — what (would commit as `<type>(<area>): <subject>`)

@@ -99,6 +99,8 @@ In both paths, the marker UUID is prepended to the report body atomically before
 
 **Dismissed-finding suppression.** Immediately before posting, the helper fetches resolved PR review threads and applies local suppressions from `~/.hermes/state/review-anvil-dismissed-findings.json`. Matching inline/report findings are removed; if GitHub's resolved-thread state cannot be fetched, posting aborts rather than risking repeat feedback.
 
+**Scope discipline.** The posted review should separate actionable in-scope findings from obvious pre-existing issues. Findings unrelated to the PR's stated purpose should appear, at most, under "Out-of-scope follow-ups" as separate-PR work and should not be emitted as inline actionable comments.
+
 **Cleanup on success.** After a successful post (either path), the helper removes `<REPORT_PATH>` and `<REPORT_PATH>.inline.json`, and attempts to `rmdir` the parent directory (succeeds only if empty — concurrent runs are unaffected). On any abort (`die`), the artifacts are left in place so the user can inspect or post manually.
 
 ### 5. Report back
