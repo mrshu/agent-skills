@@ -40,6 +40,166 @@ cleanup_post_artifacts() {
     rmdir "$(dirname "$report_path")" 2>/dev/null || true
 }
 
+# Remove findings that the PR author has already dismissed/resolved. This is a
+# hard pre-post gate: if GitHub's resolved review-thread state cannot be read,
+# abort rather than risk reposting stale noise.
+suppress_dismissed_findings() {
+    local host="$1" owner="$2" repo="$3" n="$4" report_path="$5" inline_json="$6"
+    export GH_HOST="$host"
+    command -v python3 >/dev/null 2>&1 || die "python3 required for dismissed-finding suppression"
+    python3 - "$owner" "$repo" "$n" "$report_path" "$inline_json" <<'PY'
+import difflib
+import json
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+owner, repo, n, report_path, inline_json = sys.argv[1:]
+report = Path(report_path)
+inline = Path(inline_json)
+state_path = Path.home() / ".hermes" / "state" / "review-anvil-dismissed-findings.json"
+
+QUERY = r'''
+query($owner:String!,$repo:String!,$number:Int!){
+  repository(owner:$owner,name:$repo){
+    pullRequest(number:$number){
+      reviewThreads(first:100){
+        nodes{
+          isResolved
+          isOutdated
+          path
+          line
+          comments(first:20){ nodes{ body author{login} url } }
+        }
+      }
+    }
+  }
+}
+'''
+
+cp = subprocess.run(
+    ["gh", "api", "graphql", "-f", f"owner={owner}", "-f", f"repo={repo}", "-F", f"number={n}", "-f", f"query={QUERY}"],
+    text=True,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+)
+if cp.returncode != 0:
+    print(cp.stderr.strip() or cp.stdout.strip(), file=sys.stderr)
+    raise SystemExit("pr-helper: could not read resolved PR review threads; refusing to post possible repeat findings")
+
+def norm(text: str) -> str:
+    text = re.sub(r"https?://\S+", " ", text or "")
+    text = re.sub(r"!\[[^\]]*\]\([^)]*\)", " ", text)
+    text = re.sub(r"`([^`]*)`", r"\1", text)
+    text = re.sub(r"<[^>]+>", " ", text)
+    text = re.sub(r"[^a-zA-Z0-9]+", " ", text).lower()
+    words = [w for w in text.split() if len(w) > 2 and w not in {"the", "and", "for", "with", "this", "that", "from", "into", "when", "because"}]
+    return " ".join(words)
+
+def signature(body: str) -> str:
+    body = body or ""
+    # review-anvil inline body: **[medium] area** -- What ...
+    m = re.search(r"\*\*\[(critical|high|medium|low|nit)\]\s*([^*]+?)\*\*\s*[-—:]+\s*([^\n]+)", body, re.I)
+    if m:
+        return norm(f"{m.group(2)} {m.group(3)}")
+    # GitHub/Codex-style body: Medium: what...
+    m = re.search(r"\b(critical|high|medium|low|nit)\s*:\s*([^\n]+)", body, re.I)
+    if m:
+        return norm(m.group(2))
+    lines = [ln.strip() for ln in body.splitlines() if ln.strip() and not ln.strip().startswith("<!--")]
+    return norm(" ".join(lines[:2])[:500])
+
+def same_finding(candidate: dict, dismissed: dict) -> bool:
+    cpath = candidate.get("path") or ""
+    dpath = dismissed.get("path") or ""
+    if cpath and dpath and cpath != dpath:
+        return False
+    cs = candidate.get("sig", "")
+    ds = dismissed.get("sig", "")
+    if not cs or not ds:
+        return False
+    if cs == ds:
+        return True
+    if len(cs) > 35 and len(ds) > 35 and (cs in ds or ds in cs):
+        return True
+    return difflib.SequenceMatcher(None, cs, ds).ratio() >= 0.62
+
+j = json.loads(cp.stdout)
+threads = j["data"]["repository"]["pullRequest"]["reviewThreads"]["nodes"] or []
+dismissed = []
+for t in threads:
+    if not t.get("isResolved"):
+        continue
+    for c in (t.get("comments") or {}).get("nodes") or []:
+        body = c.get("body") or ""
+        sig = signature(body)
+        if sig:
+            dismissed.append({"path": t.get("path") or "", "sig": sig, "source": c.get("url") or "resolved-thread"})
+
+# Optional local suppressions for product decisions/stale bot claims that may not
+# map cleanly to a resolved GitHub thread yet. Shape:
+# {"Cisco-CollabAI/nex#329": [{"path":"...", "pattern":"...", "reason":"..."}]}
+if state_path.exists():
+    try:
+        state = json.loads(state_path.read_text())
+        for item in state.get(f"{owner}/{repo}#{n}", []):
+            sig = norm(item.get("pattern", ""))
+            if sig:
+                dismissed.append({"path": item.get("path", ""), "sig": sig, "source": item.get("reason", "local-suppression")})
+    except Exception as exc:
+        raise SystemExit(f"pr-helper: invalid dismissal state {state_path}: {exc}")
+
+if not dismissed:
+    raise SystemExit(0)
+
+suppressed = []
+if inline.exists() and inline.read_text().strip() not in {"", "[]"}:
+    items = json.loads(inline.read_text())
+    kept = []
+    for item in items:
+        cand = {"path": item.get("path") or "", "sig": signature(item.get("body") or "")}
+        hit = next((d for d in dismissed if same_finding(cand, d)), None)
+        if hit:
+            suppressed.append({"path": cand["path"], "sig": cand["sig"], "source": hit["source"]})
+        else:
+            kept.append(item)
+    if len(kept) != len(items):
+        inline.write_text(json.dumps(kept, indent=2) + "\n")
+
+# Best-effort markdown cleanup for bullet/paragraph findings in the report body.
+# Inline comments are the authoritative GitHub UX; this prevents obvious repeats
+# from also appearing in the summary body.
+if suppressed and report.exists():
+    lines = report.read_text().splitlines()
+    out = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if "**[" in line:
+            block = [line]
+            j2 = i + 1
+            while j2 < len(lines) and lines[j2].strip() and not lines[j2].startswith("## ") and not lines[j2].lstrip().startswith("- **["):
+                block.append(lines[j2])
+                # Keep continuation lines with the finding, but stop before the
+                # next review-anvil bullet/section so one suppressed finding
+                # cannot delete unrelated actionable findings.
+                j2 += 1
+            cand = {"path": "", "sig": signature("\n".join(block))}
+            if any(same_finding(cand, {"path": "", "sig": s["sig"]}) for s in suppressed):
+                i = j2
+                continue
+        out.append(line)
+        i += 1
+    note = f"\n\n---\n\n_Suppressed {len(suppressed)} finding(s) already dismissed/resolved on this PR._"
+    report.write_text("\n".join(out).rstrip() + note + "\n")
+
+if suppressed:
+    print(f"pr-helper: suppressed {len(suppressed)} dismissed/resolved finding(s) before posting", file=sys.stderr)
+PY
+}
+
 cmd_init() {
     local locator="${1:-}"
     command -v gh >/dev/null 2>&1 || die "install gh first; the review-anvil-pr skill requires gh"
@@ -79,7 +239,7 @@ cmd_init() {
 
     export GH_HOST="$host"
 
-    if ! gh auth status >/dev/null 2>&1; then
+    if ! gh auth status --hostname "$host" >/dev/null 2>&1; then
         die "gh auth status failed for host=$host; run 'gh auth login' (or set GH_TOKEN/GITHUB_TOKEN)"
     fi
 
@@ -146,6 +306,16 @@ cmd_post() {
         if [[ -n "$(tr -d '[:space:]' <"$inline_json")" ]] \
            && [[ "$(tr -d '[:space:]' <"$inline_json")" != "[]" ]]; then
             has_inline=1
+        fi
+    fi
+
+    suppress_dismissed_findings "$host" "$owner" "$repo" "$n" "$report_path" "$inline_json"
+    if [[ -f "$inline_json" ]]; then
+        if [[ -n "$(tr -d '[:space:]' <"$inline_json")" ]] \
+           && [[ "$(tr -d '[:space:]' <"$inline_json")" != "[]" ]]; then
+            has_inline=1
+        else
+            has_inline=0
         fi
     fi
 
@@ -242,7 +412,7 @@ cmd_verify_checkout() {
 
     export GH_HOST="$host"
 
-    if ! gh auth status >/dev/null 2>&1; then
+    if ! gh auth status --hostname "$host" >/dev/null 2>&1; then
         die "gh auth status failed for host=$host; run 'gh auth login' (or set GH_TOKEN/GITHUB_TOKEN)"
     fi
 

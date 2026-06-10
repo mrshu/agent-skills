@@ -93,6 +93,7 @@ Capture the target's state at round start so all reviewers see the same input:
 
 - Non-PR targets (branch, uncommitted, path): materialize the diff with the appropriate `git diff …`.
 - PR targets (always `commit_mode=none`): fetch the PR's diff via `gh pr diff <N> -R <owner>/<repo>` (or equivalent MCP/REST). The local worktree is irrelevant — reviewers see the PR as it exists on GitHub.
+- For PR targets, also fetch resolved review threads before dispatch (`reviewThreads { isResolved path line comments { body url } }`). Treat resolved threads and local suppressions as **dismissed findings**: include their file/line + one-line summaries in every reviewer prompt, and never report them again unless the new diff materially reintroduces the same bug in different code. If this lookup fails, abort rather than posting a review that may repeat dismissed feedback.
 - Note `git rev-parse HEAD` so the round summary can reference the exact baseline (informational-only for PR targets).
 
 ### 2. Dispatch reviewers in parallel
@@ -278,6 +279,11 @@ PRIOR ROUNDS
       - [medium] db — pool sizing (introduces new dependency: pgbouncer)
 If this is round 1: "None — this is round 1."}
 
+DISMISSED FINDINGS FOR THIS PR
+{For PR targets only: resolved GitHub review threads and local suppressions,
+itemized as `- <file>:<line> — <summary> (<url or reason>)`. These are
+author/product decisions or stale findings. If none: "None."}
+
 YOUR LENS
 {This reviewer's lens pack(s), as bullets, plus user focus additions.}
 Spend your effort on this lens. The full focus list for the run is:
@@ -318,6 +324,10 @@ Severity guide:
 Do not repeat issues already addressed or deferred in prior rounds
 (see PRIOR ROUNDS). Deferrals are deliberate decisions — re-raise one
 only if you believe the deferral reason is wrong, and say why.
+Do not repeat dismissed PR findings (see DISMISSED FINDINGS FOR THIS PR):
+resolved review threads, product decisions, and stale claims are out of scope.
+Only mention one if the current diff materially reintroduces the same bug in
+new code, and explicitly explain why it is not the dismissed instance.
 
 For each issue, return a structured finding with these keys:
 - severity: one of critical|high|medium|low|nit
