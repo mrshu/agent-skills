@@ -97,7 +97,7 @@ The script chooses between two posting strategies based on whether the engine em
 
 In both paths, the marker UUID is prepended to the report body atomically before posting, so URL recovery via marker remains possible even on the fallback path.
 
-**Dismissed-finding suppression.** Immediately before posting, the helper fetches resolved PR review threads and applies local suppressions from `~/.hermes/state/review-anvil-dismissed-findings.json`. Matching inline/report findings are removed; if GitHub's resolved-thread state cannot be fetched, posting aborts rather than risking repeat feedback.
+**Dismissed-finding suppression.** Immediately before posting, the helper fetches resolved PR review threads (paginated, retried once) and applies local suppressions from `$REVIEW_ANVIL_DISMISSALS` (default `~/.review-anvil/dismissed-findings.json`; a legacy `~/.hermes/state/` file is honored if present). Matching is deliberately conservative — inline findings require an exact path match plus near-identical text (similarity ≥ 0.9), because silently deleting a real finding is worse than repeating a dismissed one. Matched inline comments are removed; matched report-body findings are **demoted** into a "Previously dismissed on this PR" section rather than deleted, so a false positive stays visible. If resolved-thread state cannot be fetched after retry, posting aborts rather than risking repeat feedback.
 
 **Scope discipline.** The posted review should separate actionable in-scope findings from obvious pre-existing issues. Findings unrelated to the PR's stated purpose should appear, at most, under "Out-of-scope follow-ups" as separate-PR work and should not be emitted as inline actionable comments. Follow-ups are auto-approved only when they are confirmed, high-confidence `critical`/`high` (or clearly reproducible `medium`), not product/style decisions, not already tracked/dismissed, and separable from the current PR; ambiguous ones remain `needs_triage`.
 
@@ -115,7 +115,7 @@ Surface the URL (or `posted (URL unavailable)`) to the user. If the helper scrip
 
 ## Constraints
 
-- Requires `gh` on `PATH` and `uuidgen`. The script aborts with a clear error if either is missing.
+- Requires `gh` on `PATH` and `uuidgen`, plus `uv` (preferred; falls back to `python3`) for dismissed-finding handling. The script aborts with a clear error if a dependency is missing.
 - What lands on the PR has passed the engine's verification step: `medium`+ findings raised by a single reviewer are confirmed against the actual code before posting, and findings that fail verification appear under "Deferred items" with reason `failed verification` rather than as actionable review comments. False positives posted to a colleague's PR burn trust — the engine treats precision as the product.
 - Read-only by design — the PR's branch may not be checked out locally, and pushing fix commits to a PR you don't own is rarely the intent. If you want to fix-and-commit on a PR you have checked out, activate `review-anvil` directly with `target: branch` (your checked-out PR branch) and `commit_mode=per_fix` — the local working tree becomes the source of truth and the diff against the merge base is unambiguous.
 - Supports github.com and GitHub Enterprise — the script extracts the host from the URL and sets `GH_HOST` internally for all `gh` invocations.

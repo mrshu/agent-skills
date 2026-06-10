@@ -93,8 +93,8 @@ Capture the target's state at round start so all reviewers see the same input:
 
 - Non-PR targets (branch, uncommitted, path): materialize the diff with the appropriate `git diff …`.
 - PR targets (always `commit_mode=none`): fetch the PR's diff via `gh pr diff <N> -R <owner>/<repo>` (or equivalent MCP/REST). The local worktree is irrelevant — reviewers see the PR as it exists on GitHub.
-- For PR targets, fetch PR title/body/base branch/file list too, then infer the PR's intended scope in one sentence (e.g. "performance optimization in annotation seeding", "left-sidebar UX reorganization"). Put that scope in every reviewer prompt. A finding is actionable only if the PR introduces/regresses it or if it directly undermines the PR's stated purpose. Obvious, high-confidence pre-existing defects may be mentioned, but only under a separate "Out-of-scope follow-ups" section — never as blockers or inline actionable review comments for the current PR.
-- For PR targets, also fetch resolved review threads before dispatch (`reviewThreads { isResolved path line comments { body url } }`). Treat resolved threads and local suppressions as **dismissed findings**: include their file/line + one-line summaries in every reviewer prompt, and never report them again unless the new diff materially reintroduces the same bug in different code. If this lookup fails, abort rather than posting a review that may repeat dismissed feedback.
+- Whenever PR context is available — a PR-locator target, or a preset that supplies it (`review-anvil-improve-pr` does, after `verify-checkout`) — fetch the PR title/body/base branch/file list too, then infer the PR's intended scope in one sentence (e.g. "performance optimization in annotation seeding", "left-sidebar UX reorganization"). Put that scope in every reviewer prompt. A finding is actionable only if the PR introduces/regresses it or if it directly undermines the PR's stated purpose. Obvious, high-confidence pre-existing defects may be mentioned, but only under a separate "Out-of-scope follow-ups" section — never as blockers or inline actionable review comments for the current PR.
+- Likewise fetch the **dismissed findings** before dispatch: resolved review threads plus local suppressions, via `pr-helper.sh dismissed <host> <owner> <repo> <n>` (ships with `review-anvil-pr`; paginated, retried once). Include the itemized list in every reviewer prompt (DISMISSED FINDINGS block) and never report those findings again unless the new diff materially reintroduces the same bug in different code. If the lookup fails after retry, abort rather than risk repeating feedback the author already resolved.
 - Note `git rev-parse HEAD` so the round summary can reference the exact baseline (informational-only for PR targets).
 
 ### 2. Dispatch reviewers in parallel
@@ -157,6 +157,7 @@ When all reviewers return:
 
 Plausible-but-wrong findings are the dominant failure mode of LLM review, and both downstream actions are expensive: a bogus fix commit pollutes the branch, a bogus finding posted to a PR burns the author's trust. After dedup:
 
+- **Dismissed check first (orchestrator judgment).** When a DISMISSED FINDINGS list exists, compare every merged finding against it *semantically* — same root cause counts even when the wording differs completely ("missing CSRF check" matches "no token validation on state-changing route"). Matches move to Deferred with reason `previously dismissed (<source>)` and are never auto-fixed or posted. You are the primary matcher here; the post-time script gate in `pr-helper.sh` only catches near-verbatim repeats (path match + text similarity ≥ 0.9) as a deterministic backstop.
 - A `medium`+ finding raised by a **single** reviewer must be confirmed against the actual code before it is auto-fixed or reported as actionable: open the cited file and enough surrounding context (callers, configured runtime, tests) to confirm the issue is real and reachable — not merely plausible from the hunk.
 - Findings raised independently by **2+ reviewers** skip verification; consensus is the signal (this is why dedup records who raised what).
 - Failed verification → **Deferred** with reason `failed verification: <one line>` — never auto-fixed, never silently dropped.
@@ -309,14 +310,14 @@ PRIOR ROUNDS
 If this is round 1: "None — this is round 1."}
 
 SCOPE OF THIS REVIEW
-{For PR targets only: infer from PR title/body/base branch/file list and summarize
+{When PR context is available: infer from PR title/body/base branch/file list and summarize
 what this PR is trying to change. Actionable findings must be caused by this PR,
 regress behavior touched by this PR, or directly undermine this PR's stated
 purpose. Obvious, high-confidence pre-existing defects may be mentioned only as
 "Out-of-scope follow-ups" for a separate PR, not as actionable findings.}
 
 DISMISSED FINDINGS FOR THIS PR
-{For PR targets only: resolved GitHub review threads and local suppressions,
+{When PR context is available: resolved GitHub review threads and local suppressions,
 itemized as `- <file>:<line> — <summary> (<url or reason>)`. These are
 author/product decisions or stale findings. If none: "None."}
 

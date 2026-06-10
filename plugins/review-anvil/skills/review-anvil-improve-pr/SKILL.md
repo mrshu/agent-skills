@@ -78,6 +78,14 @@ Capture all values. Echo to the user: `improving PR: $HOST/$OWNER/$REPO#$N — $
 
 On non-zero exit, surface the script's stderr verbatim and stop. Do not dispatch reviewers.
 
+Then fetch the PR's dismissed findings (resolved review threads + local suppressions) for the reviewer prompts:
+
+```bash
+bash <helper-path> dismissed "$HOST" "$OWNER" "$REPO" "$N"
+```
+
+Capture the output — an itemized list, or `None.` — for step 4. On non-zero exit, abort: re-litigating feedback the author already resolved is exactly what this lookup prevents.
+
 ### 3. Post the "starting" comment
 
 Before any review work begins:
@@ -114,6 +122,8 @@ commit_mode: per_fix, target: <BASE_BRANCH>...HEAD, report_path: <REPORT_PATH>, 
 
 `<BASE_BRANCH>` and `<REPORT_PATH>` come from step 2. Using `<BASE_BRANCH>...HEAD` (three-dot diff) targets exactly the commits that distinguish this PR from its base. Pinning `report_path` makes the engine write the final synthesized report to a file that step 6 (`post-update`) can read.
 
+Supply the dismissed-findings list captured in step 2 as the engine's `DISMISSED FINDINGS FOR THIS PR` reviewer-prompt block — the branch target means the engine won't fetch it itself.
+
 Note: do **not** pin a PR locator as `target` — the engine's "PR-target / per_fix incompatibility" rule would force `commit_mode=none` and defeat the point of this preset. Targeting the branch directly is the intended escape hatch.
 
 The user may override `rounds:` (default is the engine's `rounds: 3` for productive loops). They should not override `commit_mode`, `target`, or `report_path` — these are pinned for safety; the step-0 segment-rejection above blocks override attempts.
@@ -137,8 +147,10 @@ If the engine succeeded but `git push` fails (permission denied, conflict, etc.)
 Always run this step, regardless of step 4/5 outcome. Pass `outcome=success` only if both the engine and the push completed cleanly:
 
 ```bash
-bash <helper-path> post-update "$HOST" "$OWNER" "$REPO" "$COMMENT_ID" "$MARKER" "$REPORT_PATH" "$AUTHOR" "$OUTCOME" "$STARTED_AT"
+bash <helper-path> post-update "$HOST" "$OWNER" "$REPO" "$N" "$COMMENT_ID" "$MARKER" "$REPORT_PATH" "$AUTHOR" "$OUTCOME" "$STARTED_AT"
 ```
+
+On a `success` outcome the helper also re-applies dismissed-finding suppression to the report before editing the comment (non-fatal: if the thread lookup fails, it warns and posts the unfiltered report — a dangling "starting" comment would be worse).
 
 `$OUTCOME` is `success` or `failure`. The script PATCH-edits the starting comment (identified by `$COMMENT_ID`), replacing its body entirely with:
 
@@ -166,7 +178,7 @@ Surface the engine's final report inline. Echo a two-line summary:
 
 ## Constraints
 
-- Requires `gh` on `PATH` and `uuidgen` (used by the shared helper).
+- Requires `gh` on `PATH` and `uuidgen`, plus `uv` (preferred; falls back to `python3`) for dismissed-finding handling (all used by the shared helper).
 - **Mutates the local working tree and pushes to the PR.** Use `review-anvil-pr` (read-only + comment) when you only want feedback without applying fixes.
 - The user must already be on the PR's branch with a clean worktree. The verify-checkout step enforces this and gives clear recovery instructions on failure (e.g. `gh pr checkout <N>`).
 - The PR must be one you have push access to. `git push` will fail with a normal git error if not — the script doesn't pre-check push permissions.

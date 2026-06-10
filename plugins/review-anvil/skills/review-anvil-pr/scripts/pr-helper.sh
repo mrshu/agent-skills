@@ -3,21 +3,23 @@
 # for the review-anvil-pr skill. Co-located with the skill so it travels
 # across agents via `npx skills add mrshu/agent-skills --skill review-anvil-pr`.
 #
-# Two subcommands:
+# Subcommands (see the case dispatch at the bottom for exact signatures):
 #
-#   pr-helper.sh init <locator>
-#     Parses the locator, runs gh preflight, generates a marker UUID,
-#     and prepares a report path. Prints HOST/OWNER/REPO/N/MARKER/
-#     REPORT_PATH/TITLE as KEY=VALUE lines on stdout (one per line,
-#     no quoting needed for values without whitespace except TITLE).
-#     Exits non-zero on any failure with an error message on stderr.
+#   init [<locator>]        — locator parse/auto-detect, gh preflight, marker
+#                             UUID + report path; prints KEY=VALUE lines.
+#   post …                  — suppress dismissed findings, prepend marker,
+#                             post as PR review (inline) or top-level comment;
+#                             prints the comment URL.
+#   verify-checkout […]     — improve-pr preflight: checkout matches PR head,
+#                             clean worktree; prints KEY=VALUE lines.
+#   post-start …            — post the "starting" comment, cc the author;
+#                             prints COMMENT_ID/COMMENT_URL/STARTED_AT.
+#   post-update …           — PATCH-edit the starting comment with the final
+#                             report (suppression applied on success outcome).
+#   dismissed …             — print itemized dismissed findings (resolved
+#                             threads + local suppressions) for prompt blocks.
 #
-#   pr-helper.sh post <host> <owner> <repo> <n> <marker> <report_path>
-#     Prepends the marker to the report file, posts it via gh, and
-#     recovers the comment URL via paginated comment lookup. Prints
-#     the URL on stdout (or "posted (URL unavailable)" if recovery
-#     failed twice). Exits non-zero only on post failure, not on
-#     URL-recovery failure.
+# All subcommands exit non-zero on failure with an error on stderr.
 #
 # Locator forms accepted by init:
 #   - Full GitHub URL: https://<host>/<owner>/<repo>/pull/<N>
@@ -40,38 +42,64 @@ cleanup_post_artifacts() {
     rmdir "$(dirname "$report_path")" 2>/dev/null || true
 }
 
-# Remove findings that the PR author has already dismissed/resolved. This is a
-# hard pre-post gate: if GitHub's resolved review-thread state cannot be read,
-# abort rather than risk reposting stale noise.
-suppress_dismissed_findings() {
-    local host="$1" owner="$2" repo="$3" n="$4" report_path="$5" inline_json="$6"
-    export GH_HOST="$host"
-    command -v python3 >/dev/null 2>&1 || die "python3 required for dismissed-finding suppression"
-    python3 - "$owner" "$repo" "$n" "$report_path" "$inline_json" <<'PY'
+# Resolve a Python runner: prefer uv (which can provision an interpreter
+# itself), fall back to system python3. The dismissed-findings logic is
+# stdlib-only, so --no-project keeps uv from looking for a pyproject.
+_py() {
+    if command -v uv >/dev/null 2>&1; then
+        uv run --no-project python3 "$@"
+    elif command -v python3 >/dev/null 2>&1; then
+        python3 "$@"
+    else
+        die "neither uv nor python3 found; one is required for dismissed-finding handling (install uv: https://docs.astral.sh/uv/)"
+    fi
+}
+
+# Shared dismissed-findings engine. Modes:
+#   list <owner> <repo> <n>
+#       Print itemized dismissed findings (resolved review threads + local
+#       suppressions), one per line: "- <path>:<line> — <summary> (<source>)",
+#       or "None." — used to build the DISMISSED FINDINGS reviewer-prompt block.
+#   suppress <owner> <repo> <n> <report_path> <inline_json>
+#       Remove dismissed findings from the inline-comments artifact and
+#       DEMOTE matching report-body findings into a "Previously dismissed"
+#       section (never silently delete — a false positive must stay visible).
+#
+# Matching is deliberately conservative: inline items require an exact path
+# match AND text similarity >= 0.9; silently dropping a real finding is worse
+# than occasionally repeating a dismissed one. Only each thread's root comment
+# counts as the finding (replies are discussion). The GraphQL fetch is
+# paginated and retried once; on persistent failure the script exits non-zero
+# and the caller decides whether that is fatal (cmd_post) or a warning
+# (cmd_post_update). Local suppressions come from $REVIEW_ANVIL_DISMISSALS,
+# default ~/.review-anvil/dismissed-findings.json (a legacy
+# ~/.hermes/state/review-anvil-dismissed-findings.json is honored if present).
+# Shape: {"<owner>/<repo>#<N>": [{"path":"...", "pattern":"...", "reason":"..."}]}
+_dismissed_py() {
+    _py - "$@" <<'PY'
 import difflib
 import json
 import os
 import re
 import subprocess
 import sys
+import time
 from pathlib import Path
 
-owner, repo, n, report_path, inline_json = sys.argv[1:]
-report = Path(report_path)
-inline = Path(inline_json)
-state_path = Path.home() / ".hermes" / "state" / "review-anvil-dismissed-findings.json"
+mode, owner, repo, n = sys.argv[1:5]
 
 QUERY = r'''
-query($owner:String!,$repo:String!,$number:Int!){
+query($owner:String!,$repo:String!,$number:Int!,$cursor:String){
   repository(owner:$owner,name:$repo){
     pullRequest(number:$number){
-      reviewThreads(first:100){
+      reviewThreads(first:100, after:$cursor){
+        pageInfo{ hasNextPage endCursor }
         nodes{
           isResolved
           isOutdated
           path
           line
-          comments(first:20){ nodes{ body author{login} url } }
+          comments(first:50){ nodes{ body author{login} url } }
         }
       }
     }
@@ -79,15 +107,28 @@ query($owner:String!,$repo:String!,$number:Int!){
 }
 '''
 
-cp = subprocess.run(
-    ["gh", "api", "graphql", "-f", f"owner={owner}", "-f", f"repo={repo}", "-F", f"number={n}", "-f", f"query={QUERY}"],
-    text=True,
-    stdout=subprocess.PIPE,
-    stderr=subprocess.PIPE,
-)
-if cp.returncode != 0:
+def gh_graphql(cursor):
+    args = ["gh", "api", "graphql", "-f", f"owner={owner}", "-f", f"repo={repo}",
+            "-F", f"number={n}", "-f", f"query={QUERY}"]
+    if cursor:
+        args += ["-f", f"cursor={cursor}"]
+    for attempt in (1, 2):
+        cp = subprocess.run(args, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if cp.returncode == 0:
+            return cp
+        if attempt == 1:
+            time.sleep(2)
     print(cp.stderr.strip() or cp.stdout.strip(), file=sys.stderr)
-    raise SystemExit("pr-helper: could not read resolved PR review threads; refusing to post possible repeat findings")
+    raise SystemExit("pr-helper: could not read resolved PR review threads after retry")
+
+def fetch_threads():
+    nodes, cursor = [], None
+    while True:
+        page = json.loads(gh_graphql(cursor).stdout)["data"]["repository"]["pullRequest"]["reviewThreads"]
+        nodes.extend(page["nodes"] or [])
+        if not page["pageInfo"]["hasNextPage"]:
+            return nodes
+        cursor = page["pageInfo"]["endCursor"]
 
 def norm(text: str) -> str:
     text = re.sub(r"https?://\S+", " ", text or "")
@@ -111,48 +152,87 @@ def signature(body: str) -> str:
     lines = [ln.strip() for ln in body.splitlines() if ln.strip() and not ln.strip().startswith("<!--")]
     return norm(" ".join(lines[:2])[:500])
 
-def same_finding(candidate: dict, dismissed: dict) -> bool:
-    cpath = candidate.get("path") or ""
-    dpath = dismissed.get("path") or ""
-    if cpath and dpath and cpath != dpath:
-        return False
-    cs = candidate.get("sig", "")
-    ds = dismissed.get("sig", "")
+def summary(body: str) -> str:
+    body = body or ""
+    m = re.search(r"\*\*\[(critical|high|medium|low|nit)\]\s*([^*]+?)\*\*\s*[-—:]+\s*([^\n]+)", body, re.I)
+    if m:
+        return f"[{m.group(1).lower()}] {m.group(2).strip()} — {m.group(3).strip()}"[:160]
+    lines = [ln.strip() for ln in body.splitlines() if ln.strip() and not ln.strip().startswith("<!--")]
+    return (lines[0] if lines else "")[:160]
+
+def state_file():
+    env = os.environ.get("REVIEW_ANVIL_DISMISSALS")
+    if env:
+        return Path(env)
+    for p in (Path.home() / ".review-anvil" / "dismissed-findings.json",
+              Path.home() / ".hermes" / "state" / "review-anvil-dismissed-findings.json"):
+        if p.exists():
+            return p
+    return None
+
+dismissed = []
+for t in fetch_threads():
+    if not t.get("isResolved"):
+        continue
+    comments = (t.get("comments") or {}).get("nodes") or []
+    if not comments:
+        continue
+    # Root comment only: it carries the finding; replies are discussion and
+    # would inflate the false-positive surface of fuzzy matching.
+    body = comments[0].get("body") or ""
+    sig = signature(body)
+    if sig:
+        dismissed.append({"path": t.get("path") or "", "line": t.get("line"),
+                          "sig": sig, "summary": summary(body),
+                          "source": comments[0].get("url") or "resolved-thread"})
+
+sp = state_file()
+if sp and sp.exists():
+    try:
+        state = json.loads(sp.read_text())
+        for item in state.get(f"{owner}/{repo}#{n}", []):
+            sig = norm(item.get("pattern", ""))
+            if sig:
+                dismissed.append({"path": item.get("path", ""), "line": item.get("line"),
+                                  "sig": sig, "summary": item.get("pattern", "")[:160],
+                                  "source": item.get("reason", "local-suppression")})
+    except Exception as exc:
+        raise SystemExit(f"pr-helper: invalid dismissal state {sp}: {exc}")
+
+if mode == "list":
+    if not dismissed:
+        print("None.")
+    else:
+        for d in dismissed:
+            loc = f'{d["path"]}:{d["line"]}' if d["path"] else "(no file anchor)"
+            print(f'- {loc} — {d["summary"]} ({d["source"]})')
+    raise SystemExit(0)
+
+if mode != "suppress":
+    raise SystemExit(f"pr-helper: unknown dismissed-findings mode: {mode}")
+
+report = Path(sys.argv[5])
+inline = Path(sys.argv[6])
+if not dismissed:
+    raise SystemExit(0)
+
+def same_finding(cand, dis, require_path):
+    cs, ds = cand.get("sig", ""), dis.get("sig", "")
     if not cs or not ds:
+        return False
+    cpath, dpath = cand.get("path") or "", dis.get("path") or ""
+    if require_path:
+        # Inline comments get deleted outright, so demand the strongest
+        # evidence: same file, near-identical text.
+        if not cpath or not dpath or cpath != dpath:
+            return False
+    elif cpath and dpath and cpath != dpath:
         return False
     if cs == ds:
         return True
     if len(cs) > 35 and len(ds) > 35 and (cs in ds or ds in cs):
         return True
-    return difflib.SequenceMatcher(None, cs, ds).ratio() >= 0.62
-
-j = json.loads(cp.stdout)
-threads = j["data"]["repository"]["pullRequest"]["reviewThreads"]["nodes"] or []
-dismissed = []
-for t in threads:
-    if not t.get("isResolved"):
-        continue
-    for c in (t.get("comments") or {}).get("nodes") or []:
-        body = c.get("body") or ""
-        sig = signature(body)
-        if sig:
-            dismissed.append({"path": t.get("path") or "", "sig": sig, "source": c.get("url") or "resolved-thread"})
-
-# Optional local suppressions for product decisions/stale bot claims that may not
-# map cleanly to a resolved GitHub thread yet. Shape:
-# {"Cisco-CollabAI/nex#329": [{"path":"...", "pattern":"...", "reason":"..."}]}
-if state_path.exists():
-    try:
-        state = json.loads(state_path.read_text())
-        for item in state.get(f"{owner}/{repo}#{n}", []):
-            sig = norm(item.get("pattern", ""))
-            if sig:
-                dismissed.append({"path": item.get("path", ""), "sig": sig, "source": item.get("reason", "local-suppression")})
-    except Exception as exc:
-        raise SystemExit(f"pr-helper: invalid dismissal state {state_path}: {exc}")
-
-if not dismissed:
-    raise SystemExit(0)
+    return difflib.SequenceMatcher(None, cs, ds).ratio() >= 0.9
 
 suppressed = []
 if inline.exists() and inline.read_text().strip() not in {"", "[]"}:
@@ -160,21 +240,21 @@ if inline.exists() and inline.read_text().strip() not in {"", "[]"}:
     kept = []
     for item in items:
         cand = {"path": item.get("path") or "", "sig": signature(item.get("body") or "")}
-        hit = next((d for d in dismissed if same_finding(cand, d)), None)
+        hit = next((d for d in dismissed if same_finding(cand, d, require_path=True)), None)
         if hit:
-            suppressed.append({"path": cand["path"], "sig": cand["sig"], "source": hit["source"]})
+            suppressed.append({**cand, "summary": summary(item.get("body") or ""), "source": hit["source"]})
         else:
             kept.append(item)
     if len(kept) != len(items):
         inline.write_text(json.dumps(kept, indent=2) + "\n")
 
-# Best-effort markdown cleanup for bullet/paragraph findings in the report body.
-# Inline comments are the authoritative GitHub UX; this prevents obvious repeats
-# from also appearing in the summary body.
-if suppressed and report.exists():
+# Demote (never delete) matching findings in the report body: matched blocks
+# move to a "Previously dismissed" section so a false positive stays visible
+# to the author instead of vanishing.
+demoted = []
+if report.exists():
     lines = report.read_text().splitlines()
-    out = []
-    i = 0
+    out, i = [], 0
     while i < len(lines):
         line = lines[i]
         if "**[" in line:
@@ -182,22 +262,47 @@ if suppressed and report.exists():
             j2 = i + 1
             while j2 < len(lines) and lines[j2].strip() and not lines[j2].startswith("## ") and not lines[j2].lstrip().startswith("- **["):
                 block.append(lines[j2])
-                # Keep continuation lines with the finding, but stop before the
-                # next review-anvil bullet/section so one suppressed finding
-                # cannot delete unrelated actionable findings.
                 j2 += 1
             cand = {"path": "", "sig": signature("\n".join(block))}
-            if any(same_finding(cand, {"path": "", "sig": s["sig"]}) for s in suppressed):
+            hit = next((d for d in dismissed if same_finding(cand, d, require_path=False)), None)
+            if hit:
+                demoted.append({"line": block[0].strip(), "sig": cand["sig"], "source": hit["source"]})
                 i = j2
                 continue
         out.append(line)
         i += 1
-    note = f"\n\n---\n\n_Suppressed {len(suppressed)} finding(s) already dismissed/resolved on this PR._"
-    report.write_text("\n".join(out).rstrip() + note + "\n")
+    if demoted or suppressed:
+        demoted_sigs = {d["sig"] for d in demoted}
+        tail = ["", "---", "", "### Previously dismissed on this PR (suppressed)", ""]
+        tail += [f'{d["line"]} _(dismissed: {d["source"]})_' for d in demoted]
+        tail += [f'- **(inline)** {s["path"]} — {s["summary"]} _(dismissed: {s["source"]})_'
+                 for s in suppressed if s["sig"] not in demoted_sigs]
+        report.write_text("\n".join(out).rstrip() + "\n" + "\n".join(tail) + "\n")
 
-if suppressed:
-    print(f"pr-helper: suppressed {len(suppressed)} dismissed/resolved finding(s) before posting", file=sys.stderr)
+if suppressed or demoted:
+    print(f"pr-helper: suppressed {len(suppressed)} inline / demoted {len(demoted)} report finding(s) already dismissed on this PR", file=sys.stderr)
 PY
+}
+
+# Remove/demote findings the PR author already dismissed. Callers choose the
+# failure semantics: cmd_post treats a non-zero exit as fatal (refuse to post
+# possible repeat feedback), cmd_post_update degrades to a warning (the
+# starting comment must always be updated).
+suppress_dismissed_findings() {
+    local host="$1" owner="$2" repo="$3" n="$4" report_path="$5" inline_json="$6"
+    export GH_HOST="$host"
+    _dismissed_py suppress "$owner" "$repo" "$n" "$report_path" "$inline_json"
+}
+
+cmd_dismissed() {
+    # Print the itemized dismissed-findings list for a PR — consumed by the
+    # presets to build the DISMISSED FINDINGS reviewer-prompt block.
+    local host="${1:-}" owner="${2:-}" repo="${3:-}" n="${4:-}"
+    for v in host owner repo n; do
+        [[ -n "${!v}" ]] || die "dismissed: missing <$v>"
+    done
+    export GH_HOST="$host"
+    _dismissed_py list "$owner" "$repo" "$n"
 }
 
 cmd_init() {
@@ -309,7 +414,8 @@ cmd_post() {
         fi
     fi
 
-    suppress_dismissed_findings "$host" "$owner" "$repo" "$n" "$report_path" "$inline_json"
+    suppress_dismissed_findings "$host" "$owner" "$repo" "$n" "$report_path" "$inline_json" \
+        || die "dismissed-finding suppression failed; refusing to post possible repeat findings (report left at $report_path)"
     if [[ -f "$inline_json" ]]; then
         if [[ -n "$(tr -d '[:space:]' <"$inline_json")" ]] \
            && [[ "$(tr -d '[:space:]' <"$inline_json")" != "[]" ]]; then
@@ -558,8 +664,8 @@ cmd_post_update() {
     # Edit (PATCH) an existing review-anvil-improve-pr comment with the
     # final summary. Replaces the body entirely — the "starting" text
     # from post-start is gone, only the final summary remains.
-    local host="${1:-}" owner="${2:-}" repo="${3:-}" comment_id="${4:-}" marker="${5:-}" report_path="${6:-}" author="${7:-}" outcome="${8:-}" started_at="${9:-}"
-    for v in host owner repo comment_id marker report_path author outcome; do
+    local host="${1:-}" owner="${2:-}" repo="${3:-}" n="${4:-}" comment_id="${5:-}" marker="${6:-}" report_path="${7:-}" author="${8:-}" outcome="${9:-}" started_at="${10:-}"
+    for v in host owner repo n comment_id marker report_path author outcome; do
         [[ -n "${!v}" ]] || die "post-update: missing <$v>"
     done
     [[ -f "$report_path" ]] || die "report file not found: $report_path"
@@ -569,6 +675,15 @@ cmd_post_update() {
     export GH_HOST="$host"
     command -v jq >/dev/null 2>&1 \
         || die "jq required to PATCH-encode the comment body (it ships with gh; ensure it is on PATH)"
+
+    # Suppress dismissed findings on the success path only (a failure summary
+    # has nothing to suppress). Non-fatal: the starting comment must be
+    # updated even if GitHub's thread state is momentarily unreadable —
+    # aborting here would create a dangling "starting" comment.
+    if [[ "$outcome" == "success" ]]; then
+        suppress_dismissed_findings "$host" "$owner" "$repo" "$n" "$report_path" "${report_path}.inline.json" \
+            || printf 'pr-helper: warning: dismissed-finding suppression failed; updating comment with unfiltered report\n' >&2
+    fi
 
     local completed_at
     completed_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
@@ -618,6 +733,7 @@ case "${1:-}" in
     verify-checkout)  shift; cmd_verify_checkout "$@" ;;
     post-start)       shift; cmd_post_start "$@" ;;
     post-update)      shift; cmd_post_update "$@" ;;
-    "")               die "usage: pr-helper.sh {init [<locator>] | post <host> <owner> <repo> <n> <marker> <report_path> | verify-checkout [<locator>] | post-start <host> <owner> <repo> <n> <marker> <author> | post-update <host> <owner> <repo> <comment_id> <marker> <report_path> <author> <success|failure> [<started_at>]}" ;;
+    dismissed)        shift; cmd_dismissed "$@" ;;
+    "")               die "usage: pr-helper.sh {init [<locator>] | post <host> <owner> <repo> <n> <marker> <report_path> | verify-checkout [<locator>] | post-start <host> <owner> <repo> <n> <marker> <author> | post-update <host> <owner> <repo> <n> <comment_id> <marker> <report_path> <author> <success|failure> [<started_at>] | dismissed <host> <owner> <repo> <n>}" ;;
     *)                die "unknown subcommand: $1" ;;
 esac
