@@ -162,6 +162,33 @@ Plausible-but-wrong findings are the dominant failure mode of LLM review, and bo
 - Failed verification → **Deferred** with reason `failed verification: <one line>` — never auto-fixed, never silently dropped.
 - `low`/`nit` findings skip verification: they're below the auto-fix gate and surface as suggestions either way.
 
+#### Approving out-of-scope follow-ups
+
+A pre-existing issue outside the PR's scope can still be valuable, but it must not become an inline/blocking PR finding. Classify each out-of-scope follow-up:
+
+- **Auto-approved follow-up** — create/queue separate work when all are true: severity is `critical`/`high` (or clearly reproducible `medium`), the bug is confirmed from code/tests/runtime evidence, it is not a product decision/style preference, it is not already tracked/resolved/dismissed, and the fix is plausibly separable from the current PR.
+- **Needs human triage** — mention only as a non-blocking follow-up when the issue is real but severity/ownership/product intent is ambiguous.
+- **Do not surface** — drop if speculative, low/nit, a product decision, already dismissed/tracked, or only discoverable by reviewing unrelated code paths deeply.
+
+When `report_path` is set, write a sibling `<report_path>.followups.json` with any follow-ups:
+
+```json
+[
+  {
+    "approval": "auto_approved | needs_triage",
+    "severity": "high",
+    "area": "entity-resolution",
+    "title": "Canonicalize merged co-mentions before seeding annotation prompts",
+    "why": "Confirmed pre-existing bug; stale merged IDs can re-enter prompts.",
+    "evidence": {"file": "apps/api/src/pipeline/seeder.rs", "line": 359},
+    "separate_pr_reason": "Not introduced by this performance PR; should be fixed independently.",
+    "dedupe_key": "entity-resolution merged co-mentions seeding"
+  }
+]
+```
+
+Downstream automation may file GitHub issues only for `auto_approved` entries after duplicate search; `needs_triage` stays in the PR report only.
+
 ### 4. Apply fixes
 
 **Skip entirely when `commit_mode=none`** (the policy below is still evaluated in the abstract for the report).
@@ -222,6 +249,7 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 
    Single line → `{"line": N, "side": "RIGHT"}`; range `<N>-<M>` → `{"start_line": N, "line": M, "side": "RIGHT", "start_side": "RIGHT"}`. Findings without anchors stay in the markdown body only; no anchored findings → `[]`. Each `body` is a self-contained mini-report (severity + area + what + why + suggested_fix).
 3. Print the report path as the last output line; the `.inline.json` is implied by convention.
+4. For out-of-scope follow-ups, write optional sibling `<report_path>.followups.json` using the approval schema above. Automation that files issues may only act on `approval: "auto_approved"` after duplicate search.
 
 ### Failure handling
 
@@ -326,7 +354,8 @@ Review principles:
 the PR, a regression in behavior the PR touches, or a direct threat to the PR's
 stated purpose. If you notice an obvious, high-confidence pre-existing issue
 outside that scope, put it in a separate "Out-of-scope follow-ups" section and
-mark it as separate-PR work; do not include it in the fenced findings block.
+mark it `auto_approved` only when it meets the approval policy; otherwise mark
+it `needs_triage`. Do not include follow-ups in the fenced findings block.
 
 Severity guide:
 - critical: data loss, security breach, production crash
@@ -427,7 +456,7 @@ After the last round, emit a fresh top-level report (a new document, not a repla
 - **[severity] area** — what (deferred because: <reason — e.g. introduces new dependency: <X>; size cap reached; failed verification: <why>; product decision>)
 
 ## Out-of-scope follow-ups
-- **[severity] area** — obvious pre-existing issue noticed during review (separate PR; why it is outside this PR's scope)
+- **[severity] area** — obvious pre-existing issue noticed during review (`auto_approved` or `needs_triage`; separate PR; why it is outside this PR's scope)
 
 ## Would-apply summary                      # commit_mode=none only
 - **[severity] area** — what (would commit as `<type>(<area>): <subject>`)
