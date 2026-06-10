@@ -31,6 +31,7 @@ Parse the user's free-form args string into:
 | `allow_new_deps` | `false` | "allow new deps" — auto-apply fixes that introduce new imports/subsystems instead of deferring them |
 | `min_fix_severity` | `medium` | "auto-fix high and above", "fix only critical" — minimum severity for auto-fix; lower findings are listed, not applied |
 | `commit_mode` | `per_fix` | `per_fix` (one commit per fix-group) or `none` ("review only", "don't commit", "no fixes") |
+| `approve` | `allowed` | "never approve", "comment only", `approve: never` — forbid an `APPROVE` decision in `.approval.json`; the run always posts a COMMENT review. Only meaningful for review-only PR runs |
 | `verify_cmd` | auto-detect | "verify with `npm test`", `verify_cmd: none` to skip — build/test command run after each round's fixes (see "Build/test gate"; per_fix only) |
 | `reviewer_timeout` | `600` | "timeout 10 minutes" — hard per-reviewer wall-clock cap in seconds for Bash-dispatched reviewers (see `run-reviewer.sh`). Default is ~3× the slowest legitimate reviewer observed in real runs (98–213s); doubled automatically for >5000-line diffs |
 | `report_path` | unset | File path; when set, the engine writes the final report there (creating parent dirs) and prints exactly that path as its last output line so downstream consumers can pick it up |
@@ -249,7 +250,7 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
    ```
 
    Single line → `{"line": N, "side": "RIGHT"}`; range `<N>-<M>` → `{"start_line": N, "line": M, "side": "RIGHT", "start_side": "RIGHT"}`. Findings without anchors stay in the markdown body only; no anchored findings → `[]`. Each `body` is a self-contained mini-report (severity + area + what + why + suggested_fix).
-3. Write a sibling `<report_path>.approval.json` so the PR-posting helper can choose the GitHub review event:
+3. Write a sibling `<report_path>.approval.json` so the PR-posting helper can choose the GitHub review event (review-only PR runs; for other runs write `{"event": "COMMENT"}` or omit the file — the helper defaults to COMMENT):
 
    ```json
    {
@@ -258,7 +259,7 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
    }
    ```
 
-   Use `APPROVE` for review-only PR runs when all of these hold: at least one reviewer succeeded, dismissed/resolved-thread lookup succeeded, there are no `critical`/`high` actionable in-scope findings, no `critical`/`high` in-scope deferred finding needs author action, and remaining items are only `medium`/`low`/`nit` findings, suggestions, deferred notes, or out-of-scope follow-ups. Medium-and-lower in-scope findings should still be posted clearly, but the review event is approval: leave those fixes to the author. Use `COMMENT` otherwise. Out-of-scope follow-ups do not block approval.
+   Use `APPROVE` for review-only PR runs when all of these hold: `approve` is not `never`, at least one reviewer succeeded, dismissed/resolved-thread lookup succeeded, there are no `critical`/`high` actionable in-scope findings, no `critical`/`high` in-scope deferred finding needs author action, and remaining items are only `medium`/`low`/`nit` findings, suggestions, deferred notes, or out-of-scope follow-ups. Medium-and-lower in-scope findings should still be posted clearly, but the review event is approval: leave those fixes to the author. Use `COMMENT` otherwise. Out-of-scope follow-ups do not block approval.
 4. Print the report path as the last output line; the `.inline.json` and `.approval.json` files are implied by convention.
 5. For out-of-scope follow-ups, write optional sibling `<report_path>.followups.json` using the approval schema above. Automation that files issues may only act on `approval: "auto_approved"` after duplicate search.
 
@@ -442,7 +443,7 @@ After the last round, emit a fresh top-level report (a new document, not a repla
 **Auto-fix policy:** min severity = <medium>, allow_new_deps = <false>
 **Verification:** <verify_cmd used, or "none detected" / "skipped">   # per_fix only
 **Report path:** <only when report_path was set>
-**Review decision:** APPROVE | COMMENT — <one-sentence reason>
+**Review decision:** APPROVE | COMMENT — <one-sentence reason>   # review-only PR runs
 
 ## Scope
 <For PR targets: one sentence summarizing what this PR is trying to change.>

@@ -42,6 +42,48 @@ cleanup_post_artifacts() {
     rmdir "$(dirname "$report_path")" 2>/dev/null || true
 }
 
+# Submit one PR review via the REST reviews endpoint. Relies on the caller's
+# owner/repo/n/report_path locals (bash dynamic scoping). $1 = event,
+# $2 = inline-comments JSON file, or "" for a body-only review. On success
+# prints the review's html_url (possibly empty) and returns 0; on failure
+# prints a one-line warning to stderr and returns 1 — the caller decides the
+# next step in the fallback cascade.
+_submit_review() {
+    local event="$1" inline="${2:-}" payload response
+    command -v jq >/dev/null 2>&1 \
+        || die "jq required to submit PR reviews (it ships with gh; ensure it is on PATH)"
+    if [[ -n "$inline" ]]; then
+        payload=$(jq -n --rawfile body "$report_path" --arg event "$event" --slurpfile comments "$inline" \
+            '{event: $event, body: $body, comments: $comments[0]}')
+    else
+        payload=$(jq -n --rawfile body "$report_path" --arg event "$event" \
+            '{event: $event, body: $body}')
+    fi
+    if ! response=$(printf '%s' "$payload" | gh api \
+                      "repos/${owner}/${repo}/pulls/${n}/reviews" \
+                      -X POST --input - 2>&1); then
+        printf 'warning: %s review submission%s failed (%s)\n' \
+            "$event" "${inline:+ with inline comments}" \
+            "$(printf '%s' "$response" | head -n1)" >&2
+        return 1
+    fi
+    printf '%s' "$response" | jq -r '.html_url // empty' 2>/dev/null || true
+}
+
+# Print the post result and clean up artifacts. $1 = event, $2 = url (may be
+# empty). Uses the caller's report_path local.
+_emit_post_result() {
+    local event="$1" url="$2"
+    cleanup_post_artifacts "$report_path"
+    if [[ -n "$url" ]]; then
+        printf '%s\n' "$url"
+    elif [[ "$event" == "APPROVE" ]]; then
+        printf 'approved (URL unavailable)\n'
+    else
+        printf 'posted (URL unavailable)\n'
+    fi
+}
+
 # Resolve a Python runner: prefer uv (which can provision an interpreter
 # itself), fall back to system python3. The dismissed-findings logic is
 # stdlib-only, so --no-project keeps uv from looking for a pyproject.
@@ -413,7 +455,12 @@ cmd_post() {
         review_event=$(jq -r '.event // "COMMENT"' "$approval_json" 2>/dev/null || printf 'COMMENT')
         case "$review_event" in
             APPROVE|COMMENT) ;;
-            *) die "invalid review event in $approval_json: $review_event (expected APPROVE or COMMENT)" ;;
+            *)
+                # Same safe direction as malformed JSON: an unexpected value
+                # must never block the post — and must never approve.
+                printf 'warning: unexpected review event in %s: %s — defaulting to COMMENT\n' \
+                    "$approval_json" "$review_event" >&2
+                review_event="COMMENT" ;;
         esac
     fi
     local has_inline=0
@@ -436,57 +483,37 @@ cmd_post() {
         fi
     fi
 
+    # Review-submission cascade — a failed approval must never cost the
+    # report (GitHub rejects self-approval with 422, the most common case
+    # for the "review the PR I'm on" workflow):
+    #   1. review {requested event + inline comments}   (if inline exists;
+    #      can also fail when reviewer line refs aren't in the PR's diff)
+    #   2. review {APPROVE, body-only}                  (if event is APPROVE)
+    #   3. downgrade APPROVE -> COMMENT, note it in the report, retry
+    #      {COMMENT + inline}                           (if inline exists)
+    #   4. top-level comment fallback (below)
+    local url
     if [[ "$has_inline" -eq 1 ]]; then
-        # Build the review payload: {body, event, comments}. Use jq to
-        # assemble JSON safely (handles quoting, multiline body, etc.).
-        command -v jq >/dev/null 2>&1 \
-            || die "jq required to submit inline-comment reviews (it ships with gh; ensure it is on PATH)"
-        local review_payload
-        review_payload=$(jq -n --rawfile body "$report_path" --arg event "$review_event" --slurpfile comments "$inline_json" \
-            '{event: $event, body: $body, comments: $comments[0]}')
-
-        # Submit the review. The response JSON contains html_url
-        # directly — no marker lookup needed on this path.
-        local response url
-        if ! response=$(printf '%s' "$review_payload" | gh api \
-                          "repos/${owner}/${repo}/pulls/${n}/reviews" \
-                          -X POST --input - 2>&1); then
-            # Fall through to the top-level fallback rather than aborting:
-            # inline-comment submission can fail when reviewer-supplied
-            # file/line refs aren't actually in the PR's diff. The
-            # user still wants their report posted somewhere.
-            printf 'warning: PR-review submission failed (%s); falling back to %s without inline comments\n' \
-                "$(printf '%s' "$response" | head -n1)" "$review_event" >&2
-        else
-            url=$(printf '%s' "$response" | jq -r '.html_url // empty' 2>/dev/null || true)
-            cleanup_post_artifacts "$report_path"
-            if [[ -n "$url" ]]; then
-                printf '%s\n' "$url"
-            else
-                printf 'posted (URL unavailable)\n'
-            fi
+        if url=$(_submit_review "$review_event" "$inline_json"); then
+            _emit_post_result "$review_event" "$url"
             return 0
         fi
     fi
 
     if [[ "$review_event" == "APPROVE" ]]; then
-        command -v jq >/dev/null 2>&1 \
-            || die "jq required to submit approval reviews (ensure it is on PATH)"
-        local approval_payload response url
-        approval_payload=$(jq -n --rawfile body "$report_path" '{event: "APPROVE", body: $body}')
-        if ! response=$(printf '%s' "$approval_payload" | gh api \
-                          "repos/${owner}/${repo}/pulls/${n}/reviews" \
-                          -X POST --input - 2>&1); then
-            die "gh approval review failed for $owner/$repo#$n on host=$host: $(printf '%s' "$response" | head -n1)"
+        if url=$(_submit_review APPROVE ""); then
+            _emit_post_result APPROVE "$url"
+            return 0
         fi
-        url=$(printf '%s' "$response" | jq -r '.html_url // empty' 2>/dev/null || true)
-        cleanup_post_artifacts "$report_path"
-        if [[ -n "$url" ]]; then
-            printf '%s\n' "$url"
-        else
-            printf 'approved (URL unavailable)\n'
+        review_event="COMMENT"
+        printf 'warning: approval could not be submitted (common cause: GitHub rejects approving your own PR); downgrading to a comment review\n' >&2
+        printf '\n\n---\n\n_review-anvil decided APPROVE, but GitHub rejected the approval (commonly: self-authored PRs cannot be approved); posted as a comment instead._\n' >> "$report_path"
+        if [[ "$has_inline" -eq 1 ]]; then
+            if url=$(_submit_review COMMENT "$inline_json"); then
+                _emit_post_result COMMENT "$url"
+                return 0
+            fi
         fi
-        return 0
     fi
 
     # Fallback path: top-level comment + marker URL recovery.

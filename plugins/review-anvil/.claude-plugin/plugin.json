@@ -1,6 +1,6 @@
 {
   "name": "review-anvil",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "description": "Iterative multi-agent code review. Four cross-agent skills: review-anvil (engine — N rounds of parallel codex-exec/claude-exec reviewers, synthesize findings, optionally apply fix commits), review-anvil-readonly (engine with commit_mode=none), review-anvil-pr (read-only PR review with hybrid posting — inline review comments for file-anchored findings + top-level summary for the rest), review-anvil-improve-pr (productive PR loop — posts a 'starting' PR comment cc'ing the author, applies fix commits across N rounds, pushes back to the PR, then edits the starting comment in-place with the synthesized report or failure summary). Reviewers get distinct lenses; findings are verified against the code before being applied or posted; a per-round build/test gate keeps fix commits green; Bash-dispatched reviewers run under a run-reviewer.sh watchdog (hard timeout, empty-output detection). PR posting and verification delegated to `set -euo pipefail` shell helpers.",
   "author": {
     "name": "mrshu"
