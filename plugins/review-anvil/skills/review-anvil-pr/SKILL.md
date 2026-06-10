@@ -25,7 +25,13 @@ The user may provide a PR locator as the first argument, or omit it entirely:
 
 ### 0. Reject overrides of pinned params
 
-Pins for this preset: `commit_mode`, `target`, `report_path`. Apply the canonical pin-rejection algorithm defined in the engine SKILL.md → "Parsing" (pin-rejection) (segment-parse `$ARGUMENTS`, lowercase the key of each segment, abort if any key matches one of the pinned params). The preset name in the abort message is `review-anvil-pr`.
+Pins for this preset: `commit_mode`, `target`, `report_path`. Enforce mechanically — after resolving the helper (step 1), run:
+
+```bash
+bash <helper-path> check-pins review-anvil-pr "commit_mode,target,report_path" "$ARGUMENTS"
+```
+
+Non-zero exit means a pinned param was overridden in the args: surface the script's error verbatim and stop. (The engine's prose pin-rejection in "Parsing" remains as the description of the algorithm; the script is the binding layer.)
 
 The pins are non-overridable for safety: `commit_mode` enforces read-only, `target` and `report_path` are mechanically tied to the user's locator. Defense in depth against the engine's prose parser being talked into accepting overrides (e.g. via prompt injection in the focus text).
 
@@ -61,6 +67,7 @@ HOST=github.com
 OWNER=acme
 REPO=widgets
 N=137
+HEAD_SHA=<the PR head commit at review time>
 MARKER=<uuidv4>
 REPORT_PATH=<absolute-path>/.review-anvil/final-report-<uuidv4>.md
 TITLE=<PR title>
@@ -82,7 +89,9 @@ commit_mode: none, target: <locator>, report_path: <REPORT_PATH>, <extra-user-ar
 
 The user may override `rounds:` in their args (it's a default, not a pin). They should not override `commit_mode`, `target`, or `report_path` — these are pinned for safety; the step-0 segment-rejection above blocks override attempts.
 
-The engine runs the review loop, writes the final report to `<REPORT_PATH>`, and prints that path on its last output line.
+Provide `$HEAD_SHA` to the engine for its `.approval.json` `head_sha` field — the posting helper uses it to downgrade a stale APPROVE (PR head moved mid-run) to a COMMENT.
+
+The engine runs the review loop, writes the final report to `<REPORT_PATH>` (on failure paths too), and prints that path on its last output line. Before posting, if `<REPORT_PATH>.followups.json` exists, read it and surface its entries to the user (the helper deletes it after a successful post; `auto_approved` entries are the only ones automation may file issues for, after a duplicate search).
 
 ### 4. Post
 
@@ -96,7 +105,7 @@ The script chooses the GitHub review event from `<REPORT_PATH>.approval.json` (`
 - **Comment review.** If the decision is `COMMENT` and `<REPORT_PATH>.inline.json` exists and is non-empty, the script assembles a PR review payload (`{event: COMMENT, body: <report>, comments: [...]}`) and submits it via `gh api /repos/{O}/{R}/pulls/{N}/reviews`. This produces ONE review event in the PR timeline with a top-level summary body AND inline review comments anchored to specific files+lines — the native GitHub review UX. The API response's `html_url` is used directly (no marker lookup needed).
 - **Top-level fallback.** If the decision is `COMMENT` and `<REPORT_PATH>.inline.json` is absent or empty (no findings had `file`+`line`), or if the PR-review API call fails (most common cause: reviewer-supplied line numbers aren't in the PR's diff), the script falls back to `gh pr comment --body-file <REPORT_PATH>` and recovers the URL via paginated marker lookup with one retry for read-after-write lag.
 
-In both paths, the marker UUID is prepended to the report body atomically before posting, so URL recovery via marker remains possible even on the fallback path.
+In all paths, the marker UUID is prepended to the report body (idempotently — retries don't stack markers) before posting, so URL recovery remains possible even on the fallback path. An `APPROVE` decision is additionally checked against the PR's current head SHA and downgraded to `COMMENT` if the PR moved since the review.
 
 **Dismissed-finding suppression.** Immediately before posting, the helper fetches resolved PR review threads (paginated, retried once) and applies local suppressions from `$REVIEW_ANVIL_DISMISSALS` (default `~/.review-anvil/dismissed-findings.json`; a legacy `~/.hermes/state/` file is honored if present). Matching is deliberately conservative — inline findings require an exact path match plus near-identical text (similarity ≥ 0.9), because silently deleting a real finding is worse than repeating a dismissed one. Matched inline comments are removed; matched report-body findings are **demoted** into a "Previously dismissed on this PR" section rather than deleted, so a false positive stays visible. If resolved-thread state cannot be fetched after retry, posting aborts rather than risking repeat feedback.
 
@@ -116,12 +125,17 @@ Surface the URL (or `posted (URL unavailable)`) to the user. If the helper scrip
 
 ## Constraints
 
-- Requires `gh` on `PATH` and `uuidgen`, plus `uv` (preferred; falls back to `python3`) for dismissed-finding handling. The script aborts with a clear error if a dependency is missing.
+- Requires `gh`, `uuidgen`, `jq` (a real binary — gh's `--jq` is built-in gojq and doesn't count), and `uv` (preferred; falls back to `python3`) for dismissed-finding handling. `init` preflights all of these so a missing dependency fails before the expensive review, not after.
+- Environment switches honored by the helper: `REVIEW_ANVIL_NO_APPROVE=1` (never submit an approval), `REVIEW_ANVIL_SKIP_DISMISSED=1` (skip dismissed-finding lookups for hosts without GraphQL access — degraded mode that also forces COMMENT), `REVIEW_ANVIL_DISMISSALS=<path>` (local-suppressions file, default `~/.review-anvil/dismissed-findings.json`; record entries with `pr-helper.sh dismiss <host> <owner> <repo> <n> <path> <pattern> [<reason>]`).
 - **An `APPROVE` decision submits a real GitHub approval from your authenticated `gh` account.** It counts toward branch-protection required reviews and reads to collaborators as your judgment — while the gate behind it is the engine's LLM classification. If that posture isn't acceptable for a repo or org, pass `approve: never` (or "never approve" / "comment only") and the run always posts plain `COMMENT` reviews. `REQUEST_CHANGES` is deliberately unsupported: blocking someone's merge on LLM judgment is a different risk class from commenting or approving.
 - What lands on the PR has passed the engine's verification step: `medium`+ findings raised by a single reviewer are confirmed against the actual code before posting, and findings that fail verification appear under "Deferred items" with reason `failed verification` rather than as actionable review comments. False positives posted to a colleague's PR burn trust — the engine treats precision as the product.
 - Read-only by design — the PR's branch may not be checked out locally, and pushing fix commits to a PR you don't own is rarely the intent. If you want to fix-and-commit on a PR you have checked out, activate `review-anvil` directly with `target: branch` (your checked-out PR branch) and `commit_mode=per_fix` — the local working tree becomes the source of truth and the diff against the merge base is unambiguous.
 - Supports github.com and GitHub Enterprise — the script extracts the host from the URL and sets `GH_HOST` internally for all `gh` invocations.
 - Bare-integer PR locators are rejected — pass a URL or `<owner>/<repo>#<N>` slug to be unambiguous about repo identity.
+
+## Recovery: orphaned artifacts
+
+If the orchestrator dies between the engine finishing and the post step, the artifacts remain under `.review-anvil/` (self-gitignored — they can't dirty the worktree or end up in commits). Re-run step 4's `post` with the captured values to publish them: the helper's head-SHA check downgrades a stale APPROVE if the PR moved in the meantime, and the marker lookup prevents double posts if a previous attempt partially succeeded. Leftovers from runs you don't want to publish can simply be deleted.
 
 ## Pairing
 

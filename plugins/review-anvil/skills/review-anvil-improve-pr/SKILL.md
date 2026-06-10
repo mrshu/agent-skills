@@ -11,7 +11,7 @@ The skill orchestrates six steps:
 
 1. `scripts/pr-helper.sh verify-checkout [<locator>]` — locator parsing or auto-detect, then verify the local checkout matches the PR's head branch and is in a clean state. Captures the PR's base branch, author, marker UUID, and report path.
 2. `scripts/pr-helper.sh post-start` — post a "starting" top-level PR comment cc'ing the original author, explaining what's about to happen and that the comment will be edited with the final summary. Captures the comment's ID (for the later edit) and start timestamp. The author gets a GitHub notification.
-3. The [`review-anvil`](../review-anvil/SKILL.md) engine in `commit_mode=per_fix` on a branch-vs-base diff (NOT a PR-locator target — the engine's v0.4.1 incompatibility rule forbids that combination; this preset deliberately routes around it by targeting the local branch directly). The engine writes the final synthesized report to `report_path`.
+3. The [`review-anvil`](../review-anvil/SKILL.md) engine in `commit_mode=per_fix` on a branch-vs-base diff (NOT a PR-locator target — the engine's "PR-target / per_fix incompatibility" rule forbids that combination; this preset deliberately routes around it by targeting the local branch directly). The engine writes the final synthesized report to `report_path` — on failure paths too.
 4. `git push` — once, after all rounds complete (or converge early) and only if the engine reported no failures and the build/test gate ended green, to publish the fix commits to the PR.
 5. `scripts/pr-helper.sh post-update` — PATCH-edit the starting comment to replace its body with the final report (outcome=success) or a failure summary (outcome=failure). GitHub does NOT notify on edits, so the author isn't pinged again — the original `cc @author` notification at step 2 is the only ping.
 6. Surface the final report inline + the comment URL to the user.
@@ -30,7 +30,13 @@ The helper script aborts cleanly if the current checkout doesn't match the named
 
 ### 0. Reject overrides of pinned params
 
-Pins for this preset: `commit_mode`, `target`, `report_path`. Apply the canonical pin-rejection algorithm defined in the engine SKILL.md → "Parsing" (pin-rejection) (segment-parse `$ARGUMENTS`, lowercase the key of each segment, abort if any key matches one of the pinned params). The preset name in the abort message is `review-anvil-improve-pr`.
+Pins for this preset: `commit_mode`, `target`, `report_path`. Enforce mechanically — after resolving the helper (step 1), run:
+
+```bash
+bash <helper-path> check-pins review-anvil-improve-pr "commit_mode,target,report_path" "$ARGUMENTS"
+```
+
+Non-zero exit means a pinned param was overridden: surface the error verbatim and stop.
 
 The pins are non-overridable for safety: `commit_mode=per_fix` is the whole point of this preset (read-only is what `review-anvil-pr` is for), `target=<base>...HEAD` is mechanically tied to the verified PR, and `report_path` is the file the post-summary step needs to read after the engine finishes.
 
@@ -65,6 +71,7 @@ OWNER=acme
 REPO=widgets
 N=137
 HEAD_BRANCH=feature/auth-rewrite
+HEAD_SHA=<the PR head commit at review time>
 BASE_BRANCH=main
 TITLE=<PR title>
 AUTHOR=<github-login>
@@ -110,11 +117,11 @@ STARTED_AT=2026-06-07T10:00:00Z
 
 Capture all three. Echo to the user: `starting comment posted: $COMMENT_URL`. The PR author receives a GitHub notification from the `@-mention`.
 
-If `post-start` fails (network blip, gh auth issue, marker-lookup failure), abort. The fix commits haven't started yet, so nothing to clean up.
+If `post-start` fails *before* posting (network blip, gh auth issue), abort — nothing to clean up. One failure mode is different: the script can die *after* posting, when the marker lookup can't recover the comment ID ("posted starting comment but could not recover its ID"). In that case a starting comment **does** exist on the PR — abort the run and apply the Recovery procedure below to edit it manually.
 
 ### 4. Activate the engine
 
-Activate the `review-anvil` skill with this argument string (extra user args go between the pinned params and the rounds default):
+Activate the `review-anvil` skill with this argument string (extra user args go after the pinned params; the engine's own `rounds: 3` default applies when the user doesn't pass one):
 
 ```
 commit_mode: per_fix, target: <BASE_BRANCH>...HEAD, report_path: <REPORT_PATH>, <extra-user-args>
@@ -132,7 +139,7 @@ The engine runs the multi-round loop, committing fix-groups along the way and wr
 
 ### 5. Push
 
-Only after the engine reports a successful run: all requested rounds completed (or the loop converged early — that counts as success), no `git commit failed` or `all reviewers failed` errors in the round summaries, and **every round's build/test gate ended green** (passed, reverted-to-green, `none detected`, or pre-existing baseline red with no new failures — never newly red):
+Only after the engine reports a successful run: all requested rounds completed (or the loop converged early — that counts as success), no `git commit failed` or `all reviewers failed` errors in the round summaries, and **every round's Verification state is one of** `passed`, `failed → round reverted`, `pre-existing failures (no new)`, `none detected`, or `skipped` — i.e. never newly red (these are exactly the engine's round-summary states):
 
 ```bash
 git push origin "$HEAD_BRANCH"
@@ -160,7 +167,7 @@ On a `success` outcome the helper also re-applies dismissed-finding suppression 
 
 GitHub does **not** notify on comment edits, so the author isn't pinged again — the original `cc @author` notification from step 3 is the only ping.
 
-The script also cleans up `<REPORT_PATH>` and `<report_path>.inline.json` (if any) and rmdir's the parent `.review-anvil/` directory if empty.
+Before calling `post-update` on a success outcome, read `<REPORT_PATH>.followups.json` (if present) and surface its entries to the user — the script deletes it afterwards. The script cleans up all four artifacts (`<REPORT_PATH>`, `.inline.json`, `.approval.json`, `.followups.json`) and removes the `.review-anvil/` directory when no other run's artifacts remain.
 
 If `post-update` itself fails (rare: transient `gh` issue, comment was deleted by hand mid-run), surface the error but **do not undo the push** — the fix commits are already on the PR and a missing comment edit is recoverable. The user can manually edit the starting comment using the comment ID. The report file remains on disk for that purpose (cleanup is skipped on `post-update` failure).
 
@@ -178,7 +185,7 @@ Surface the engine's final report inline. Echo a two-line summary:
 
 ## Constraints
 
-- Requires `gh` on `PATH` and `uuidgen`, plus `uv` (preferred; falls back to `python3`) for dismissed-finding handling (all used by the shared helper).
+- Requires `gh`, `uuidgen`, `jq` (a real binary — gh's `--jq` is built-in gojq and doesn't count), plus `uv` (preferred; falls back to `python3`) for dismissed-finding handling. `verify-checkout` preflights all of these so a missing dependency fails before the expensive review. The helper honors the same environment switches as `review-anvil-pr` (`REVIEW_ANVIL_NO_APPROVE`, `REVIEW_ANVIL_SKIP_DISMISSED`, `REVIEW_ANVIL_DISMISSALS`).
 - **Mutates the local working tree and pushes to the PR.** Use `review-anvil-pr` (read-only + comment) when you only want feedback without applying fixes.
 - The user must already be on the PR's branch with a clean worktree. The verify-checkout step enforces this and gives clear recovery instructions on failure (e.g. `gh pr checkout <N>`).
 - The PR must be one you have push access to. `git push` will fail with a normal git error if not — the script doesn't pre-check push permissions.

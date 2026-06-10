@@ -16,7 +16,7 @@ This is the **engine**. Three preset skills in the same plugin pin common config
 | `review-anvil` (engine) | nothing | Default fix/commit loop, or any custom param combination. |
 | `review-anvil-readonly` | `commit_mode=none`; default `rounds=1` | Read-only review — no edits, no commits. |
 | `review-anvil-pr [<locator>]` | `commit_mode=none`, `target=<locator>`, `report_path=<file>` | Review a GitHub PR and post the report back as a PR comment (orchestrates `scripts/pr-helper.sh`). Locator auto-detected from the current branch when omitted. |
-| `review-anvil-improve-pr [<locator>]` | `commit_mode=per_fix`, `target=<base>...HEAD` | Improve a checked-out PR: fix commits across N rounds, then push. Targets the branch (not a PR locator), deliberately routing around the PR-target/per_fix rule below. |
+| `review-anvil-improve-pr [<locator>]` | `commit_mode=per_fix`, `target=<base>...HEAD`, `report_path=<file>` | Improve a checked-out PR: fix commits across N rounds, then push. Targets the branch (not a PR locator), deliberately routing around the PR-target/per_fix rule below. |
 
 ## Parameters
 
@@ -31,7 +31,7 @@ Parse the user's free-form args string into:
 | `allow_new_deps` | `false` | "allow new deps" — auto-apply fixes that introduce new imports/subsystems instead of deferring them |
 | `min_fix_severity` | `medium` | "auto-fix high and above", "fix only critical" — minimum severity for auto-fix; lower findings are listed, not applied |
 | `commit_mode` | `per_fix` | `per_fix` (one commit per fix-group) or `none` ("review only", "don't commit", "no fixes") |
-| `approve` | `allowed` | "never approve", "comment only", `approve: never` — forbid an `APPROVE` decision in `.approval.json`; the run always posts a COMMENT review. Only meaningful for review-only PR runs |
+| `approve` | `allowed` | "never approve", "comment only", `approve: never` — always write `{"event": "COMMENT"}` to `.approval.json`. Presets additionally export `REVIEW_ANVIL_NO_APPROVE=1` so the helper enforces it mechanically. Only meaningful for review-only PR runs |
 | `verify_cmd` | auto-detect | "verify with `npm test`", `verify_cmd: none` to skip — build/test command run after each round's fixes (see "Build/test gate"; per_fix only) |
 | `reviewer_timeout` | `600` | "timeout 10 minutes" — hard per-reviewer wall-clock cap in seconds for Bash-dispatched reviewers (see `run-reviewer.sh`). Default is ~3× the slowest legitimate reviewer observed in real runs (98–213s); doubled automatically for >5000-line diffs |
 | `report_path` | unset | File path; when set, the engine writes the final report there (creating parent dirs) and prints exactly that path as its last output line so downstream consumers can pick it up |
@@ -95,7 +95,7 @@ Capture the target's state at round start so all reviewers see the same input:
 - Non-PR targets (branch, uncommitted, path): materialize the diff with the appropriate `git diff …`.
 - PR targets (always `commit_mode=none`): fetch the PR's diff via `gh pr diff <N> -R <owner>/<repo>` (or equivalent MCP/REST). The local worktree is irrelevant — reviewers see the PR as it exists on GitHub.
 - Whenever PR context is available — a PR-locator target, or a preset that supplies it (`review-anvil-improve-pr` does, after `verify-checkout`) — fetch the PR title/body/base branch/file list too, then infer the PR's intended scope in one sentence (e.g. "performance optimization in annotation seeding", "left-sidebar UX reorganization"). Put that scope in every reviewer prompt. A finding is actionable only if the PR introduces/regresses it or if it directly undermines the PR's stated purpose. Obvious, high-confidence pre-existing defects may be mentioned, but only under a separate "Out-of-scope follow-ups" section — never as blockers or inline actionable review comments for the current PR.
-- Likewise fetch the **dismissed findings** before dispatch: resolved review threads plus local suppressions, via `pr-helper.sh dismissed <host> <owner> <repo> <n>` (ships with `review-anvil-pr`; paginated, retried once). Include the itemized list in every reviewer prompt (DISMISSED FINDINGS block) and never report those findings again unless the new diff materially reintroduces the same bug in different code. If the lookup fails after retry, abort rather than risk repeating feedback the author already resolved.
+- Likewise gather the **dismissed findings** before dispatch: when a preset supplied the list (improve-pr captures it at verify-checkout time), use that; for PR-locator targets fetch it yourself via `pr-helper.sh dismissed <host> <owner> <repo> <n>` (ships with `review-anvil-pr`; paginated, retried once). Include the itemized list in every reviewer prompt (DISMISSED FINDINGS block) and never report those findings again unless the new diff materially reintroduces the same bug in different code. If the lookup fails after retry, abort rather than risk repeating feedback the author already resolved — unless the user opted into degraded mode (`REVIEW_ANVIL_SKIP_DISMISSED=1`), which also forces the review decision to COMMENT.
 - Note `git rev-parse HEAD` so the round summary can reference the exact baseline (informational-only for PR targets).
 
 ### 2. Dispatch reviewers in parallel
@@ -210,8 +210,8 @@ Noise/false positives are also **deferred** with a one-line reason — never sil
 Fix commits must not leave the branch red. In `per_fix`:
 
 - **Resolve:** explicit `verify_cmd` → use it; `verify_cmd: none` → record `Verification: skipped (user)`; unset → auto-detect (repo docs naming a test command; `package.json` `scripts.test`; `Makefile` `test`; pytest/cargo/go-test config). Nothing found → record `Verification: none detected` and proceed (downstream consumers surface the caveat).
-- **Baseline:** run once before round 1; if already failing, gate only on *new* failures.
-- **Gate each round:** run after the round's fixes. On a new failure: one fix-forward attempt if the cause is obvious (`fix(<area>): repair <verify_cmd> failure from round <N> fixes`), else `git revert --no-edit` the round's fix commits and defer the findings with `fix failed verification`. A round never ends with the gate newly red.
+- **Baseline:** run once before round 1; if already failing, gate only on *new* failures and record the round state as `pre-existing failures (no new)`.
+- **Gate each round:** run after the round's fixes. On a new failure: one fix-forward attempt if the cause is obvious (`fix(<area>): repair <verify_cmd> failure from round <N> fixes`), else `git revert --no-edit` the round's fix commits and defer the findings with `fix failed verification`. If the revert itself fails to restore green, stop the loop and surface it (same handling as a failed `git commit`). A round never ends with the gate newly red.
 
 ### 5. Round summary
 
@@ -223,7 +223,7 @@ Append to running output:
 - Reviewers: <list dispatched>
 - Findings: C critical, H high, M medium, L low, X nit
 - Fixes applied: K commits (<sha1>..<shaN>)   # or "0 (review-only)"
-- Verification: <cmd> — passed | failed → round reverted | none detected | skipped   # per_fix only
+- Verification: <cmd> — passed | failed → round reverted | pre-existing failures (no new) | none detected | skipped   # per_fix only
 - Would-apply: W items                         # commit_mode=none only
 - Suggestions: S items (sub-threshold severity; not applied)
 - Deferred: D items (reasons: noise / new dependency / size cap / failed verification / product decision)
@@ -284,19 +284,23 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
    ```json
    {
      "event": "APPROVE | COMMENT",
+     "head_sha": "<the HEAD_SHA the preset captured at init/verify-checkout>",
      "reason": "No high/critical in-scope findings; medium-and-lower items are left to the author."
    }
    ```
 
-   Use `APPROVE` for review-only PR runs when all of these hold: `approve` is not `never`, at least one reviewer succeeded, dismissed/resolved-thread lookup succeeded, there are no `critical`/`high` actionable in-scope findings, no `critical`/`high` in-scope deferred finding needs author action, and remaining items are only `medium`/`low`/`nit` findings, suggestions, deferred notes, or out-of-scope follow-ups. Medium-and-lower in-scope findings should still be posted clearly, but the review event is approval: leave those fixes to the author. Use `COMMENT` otherwise. Out-of-scope follow-ups do not block approval.
+   Include `"head_sha"` — the `HEAD_SHA` the preset captured at init/verify-checkout time — so the posting helper can verify the approval still matches the reviewed state (it downgrades to COMMENT if the PR head moved mid-run).
+
+   Use `APPROVE` for review-only PR runs when all of these hold: `approve` is not `never`, at least one reviewer succeeded, there are no `critical`/`high` actionable in-scope findings, no `critical`/`high` in-scope deferred finding needs author action, and remaining items are only `medium`/`low`/`nit` findings, suggestions, deferred notes, or out-of-scope follow-ups. Medium-and-lower in-scope findings should still be posted clearly, but the review event is approval: leave those fixes to the author. Use `COMMENT` otherwise. Out-of-scope follow-ups do not block approval.
 4. Print the report path as the last output line; the `.inline.json` and `.approval.json` files are implied by convention.
-5. For out-of-scope follow-ups, write optional sibling `<report_path>.followups.json` using the approval schema above. Automation that files issues may only act on `approval: "auto_approved"` after duplicate search.
+5. For out-of-scope follow-ups, write the sibling `<report_path>.followups.json` once, after the final round, using the follow-ups schema from §3 "Approving out-of-scope follow-ups" (NOT the `.approval.json` schema above). The posting helper deletes it after a successful post, so any consumer (surfacing follow-ups to the user, filing issues for `auto_approved` entries after duplicate search) must read it **before** the post/post-update step — the presets do this.
 
 ### Failure handling
 
 - A reviewer fails or times out → log `<agent>: failed (<reason>)` in the round summary and proceed; no retries. For Bash-dispatched reviewers, failure = wrapper STATUS `timeout`/`empty`/`failed`, reason = tail of `.err`.
 - **All** reviewers fail → abort the loop and report. Never carry on with zero findings — that's a misleading clean signal.
 - `git commit` fails (hook, conflict) → surface the error, stop the loop, leave partial fixes in the worktree. Never `--no-verify`, never amend earlier commits.
+- **On any abort, if `report_path` is set, write a failure report to it before stopping** — the usual header block, a `## Failure` section stating what happened and at which round, plus any completed round summaries. Downstream consumers (`review-anvil-improve-pr`'s post-update step) depend on the file existing on every exit path, success or failure. Write `{"event": "COMMENT"}` to `.approval.json` in this case.
 
 ### Concurrency
 
@@ -456,7 +460,7 @@ If you find nothing worth raising, end with an empty findings block:
 - Concatenate the context block (placeholders filled) and the task block verbatim; hand the result to the dispatch mechanism from §2.
 - Reviewers return **prose findings only** — ignore any embedded patches.
 - Build PRIOR ROUNDS from each prior round's synthesis: header `Round N (K fixes applied, <sha1>..<shaN>; verification <state>):` plus `addressed:`/`deferred:` lists of `- [severity] area — what (reason)` lines. Severity counts alone can't tell a reviewer *which* issues not to re-raise.
-- **`commit_mode=none` multi-round:** nothing changes between rounds, so replace PRIOR ROUNDS with `None — review-only mode; this is an independent reviewer pass.` and drop the "do not repeat" paragraph from the task block.
+- **`commit_mode=none` multi-round:** nothing changes between rounds, so replace PRIOR ROUNDS with `None — review-only mode; this is an independent reviewer pass.` and drop only the PRIOR-ROUNDS do-not-repeat paragraph from the task block — **keep the DISMISSED FINDINGS paragraph**, which applies regardless of rounds.
 
 ## Output Format
 

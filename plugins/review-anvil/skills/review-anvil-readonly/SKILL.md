@@ -17,14 +17,16 @@ commit_mode: none, <pass-through any args the user specified>, rounds: 1
 
 **Assembly order matters.** The engine parses left-to-right with first-occurrence-wins precedence. Pinned values (`commit_mode: none`) go *before* user args so the pin is authoritative. Defaults the user can override (`rounds: 1`) go *after* user args so any user-supplied `rounds: N` wins.
 
-**Pin-rejection (defense in depth).** Pins for this preset: `commit_mode`. Before assembling, apply the canonical pin-rejection algorithm defined in the engine SKILL.md → "Parsing" (pin-rejection) (segment-parse `$ARGUMENTS`, lowercase the key of each segment, abort if any key matches `commit_mode`). The preset name in the abort message is `review-anvil-readonly`.
+**Pin-rejection (defense in depth).** Pins for this preset: `commit_mode`. If the `review-anvil-pr` helper script is resolvable (this preset ships no script of its own), enforce mechanically: `bash <pr-helper-path> check-pins review-anvil-readonly "commit_mode" "$ARGUMENTS"` — non-zero exit means abort with the script's error verbatim. Otherwise apply the engine's prose pin-rejection algorithm ("Parsing" section); the abort-message preset name is `review-anvil-readonly`.
 
-Pass-through args the user may specify (each documented in the engine's SKILL.md):
+Pass-through args the user may specify (non-exhaustive — any engine param not pinned here works; each is documented in the engine's SKILL.md):
 
 - `target: PR #42` / `target: src/auth/` / `target: branch` / `target: uncommitted` — what to review
 - `focus: <topic>` — narrow the four-pillar focus, or `only: <topic>` to replace it
 - `rounds: N` — the user's value wins over the default `rounds: 1`
 - `agents: 2 codex + 1 claude` — custom reviewer mix
+- `min_fix_severity: <sev>` — drives the would-apply/suggestions split in the read-only report
+- `reviewer_timeout: <seconds>`, `report_path: <file>` — as in the engine
 
 After the engine completes, surface the synthesized report inline. **Do not** follow with edits, commits, or any side effects — that's exactly what `commit_mode=none` rules out.
 
