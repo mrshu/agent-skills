@@ -18,6 +18,17 @@
 #                             report (suppression applied on success outcome).
 #   dismissed …             — print itemized dismissed findings (resolved
 #                             threads + local suppressions) for prompt blocks.
+#   dismiss …               — record a local suppression in the dismissals
+#                             state file ($REVIEW_ANVIL_DISMISSALS).
+#   check-pins …            — mechanical preset pin-rejection over raw args.
+#
+# Environment switches:
+#   REVIEW_ANVIL_NO_APPROVE=1     never submit APPROVE (downgrade to COMMENT)
+#   REVIEW_ANVIL_SKIP_DISMISSED=1 skip dismissed-finding lookups (degraded
+#                                 mode for hosts without GraphQL; also forces
+#                                 APPROVE -> COMMENT)
+#   REVIEW_ANVIL_DISMISSALS=path  local-suppressions state file (default
+#                                 ~/.review-anvil/dismissed-findings.json)
 #
 # All subcommands exit non-zero on failure with an error on stderr.
 #
@@ -32,14 +43,39 @@ set -euo pipefail
 
 die() { printf 'pr-helper: %s\n' "$*" >&2; exit 1; }
 
-# Remove the report markdown + sibling inline JSON, and try to rmdir
-# the parent directory. Called only on successful post paths (failures
-# leave the artifacts in place so the user can inspect / post manually).
-# rmdir fails quietly if other runs have artifacts in the same dir.
+# Create the artifact dir with a self-ignoring .gitignore. Leftover artifacts
+# from failed runs must never show up as dirty worktree state (verify-checkout
+# would refuse the next run with a misleading "uncommitted changes" error) or
+# get staged into fix commits and pushed to the PR.
+_ensure_artifact_dir() {
+    local dir="$1"
+    mkdir -p "$dir"
+    [[ -f "$dir/.gitignore" ]] || printf '*\n' > "$dir/.gitignore"
+}
+
+# Remove this run's artifacts, and the directory itself when no other run's
+# artifacts remain (the self-ignoring .gitignore doesn't count). Called only
+# on successful post paths (failures leave the artifacts in place so the
+# user can inspect / post manually).
+# True when the dir contains anything besides its own .gitignore.
+_dir_has_other_artifacts() {
+    local dir="$1" f
+    for f in "$dir"/* "$dir"/.[!.]* "$dir"/..?*; do
+        [[ -e "$f" ]] || continue
+        [[ "${f##*/}" == ".gitignore" ]] && continue
+        return 0
+    done
+    return 1
+}
+
 cleanup_post_artifacts() {
-    local report_path="$1"
+    local report_path="$1" dir
     rm -f "$report_path" "${report_path}.inline.json" "${report_path}.approval.json" "${report_path}.followups.json"
-    rmdir "$(dirname "$report_path")" 2>/dev/null || true
+    dir=$(dirname "$report_path")
+    if [[ -d "$dir" ]] && ! _dir_has_other_artifacts "$dir"; then
+        rm -f "$dir/.gitignore"
+        rmdir "$dir" 2>/dev/null || true
+    fi
 }
 
 # Submit one PR review via the REST reviews endpoint. Relies on the caller's
@@ -49,9 +85,10 @@ cleanup_post_artifacts() {
 # prints a one-line warning to stderr and returns 1 — the caller decides the
 # next step in the fallback cascade.
 _submit_review() {
+    # jq availability is preflighted at the top of cmd_post — a die here
+    # would run inside a command-substitution subshell and silently degrade
+    # the cascade instead of aborting.
     local event="$1" inline="${2:-}" payload response
-    command -v jq >/dev/null 2>&1 \
-        || die "jq required to submit PR reviews (it ships with gh; ensure it is on PATH)"
     if [[ -n "$inline" ]]; then
         payload=$(jq -n --rawfile body "$report_path" --arg event "$event" --slurpfile comments "$inline" \
             '{event: $event, body: $body, comments: $comments[0]}')
@@ -246,7 +283,10 @@ if mode == "list":
         print("None.")
     else:
         for d in dismissed:
-            loc = f'{d["path"]}:{d["line"]}' if d["path"] else "(no file anchor)"
+            if d["path"]:
+                loc = f'{d["path"]}:{d["line"]}' if d.get("line") else d["path"]
+            else:
+                loc = "(no file anchor)"
             print(f'- {loc} — {d["summary"]} ({d["source"]})')
     raise SystemExit(0)
 
@@ -279,8 +319,13 @@ def same_finding(cand, dis, require_path):
 suppressed = []
 if inline.exists() and inline.read_text().strip() not in {"", "[]"}:
     items = json.loads(inline.read_text())
+    if not isinstance(items, list):
+        raise SystemExit(f"pr-helper: {inline} is not a JSON array of comment objects")
     kept = []
     for item in items:
+        if not isinstance(item, dict):
+            kept.append(item)  # let posting fail loudly on malformed members
+            continue
         cand = {"path": item.get("path") or "", "sig": signature(item.get("body") or "")}
         hit = next((d for d in dismissed if same_finding(cand, d, require_path=True)), None)
         if hit:
@@ -292,19 +337,54 @@ if inline.exists() and inline.read_text().strip() not in {"", "[]"}:
 
 # Demote (never delete) matching findings in the report body: matched blocks
 # move to a "Previously dismissed" section so a false positive stays visible
-# to the author instead of vanishing.
+# to the author instead of vanishing. The walk is fence-aware ("**[" inside a
+# code block must not start a finding) and paragraph-aware (a blank line ends
+# a block only when what follows is not indented continuation or a fence).
 demoted = []
 if report.exists():
     lines = report.read_text().splitlines()
+
+    def is_fence(s):
+        ls = s.lstrip()
+        return ls.startswith("```") or ls.startswith("~~~")
+
+    def block_end(start):
+        j = start + 1
+        fence = False
+        while j < len(lines):
+            ln = lines[j]
+            if is_fence(ln):
+                fence = not fence
+                j += 1
+                continue
+            if fence:
+                j += 1
+                continue
+            if ln.startswith("## ") or ln.startswith("### ") or ln.lstrip().startswith("- **["):
+                return j
+            if not ln.strip():
+                k = j + 1
+                while k < len(lines) and not lines[k].strip():
+                    k += 1
+                if k < len(lines) and (lines[k].startswith((" ", "\t")) or is_fence(lines[k])):
+                    j = k  # blank gap inside the block; continuation follows
+                    continue
+                return j
+            j += 1
+        return j
+
     out, i = [], 0
+    in_fence = False
     while i < len(lines):
         line = lines[i]
-        if "**[" in line:
-            block = [line]
-            j2 = i + 1
-            while j2 < len(lines) and lines[j2].strip() and not lines[j2].startswith("## ") and not lines[j2].lstrip().startswith("- **["):
-                block.append(lines[j2])
-                j2 += 1
+        if is_fence(line):
+            in_fence = not in_fence
+            out.append(line)
+            i += 1
+            continue
+        if not in_fence and "**[" in line:
+            j2 = block_end(i)
+            block = lines[i:j2]
             cand = {"path": "", "sig": signature("\n".join(block))}
             hit = next((d for d in dismissed if same_finding(cand, d, require_path=False)), None)
             if hit:
@@ -332,6 +412,14 @@ PY
 # starting comment must always be updated).
 suppress_dismissed_findings() {
     local host="$1" owner="$2" repo="$3" n="$4" report_path="$5" inline_json="$6"
+    if [[ "${REVIEW_ANVIL_SKIP_DISMISSED:-}" == "1" ]]; then
+        # Escape hatch for hosts where the GraphQL reviewThreads API is
+        # unavailable (GHE without GraphQL, restricted token scopes).
+        # Degraded mode: dismissed findings may be repeated; cmd_post
+        # also forces APPROVE -> COMMENT when this is set.
+        printf 'warning: REVIEW_ANVIL_SKIP_DISMISSED=1 — skipping dismissed-finding suppression (degraded mode)\n' >&2
+        return 0
+    fi
     export GH_HOST="$host"
     _dismissed_py suppress "$owner" "$repo" "$n" "$report_path" "$inline_json"
 }
@@ -343,14 +431,88 @@ cmd_dismissed() {
     for v in host owner repo n; do
         [[ -n "${!v}" ]] || die "dismissed: missing <$v>"
     done
+    if [[ "${REVIEW_ANVIL_SKIP_DISMISSED:-}" == "1" ]]; then
+        printf 'None. (dismissed-finding lookup skipped: REVIEW_ANVIL_SKIP_DISMISSED=1 — degraded mode)\n'
+        return 0
+    fi
     export GH_HOST="$host"
     _dismissed_py list "$owner" "$repo" "$n"
 }
 
+cmd_dismiss() {
+    # Record a local suppression in the dismissals state file so future runs
+    # against this PR skip the finding. Usage:
+    #   dismiss <host> <owner> <repo> <n> <path-or-empty> <pattern> [<reason>]
+    local host="${1:-}" owner="${2:-}" repo="${3:-}" n="${4:-}" fpath="${5:-}" pattern="${6:-}" reason="${7:-local-suppression}"
+    for v in host owner repo n pattern; do
+        [[ -n "${!v}" ]] || die "dismiss: missing <$v>"
+    done
+    _py - "$owner" "$repo" "$n" "$fpath" "$pattern" "$reason" <<'PY'
+import json
+import os
+import sys
+from pathlib import Path
+
+owner, repo, n, fpath, pattern, reason = sys.argv[1:7]
+sp = Path(os.environ.get("REVIEW_ANVIL_DISMISSALS")
+          or (Path.home() / ".review-anvil" / "dismissed-findings.json"))
+sp.parent.mkdir(parents=True, exist_ok=True)
+state = {}
+if sp.exists():
+    try:
+        state = json.loads(sp.read_text())
+    except Exception as exc:
+        raise SystemExit(f"pr-helper: invalid dismissal state {sp}: {exc}")
+key = f"{owner}/{repo}#{n}"
+state.setdefault(key, []).append({"path": fpath, "pattern": pattern, "reason": reason})
+sp.write_text(json.dumps(state, indent=2) + "\n")
+print(f"recorded suppression for {key} in {sp}")
+PY
+}
+
+cmd_check_pins() {
+    # Mechanical pin-rejection (the engine's prose algorithm, made binding):
+    #   check-pins <preset-name> <pins-csv> [<raw-args>]
+    # Segment-split raw args on commas, take each segment's key (text before
+    # its first ':'), lowercase, abort if it matches a pinned param. A comma
+    # inside a quoted value can split into stray segments, but those only
+    # abort if their derived key exactly equals a pin name — refusing in an
+    # ambiguous case is the safe direction.
+    local preset="${1:-}" pins_csv="${2:-}" raw="${3:-}"
+    [[ -n "$preset" && -n "$pins_csv" ]] || die "check-pins: usage: check-pins <preset> <pins-csv> [<raw-args>]"
+    if [[ -z "$raw" ]]; then
+        printf 'pins-ok\n'
+        return 0
+    fi
+    local seg key pin pin_norm
+    local IFS=','
+    for seg in $raw; do
+        key=$(printf '%s' "${seg%%:*}" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')
+        [[ -n "$key" ]] || continue
+        for pin in $pins_csv; do
+            pin_norm=$(printf '%s' "$pin" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')
+            if [[ "$key" == "$pin_norm" ]]; then
+                die "error: $pin_norm is pinned by $preset and cannot be overridden in args"
+            fi
+        done
+    done
+    printf 'pins-ok\n'
+}
+
+# Preflight the dependencies that would otherwise fail only at post time,
+# after the expensive review has already run.
+_preflight_deps() {
+    command -v gh >/dev/null 2>&1 || die "install gh first; the review-anvil PR skills require gh"
+    command -v uuidgen >/dev/null 2>&1 || die "uuidgen not available"
+    command -v jq >/dev/null 2>&1 \
+        || die "jq not found — required at post time (gh's --jq is built-in gojq, not a jq binary; install jq now so the run doesn't fail after the review)"
+    command -v uv >/dev/null 2>&1 || command -v python3 >/dev/null 2>&1 \
+        || die "neither uv nor python3 found — required for dismissed-finding handling (install uv: https://docs.astral.sh/uv/)"
+}
+
 cmd_init() {
     local locator="${1:-}"
-    command -v gh >/dev/null 2>&1 || die "install gh first; the review-anvil-pr skill requires gh"
-    command -v uuidgen >/dev/null 2>&1 || die "uuidgen not available"
+    _preflight_deps
 
     # If the user supplied no locator, try to detect the PR for the
     # currently checked-out branch. `gh pr view` (no args) uses the
@@ -363,7 +525,7 @@ cmd_init() {
             locator="$detected"
             printf 'auto-detected PR: %s\n' "$locator" >&2
         else
-            die "no <locator> supplied and no PR detected for the current branch — pass a URL or <owner>/<repo>#<N>, or check out the PR's branch first"
+            die "no <locator> supplied and no PR detected for the current branch — pass a URL or <owner>/<repo>#<N>, or check out the PR's branch first (if gh is not authenticated, run 'gh auth login' first)"
         fi
     fi
 
@@ -390,16 +552,25 @@ cmd_init() {
         die "gh auth status failed for host=$host; run 'gh auth login' (or set GH_TOKEN/GITHUB_TOKEN)"
     fi
 
-    # Verify PR reachability AND extract the title in one network call,
-    # using gh's built-in jq (no sed regex or python3 dependency).
-    local title
-    if ! title=$(gh pr view "$n" -R "$owner/$repo" --json title --jq '.title' 2>&1); then
-        # one retry for transient failure
+    # Verify PR reachability AND extract title + head SHA in one network
+    # call. Capture stderr separately: gh writes update/deprecation notices
+    # to stderr even on success, and 2>&1 would corrupt the parsed values.
+    local pr_data errf
+    errf=$(mktemp -t review-anvil-err.XXXXXX)
+    if ! pr_data=$(gh pr view "$n" -R "$owner/$repo" --json title,headRefOid \
+                     --jq '[.headRefOid, .title] | @tsv' 2>"$errf"); then
         sleep 2
-        if ! title=$(gh pr view "$n" -R "$owner/$repo" --json title --jq '.title' 2>&1); then
-            die "gh pr view failed for $owner/$repo#$n on host=$host: $title"
+        if ! pr_data=$(gh pr view "$n" -R "$owner/$repo" --json title,headRefOid \
+                         --jq '[.headRefOid, .title] | @tsv' 2>"$errf"); then
+            local err
+            err=$(head -n1 "$errf" || true)
+            rm -f "$errf"
+            die "gh pr view failed for $owner/$repo#$n on host=$host: $err"
         fi
     fi
+    rm -f "$errf"
+    local head_sha title
+    IFS=$'\t' read -r head_sha title <<<"$pr_data"
     [[ -n "$title" ]] || title='(title unavailable)'
 
     # Anchor the report path inside the repo's worktree, not whatever
@@ -409,7 +580,7 @@ cmd_init() {
     anchor=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
     local marker report_path
     marker=$(uuidgen | tr '[:upper:]' '[:lower:]')
-    mkdir -p "$anchor/.review-anvil"
+    _ensure_artifact_dir "$anchor/.review-anvil"
     # Emit an absolute path so the engine writes to and the post step
     # reads from the same file regardless of CWD changes between
     # invocations.
@@ -419,6 +590,7 @@ cmd_init() {
     printf 'OWNER=%s\n' "$owner"
     printf 'REPO=%s\n' "$repo"
     printf 'N=%s\n' "$n"
+    printf 'HEAD_SHA=%s\n' "$head_sha"
     printf 'MARKER=%s\n' "$marker"
     printf 'REPORT_PATH=%s\n' "$report_path"
     printf 'TITLE=%s\n' "$title"
@@ -433,25 +605,27 @@ cmd_post() {
 
     export GH_HOST="$host"
 
-    # Atomically prepend the marker to the report.
-    local tmp="${report_path}.tmp"
-    {
-        printf '<!-- review-anvil-marker: %s -->\n' "$marker"
-        cat "$report_path"
-    } > "$tmp"
-    mv "$tmp" "$report_path"
+    # Preflight jq at top level: a die inside the cascade's command
+    # substitutions cannot abort the script. Note: gh's --jq is built-in
+    # gojq — it does NOT provide a jq binary on PATH.
+    command -v jq >/dev/null 2>&1 \
+        || die "jq not found — required to post reviews (gh's --jq is built-in gojq, not a jq binary; install jq)"
 
-    # If a sibling .inline.json exists with a non-empty array of inline
-    # comment payloads, submit as a PR review (one timeline event with
-    # both a top-level body and inline-anchored comments). Otherwise
-    # fall back to a top-level comment via gh pr comment + marker URL
-    # recovery.
+    # Prepend the marker atomically, exactly once (post is retryable after a
+    # suppression failure — a retry must not stack marker lines).
+    if ! grep -q "review-anvil-marker: $marker" "$report_path"; then
+        local tmp="${report_path}.tmp"
+        {
+            printf '<!-- review-anvil-marker: %s -->\n' "$marker"
+            cat "$report_path"
+        } > "$tmp"
+        mv "$tmp" "$report_path"
+    fi
+
     local inline_json="${report_path}.inline.json"
     local approval_json="${report_path}.approval.json"
     local review_event="COMMENT"
     if [[ -f "$approval_json" ]]; then
-        command -v jq >/dev/null 2>&1 \
-            || die "jq required to read approval decision (ensure it is on PATH)"
         review_event=$(jq -r '.event // "COMMENT"' "$approval_json" 2>/dev/null || printf 'COMMENT')
         case "$review_event" in
             APPROVE|COMMENT) ;;
@@ -463,24 +637,52 @@ cmd_post() {
                 review_event="COMMENT" ;;
         esac
     fi
-    local has_inline=0
-    if [[ -f "$inline_json" ]]; then
-        # Treat empty array / whitespace-only / missing-file as "no inline".
-        if [[ -n "$(tr -d '[:space:]' <"$inline_json")" ]] \
-           && [[ "$(tr -d '[:space:]' <"$inline_json")" != "[]" ]]; then
-            has_inline=1
+
+    # Mechanical approve kill-switches: the engine's approve:never rule is
+    # LLM-enforced prose; these make it (and skipped dismissed lookups, which
+    # invalidate the approval criteria) binding regardless of what the
+    # orchestrator wrote into approval.json.
+    if [[ "$review_event" == "APPROVE" && "${REVIEW_ANVIL_NO_APPROVE:-}" == "1" ]]; then
+        printf 'warning: REVIEW_ANVIL_NO_APPROVE=1 — downgrading APPROVE to COMMENT\n' >&2
+        review_event="COMMENT"
+    fi
+    if [[ "$review_event" == "APPROVE" && "${REVIEW_ANVIL_SKIP_DISMISSED:-}" == "1" ]]; then
+        printf 'warning: dismissed-finding lookup was skipped, so the approval criteria cannot hold — downgrading APPROVE to COMMENT\n' >&2
+        review_event="COMMENT"
+    fi
+
+    # Staleness gate: an approval is only valid for the head SHA the review
+    # actually saw. approval.json may carry "head_sha" (copied by the engine
+    # from init's HEAD_SHA output); when the PR head has moved, downgrade —
+    # new commits pushed mid-run were never reviewed.
+    if [[ "$review_event" == "APPROVE" ]]; then
+        local reviewed_sha current_sha
+        reviewed_sha=$(jq -r '.head_sha // empty' "$approval_json" 2>/dev/null || true)
+        if [[ -n "$reviewed_sha" ]]; then
+            current_sha=$(gh pr view "$n" -R "$owner/$repo" --json headRefOid --jq '.headRefOid' 2>/dev/null || true)
+            if [[ -n "$current_sha" && "$current_sha" != "$reviewed_sha" ]]; then
+                printf 'warning: PR head moved since review (%s -> %s); downgrading APPROVE to COMMENT\n' \
+                    "${reviewed_sha:0:8}" "${current_sha:0:8}" >&2
+                # shellcheck disable=SC2016  # backticks are markdown, not expansion
+                printf '\n\n---\n\n_review-anvil decided APPROVE for head `%s`, but the PR has since moved to `%s`; posted as a comment instead — the newer commits were not reviewed._\n' \
+                    "${reviewed_sha:0:8}" "${current_sha:0:8}" >> "$report_path"
+                review_event="COMMENT"
+            fi
+        else
+            printf 'warning: approval.json carries no head_sha; cannot verify the approval matches the reviewed state\n' >&2
         fi
     fi
 
     suppress_dismissed_findings "$host" "$owner" "$repo" "$n" "$report_path" "$inline_json" \
         || die "dismissed-finding suppression failed; refusing to post possible repeat findings (report left at $report_path)"
-    if [[ -f "$inline_json" ]]; then
-        if [[ -n "$(tr -d '[:space:]' <"$inline_json")" ]] \
-           && [[ "$(tr -d '[:space:]' <"$inline_json")" != "[]" ]]; then
-            has_inline=1
-        else
-            has_inline=0
-        fi
+
+    # Compute inline presence after suppression (which may have emptied the
+    # array). Empty array / whitespace-only / missing file = no inline.
+    local has_inline=0
+    if [[ -f "$inline_json" ]] \
+       && [[ -n "$(tr -d '[:space:]' <"$inline_json")" ]] \
+       && [[ "$(tr -d '[:space:]' <"$inline_json")" != "[]" ]]; then
+        has_inline=1
     fi
 
     # Review-submission cascade — a failed approval must never cost the
@@ -516,6 +718,20 @@ cmd_post() {
         fi
     fi
 
+    # A gh failure while reading the response can leave a review created
+    # server-side; check for our marker among existing reviews before
+    # posting the report a second time.
+    local existing
+    existing=$(gh api "repos/${owner}/${repo}/pulls/${n}/reviews" --paginate \
+               --jq ".[] | select(.body | contains(\"$marker\")) | .html_url" 2>/dev/null \
+               | head -n1 || true)
+    if [[ -n "$existing" ]]; then
+        printf 'note: a review with this marker already exists on the PR; not posting again\n' >&2
+        cleanup_post_artifacts "$report_path"
+        printf '%s\n' "$existing"
+        return 0
+    fi
+
     # Fallback path: top-level comment + marker URL recovery.
     if ! gh pr comment "$n" -R "$owner/$repo" --body-file "$report_path" >/dev/null 2>&1; then
         die "gh pr comment failed for $owner/$repo#$n on host=$host"
@@ -542,7 +758,7 @@ cmd_post() {
 cmd_verify_checkout() {
     local locator="${1:-}"
 
-    command -v gh >/dev/null 2>&1 || die "install gh first; review-anvil-improve-pr requires gh"
+    _preflight_deps
 
     # Auto-detect PR from current branch if no locator given (same logic
     # as cmd_init — `gh pr view` with no args uses the working
@@ -553,7 +769,7 @@ cmd_verify_checkout() {
             locator="$detected"
             printf 'auto-detected PR: %s\n' "$locator" >&2
         else
-            die "no <locator> supplied and no PR detected for the current branch — pass a URL or <owner>/<repo>#<N>, or check out the PR's branch first"
+            die "no <locator> supplied and no PR detected for the current branch — pass a URL or <owner>/<repo>#<N>, or check out the PR's branch first (if gh is not authenticated, run 'gh auth login' first)"
         fi
     fi
 
@@ -581,19 +797,25 @@ cmd_verify_checkout() {
     fi
 
     # Fetch the PR's head/base refs + title + author in one call (verify
-    # reachability + capture fields).
+    # reachability + capture fields). Stderr captured separately — gh
+    # notices on success would corrupt the TSV parse.
     # Output looks like: <headRefName>\t<headRefOid>\t<baseRefName>\t<title>\t<author>
-    local pr_fields
+    local pr_fields errf
+    errf=$(mktemp -t review-anvil-err.XXXXXX)
     if ! pr_fields=$(gh pr view "$n" -R "$owner/$repo" \
                        --json headRefName,headRefOid,baseRefName,title,author \
-                       --jq '[.headRefName, .headRefOid, .baseRefName, .title, .author.login] | @tsv' 2>&1); then
+                       --jq '[.headRefName, .headRefOid, .baseRefName, .title, .author.login] | @tsv' 2>"$errf"); then
         sleep 2
         if ! pr_fields=$(gh pr view "$n" -R "$owner/$repo" \
                            --json headRefName,headRefOid,baseRefName,title,author \
-                           --jq '[.headRefName, .headRefOid, .baseRefName, .title, .author.login] | @tsv' 2>&1); then
-            die "gh pr view failed for $owner/$repo#$n on host=$host: $pr_fields"
+                           --jq '[.headRefName, .headRefOid, .baseRefName, .title, .author.login] | @tsv' 2>"$errf"); then
+            local err
+            err=$(head -n1 "$errf" || true)
+            rm -f "$errf"
+            die "gh pr view failed for $owner/$repo#$n on host=$host: $err"
         fi
     fi
+    rm -f "$errf"
     local head_branch head_sha base_branch title author
     IFS=$'\t' read -r head_branch head_sha base_branch title author <<<"$pr_fields"
     [[ -n "$title" ]] || title='(title unavailable)'
@@ -629,12 +851,25 @@ cmd_verify_checkout() {
         die "worktree has uncommitted changes; commit or stash them before running review-anvil-improve-pr"
     fi
 
-    # Ensure base branch is locally reachable for the diff (engine will
-    # use git diff <base>...HEAD). If not, fetch it.
-    if ! git rev-parse --verify "$base_branch" >/dev/null 2>&1; then
-        if ! git fetch origin "$base_branch:refs/remotes/origin/$base_branch" 2>/dev/null \
-           && ! git fetch origin "$base_branch" 2>/dev/null; then
-            die "base branch '$base_branch' not available locally and 'git fetch origin $base_branch' failed; ensure the base branch is reachable"
+    # Ensure the base branch resolves to a usable diff target (the engine
+    # runs `git diff <BASE_BRANCH>...HEAD` with the value we emit). A bare
+    # branch name does NOT resolve through refs/remotes/<remote>/<name>, so
+    # after fetching we must re-verify and emit the remote-tracking ref when
+    # only that exists. The remote comes from the current branch's upstream
+    # (falling back to origin) — PR checkouts aren't always on "origin".
+    local remote
+    remote=$(git config "branch.${current_branch}.remote" 2>/dev/null || true)
+    [[ -n "$remote" ]] || remote="origin"
+    if ! git rev-parse --verify --quiet "$base_branch" >/dev/null; then
+        if ! git rev-parse --verify --quiet "$remote/$base_branch" >/dev/null; then
+            git fetch "$remote" "$base_branch:refs/remotes/$remote/$base_branch" 2>/dev/null \
+                || git fetch "$remote" "$base_branch" 2>/dev/null \
+                || die "base branch '$base_branch' not available locally and 'git fetch $remote $base_branch' failed; ensure the base branch is reachable"
+        fi
+        if git rev-parse --verify --quiet "$remote/$base_branch" >/dev/null; then
+            base_branch="$remote/$base_branch"
+        elif ! git rev-parse --verify --quiet "$base_branch" >/dev/null; then
+            die "fetched '$base_branch' from $remote but no resolvable ref exists for it; ensure the base branch is reachable"
         fi
     fi
 
@@ -646,7 +881,7 @@ cmd_verify_checkout() {
     anchor=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
     local marker report_path
     marker=$(uuidgen | tr '[:upper:]' '[:lower:]')
-    mkdir -p "$anchor/.review-anvil"
+    _ensure_artifact_dir "$anchor/.review-anvil"
     report_path="$anchor/.review-anvil/final-report-${marker}.md"
 
     printf 'HOST=%s\n' "$host"
@@ -654,6 +889,7 @@ cmd_verify_checkout() {
     printf 'REPO=%s\n' "$repo"
     printf 'N=%s\n' "$n"
     printf 'HEAD_BRANCH=%s\n' "$head_branch"
+    printf 'HEAD_SHA=%s\n' "$head_sha"
     printf 'BASE_BRANCH=%s\n' "$base_branch"
     printf 'TITLE=%s\n' "$title"
     printf 'AUTHOR=%s\n' "$author"
@@ -732,7 +968,7 @@ cmd_post_update() {
 
     export GH_HOST="$host"
     command -v jq >/dev/null 2>&1 \
-        || die "jq required to PATCH-encode the comment body (it ships with gh; ensure it is on PATH)"
+        || die "jq not found — required to PATCH-encode the comment body (gh's --jq is built-in gojq, not a jq binary; install jq)"
 
     # Suppress dismissed findings on the success path only (a failure summary
     # has nothing to suppress). Non-fatal: the starting comment must be
@@ -792,6 +1028,8 @@ case "${1:-}" in
     post-start)       shift; cmd_post_start "$@" ;;
     post-update)      shift; cmd_post_update "$@" ;;
     dismissed)        shift; cmd_dismissed "$@" ;;
-    "")               die "usage: pr-helper.sh {init [<locator>] | post <host> <owner> <repo> <n> <marker> <report_path> | verify-checkout [<locator>] | post-start <host> <owner> <repo> <n> <marker> <author> | post-update <host> <owner> <repo> <n> <comment_id> <marker> <report_path> <author> <success|failure> [<started_at>] | dismissed <host> <owner> <repo> <n>}" ;;
+    dismiss)          shift; cmd_dismiss "$@" ;;
+    check-pins)       shift; cmd_check_pins "$@" ;;
+    "")               die "usage: pr-helper.sh {init [<locator>] | post <host> <owner> <repo> <n> <marker> <report_path> | verify-checkout [<locator>] | post-start <host> <owner> <repo> <n> <marker> <author> | post-update <host> <owner> <repo> <n> <comment_id> <marker> <report_path> <author> <success|failure> [<started_at>] | dismissed <host> <owner> <repo> <n> | dismiss <host> <owner> <repo> <n> <path> <pattern> [<reason>] | check-pins <preset> <pins-csv> [<raw-args>]}" ;;
     *)                die "unknown subcommand: $1" ;;
 esac

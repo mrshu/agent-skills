@@ -61,19 +61,27 @@ cmd_pid=$!
     kill -TERM "$cmd_pid" 2>/dev/null
     sleep 30
     kill -KILL "$cmd_pid" 2>/dev/null
-) &
+) 2>/dev/null &
 watchdog_pid=$!
 
 wait "$cmd_pid"
 status=$?
+# Kill the watchdog subshell AND its in-flight sleep child — otherwise an
+# orphaned `sleep <secs>` lingers until the full deadline for every
+# dispatched reviewer.
+pkill -P "$watchdog_pid" 2>/dev/null || true
 kill "$watchdog_pid" 2>/dev/null
 wait "$watchdog_pid" 2>/dev/null
 
 # Classification order matters: a command that exits 0 with non-empty
 # output right at the deadline (stamp present, status 0) still counts
-# as ok — the work completed; the kill raced the natural exit.
+# as ok — the work completed; the kill raced the natural exit. A command
+# that ignored TERM and later exited non-zero of its own accord is also
+# classified timeout (the watchdog did fire); EXIT_CODE is printed so the
+# underlying status isn't lost.
 if [[ -e "$stamp" && "$status" -ne 0 ]]; then
     rm -f "$stamp"
+    printf 'EXIT_CODE=%s\n' "$status"
     printf 'STATUS=timeout\n'
     exit 124
 fi
