@@ -75,6 +75,8 @@ Four skills (not four slash commands) because skills are the cross-agent abstrac
 
 In Claude Code, you can also invoke directly as `Skill review-anvil "<free-form args>"` — see `skills/review-anvil/SKILL.md` for the full parameter surface.
 
+The `simplicity` review lens carries a **minimization ladder** (need it at all? → stdlib → native feature → existing dependency → one line → the minimum that works), so every default run flags over-engineering, not just correctness. The ladder is adapted from and credited to [ponytail](https://github.com/DietrichGebert/ponytail).
+
 ### overleaf-comment
 
 Bulk-post Overleaf comments from a JSON plan. Drives the user's already-logged-in browser tab via Chrome DevTools Protocol, so no API keys / no test accounts. Break-even is around 5 comments — under that, type them by hand.
