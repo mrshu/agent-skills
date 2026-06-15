@@ -12,9 +12,26 @@ M identical prompts buy redundancy and dedup work, not coverage — when M ≥ 2
 | Lens pack | Covers |
 |---|---|
 | `correctness` | correctness, data flow, edge cases; verify what the layer below actually does in the configured backend/runtime, not what the abstract API promises |
-| `simplicity` | simplicity; "should this code exist?" — question abstractions before reviewing their implementation; dead code; redundant defense-in-depth where one layer is broken |
+| `simplicity` | simplicity / minimization; walk the **minimization ladder** (below) and question abstractions before reviewing their implementation; dead code; redundant defense-in-depth where one layer is broken |
 | `blast-radius` | production blast-radius: failure modes, fallback paths that swallow errors, operational concerns (logging, config, migrations, rollout) |
 | `maintainability` | maintainability; cross-file consistency (same pattern handled differently elsewhere?); test coverage of the change; `pragma: no cover`/`noqa` suppression smells |
+
+The `simplicity` lens applies a **minimization ladder**, adapted from
+[ponytail](https://github.com/DietrichGebert/ponytail)'s "lazy senior developer"
+decision ladder. Stop at the first rung that holds and flag the gap:
+
+1. Does this need to exist at all? → if not, the finding is "delete it" (YAGNI).
+2. Does the standard library / language already do this? → use it.
+3. Is there a native platform/framework feature for it? → use it.
+4. Does an already-installed dependency cover it? → use it; don't add a new one.
+5. Is it a one-liner? → keep it a one-liner.
+6. Only then: the minimum code that works.
+
+**Guardrail:** simplifications must *preserve* trust-boundary validation,
+data-loss handling, security, and accessibility — never cut those for brevity,
+though redundant or dead instances are fair game. Severity tracks real impact:
+usually `low`/`medium`, but `high` for an unnecessary subsystem, an avoidable
+dependency, or a major maintainability burden.
 
 | M | Lenses |
 |---|---|
