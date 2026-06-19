@@ -60,7 +60,9 @@ Reviewers of a PR locator see the GitHub-fetched diff, which may not match the l
 
 ### Posting reports externally
 
-The engine never posts anywhere. Downstream consumers set `report_path`, let the engine write the report, and post after it returns — `review-anvil-pr` + its `pr-helper.sh` is the reference implementation.
+The engine never posts anywhere. Downstream consumers set `report_path`, let the engine write a GitHub-ready compact report, and post after it returns — `review-anvil-pr` + its `pr-helper.sh` is the reference implementation.
+
+When `report_path` is set, optimize the report for a PR timeline reader, not for archival completeness. The per-round console output and reviewer artifacts are the transcript; the posted report is the decision summary plus the few findings that need action.
 
 ### Examples
 
@@ -207,19 +209,21 @@ If rounds remain, start the next round; round N+1 reviews the new state includin
 
 After the final round, emit the **Final Report** (Output Format). If `report_path` is set:
 
-1. Write the rendered report there (creating parent dirs).
+1. Write the rendered compact report there (creating parent dirs).
 2. Write a sibling `<report_path>.inline.json`: an array of GitHub PR review comment payloads for findings with both `file` and `line` —
 
    ```json
    [
-     {"path": "src/auth.ts", "line": 50, "side": "RIGHT", "body": "**[high] auth** — Missing CSRF check.\n\nWhy: ...\n\nSuggested fix: ..."},
-     {"path": "src/db.ts", "start_line": 100, "line": 110, "side": "RIGHT", "start_side": "RIGHT", "body": "..."}
+     {"path": "src/auth.ts", "line": 50, "side": "RIGHT", "severity": "high", "body": "**[high] auth** — Missing CSRF check.\n\nWhy: ...\n\nSuggested fix: ..."},
+     {"path": "src/db.ts", "start_line": 100, "line": 110, "side": "RIGHT", "start_side": "RIGHT", "severity": "medium", "body": "...", "suggestion": "exact replacement text"}
    ]
    ```
 
    Single line → `{"line": N, "side": "RIGHT"}`; range `<N>-<M>` → `{"start_line": N, "line": M, "side": "RIGHT", "start_side": "RIGHT"}`. Findings without anchors stay in the markdown body only; no anchored findings → `[]`. A reader must be able to create the fix from each `body` alone.
 
-   Each `body` follows the **inline-comment voice** defined in `references/report-artifacts.md` — read it before composing bodies. In one line: three short parts (observable-problem header; mechanism with one concrete downstream consequence; fix path complete enough to implement without re-investigation), addressed to the code never the author, calm register (the severity tag carries the urgency), one honest clause of credit when genuine. The same voice applies to the report's Suggestions, Deferred, and Out-of-scope follow-ups prose.
+   Include helper-only `"severity"` for every inline item. The posting helper strips it before calling GitHub and uses it to keep low/nit findings summary-only by default. Include helper-only `"suggestion"` only when the fix is an exact replacement for the commented line/range; the helper turns it into a GitHub suggestion fenced block and strips the extra key before posting. Do not include suggestions for design fixes, cross-file edits, deleted lines, or anything that requires judgment.
+
+   Each `body` follows the **inline-comment voice** defined in `references/report-artifacts.md` — read it before composing bodies. In one line: compact, code-anchored prose with an observable-problem header, one concrete downstream consequence, and a fix path complete enough to implement without re-investigation. By default, inline comments are for `critical`/`high`/`medium` anchored findings; `low`/`nit` findings remain in the top-level summary unless the user or environment lowers `REVIEW_ANVIL_INLINE_MIN_SEVERITY`. The same voice applies to the report's Suggestions, Deferred, and Out-of-scope follow-ups prose.
 
 3. Write a sibling `<report_path>.approval.json` so the PR-posting helper can choose the GitHub review event (review-only PR runs; for other runs write `{"event": "COMMENT"}` or omit the file — the helper defaults to COMMENT):
 
@@ -258,49 +262,56 @@ During execution: print `Round 2/3: dispatching 2 codex-exec + 1 claude-exec on 
 
 ### Final report
 
-After the last round, emit a fresh top-level report (a new document, not a replacement for the per-round blocks):
+After the last round, emit a fresh top-level report (a new document, not a replacement for the per-round blocks).
+
+The final report is a PR comment body. It must include every finding, but it should read like a scan-friendly review index, not a transcript. Do not paste raw reviewer output, full round transcripts, repeated metadata, or paragraph-sized low-priority notes. Put each finding in exactly one compact row or bullet, grouped by severity/priority; use inline comments and collapsed `<details>` sections for longer explanation.
 
 ```
 # review-anvil report
 
-**Target:** <e.g. "PR #42 (feature/auth-rewrite, 12 files, +340/-89)">
-**Rounds:** <N>
-**Mix per round:** <e.g. "2 codex-exec + 1 claude-exec">
-**Focus:** <focus list actually used>
-**Commit mode:** <per_fix | none>
-**Auto-fix policy:** min severity = <medium>, allow_new_deps = <false>
-**Verification:** <verify_cmd used, or "none detected" / "skipped">   # per_fix only
-**Report path:** <only when report_path was set>
 **Review decision:** APPROVE | COMMENT — <one-sentence reason>   # review-only PR runs
+**Result:** <one sentence: blockers/non-blockers/fixes/verification outcome>
+**Scope:** <For PR targets: one sentence summarizing what this PR is trying to change.>
+**Verification:** <verify_cmd used, or "none detected" / "skipped">   # per_fix only
 
-## Scope
-<For PR targets: one sentence summarizing what this PR is trying to change.>
+## Findings
+<Every confirmed finding appears exactly once. Critical/high findings go first, then medium, then low/nit. Keep each row short; inline comments carry implementation detail for anchored findings. If none: "No in-scope findings were confirmed.">
 
-## Round 1 — <convergence flag>
-<the same lines as the §5 round summary, minus Parameters/Reviewers>
+| Severity | Area | Location | Finding | Next step |
+|---|---|---|---|---|
+| high | auth | `src/auth.ts:42` | Refresh can succeed without CSRF validation | Inline comment has the fix path |
 
-## Round 2 — <convergence flag>
-…
+<If the table would be hard to read, use grouped bullets instead:>
 
-## Total
-- Total commits: T                          # per_fix only
-- Findings addressed: A                     # per_fix; "Findings would-apply: A" in review-only
-- Suggestions surfaced: S
-- Findings deferred: D
-- Converged after round N of R (early exit) # only when early exit fired
+- **[high] auth** `src/auth.ts:42` — Refresh can succeed without CSRF validation. Inline comment has the fix path.
+
+<details>
+<summary>Non-blocking low/nit findings</summary>
+
+- **[low] docs** — Keep the option name consistent with the CLI help.
+- **[nit] tests** — Collapse duplicate fixture setup in the new test file.
+
+</details>
+
+## Fixes / Would Apply
+<For per_fix: compact commit list or "No fix commits were applied." For review-only: include every would-apply item as a one-line bullet.>
+
+- `<sha>` — <subject>                         # per_fix only
+- **[severity] area** — would commit as `<type>(<area>): <subject>`   # commit_mode=none only
+
+## Deferred / Out-of-Scope
+<Include every deferred item and follow-up, but keep each to one line. Collapse the section with `<details>` when it contains more than 3 entries. Omit the section if empty.>
+
+- **[severity] area** — deferred because <reason>.
+- **[severity] area** — out-of-scope follow-up (`auto_approved` or `needs_triage`): <why separate>.
+
+## Run Details
+- Target: <e.g. "PR #42 (feature/auth-rewrite, 12 files, +340/-89)">
+- Rounds: <completed>/<requested>; <convergence note if early exit fired>
+- Mix: <e.g. "2 codex-exec + 1 claude-exec">
+- Focus: <focus list actually used>
+- Counts: <C critical, H high, M medium, L low, N nit; deferred D; suggestions S>
 - Tuning suggestion: <one line; see rule below>   # omit in review-only
-
-## Suggestions
-- **[severity] area** — what (consider re-running with `min_fix_severity: <severity>` to apply)
-
-## Deferred items
-- **[severity] area** — what (deferred because: <reason — e.g. introduces new dependency: <X>; size cap reached; failed verification: <why>; product decision>)
-
-## Out-of-scope follow-ups
-- **[severity] area** — obvious pre-existing issue noticed during review (`auto_approved` or `needs_triage`; separate PR; why it is outside this PR's scope)
-
-## Would-apply summary                      # commit_mode=none only
-- **[severity] area** — what (would commit as `<type>(<area>): <subject>`)
 ```
 
 `Findings addressed` = post-dedup count of unique findings auto-applied across all rounds.

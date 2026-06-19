@@ -90,6 +90,9 @@ findings outside your lens are welcome but secondary.
 TASK
 Review the target above. Be very critical. Surface issues across your
 lens. IMPORTANT: research only — do not edit any files.
+Return every finding you can defend from the code in front of you.
+Keep each finding compact: prioritize precise evidence and a usable fix
+path over long explanation.
 
 Review principles:
 - Do not review the diff in isolation. You have read access to the
@@ -139,8 +142,15 @@ For each issue, return a structured finding with these keys:
 - suggested_fix: PROSE description with enough specifics that someone
   could implement it without re-investigating: what to change, where
   (file/function), the intended behavior afterwards, edge cases to
-  preserve, and the test that would lock it in (no patches, no code
-  blocks unless quoting a single short line for clarity)
+  preserve, and the test that would lock it in. Keep it to one or two
+  sentences unless the finding is critical/high and needs more context.
+  Keep this field prose-only; no patches or code blocks unless quoting a
+  single short line for clarity.
+- suggested_change: (OPTIONAL) exact replacement text for the cited
+  line/range, only when the fix is narrow, mechanical, and directly
+  applicable as a GitHub suggested change. Omit for design concerns,
+  cross-file edits, deleted lines, generated code, or anything that
+  requires judgment.
 - file: (OPTIONAL) repo-relative path, e.g. "src/auth.ts". Omit for
   findings without a specific file anchor.
 - line: (OPTIONAL) line number on the "new" side of the diff, or a
@@ -173,4 +183,3 @@ If you find nothing worth raising, end with an empty findings block:
 - Reviewers return **prose findings only** — ignore any embedded patches.
 - Build PRIOR ROUNDS from each prior round's synthesis: header `Round N (K fixes applied, <sha1>..<shaN>; verification <state>):` plus `addressed:`/`deferred:` lists of `- [severity] area — what (reason)` lines. Severity counts alone can't tell a reviewer *which* issues not to re-raise.
 - **`commit_mode=none` multi-round:** nothing changes between rounds, so replace PRIOR ROUNDS with `None — review-only mode; this is an independent reviewer pass.` and drop only the PRIOR-ROUNDS do-not-repeat paragraph from the task block — **keep the DISMISSED FINDINGS paragraph**, which applies regardless of rounds.
-

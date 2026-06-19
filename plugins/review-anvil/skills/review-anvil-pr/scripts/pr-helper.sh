@@ -20,6 +20,8 @@
 #                             threads + local suppressions) for prompt blocks.
 #   dismiss …               — record a local suppression in the dismissals
 #                             state file ($REVIEW_ANVIL_DISMISSALS).
+#   compact-report …        — compact an oversized markdown report for GitHub.
+#   process-inline …        — filter/compact inline review comments.
 #   check-pins …            — mechanical preset pin-rejection over raw args.
 #
 # Environment switches:
@@ -29,6 +31,20 @@
 #                                 APPROVE -> COMMENT)
 #   REVIEW_ANVIL_DISMISSALS=path  local-suppressions state file (default
 #                                 ~/.review-anvil/dismissed-findings.json)
+#   REVIEW_ANVIL_GITHUB_MAX_CHARS=N
+#                                 compact posted reports longer than N chars
+#                                 while preserving all findings; this is a
+#                                 compaction trigger, not a truncation limit
+#                                 (default 12000)
+#   REVIEW_ANVIL_NO_COMPACT=1     disable GitHub report compaction
+#   REVIEW_ANVIL_INLINE_MIN_SEVERITY=medium
+#                                 minimum severity posted as inline comments
+#                                 (lower findings stay in the summary)
+#   REVIEW_ANVIL_INLINE_MAX_CHARS=N
+#                                 compact inline prose over N chars
+#                                 (default 900)
+#   REVIEW_ANVIL_ENABLE_SUGGESTIONS=0
+#                                 disable helper-added ```suggestion blocks
 #
 # All subcommands exit non-zero on failure with an error on stderr.
 #
@@ -70,7 +86,7 @@ _dir_has_other_artifacts() {
 
 cleanup_post_artifacts() {
     local report_path="$1" dir
-    rm -f "$report_path" "${report_path}.inline.json" "${report_path}.approval.json" "${report_path}.followups.json"
+    rm -f "$report_path" "${report_path}.inline.json" "${report_path}.approval.json" "${report_path}.followups.json" "${report_path}.full.md"
     dir=$(dirname "$report_path")
     if [[ -d "$dir" ]] && ! _dir_has_other_artifacts "$dir"; then
         rm -f "$dir/.gitignore"
@@ -132,6 +148,381 @@ _py() {
     else
         die "neither uv nor python3 found; one is required for dismissed-finding handling (install uv: https://docs.astral.sh/uv/)"
     fi
+}
+
+compact_report_for_github() {
+    local report_path="${1:-}" inline_json="${2:-}" max_chars="${REVIEW_ANVIL_GITHUB_MAX_CHARS:-12000}"
+    [[ -f "$report_path" ]] || die "compact-report: report file not found: $report_path"
+    [[ "${REVIEW_ANVIL_NO_COMPACT:-}" != "1" ]] || return 0
+    [[ "$max_chars" =~ ^[0-9]+$ ]] \
+        || die "REVIEW_ANVIL_GITHUB_MAX_CHARS must be a positive integer, got '$max_chars'"
+    [[ "$max_chars" -gt 0 ]] || return 0
+
+    _py - "$report_path" "$inline_json" "$max_chars" <<'PY'
+import json
+import re
+import sys
+from pathlib import Path
+
+report = Path(sys.argv[1])
+inline = Path(sys.argv[2]) if sys.argv[2] else None
+max_chars = int(sys.argv[3])
+text = report.read_text()
+
+if len(text) <= max_chars:
+    raise SystemExit(0)
+
+full = Path(str(report) + ".full.md")
+if not full.exists():
+    full.write_text(text)
+
+lines = text.splitlines()
+marker_lines = []
+while lines and lines[0].startswith("<!-- review-anvil-marker:"):
+    marker_lines.append(lines.pop(0))
+
+sections = {}
+order = []
+preamble = []
+current_title = None
+current_lines = []
+
+for line in lines:
+    if line.startswith("## "):
+        if current_title is None:
+            preamble = current_lines
+        else:
+            sections[current_title] = current_lines
+        current_title = line[3:].strip()
+        order.append(current_title)
+        current_lines = []
+    else:
+        current_lines.append(line)
+
+if current_title is None:
+    preamble = current_lines
+else:
+    sections[current_title] = current_lines
+
+def inline_count():
+    if not inline or not inline.exists():
+        return 0
+    raw = inline.read_text().strip()
+    if not raw or raw == "[]":
+        return 0
+    try:
+        data = json.loads(raw)
+    except Exception:
+        return 0
+    return len(data) if isinstance(data, list) else 0
+
+def squeeze(value):
+    value = re.sub(r"\s+", " ", value.strip())
+    return value
+
+def shorten(value, limit):
+    value = squeeze(value)
+    if len(value) <= limit:
+        return value
+    cut = value.rfind(" ", 0, max(0, limit - 3))
+    if cut < 80:
+        cut = max(0, limit - 3)
+    return value[:cut].rstrip() + "..."
+
+def bullet_blocks(section_lines):
+    blocks = []
+    current = []
+    saw_bullet = False
+    for line in section_lines:
+        if line.startswith("## "):
+            break
+        if re.match(r"^\s*(?:[-*]|\d+\.)\s+", line):
+            saw_bullet = True
+            if current:
+                blocks.append(current)
+            current = [line]
+        elif current:
+            current.append(line)
+        elif line.strip():
+            blocks.append([line])
+    if current:
+        blocks.append(current)
+    if saw_bullet:
+        return blocks
+    paragraph = "\n".join(section_lines).strip()
+    return [[paragraph]] if paragraph else []
+
+def render_block(block, limit=520):
+    text = "\n".join(block).strip()
+    text = re.sub(r"^\s*\d+\.\s+", "- ", text)
+    if not text.startswith(("- ", "* ")):
+        text = "- " + text
+    return shorten(text, limit)
+
+def blocks_for(*names):
+    blocks = []
+    for name in names:
+        if name in sections:
+            blocks.extend(bullet_blocks(sections[name]))
+    return blocks
+
+def severity(block):
+    text = "\n".join(block)
+    match = re.search(r"\*\*\[(critical|high|medium|low|nit)\]", text, re.I)
+    if not match:
+        return 99
+    return {"critical": 0, "high": 1, "medium": 2, "low": 3, "nit": 4}[match.group(1).lower()]
+
+def render_blocks(blocks, limit=520):
+    return [render_block(block, limit) for block in blocks]
+
+def section_text(name, body, collapse=False):
+    body = [line for line in body if line.strip()]
+    if not body:
+        return []
+    if collapse:
+        return [
+            "<details>",
+            f"<summary>{name} ({len(body)} item(s))</summary>",
+            "",
+            *body,
+            "",
+            "</details>",
+            "",
+        ]
+    return [f"## {name}", *body, ""]
+
+metadata_prefixes = (
+    "# ",
+    "**Review decision:**",
+    "**Result:**",
+    "**Scope:**",
+    "**Verification:**",
+    "**Target:**",
+    "**Rounds:**",
+    "**Mix per round:**",
+    "**Focus:**",
+    "**Commit mode:**",
+)
+
+metadata = []
+for line in preamble:
+    stripped = line.strip()
+    if stripped.startswith("**Report path:**"):
+        continue
+    if any(stripped.startswith(prefix) for prefix in metadata_prefixes):
+        metadata.append(stripped)
+
+if not any(line.startswith("# ") for line in metadata):
+    metadata.insert(0, "# review-anvil report")
+
+icount = inline_count()
+if icount:
+    metadata.append(f"**Inline findings:** {icount} anchored comment(s) posted with this review.")
+
+metadata.append(
+    f"_Compact GitHub summary: generated report was {len(text)} characters; "
+    "findings were converted to a scan-friendly index._"
+)
+
+failure = blocks_for("Failure")
+needs = blocks_for("Findings", "Needs Attention")
+if not needs:
+    all_blocks = []
+    for name in order:
+        all_blocks.extend(bullet_blocks(sections.get(name, [])))
+    material = [block for block in all_blocks if severity(block) <= 2]
+    material.sort(key=severity)
+    needs = material
+
+fixes = blocks_for("Fixes / Would Apply", "Would-apply summary")
+notes = blocks_for("Non-Blocking Notes", "Suggestions")
+deferred = blocks_for("Deferred / Out-of-Scope", "Deferred items", "Out-of-scope follow-ups")
+details = blocks_for("Run Details", "Total")
+
+out = []
+out.extend(marker_lines)
+out.extend(metadata)
+out.append("")
+
+out.extend(section_text("Failure", render_blocks(failure, 900)))
+
+if needs:
+    out.extend(section_text("Findings", render_blocks(needs, 140)))
+else:
+    out.extend(section_text("Findings", ["No in-scope findings were confirmed."]))
+
+out.extend(section_text("Fixes / Would Apply", render_blocks(fixes, 140), collapse=len(fixes) > 6))
+out.extend(section_text("Non-Blocking Notes", render_blocks(notes, 140), collapse=True))
+out.extend(section_text("Deferred / Out-of-Scope", render_blocks(deferred, 140), collapse=True))
+out.extend(section_text("Run Details", render_blocks(details, 140), collapse=True))
+
+compact = "\n".join(out).rstrip() + "\n"
+if len(compact) > max_chars:
+    compact += (
+        "\n_This compact summary still exceeds the configured compaction "
+        "trigger because all findings are preserved._\n"
+    )
+
+report.write_text(compact)
+print(
+    f"pr-helper: compacted oversized GitHub report from {len(text)} to {len(compact)} chars "
+    f"(full copy: {full})",
+    file=sys.stderr,
+)
+PY
+}
+
+process_inline_comments_for_github() {
+    local inline_json="${1:-}" min_severity="${REVIEW_ANVIL_INLINE_MIN_SEVERITY:-medium}" max_chars="${REVIEW_ANVIL_INLINE_MAX_CHARS:-900}"
+    [[ -n "$inline_json" && -f "$inline_json" ]] || return 0
+    [[ "$max_chars" =~ ^[0-9]+$ ]] \
+        || die "REVIEW_ANVIL_INLINE_MAX_CHARS must be a positive integer, got '$max_chars'"
+    [[ "$max_chars" -gt 0 ]] || return 0
+
+    _py - "$inline_json" "$min_severity" "$max_chars" <<'PY'
+import json
+import os
+import re
+import sys
+from pathlib import Path
+
+inline = Path(sys.argv[1])
+min_severity = sys.argv[2].lower()
+max_chars = int(sys.argv[3])
+enable_suggestions = os.environ.get("REVIEW_ANVIL_ENABLE_SUGGESTIONS", "1") != "0"
+
+rank = {"critical": 0, "high": 1, "medium": 2, "low": 3, "nit": 4}
+if min_severity not in rank:
+    raise SystemExit(
+        "pr-helper: REVIEW_ANVIL_INLINE_MIN_SEVERITY must be one of "
+        "critical|high|medium|low|nit"
+    )
+
+raw = inline.read_text().strip()
+if not raw or raw == "[]":
+    raise SystemExit(0)
+
+items = json.loads(raw)
+if not isinstance(items, list):
+    raise SystemExit(f"pr-helper: {inline} is not a JSON array of comment objects")
+
+allowed = {"path", "position", "body", "line", "side", "start_line", "start_side"}
+
+def infer_severity(item):
+    explicit = str(item.get("severity", "")).lower()
+    if explicit in rank:
+        return explicit
+    body = item.get("body") or ""
+    m = re.search(r"\*\*\[(critical|high|medium|low|nit)\]", body, re.I)
+    if m:
+        return m.group(1).lower()
+    m = re.search(r"\b(critical|high|medium|low|nit)\s*:", body, re.I)
+    if m:
+        return m.group(1).lower()
+    # Unknown severity stays visible; medium is the least surprising default.
+    return "medium"
+
+def squeeze(value):
+    return re.sub(r"\s+", " ", (value or "").strip())
+
+def shorten(value, limit):
+    value = squeeze(value)
+    if len(value) <= limit:
+        return value
+    cut = value.rfind(" ", 0, max(0, limit - 3))
+    if cut < 80:
+        cut = max(0, limit - 3)
+    return value[:cut].rstrip() + "..."
+
+def split_blocks(body):
+    body = body.strip()
+    if not body:
+        return "", []
+    parts = [p.strip() for p in re.split(r"\n\s*\n", body) if p.strip()]
+    if not parts:
+        return "", []
+    return parts[0], parts[1:]
+
+def append_suggestion(body, item):
+    suggestion = item.get("suggestion")
+    if suggestion is None:
+        suggestion = item.get("suggested_change")
+    if suggestion is None:
+        suggestion = item.get("suggestedChange")
+    if not enable_suggestions or suggestion is None:
+        return body
+    suggestion = str(suggestion).strip("\n")
+    if not suggestion or "```" in suggestion or "```suggestion" in body:
+        return body
+    # GitHub suggestions apply to the commented line/range. Only append when
+    # the comment has a concrete new-side anchor that GitHub can apply.
+    if not (item.get("line") or item.get("start_line") or item.get("position")):
+        return body
+    return body.rstrip() + "\n\n```suggestion\n" + suggestion + "\n```"
+
+def compact_body(body, item):
+    body = append_suggestion(body or "", item)
+    if len(body) <= max_chars:
+        return body
+
+    suggestion_blocks = re.findall(r"```suggestion\n.*?```", body, flags=re.S)
+    prose = re.sub(r"\n*```suggestion\n.*?```\n*", "\n\n", body, flags=re.S).strip()
+    header, rest = split_blocks(prose)
+    if not header:
+        header = shorten(prose, min(max_chars, 220))
+        rest = []
+
+    budget = max_chars - sum(len(b) + 2 for b in suggestion_blocks)
+    if budget < 300:
+        budget = 300
+
+    if not rest:
+        compact = shorten(header, budget)
+    elif len(rest) == 1:
+        compact = header + "\n\n" + shorten(rest[0], max(120, budget - len(header) - 2))
+    else:
+        mechanism = shorten(rest[0], 260)
+        fix = shorten(rest[-1], max(120, budget - len(header) - len(mechanism) - 10))
+        if not re.match(r"^(fix|suggested fix|a fix)[:.]", fix, re.I):
+            fix = "Fix: " + fix
+        compact = header + "\n\n" + mechanism + "\n\n" + fix
+
+    if suggestion_blocks:
+        compact = compact.rstrip() + "\n\n" + "\n\n".join(suggestion_blocks)
+    return compact
+
+kept = []
+filtered = 0
+compacted = 0
+suggested = 0
+
+for item in items:
+    if not isinstance(item, dict):
+        kept.append(item)
+        continue
+    severity = infer_severity(item)
+    if rank[severity] > rank[min_severity]:
+        filtered += 1
+        continue
+    original_body = item.get("body") or ""
+    body = compact_body(original_body, item)
+    if body != original_body:
+        compacted += 1
+    if "```suggestion" in body and "```suggestion" not in original_body:
+        suggested += 1
+    clean = {key: item[key] for key in allowed if key in item}
+    clean["body"] = body
+    kept.append(clean)
+
+inline.write_text(json.dumps(kept, indent=2) + "\n")
+if filtered or compacted or suggested:
+    print(
+        "pr-helper: inline comments processed "
+        f"({filtered} summary-only, {compacted} compacted, {suggested} suggestion block(s) added)",
+        file=sys.stderr,
+    )
+PY
 }
 
 # Shared dismissed-findings engine. Modes:
@@ -676,6 +1067,9 @@ cmd_post() {
     suppress_dismissed_findings "$host" "$owner" "$repo" "$n" "$report_path" "$inline_json" \
         || die "dismissed-finding suppression failed; refusing to post possible repeat findings (report left at $report_path)"
 
+    process_inline_comments_for_github "$inline_json"
+    compact_report_for_github "$report_path" "$inline_json"
+
     # Compute inline presence after suppression (which may have emptied the
     # array). Empty array / whitespace-only / missing file = no inline.
     local has_inline=0
@@ -710,6 +1104,7 @@ cmd_post() {
         review_event="COMMENT"
         printf 'warning: approval could not be submitted (common cause: GitHub rejects approving your own PR); downgrading to a comment review\n' >&2
         printf '\n\n---\n\n_review-anvil decided APPROVE, but GitHub rejected the approval (commonly: self-authored PRs cannot be approved); posted as a comment instead._\n' >> "$report_path"
+        compact_report_for_github "$report_path" "$inline_json"
         if [[ "$has_inline" -eq 1 ]]; then
             if url=$(_submit_review COMMENT "$inline_json"); then
                 _emit_post_result COMMENT "$url"
@@ -979,6 +1374,9 @@ cmd_post_update() {
             || printf 'pr-helper: warning: dismissed-finding suppression failed; updating comment with unfiltered report\n' >&2
     fi
 
+    process_inline_comments_for_github "${report_path}.inline.json"
+    compact_report_for_github "$report_path" "${report_path}.inline.json"
+
     local completed_at
     completed_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
@@ -1029,7 +1427,9 @@ case "${1:-}" in
     post-update)      shift; cmd_post_update "$@" ;;
     dismissed)        shift; cmd_dismissed "$@" ;;
     dismiss)          shift; cmd_dismiss "$@" ;;
+    compact-report)   shift; compact_report_for_github "$@" ;;
+    process-inline)   shift; process_inline_comments_for_github "$@" ;;
     check-pins)       shift; cmd_check_pins "$@" ;;
-    "")               die "usage: pr-helper.sh {init [<locator>] | post <host> <owner> <repo> <n> <marker> <report_path> | verify-checkout [<locator>] | post-start <host> <owner> <repo> <n> <marker> <author> | post-update <host> <owner> <repo> <n> <comment_id> <marker> <report_path> <author> <success|failure> [<started_at>] | dismissed <host> <owner> <repo> <n> | dismiss <host> <owner> <repo> <n> <path> <pattern> [<reason>] | check-pins <preset> <pins-csv> [<raw-args>]}" ;;
+    "")               die "usage: pr-helper.sh {init [<locator>] | post <host> <owner> <repo> <n> <marker> <report_path> | verify-checkout [<locator>] | post-start <host> <owner> <repo> <n> <marker> <author> | post-update <host> <owner> <repo> <n> <comment_id> <marker> <report_path> <author> <success|failure> [<started_at>] | dismissed <host> <owner> <repo> <n> | dismiss <host> <owner> <repo> <n> <path> <pattern> [<reason>] | compact-report <report_path> [<inline_json>] | process-inline <inline_json> | check-pins <preset> <pins-csv> [<raw-args>]}" ;;
     *)                die "unknown subcommand: $1" ;;
 esac
