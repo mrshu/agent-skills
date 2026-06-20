@@ -239,6 +239,14 @@ Default policy:
 
 `auto` selection after normal synthesis:
 
+- First estimate **meaningful changed size** from the reviewed snapshot. Exclude
+  generated/vendor/build artifacts, lockfiles, and snapshot/fixture churn unless
+  those files are the review's product surface. Treat `>1000` meaningful changed
+  lines or `>20` meaningful files as large, and `>5000` meaningful changed
+  lines, `>50` meaningful files, or several interacting subsystems as very
+  large. Size is an escalation floor, not the only signal: a small risky auth or
+  migration diff can still choose `targeted`, while a huge mechanical rename
+  may stay below `full` after exclusions.
 - Use `off` only when approval is disabled/impossible and the result is clean
   or low/nit-only, has no `medium`+ inline comments, no GitHub suggestion
   blocks, no `critical`/`high` actionable or deferred author-action items, and
@@ -252,7 +260,12 @@ Default policy:
   any would-apply plan that removes code, adds dependencies, changes behavior
   non-locally, touches auth/security/data/schema/migrations/concurrency/config,
   or looks like abstraction/tech-debt risk, or when dismissed/resolved PR review
-  history touches the same files/root causes.
+  history touches the same files/root causes, or when the diff is large by
+  meaningful changed size.
+- Use `full` when the meaningful diff is very large or cross-cutting across
+  several subsystems, unless exclusions show it is mostly mechanical/generated
+  churn. `full` adds second-order plan scrutiny without making approval more
+  brittle by itself.
 - Use `strict` only when the user explicitly asks for approval-sensitive
   behavior or branch protection / CODEOWNER requirements are confirmed. If any
   required adversary fails, times out, or returns unparseable output in `strict`,
@@ -463,7 +476,7 @@ Early exit already stops the loop when a round comes back clean, so the only tun
 |---|---|
 | Missing reviewer backend | Validate only the backends the resolved mix actually names, before round 1. Abort with: "review-anvil requires the `<missing-skill>` skill from the mrshu-skills marketplace. Install via `/plugin install <missing-skill>@mrshu-skills` (Claude Code) or `npx skills add mrshu/agent-skills --skill <missing-skill>` (cross-agent)." |
 | No diff in auto-detected target | Abort: "No target detected — nothing to review." Don't invent work. |
-| Diff > ~5000 lines | Warn in the round status and continue; tell reviewers they may focus on the most impactful slice; double `reviewer_timeout` (unless the user set it explicitly). |
+| Raw diff > ~5000 lines | Warn in the round status and continue; tell reviewers they may focus on the most impactful slice; double `reviewer_timeout` (unless the user set it explicitly). For `adversarial: auto`, estimate meaningful changed size after exclusions; very large meaningful diffs select at least `full`, but generated/mechanical churn alone does not force deeper adversarial review. |
 | `agents > 8` | Reject before round 1 — more dedup work than signal. |
 | `rounds = 0` | Reject — almost certainly a typo. |
 | `adversarial` with `per_fix` | Warn and ignore — productive mode verifies real fixes with the build/test gate. |
