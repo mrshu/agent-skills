@@ -26,9 +26,24 @@ Pass-through args the user may specify (non-exhaustive — any engine param not 
 - `rounds: N` — the user's value wins over the default `rounds: 1`
 - `agents: 2 codex + 1 claude` — custom reviewer mix
 - `min_fix_severity: <sev>` — drives the would-apply/suggestions split in the read-only report
+- `adversarial: auto|challenge|targeted|full|strict` — optional adversarial review that attacks false positives and disproportionate/bloated fix plans before the final report
+- `adversarial_rounds: 1|2`, `disagreement_policy: defer|comment` — tune the adversarial gate; it remains read-only and bounded
 - `reviewer_timeout: <seconds>`, `report_path: <file>` — as in the engine
 
 After the engine completes, surface the synthesized report inline. **Do not** follow with edits, commits, or any side effects — that's exactly what `commit_mode=none` rules out.
+
+Adversarial review is still `commit_mode=none`: no edits, no commits, no
+staging, no pushes. Temporary prompt/reviewer/report artifacts under
+`.review-anvil/` or an explicit `report_path` are allowed. It can make the
+report more conservative by dropping false positives, deferring harmful or
+tech-debt-heavy fix plans, hardening fix prose, or stripping unsafe suggestion
+blocks.
+
+Default local policy: leave adversarial review off for ordinary fast/local
+reviews. Append `adversarial: auto` when the user asks for a careful,
+skeptical, high-confidence, low-noise, thorough, or production-ready read-only
+review. Do not append it when the user asks for a quick/rough/sanity pass unless
+they explicitly request adversarial review.
 
 ## When not to use this
 

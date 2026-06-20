@@ -24,10 +24,11 @@ make_report() {
         printf '**Review decision:** COMMENT — material findings need attention.\n'
         printf '**Result:** 3 findings confirmed.\n'
         printf '**Scope:** Inline processing e2e fixture.\n\n'
+        printf '**Adversarial review:** targeted, 2 agents; 2 upheld, 1 hardened, 0 deferred, 0 dropped.\n\n'
         printf '## Findings\n'
-        printf -- '- **[medium] auth** `src/auth.ts:12` — finding 01 has a long explanation that should compact while retaining the finding number 01 and still point to the inline comment.\n'
-        printf -- '- **[high] db** `src/db.ts:8` — finding 02 remains inline.\n'
-        printf -- '- **[low] docs** `README.md:4` — finding 03 stays summary-only.\n'
+        printf -- '- **F-001 [medium] auth** `src/auth.ts:12` — finding 01 has a long explanation that should compact while retaining the finding number 01 and still point to the inline comment.\n'
+        printf -- '- **F-002 [high] db** `src/db.ts:8` — finding 02 remains inline.\n'
+        printf -- '- **F-003 [low] docs** `README.md:4` — finding 03 stays summary-only.\n'
         printf '\n## Non-Blocking Notes\n'
         printf -- '- **[low] docs** — low priority note should be collapsed but preserved.\n'
         printf '\n## Run Details\n'
@@ -72,6 +73,15 @@ set -euo pipefail
 
 case "$1 $2" in
   "api repos/acme/widgets/pulls/42/reviews")
+    has_input=0
+    for arg in "$@"; do
+      if [[ "$arg" == "--input" ]]; then
+        has_input=1
+      fi
+    done
+    if [[ "$has_input" == "0" ]]; then
+      exit 0
+    fi
     if [[ "${GH_MOCK_REVIEW_FAIL:-0}" == "1" ]]; then
       printf 'mock review failure\n' >&2
       exit 1
@@ -91,6 +101,9 @@ case "$1 $2" in
       fi
     done
     printf 'https://example.invalid/comment/123\n'
+    ;;
+  "api graphql")
+    printf '{"data":{"repository":{"pullRequest":{"reviewThreads":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}}}\n'
     ;;
   "pr comment")
     body_file=""
@@ -115,6 +128,21 @@ case "$1 $2" in
 esac
 GH
     chmod +x "$bin_dir/gh"
+}
+
+make_dismissals() {
+    local path="$1"
+    cat >"$path" <<'JSON'
+{
+  "acme/widgets#42": [
+    {
+      "path": "",
+      "pattern": "auth finding 01 has a long explanation that should compact while retaining the finding number 01 and still point to the inline comment",
+      "reason": "local-test-dismissal"
+    }
+  ]
+}
+JSON
 }
 
 test_process_inline() {
@@ -159,6 +187,7 @@ test_post_review_success() {
 
     jq -e '.event == "COMMENT"' "$tmp/review-payload.json" >/dev/null
     jq -e '.body | contains("review-anvil-marker: marker-123")' "$tmp/review-payload.json" >/dev/null
+    jq -e '.body | contains("Adversarial review")' "$tmp/review-payload.json" >/dev/null
     jq -e '.body | contains("Inline findings") and contains("2 anchored comment")' "$tmp/review-payload.json" >/dev/null
     jq -e '.comments | length == 2' "$tmp/review-payload.json" >/dev/null
     jq -e '.comments[] | has("severity") | not' "$tmp/review-payload.json" >/dev/null
@@ -194,6 +223,7 @@ test_post_fallback_comment() {
       "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-fallback.out
 
     grep -q 'review-anvil-marker: marker-123' "$tmp/comment.md"
+    grep -q 'Adversarial review' "$tmp/comment.md"
     grep -q 'finding 01' "$tmp/comment.md"
     grep -q '<details>' "$tmp/comment.md"
     assert_file_missing "$report"
@@ -224,10 +254,67 @@ test_post_update_success() {
 
     jq -e '.body | contains("review-anvil-improve-pr completed on this PR. cc @octocat.")' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("review-anvil-marker: marker-123")' "$tmp/patch.json" >/dev/null
+    jq -e '.body | contains("Adversarial review")' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("Inline findings") and contains("2 anchored comment")' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("Completed:")' "$tmp/patch.json" >/dev/null
     assert_file_missing "$report"
     assert_file_missing "$inline"
+    assert_file_missing "$tmp/report.md.approval.json"
+}
+
+test_post_adversarial_off_downgrades_approval() {
+    local tmp bin report inline
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+
+    report="$tmp/report.md"
+    inline="$tmp/report.md.inline.json"
+    make_report "$report"
+    make_inline "$inline"
+    printf '{"event":"APPROVE","head_sha":"head-sha","adversarial_mode":"off"}\n' >"$tmp/report.md.approval.json"
+
+    GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
+    GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
+    REVIEW_ANVIL_SKIP_DISMISSED=1 \
+    REVIEW_ANVIL_GITHUB_MAX_CHARS=500 \
+    REVIEW_ANVIL_INLINE_MAX_CHARS=220 \
+    PATH="$bin:$PATH" \
+      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-adversarial-off.out
+
+    jq -e '.event == "COMMENT"' "$tmp/review-payload.json" >/dev/null
+    assert_file_missing "$report"
+    assert_file_missing "$inline"
+    assert_file_missing "$tmp/report.md.approval.json"
+}
+
+test_post_dismisses_id_prefixed_report_findings() {
+    local tmp bin report dismissals
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+
+    report="$tmp/report.md"
+    dismissals="$tmp/dismissals.json"
+    make_report "$report"
+    make_dismissals "$dismissals"
+    printf '{"event":"COMMENT","head_sha":"head-sha"}\n' >"$tmp/report.md.approval.json"
+
+    GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
+    GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
+    REVIEW_ANVIL_DISMISSALS="$dismissals" \
+    REVIEW_ANVIL_GITHUB_MAX_CHARS=12000 \
+    PATH="$bin:$PATH" \
+      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-dismissed-id.out
+
+    grep -q 'Previously dismissed on this PR' "$tmp/comment.md"
+    grep -Fq 'F-001 [medium] auth' "$tmp/comment.md"
+    grep -q 'local-test-dismissal' "$tmp/comment.md"
+    assert_file_missing "$report"
     assert_file_missing "$tmp/report.md.approval.json"
 }
 
@@ -237,6 +324,8 @@ main() {
     test_post_review_success
     test_post_fallback_comment
     test_post_update_success
+    test_post_adversarial_off_downgrades_approval
+    test_post_dismisses_id_prefixed_report_findings
     printf 'test-pr-helper: all e2e checks passed\n'
 }
 

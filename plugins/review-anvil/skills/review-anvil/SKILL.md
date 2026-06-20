@@ -32,6 +32,9 @@ Parse the user's free-form args string into:
 | `min_fix_severity` | `medium` | "auto-fix high and above", "fix only critical" — minimum severity for auto-fix; lower findings are listed, not applied |
 | `commit_mode` | `per_fix` | `per_fix` (one commit per fix-group) or `none` ("review only", "don't commit", "no fixes") |
 | `approve` | `allowed` | "never approve", "comment only", `approve: never` — always write `{"event": "COMMENT"}` to `.approval.json`. Presets additionally export `REVIEW_ANVIL_NO_APPROVE=1` so the helper enforces it mechanically. Only meaningful for review-only PR runs |
+| `adversarial` | `off` | `off`, `auto`, `challenge`, `targeted`, `full`, or `strict` — read-only post-synthesis review that attacks candidate findings and would-apply plans before they become final guidance |
+| `adversarial_rounds` | `1` | one adversarial pass by default; max 2, and a second pass runs only when the first pass materially changes `medium`+ guidance |
+| `disagreement_policy` | `defer` | `defer` moves unresolved material disputes to Deferred; `comment` keeps the finding actionable but forces review-only PR approvals to COMMENT |
 | `verify_cmd` | auto-detect | "verify with `npm test`", `verify_cmd: none` to skip — build/test command run after each round's fixes (see "Build/test gate"; per_fix only) |
 | `reviewer_timeout` | `600` | "timeout 10 minutes" — hard per-reviewer wall-clock cap in seconds for Bash-dispatched reviewers (see `run-reviewer.sh`). Default is ~3× the slowest legitimate reviewer observed in real runs (98–213s); doubled automatically for >5000-line diffs |
 | `report_path` | unset | File path; when set, the engine writes the final report there (creating parent dirs) and prints exactly that path as its last output line so downstream consumers can pick it up |
@@ -44,6 +47,7 @@ Parse the user's free-form args string into:
 - **Pin-rejection (presets; defense in depth against the prose parser being talked into overrides):** before assembling, segment-split `$ARGUMENTS` as above, lowercase each segment's key (the text before its first `:`), and abort with `error: <param> is pinned by <preset-name> and cannot be overridden in args` if any key equals a pinned param. Match segment *keys*, never raw substrings — `focus: "target: PR safety"` has key `focus` and must pass. A host that cannot segment-split must abort (`error: pin-rejection unavailable in this environment; refusing to invoke engine without pin enforcement`), not degrade to substring scanning.
 - `agents`: a count (use the mix table below) or an explicit mix naming `codex`/`codex-exec` / `claude`/`claude-exec` — honor a mix exactly.
 - `target` auto-detect order: currently checked-out PR (e.g. `gh pr view --json number,headRefName`, a GitHub MCP query, or REST) → branch-vs-main diff (`git diff main...HEAD`) → uncommitted changes (`git diff` + `git diff --cached`). Empty args = all defaults.
+- `adversarial` applies only when `commit_mode=none`. If set with `per_fix`, warn and ignore it — productive mode already applies real fixes and gates them with the build/test command. Reject `adversarial_rounds > 2`; adversarial loops must be bounded. `auto` means choose the cheapest sufficient adversarial mode after normal synthesis using the default policy below.
 
 ### PR-target / per_fix incompatibility
 
@@ -56,7 +60,7 @@ Reviewers of a PR locator see the GitHub-fetched diff, which may not match the l
 ### Commit modes
 
 - **`per_fix` (default)** — full loop: review → synthesize/verify → apply fixes → build/test gate → commit, each round.
-- **`none` (review-only)** — review → synthesize/verify only. **No edits, no commits, no staging.** Every round reviews the same baseline, so `rounds > 1` buys reviewer redundancy, not refinement; the natural default is `rounds=1`. Skip Loop Mechanics §4 entirely; the round summary reads `Fixes applied: 0 (review-only)`; the auto-fix policy is still evaluated in the abstract so findings classify as would-apply / suggestions / deferred; the final report ends with a "Would-apply summary" instead of commit SHAs and a tuning suggestion.
+- **`none` (review-only)** — review → synthesize/verify only. **No edits, no commits, no staging.** Read-only mode may write temporary prompt/reviewer/report artifacts under `.review-anvil/` and the explicit `report_path`; it must not modify source files, the index, commits, branches, or remotes. Every normal round reviews the same baseline, so `rounds > 1` buys reviewer redundancy, not code refinement; the natural default is `rounds=1`. Skip Loop Mechanics §4 entirely; the round summary reads `Fixes applied: 0 (review-only)`; the auto-fix policy is still evaluated in the abstract so findings classify as would-apply / suggestions / deferred. Optional adversarial review is a separate post-synthesis gate that attacks finding validity and fix proportionality without pretending code changed.
 
 ### Posting reports externally
 
@@ -70,6 +74,7 @@ When `report_path` is set, optimize the report for a PR timeline reader, not for
 - `Skill review-anvil "5 rounds, 2 codex + 1 claude, focus: async correctness, target: PR #42"`
 - `Skill review-anvil "1 round, only: security, target: src/auth/"`
 - `Skill review-anvil "fix only critical"` → severity gate raised to `critical`; everything else surfaces as suggestions.
+- `Skill review-anvil "target: PR #42, adversarial: auto"` → normal review first, then adversarial review only if the synthesized findings/fix plans need a validity or proportionality challenge.
 
 ## Default Mix Policy
 
@@ -177,6 +182,128 @@ A pre-existing issue outside the PR's scope can still be valuable, but it must n
 
 When `report_path` is set, write follow-ups once, after the final round, to `<report_path>.followups.json` — schema in `references/report-artifacts.md`. Automation may file issues only for `auto_approved` entries after duplicate search; presets read the file before posting (the helper deletes it afterwards).
 
+#### Optional adversarial review (`commit_mode=none` only)
+
+When `adversarial` is not `off`, run a bounded post-synthesis gate after
+dedup/verification and before writing the final report artifacts. Read
+`references/adversarial-prompt.md` before dispatching adversarial reviewers.
+
+Adversarial review is not another broad review pass and not a simulated patch
+application. It attacks the candidate synthesis:
+
+- **Finding validity** — false-positive claims, wrong anchors, dismissed
+  findings, out-of-scope issues, over-severity, and missing reachability
+  evidence.
+- **Fix proportionality** — suggested fixes that would technically address a
+  problem but create more trouble than they solve: harmful blast radius,
+  unnecessary dependencies, bloated abstractions, future tech debt, non-local
+  churn, unsafe deletions, brittle tests, or symptom fixes that miss root cause.
+- **Report safety** — unsafe one-click GitHub suggestions, unclear fix paths,
+  overconfident approvals, and actionable comments that should be deferred.
+
+Modes:
+
+| Mode | Dispatch | Intent |
+|---|---|---|
+| `auto` | Chosen after synthesis | Selects `off`, `challenge`, `targeted`, or `strict` using the default policy below. |
+| `challenge` | 1 adversary | Cheap local check over all `medium`+ findings and would-apply plans. |
+| `targeted` | 2 adversaries | Recommended PR mode: false-positive/scope auditor + fix-plan breaker. Force a deletion skeptic when any would-apply item removes code. |
+| `full` | 3 adversaries | Adds second-order bug hunting across interacting plans, config, migrations, and tests. |
+| `strict` | Same as `full` | Approval-sensitive: any required adversary failure or unresolved `high`+ dispute forces COMMENT. |
+
+Role mapping:
+
+- `challenge`: one combined adversary using the core prompt plus both the
+  `false-positive-scope-auditor` and `fix-plan-breaker` role additions.
+- `targeted`: two adversaries, one `false-positive-scope-auditor` and one
+  `fix-plan-breaker`; add/replace with the deletion skeptic behavior from
+  `fix-plan-breaker` when any would-apply plan removes code.
+- `full`/`strict`: `false-positive-scope-auditor`, `fix-plan-breaker`, and
+  `second-order-bug-hunter`; add `report-auditor` only if the report/approval
+  artifact itself is the risky surface.
+
+Default policy:
+
+- Local `review-anvil-readonly` defaults to `off`. If the user asks for careful,
+  skeptical, high-confidence, low-noise, or thorough read-only review, the
+  orchestrator should append `adversarial: auto` unless the user explicitly
+  asked for a fast/rough pass.
+- `review-anvil-pr` defaults to `adversarial: auto` because GitHub output is
+  public reviewer speech and may include inline comments, one-click
+  suggestions, or an approval event.
+- Explicit user input wins: `adversarial: off` disables the gate; explicit
+  `challenge`/`targeted`/`full`/`strict` uses that mode. In review-only PR runs,
+  explicit `adversarial: off` also forces `.approval.json` to `{"event":
+  "COMMENT"}`; unchallenged LLM review should not satisfy branch protection by
+  accident.
+
+`auto` selection after normal synthesis:
+
+- Use `off` only when approval is disabled/impossible and the result is clean
+  or low/nit-only, has no `medium`+ inline comments, no GitHub suggestion
+  blocks, no `critical`/`high` actionable or deferred author-action items, and
+  no would-apply plan with deletion, dependency, non-local behavior, or
+  abstraction/churn risk. For local non-PR runs, ignore the approval condition.
+- Use `challenge` for small or self-authored comment-only reviews with material
+  feedback but no suggestion blocks, no high-risk fix plans, and `approve:
+  never` / `REVIEW_ANVIL_NO_APPROVE=1`.
+- Use `targeted` when candidate output includes any `medium`+ inline comment,
+  any GitHub suggestion block, any `critical`/`high` actionable/deferred item,
+  any would-apply plan that removes code, adds dependencies, changes behavior
+  non-locally, touches auth/security/data/schema/migrations/concurrency/config,
+  or looks like abstraction/tech-debt risk, or when dismissed/resolved PR review
+  history touches the same files/root causes.
+- Use `strict` only when the user explicitly asks for approval-sensitive
+  behavior or branch protection / CODEOWNER requirements are confirmed. If any
+  required adversary fails, times out, or returns unparseable output in `strict`,
+  force `COMMENT`. Do not escalate to `strict` merely because branch protection
+  is unknown; use `targeted` and force `COMMENT` if approval safety cannot be
+  established.
+
+Assign stable IDs before dispatch: findings are `F-001`, `F-002`, ... and
+would-apply plans are `W-001`, `W-002`, ... . Build would-apply plans from the
+same fix groups `per_fix` would have committed: each plan lists covered finding
+IDs, the simulated conventional-commit subject, the intended fix path, risk tags
+such as `deletion`/`dependency`/`non-local`/`abstraction`, and any exact
+suggestion blocks that would be emitted. For local non-PR reviews, set
+`CANDIDATE APPROVAL` to `not-applicable`; for PR/report-path reviews, set it to
+the tentative `.approval.json` event/reason. Adversarial reviewers return
+verdicts against those IDs using the schema in `adversarial-prompt.md`.
+
+Apply verdicts conservatively:
+
+- `drop` only when concrete evidence shows a false positive, dismissed finding,
+  or out-of-scope claim.
+- `defer` when the issue may be real but the proposed fix is harmful,
+  bloated, tech-debt-heavy, too non-local, or disproportionate for this PR.
+- `modify` to harden or simplify the prose fix path while keeping the finding
+  actionable.
+- `uphold` when the finding and fix path survive challenge.
+
+Generic uncertainty does **not** defer a finding. The adversary must cite code,
+configuration, tests, runtime behavior, dismissed-thread state, or PR scope
+evidence. Adversaries must not create new actionable findings. If they notice a
+new issue while attacking a `W-*` plan, record it only as a second-order plan
+risk or follow-up; it remains Deferred unless the orchestrator runs a separate
+normal review/verification pass.
+
+Adversarial review may make the output more conservative. It must never make a
+speculative fix more authoritative. It can strip unsafe `"suggestion"` fields
+from `.inline.json`, move items to Deferred, harden/simplify fix prose, or
+downgrade approval. It must not create patches, commits, or final actionable
+findings from unverified adversarial ideas.
+
+Run at most `adversarial_rounds` passes, capped at 2. A second adversarial pass
+runs only when the first pass materially changes `medium`+ guidance, changes
+approval, or rewrites a would-apply plan. `W-*` verdicts affect fix plans,
+suggestions, and fix prose only; linked `F-*` findings change only when an
+independent `F-*` verdict refutes or defers them. With
+`disagreement_policy=defer`, unresolved `medium` adversarial disputes move the
+item to Deferred but do not by themselves block `APPROVE`; unresolved
+`critical`/`high` disputes block `APPROVE`. With
+`disagreement_policy=comment`, unresolved `medium`+ disputes keep the item
+actionable but force the review event to `COMMENT`.
+
 ### 4. Apply fixes
 
 **Skip entirely when `commit_mode=none`** (the policy below is still evaluated in the abstract for the report).
@@ -195,6 +322,7 @@ Append to running output:
 - Fixes applied: K commits (<sha1>..<shaN>)   # or "0 (review-only)"
 - Verification: <cmd> — passed | failed → round reverted | pre-existing failures (no new) | none detected | skipped   # per_fix only
 - Would-apply: W items                         # commit_mode=none only
+- Adversarial review: off | <mode>, <A> agents, <upheld> upheld, <hardened> hardened, <deferred> deferred, <dropped> dropped
 - Suggestions: S items (sub-threshold severity; not applied)
 - Deferred: D items (reasons: noise / new dependency / size cap / failed verification / product decision)
 ```
@@ -221,7 +349,7 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 
    Single line → `{"line": N, "side": "RIGHT"}`; range `<N>-<M>` → `{"start_line": N, "line": M, "side": "RIGHT", "start_side": "RIGHT"}`. Findings without anchors stay in the markdown body only; no anchored findings → `[]`. A reader must be able to create the fix from each `body` alone.
 
-   Include helper-only `"severity"` for every inline item. The posting helper strips it before calling GitHub and uses it to keep low/nit findings summary-only by default. Include helper-only `"suggestion"` only when the fix is an exact replacement for the commented line/range; the helper turns it into a GitHub suggestion fenced block and strips the extra key before posting. Do not include suggestions for design fixes, cross-file edits, deleted lines, or anything that requires judgment.
+   Include helper-only `"severity"` for every inline item. The posting helper strips it before calling GitHub and uses it to keep low/nit findings summary-only by default. Include helper-only `"suggestion"` only when the fix is an exact replacement for the commented line/range; the helper turns it into a GitHub suggestion fenced block and strips the extra key before posting. Do not include suggestions for design fixes, cross-file edits, deleted lines, anything that requires judgment, or any suggestion whose anchor/replacement/blast-radius was disputed by adversarial review.
 
    Each `body` follows the **inline-comment voice** defined in `references/report-artifacts.md` — read it before composing bodies. In one line: compact, code-anchored prose with an observable-problem header, one concrete downstream consequence, and a fix path complete enough to implement without re-investigation. By default, inline comments are for `critical`/`high`/`medium` anchored findings; `low`/`nit` findings remain in the top-level summary unless the user or environment lowers `REVIEW_ANVIL_INLINE_MIN_SEVERITY`. The same voice applies to the report's Suggestions, Deferred, and Out-of-scope follow-ups prose.
 
@@ -231,13 +359,15 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
    {
      "event": "APPROVE | COMMENT",
      "head_sha": "<the HEAD_SHA the preset captured at init/verify-checkout>",
+     "adversarial_mode": "off | auto | challenge | targeted | full | strict",
+     "approval_allowed": true,
      "reason": "No high/critical in-scope findings; medium-and-lower items are left to the author."
    }
    ```
 
-   Include `"head_sha"` — the `HEAD_SHA` the preset captured at init/verify-checkout time — so the posting helper can verify the approval still matches the reviewed state (it downgrades to COMMENT if the PR head moved mid-run).
+   Include `"head_sha"` — the `HEAD_SHA` the preset captured at init/verify-checkout time — so the posting helper can verify the approval still matches the reviewed state (it downgrades to COMMENT if the PR head moved mid-run). Include `"adversarial_mode"` and set `"approval_allowed": false` when approval must be mechanically disabled (for example explicit `adversarial: off` in a PR run).
 
-   Use `APPROVE` for review-only PR runs when all of these hold: `approve` is not `never`, at least one reviewer succeeded, there are no `critical`/`high` actionable in-scope findings, no `critical`/`high` in-scope deferred finding needs author action, and remaining items are only `medium`/`low`/`nit` findings, suggestions, deferred notes, or out-of-scope follow-ups. Medium-and-lower in-scope findings should still be posted clearly, but the review event is approval: leave those fixes to the author. Use `COMMENT` otherwise. Out-of-scope follow-ups do not block approval.
+   Use `APPROVE` for review-only PR runs when all of these hold: `approve` is not `never`, at least one reviewer succeeded, there are no `critical`/`high` actionable in-scope findings, no `critical`/`high` in-scope deferred finding needs author action, no unresolved `critical`/`high` adversarial dispute remains, and remaining items are only `medium`/`low`/`nit` findings, suggestions, deferred notes, or out-of-scope follow-ups. Medium-and-lower in-scope findings should still be posted clearly, but the review event is approval: leave those fixes to the author. Use `COMMENT` otherwise. Out-of-scope follow-ups do not block approval.
 4. Print the report path as the last output line; the `.inline.json` and `.approval.json` files are implied by convention.
 5. For out-of-scope follow-ups, write the sibling `<report_path>.followups.json` once, after the final round, using the follow-ups schema from §3 "Approving out-of-scope follow-ups" (NOT the `.approval.json` schema above). The posting helper deletes it after a successful post, so any consumer (surfacing follow-ups to the user, filing issues for `auto_approved` entries after duplicate search) must read it **before** the post/post-update step — the presets do this.
 
@@ -256,6 +386,10 @@ Within a round: parallel (single multi-tool-call message). Between rounds: stric
 
 **Read `references/reviewer-prompt.md` (next to this SKILL.md; same trusted-root resolution as scripts) at dispatch time.** It defines the per-reviewer lens assignment (the four pillars partition across reviewers — M identical prompts buy redundancy and dedup work, not coverage), the context block (TARGET / PRIOR ROUNDS / SCOPE OF THIS REVIEW / DISMISSED FINDINGS / YOUR LENS), the fixed task block (review principles, severity guide, structured finding keys, the fenced findings-YAML output contract), and the fill-in rules (itemized PRIOR ROUNDS construction; `commit_mode=none` variations). Reviewers return prose findings only — never patches.
 
+When `adversarial` is enabled, normal reviewers still use `reviewer-prompt.md`.
+The post-synthesis adversaries use `references/adversarial-prompt.md` and
+receive the stable candidate finding / would-apply IDs produced by synthesis.
+
 ## Output Format
 
 During execution: print `Round 2/3: dispatching 2 codex-exec + 1 claude-exec on PR #42 …` before each round, the round summary block (§5) after.
@@ -273,17 +407,18 @@ The final report is a PR comment body. It must include every finding, but it sho
 **Result:** <one sentence: blockers/non-blockers/fixes/verification outcome>
 **Scope:** <For PR targets: one sentence summarizing what this PR is trying to change.>
 **Verification:** <verify_cmd used, or "none detected" / "skipped">   # per_fix only
+**Adversarial review:** off | <mode>, <A> agents; <upheld> upheld, <hardened> hardened/simplified, <deferred> deferred, <dropped> dropped
 
 ## Findings
 <Every confirmed finding appears exactly once. Critical/high findings go first, then medium, then low/nit. Keep each row short; inline comments carry implementation detail for anchored findings. If none: "No in-scope findings were confirmed.">
 
-| Severity | Area | Location | Finding | Next step |
-|---|---|---|---|---|
-| high | auth | `src/auth.ts:42` | Refresh can succeed without CSRF validation | Inline comment has the fix path |
+| ID | Severity | Area | Location | Finding | Next step |
+|---|---|---|---|---|---|
+| F-001 | high | auth | `src/auth.ts:42` | Refresh can succeed without CSRF validation | Inline comment; would apply W-001 |
 
 <If the table would be hard to read, use grouped bullets instead:>
 
-- **[high] auth** `src/auth.ts:42` — Refresh can succeed without CSRF validation. Inline comment has the fix path.
+- **F-001 [high] auth** `src/auth.ts:42` — Refresh can succeed without CSRF validation. Inline comment has the fix path.
 
 <details>
 <summary>Non-blocking low/nit findings</summary>
@@ -297,12 +432,13 @@ The final report is a PR comment body. It must include every finding, but it sho
 <For per_fix: compact commit list or "No fix commits were applied." For review-only: include every would-apply item as a one-line bullet.>
 
 - `<sha>` — <subject>                         # per_fix only
-- **[severity] area** — would commit as `<type>(<area>): <subject>`   # commit_mode=none only
+- **W-001 [severity] area** — would commit as `<type>(<area>): <subject>`; covers F-001   # commit_mode=none only
 
 ## Deferred / Out-of-Scope
 <Include every deferred item and follow-up, but keep each to one line. Collapse the section with `<details>` when it contains more than 3 entries. Omit the section if empty.>
 
 - **[severity] area** — deferred because <reason>.
+- **W-002 [medium] config** — deferred after adversarial review: disproportionate fix; adds a registry for a one-line default.
 - **[severity] area** — out-of-scope follow-up (`auto_approved` or `needs_triage`): <why separate>.
 
 ## Run Details
@@ -311,6 +447,7 @@ The final report is a PR comment body. It must include every finding, but it sho
 - Mix: <e.g. "2 codex-exec + 1 claude-exec">
 - Focus: <focus list actually used>
 - Counts: <C critical, H high, M medium, L low, N nit; deferred D; suggestions S>
+- Adversarial: off | <mode>; agents=<A>; rounds=<R>; effects=<dropped>/<deferred>/<hardened>; approval changed yes/no
 - Tuning suggestion: <one line; see rule below>   # omit in review-only
 ```
 
@@ -329,6 +466,9 @@ Early exit already stops the loop when a round comes back clean, so the only tun
 | Diff > ~5000 lines | Warn in the round status and continue; tell reviewers they may focus on the most impactful slice; double `reviewer_timeout` (unless the user set it explicitly). |
 | `agents > 8` | Reject before round 1 — more dedup work than signal. |
 | `rounds = 0` | Reject — almost certainly a typo. |
+| `adversarial` with `per_fix` | Warn and ignore — productive mode verifies real fixes with the build/test gate. |
+| `adversarial_rounds > 2` | Reject before dispatch — adversarial review is bounded critique, not an open-ended debate. |
+| Adversary failure | Continue with the normal synthesized report and note the failure in Run Details; in `strict`, any required adversary failure forces `COMMENT`. |
 | Unparseable findings block | Use the prose as free-form findings; no retry; note `<agent>: unstructured findings (parse failed)`. |
 | Reviewers contradict each other | Surface both under the same area with reviewers tagged; orchestrator judgment decides the fix; mention the disagreement in the round summary. |
 | Re-runs | Not idempotent: a new run reviews the latest state, including the prior run's commits. Surface still-present deferred items under "Deferred from previous runs (still present)". |

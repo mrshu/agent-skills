@@ -84,10 +84,23 @@ On non-zero exit, surface the script's stderr verbatim and stop. Do not dispatch
 Activate the `review-anvil` skill with this argument string (extra user args go between the pinned params and the rounds default):
 
 ```
-commit_mode: none, target: <locator>, report_path: <REPORT_PATH>, <extra-user-args>, rounds: 1
+commit_mode: none, target: <locator>, report_path: <REPORT_PATH>, <extra-user-args>, adversarial: auto, rounds: 1
 ```
 
-The user may override `rounds:` in their args (it's a default, not a pin). They should not override `commit_mode`, `target`, or `report_path` — these are pinned for safety; the step-0 segment-rejection above blocks override attempts.
+The user may override `rounds:` or `adversarial:` in their args (they are defaults, not pins). They should not override `commit_mode`, `target`, or `report_path` — these are pinned for safety; the step-0 segment-rejection above blocks override attempts.
+
+The default `adversarial: auto` lets the engine choose `off`, `challenge`,
+`targeted`, or `strict` after normal synthesis. The user may also pass
+`adversarial: off|challenge|targeted|full|strict`.
+Adversarial review stays read-only: it attacks candidate findings and
+would-apply plans before the report is posted, so false positives can be
+dropped and harmful/bloated/tech-debt-heavy fixes can be deferred instead of
+turned into inline comments. Unresolved `critical`/`high` adversarial disputes
+and `disagreement_policy=comment` material disputes force the review event to
+`COMMENT` rather than `APPROVE`. If the user explicitly passes `adversarial:
+off`, the engine must write `{"event":"COMMENT","adversarial_mode":"off",
+"approval_allowed":false}` to `.approval.json`; unchallenged LLM review should
+not satisfy branch protection by accident.
 
 Provide `$HEAD_SHA` to the engine for its `.approval.json` `head_sha` field — the posting helper uses it to downgrade a stale APPROVE (PR head moved mid-run) to a COMMENT.
 
@@ -101,7 +114,7 @@ bash <helper-path> post "$HOST" "$OWNER" "$REPO" "$N" "$MARKER" "$REPORT_PATH"
 
 The script chooses the GitHub review event from `<REPORT_PATH>.approval.json` (`APPROVE` or `COMMENT`; default `COMMENT` if absent) and then posts the report:
 
-- **Approval / hybrid review.** If the decision is `APPROVE`, the helper submits a GitHub approval review. If `<REPORT_PATH>.inline.json` is non-empty, its comments are included as non-blocking medium/low/nit findings or suggestions; otherwise the approval has only the top-level body. Use this when there are no `critical`/`high` actionable in-scope findings; medium-and-lower issues are posted but left to the author. If GitHub rejects the approval (most commonly: you cannot approve your own PR), the helper **downgrades to a comment review**, appends a note to the report explaining the downgrade, and keeps cascading down to the top-level fallback — a failed approval never costs the report. An unexpected or malformed `approval.json` likewise defaults to `COMMENT`, never to `APPROVE`.
+- **Approval / hybrid review.** If the decision is `APPROVE`, the helper submits a GitHub approval review. If `<REPORT_PATH>.inline.json` is non-empty, its comments are included as non-blocking findings or suggestions; by default the helper posts `critical`/`high`/`medium` inline comments and leaves lower-severity items in the top-level body unless `REVIEW_ANVIL_INLINE_MIN_SEVERITY` is lowered. Otherwise the approval has only the top-level body. Use this when there are no `critical`/`high` actionable in-scope findings; medium-and-lower issues are posted but left to the author. If GitHub rejects the approval (most commonly: you cannot approve your own PR), the helper **downgrades to a comment review**, appends a note to the report explaining the downgrade, and keeps cascading down to the top-level fallback — a failed approval never costs the report. An unexpected or malformed `approval.json` likewise defaults to `COMMENT`, never to `APPROVE`.
 - **Comment review.** If the decision is `COMMENT` and `<REPORT_PATH>.inline.json` exists and is non-empty, the script assembles a PR review payload (`{event: COMMENT, body: <report>, comments: [...]}`) and submits it via `gh api /repos/{O}/{R}/pulls/{N}/reviews`. This produces ONE review event in the PR timeline with a top-level summary body AND inline review comments anchored to specific files+lines — the native GitHub review UX. The API response's `html_url` is used directly (no marker lookup needed).
 - **Top-level fallback.** If the decision is `COMMENT` and `<REPORT_PATH>.inline.json` is absent or empty (no findings had `file`+`line`), or if the PR-review API call fails (most common cause: reviewer-supplied line numbers aren't in the PR's diff), the script falls back to `gh pr comment --body-file <REPORT_PATH>` and recovers the URL via paginated marker lookup with one retry for read-after-write lag.
 
@@ -126,6 +139,8 @@ Surface the URL (or `posted (URL unavailable)`) to the user. If the helper scrip
 - *"Review the PR I'm on and post the result back."* — user is checked out on a PR branch. Agent invokes `init` with no locator; helper detects the PR via `gh pr view`.
 - *"Review https://github.com/acme/widgets/pull/137 with a focus on security."* — explicit URL locator; extra arg `focus: security` flows through to the engine.
 - *"Review acme/widgets#42 and use 2 rounds of reviewer redundancy."* — slug locator; `rounds: 2` overrides the preset's `rounds: 1` default.
+- *"Review acme/widgets#42 with adversarial: targeted."* — force targeted adversarial review after normal synthesis.
+- *"Review acme/widgets#42 with adversarial: off."* — skip adversarial review and post COMMENT-only feedback.
 
 ## Constraints
 
@@ -133,6 +148,11 @@ Surface the URL (or `posted (URL unavailable)`) to the user. If the helper scrip
 - Environment switches honored by the helper: `REVIEW_ANVIL_NO_APPROVE=1` (never submit an approval), `REVIEW_ANVIL_SKIP_DISMISSED=1` (skip dismissed-finding lookups for hosts without GraphQL access — degraded mode that also forces COMMENT), `REVIEW_ANVIL_DISMISSALS=<path>` (local-suppressions file, default `~/.review-anvil/dismissed-findings.json`; record entries with `pr-helper.sh dismiss <host> <owner> <repo> <n> <path> <pattern> [<reason>]`), `REVIEW_ANVIL_GITHUB_MAX_CHARS=<N>` (compact reports over `N` characters without dropping findings; default `12000`), `REVIEW_ANVIL_NO_COMPACT=1` (disable report compaction for debugging), `REVIEW_ANVIL_INLINE_MIN_SEVERITY=<critical|high|medium|low|nit>` (minimum severity posted inline; default `medium`), `REVIEW_ANVIL_INLINE_MAX_CHARS=<N>` (compact inline comments over `N` characters; default `900`), and `REVIEW_ANVIL_ENABLE_SUGGESTIONS=0` (disable helper-added GitHub suggestion blocks).
 - **An `APPROVE` decision submits a real GitHub approval from your authenticated `gh` account.** It counts toward branch-protection required reviews and reads to collaborators as your judgment — while the gate behind it is the engine's LLM classification. If that posture isn't acceptable for a repo or org, pass `approve: never` (or "never approve" / "comment only") and the run always posts plain `COMMENT` reviews. `REQUEST_CHANGES` is deliberately unsupported: blocking someone's merge on LLM judgment is a different risk class from commenting or approving.
 - What lands on the PR has passed the engine's verification step: `medium`+ findings raised by a single reviewer are confirmed against the actual code before posting, and findings that fail verification appear under "Deferred items" with reason `failed verification` rather than as actionable review comments. False positives posted to a colleague's PR burn trust — the engine treats precision as the product.
+- When `adversarial:` is enabled, the posted report should include only the
+  final verdict summary and survivor findings. The adversarial transcript stays
+  out of GitHub; its effects are folded into dropped findings, deferred
+  disproportionate fixes, hardened fix paths, stripped suggestion blocks, and
+  approval downgrades.
 - Read-only by design — the PR's branch may not be checked out locally, and pushing fix commits to a PR you don't own is rarely the intent. If you want to fix-and-commit on a PR you have checked out, activate `review-anvil` directly with `target: branch` (your checked-out PR branch) and `commit_mode=per_fix` — the local working tree becomes the source of truth and the diff against the merge base is unambiguous.
 - Supports github.com and GitHub Enterprise — the script extracts the host from the URL and sets `GH_HOST` internally for all `gh` invocations.
 - Bare-integer PR locators are rejected — pass a URL or `<owner>/<repo>#<N>` slug to be unambiguous about repo identity.

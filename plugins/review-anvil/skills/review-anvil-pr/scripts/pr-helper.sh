@@ -229,6 +229,11 @@ def shorten(value, limit):
         cut = max(0, limit - 3)
     return value[:cut].rstrip() + "..."
 
+FINDING_RE = re.compile(
+    r"\*\*(?:(?:[FW]-\d+)\s+)?\[(critical|high|medium|low|nit)\]\s*([^*]+?)\*\*(?:\s+`[^`]+`)?\s*[-—:]+\s*([^\n]+)",
+    re.I,
+)
+
 def bullet_blocks(section_lines):
     blocks = []
     current = []
@@ -268,7 +273,7 @@ def blocks_for(*names):
 
 def severity(block):
     text = "\n".join(block)
-    match = re.search(r"\*\*\[(critical|high|medium|low|nit)\]", text, re.I)
+    match = re.search(r"\*\*(?:(?:[FW]-\d+)\s+)?\[(critical|high|medium|low|nit)\]", text, re.I)
     if not match:
         return 99
     return {"critical": 0, "high": 1, "medium": 2, "low": 3, "nit": 4}[match.group(1).lower()]
@@ -298,6 +303,7 @@ metadata_prefixes = (
     "**Result:**",
     "**Scope:**",
     "**Verification:**",
+    "**Adversarial review:**",
     "**Target:**",
     "**Rounds:**",
     "**Mix per round:**",
@@ -609,10 +615,20 @@ def norm(text: str) -> str:
     words = [w for w in text.split() if len(w) > 2 and w not in {"the", "and", "for", "with", "this", "that", "from", "into", "when", "because"}]
     return " ".join(words)
 
+FINDING_RE = re.compile(
+    r"\*\*(?:(?:[FW]-\d+)\s+)?\[(critical|high|medium|low|nit)\]\s*([^*]+?)\*\*(?:\s+`[^`]+`)?\s*[-—:]+\s*([^\n]+)",
+    re.I,
+)
+
+def is_finding_line(line: str) -> bool:
+    return bool(FINDING_RE.search(line or ""))
+
 def signature(body: str) -> str:
     body = body or ""
-    # review-anvil inline body: **[medium] area** -- What ...
-    m = re.search(r"\*\*\[(critical|high|medium|low|nit)\]\s*([^*]+?)\*\*\s*[-—:]+\s*([^\n]+)", body, re.I)
+    # review-anvil body: **[medium] area** -- What ...
+    # Stable IDs are optional: **F-001 [medium] area** -- What ...
+    # Report rows may include a code location between the bold label and dash.
+    m = FINDING_RE.search(body)
     if m:
         return norm(f"{m.group(2)} {m.group(3)}")
     # GitHub/Codex-style body: Medium: what...
@@ -624,7 +640,7 @@ def signature(body: str) -> str:
 
 def summary(body: str) -> str:
     body = body or ""
-    m = re.search(r"\*\*\[(critical|high|medium|low|nit)\]\s*([^*]+?)\*\*\s*[-—:]+\s*([^\n]+)", body, re.I)
+    m = FINDING_RE.search(body)
     if m:
         return f"[{m.group(1).lower()}] {m.group(2).strip()} — {m.group(3).strip()}"[:160]
     lines = [ln.strip() for ln in body.splitlines() if ln.strip() and not ln.strip().startswith("<!--")]
@@ -751,7 +767,7 @@ if report.exists():
             if fence:
                 j += 1
                 continue
-            if ln.startswith("## ") or ln.startswith("### ") or ln.lstrip().startswith("- **["):
+            if ln.startswith("## ") or ln.startswith("### ") or is_finding_line(ln):
                 return j
             if not ln.strip():
                 k = j + 1
@@ -773,7 +789,7 @@ if report.exists():
             out.append(line)
             i += 1
             continue
-        if not in_fence and "**[" in line:
+        if not in_fence and is_finding_line(line):
             j2 = block_end(i)
             block = lines[i:j2]
             cand = {"path": "", "sig": signature("\n".join(block))}
@@ -1040,6 +1056,15 @@ cmd_post() {
     if [[ "$review_event" == "APPROVE" && "${REVIEW_ANVIL_SKIP_DISMISSED:-}" == "1" ]]; then
         printf 'warning: dismissed-finding lookup was skipped, so the approval criteria cannot hold — downgrading APPROVE to COMMENT\n' >&2
         review_event="COMMENT"
+    fi
+    if [[ "$review_event" == "APPROVE" && -f "$approval_json" ]]; then
+        local approval_allowed adversarial_mode
+        approval_allowed=$(jq -r 'if has("approval_allowed") then .approval_allowed else "" end' "$approval_json" 2>/dev/null || true)
+        adversarial_mode=$(jq -r '.adversarial_mode // empty' "$approval_json" 2>/dev/null || true)
+        if [[ "$approval_allowed" == "false" || "$adversarial_mode" == "off" ]]; then
+            printf 'warning: approval.json marks adversarial approval unsafe — downgrading APPROVE to COMMENT\n' >&2
+            review_event="COMMENT"
+        fi
     fi
 
     # Staleness gate: an approval is only valid for the head SHA the review
