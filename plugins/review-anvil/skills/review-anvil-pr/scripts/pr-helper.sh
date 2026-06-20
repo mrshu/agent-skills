@@ -181,6 +181,30 @@ marker_lines = []
 while lines and lines[0].startswith("<!-- review-anvil-marker:"):
     marker_lines.append(lines.pop(0))
 
+def is_tool_footer(line):
+    return line.strip() == "_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills)._"
+
+footer_lines = []
+filtered_lines = []
+i = 0
+while i < len(lines):
+    stripped = lines[i].strip()
+    if (
+        stripped == "---"
+        and i + 1 < len(lines)
+        and is_tool_footer(lines[i + 1])
+    ):
+        footer_lines = ["---", lines[i + 1].strip()]
+        i += 2
+        continue
+    if is_tool_footer(lines[i]):
+        footer_lines = [lines[i].strip()]
+        i += 1
+        continue
+    filtered_lines.append(lines[i])
+    i += 1
+lines = filtered_lines
+
 sections = {}
 order = []
 preamble = []
@@ -362,6 +386,11 @@ out.extend(section_text("Fixes / Would Apply", render_blocks(fixes, 140), collap
 out.extend(section_text("Non-Blocking Notes", render_blocks(notes, 140), collapse=True))
 out.extend(section_text("Deferred / Out-of-Scope", render_blocks(deferred, 140), collapse=True))
 out.extend(section_text("Run Details", render_blocks(details, 140), collapse=True))
+if footer_lines:
+    if footer_lines[0] != "---":
+        out.append("---")
+    out.extend(footer_lines)
+    out.append("")
 
 compact = "\n".join(out).rstrip() + "\n"
 if len(compact) > max_chars:

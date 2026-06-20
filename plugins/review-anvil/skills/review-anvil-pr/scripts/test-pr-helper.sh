@@ -33,6 +33,7 @@ make_report() {
         printf -- '- **[low] docs** — low priority note should be collapsed but preserved.\n'
         printf '\n## Run Details\n'
         printf -- '- Rounds: 1/1\n- Mix: 2 codex-exec + 1 claude-exec\n'
+        printf '\n---\n_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills)._\n'
     } >"$path"
 }
 
@@ -188,6 +189,7 @@ test_post_review_success() {
     jq -e '.event == "COMMENT"' "$tmp/review-payload.json" >/dev/null
     jq -e '.body | contains("review-anvil-marker: marker-123")' "$tmp/review-payload.json" >/dev/null
     jq -e '.body | contains("Adversarial review")' "$tmp/review-payload.json" >/dev/null
+    jq -e '.body | contains("github.com/mrshu/agent-skills")' "$tmp/review-payload.json" >/dev/null
     jq -e '.body | contains("Inline findings") and contains("2 anchored comment")' "$tmp/review-payload.json" >/dev/null
     jq -e '.comments | length == 2' "$tmp/review-payload.json" >/dev/null
     jq -e '.comments[] | has("severity") | not' "$tmp/review-payload.json" >/dev/null
@@ -224,6 +226,7 @@ test_post_fallback_comment() {
 
     grep -q 'review-anvil-marker: marker-123' "$tmp/comment.md"
     grep -q 'Adversarial review' "$tmp/comment.md"
+    grep -q 'github.com/mrshu/agent-skills' "$tmp/comment.md"
     grep -q 'finding 01' "$tmp/comment.md"
     grep -q '<details>' "$tmp/comment.md"
     assert_file_missing "$report"
@@ -255,6 +258,7 @@ test_post_update_success() {
     jq -e '.body | contains("review-anvil-improve-pr completed on this PR. cc @octocat.")' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("review-anvil-marker: marker-123")' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("Adversarial review")' "$tmp/patch.json" >/dev/null
+    jq -e '.body | contains("github.com/mrshu/agent-skills")' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("Inline findings") and contains("2 anchored comment")' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("Completed:")' "$tmp/patch.json" >/dev/null
     assert_file_missing "$report"

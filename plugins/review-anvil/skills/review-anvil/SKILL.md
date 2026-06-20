@@ -331,7 +331,7 @@ Append to running output:
 ### Round N — <convergence flag>
 - Parameters: rounds=3, target=acme/widgets#42 [pin], commit_mode=none [pin], focus=4-pillar
 - Reviewers: <list dispatched>
-- Findings: C critical, H high, M medium, L low, X nit
+- Findings: C critical, H high, M medium, L low, N nit
 - Fixes applied: K commits (<sha1>..<shaN>)   # or "0 (review-only)"
 - Verification: <cmd> — passed | failed → round reverted | pre-existing failures (no new) | none detected | skipped   # per_fix only
 - Would-apply: W items                         # commit_mode=none only
@@ -423,15 +423,15 @@ The final report is a PR comment body. It must include every finding, but it sho
 **Adversarial review:** off | <mode>, <A> agents; <upheld> upheld, <hardened> hardened/simplified, <deferred> deferred, <dropped> dropped
 
 ## Findings
-<Every confirmed finding appears exactly once. Critical/high findings go first, then medium, then low/nit. Keep each row short; inline comments carry implementation detail for anchored findings. If none: "No in-scope findings were confirmed.">
+<Every confirmed finding appears exactly once. Critical/high findings go first, then medium, then low/nit. Use compact severity initials in tables: C critical, H high, M medium, L low, N nit. Keep each row short; inline comments carry implementation detail for anchored findings, so do not repeat that in every row. If none: "No in-scope findings were confirmed.">
 
-| ID | Severity | Area | Location | Finding | Next step |
-|---|---|---|---|---|---|
-| F-001 | high | auth | `src/auth.ts:42` | Refresh can succeed without CSRF validation | Inline comment; would apply W-001 |
+| ID | Sev | Area | Location | Finding |
+|---|---|---|---|---|
+| F-001 | H | auth | `src/auth.ts:42` | Refresh can succeed without CSRF validation |
 
 <If the table would be hard to read, use grouped bullets instead:>
 
-- **F-001 [high] auth** `src/auth.ts:42` — Refresh can succeed without CSRF validation. Inline comment has the fix path.
+- **F-001 [high] auth** `src/auth.ts:42` — Refresh can succeed without CSRF validation. (inline; W-001)
 
 <details>
 <summary>Non-blocking low/nit findings</summary>
@@ -462,6 +462,9 @@ The final report is a PR comment body. It must include every finding, but it sho
 - Counts: <C critical, H high, M medium, L low, N nit; deferred D; suggestions S>
 - Adversarial: off | <mode>; agents=<A>; rounds=<R>; effects=<dropped>/<deferred>/<hardened>; approval changed yes/no
 - Tuning suggestion: <one line; see rule below>   # omit in review-only
+
+---
+_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills)._
 ```
 
 `Findings addressed` = post-dedup count of unique findings auto-applied across all rounds.
