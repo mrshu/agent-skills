@@ -142,7 +142,7 @@ For each issue, return a structured finding with these keys:
 - suggested_fix: PROSE description with enough specifics that someone
   could implement it without re-investigating: what to change, where
   (file/function), the intended behavior afterwards, edge cases to
-  preserve, and the test that would lock it in. Keep it to one or two
+  preserve, and the test to add. Keep it to one or two
   sentences unless the finding is critical/high and needs more context.
   Keep this field prose-only; no patches or code blocks unless quoting a
   single short line for clarity.

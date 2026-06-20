@@ -174,7 +174,7 @@ Plausible-but-wrong findings are the dominant failure mode of LLM review, and bo
 
 #### Approving out-of-scope follow-ups
 
-A pre-existing issue outside the PR's scope can still be valuable, but it must not become an inline/blocking PR finding. Classify each out-of-scope follow-up:
+A pre-existing issue outside the PR's scope can still be worth noting, but it must not become an inline/blocking PR finding. Classify each out-of-scope follow-up:
 
 - **Auto-approved follow-up** — create/queue separate work when all are true: severity is `critical`/`high` (or clearly reproducible `medium`), the bug is confirmed from code/tests/runtime evidence, it is not a product decision/style preference, it is not already tracked/resolved/dismissed, and the fix is plausibly separable from the current PR.
 - **Needs human triage** — mention only as a non-blocking follow-up when the issue is real but severity/ownership/product intent is ambiguous.
@@ -355,7 +355,7 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 
    ```json
    [
-     {"path": "src/auth.ts", "line": 50, "side": "RIGHT", "severity": "high", "body": "**[high] auth** — Missing CSRF check.\n\nWhy: ...\n\nSuggested fix: ..."},
+     {"path": "src/auth.ts", "line": 50, "side": "RIGHT", "severity": "high", "body": "**[high] auth** — Refresh can run before CSRF validation\n\nThe handler rotates the session before checking the state token, so a stale tab can mint a new session after the old token should have failed.\n\nCould the state check run before session rotation, with a regression test for missing state?"},
      {"path": "src/db.ts", "start_line": 100, "line": 110, "side": "RIGHT", "start_side": "RIGHT", "severity": "medium", "body": "...", "suggestion": "exact replacement text"}
    ]
    ```
