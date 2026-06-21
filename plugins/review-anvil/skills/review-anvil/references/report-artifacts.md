@@ -60,7 +60,7 @@ Then fold effects into the normal sections:
 Example deferred line:
 
 ```md
-- **W-002 [medium] config** — deferred after adversarial review:
+- **RAVW002 [medium] config** — deferred after adversarial review:
   disproportionate fix; adds a registry for a one-line default.
 ```
 

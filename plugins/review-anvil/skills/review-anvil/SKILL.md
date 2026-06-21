@@ -273,8 +273,11 @@ Default policy:
   is unknown; use `targeted` and force `COMMENT` if approval safety cannot be
   established.
 
-Assign stable IDs before dispatch: findings are `F-001`, `F-002`, ... and
-would-apply plans are `W-001`, `W-002`, ... . Build would-apply plans from the
+Assign stable report-local IDs before dispatch: findings are `RAVF001`,
+`RAVF002`, ... and would-apply plans are `RAVW001`, `RAVW002`, ... . The
+canonical grammar is `RAV([FW])([0-9]{3,})`; the PR helper may accept legacy
+dashed IDs like `F-001` / `W-001` at parsing boundaries, but new reports should
+emit only the canonical no-punctuation form. Build would-apply plans from the
 same fix groups `per_fix` would have committed: each plan lists covered finding
 IDs, the simulated conventional-commit subject, the intended fix path, risk tags
 such as `deletion`/`dependency`/`non-local`/`abstraction`, and any exact
@@ -296,7 +299,7 @@ Apply verdicts conservatively:
 Generic uncertainty does **not** defer a finding. The adversary must cite code,
 configuration, tests, runtime behavior, dismissed-thread state, or PR scope
 evidence. Adversaries must not create new actionable findings. If they notice a
-new issue while attacking a `W-*` plan, record it only as a second-order plan
+new issue while attacking a `RAVW###` plan, record it only as a second-order plan
 risk or follow-up; it remains Deferred unless the orchestrator runs a separate
 normal review/verification pass.
 
@@ -308,9 +311,9 @@ findings from unverified adversarial ideas.
 
 Run at most `adversarial_rounds` passes, capped at 2. A second adversarial pass
 runs only when the first pass materially changes `medium`+ guidance, changes
-approval, or rewrites a would-apply plan. `W-*` verdicts affect fix plans,
-suggestions, and fix prose only; linked `F-*` findings change only when an
-independent `F-*` verdict refutes or defers them. With
+approval, or rewrites a would-apply plan. `RAVW###` verdicts affect fix plans,
+suggestions, and fix prose only; linked `RAVF###` findings change only when an
+independent `RAVF###` verdict refutes or defers them. With
 `disagreement_policy=defer`, unresolved `medium` adversarial disputes move the
 item to Deferred but do not by themselves block `APPROVE`; unresolved
 `critical`/`high` disputes block `APPROVE`. With
@@ -427,11 +430,11 @@ The final report is a PR comment body. It must include every finding, but it sho
 
 | ID | Sev | Area | Location | Finding |
 |---|---|---|---|---|
-| F-001 | H | auth | `src/auth.ts:42` | Refresh can succeed without CSRF validation |
+| RAVF001 | H | auth | `src/auth.ts:42` | Refresh can succeed without CSRF validation |
 
 <If the table would be hard to read, use grouped bullets instead:>
 
-- **F-001 [high] auth** `src/auth.ts:42` — Refresh can succeed without CSRF validation. (inline; W-001)
+- **RAVF001 [high] auth** `src/auth.ts:42` — Refresh can succeed without CSRF validation. (inline; RAVW001)
 
 <details>
 <summary>Non-blocking low/nit findings</summary>
@@ -445,13 +448,13 @@ The final report is a PR comment body. It must include every finding, but it sho
 <For per_fix: compact commit list or "No fix commits were applied." For review-only: include every would-apply item as a one-line bullet.>
 
 - `<sha>` — <subject>                         # per_fix only
-- **W-001 [severity] area** — would commit as `<type>(<area>): <subject>`; covers F-001   # commit_mode=none only
+- **RAVW001 [severity] area** — would commit as `<type>(<area>): <subject>`; covers RAVF001   # commit_mode=none only
 
 ## Deferred / Out-of-Scope
 <Include every deferred item and follow-up, but keep each to one line. Collapse the section with `<details>` when it contains more than 3 entries. Omit the section if empty.>
 
 - **[severity] area** — deferred because <reason>.
-- **W-002 [medium] config** — deferred after adversarial review: disproportionate fix; adds a registry for a one-line default.
+- **RAVW002 [medium] config** — deferred after adversarial review: disproportionate fix; adds a registry for a one-line default.
 - **[severity] area** — out-of-scope follow-up (`auto_approved` or `needs_triage`): <why separate>.
 
 ## Run Details

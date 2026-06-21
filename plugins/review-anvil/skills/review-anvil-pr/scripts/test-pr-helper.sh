@@ -26,9 +26,9 @@ make_report() {
         printf '**Scope:** Inline processing e2e fixture.\n\n'
         printf '**Adversarial review:** targeted, 2 agents; 2 upheld, 1 hardened, 0 deferred, 0 dropped.\n\n'
         printf '## Findings\n'
-        printf -- '- **F-001 [medium] auth** `src/auth.ts:12` — finding 01 has a long explanation that should compact while retaining the finding number 01 and still point to the inline comment.\n'
-        printf -- '- **F-002 [high] db** `src/db.ts:8` — finding 02 remains inline.\n'
-        printf -- '- **F-003 [low] docs** `README.md:4` — finding 03 stays summary-only.\n'
+        printf -- '- **RAVF001 [medium] auth** `src/auth.ts:12` — finding 01 has a long explanation that should compact while retaining the finding number 01 and still point to the inline comment.\n'
+        printf -- '- **RAVF002 [high] db** `src/db.ts:8` — finding 02 remains inline.\n'
+        printf -- '- **RAVF003 [low] docs** `README.md:4` — finding 03 stays summary-only.\n'
         printf '\n## Non-Blocking Notes\n'
         printf -- '- **[low] docs** — low priority note should be collapsed but preserved.\n'
         printf '\n## Run Details\n'
@@ -60,7 +60,7 @@ make_inline() {
     "path": "src/db.ts",
     "line": 8,
     "side": "RIGHT",
-    "body": "**[high] db** — Write failures are reported as success."
+    "body": "**RAVF002 [high] db** — Write failures are reported as success."
   }
 ]
 JSON
@@ -162,6 +162,34 @@ test_process_inline() {
     jq -e '.[0].body | contains("without...")' "$inline" >/dev/null
     jq -e '.[0].body | length <= 520' "$inline" >/dev/null
     jq -e 'map(select(.path == "src/db.ts")) | length == 1' "$inline" >/dev/null
+}
+
+test_process_inline_infers_id_prefixed_severity() {
+    local tmp inline
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    inline="$tmp/inline.json"
+    cat >"$inline" <<'JSON'
+[
+  {
+    "path": "src/db.ts",
+    "line": 8,
+    "side": "RIGHT",
+    "body": "**RAVF002 [high] db** — Write failures are reported as success."
+  },
+  {
+    "path": "src/cache.ts",
+    "line": 4,
+    "side": "RIGHT",
+    "body": "**RAVF003 [medium] cache** — Cache misses are logged as hits."
+  }
+]
+JSON
+
+    REVIEW_ANVIL_INLINE_MIN_SEVERITY=high "$HELPER" process-inline "$inline" >/dev/null
+
+    jq -e 'length == 1' "$inline" >/dev/null
+    jq -e '.[0].path == "src/db.ts"' "$inline" >/dev/null
 }
 
 test_post_review_success() {
@@ -316,8 +344,152 @@ test_post_dismisses_id_prefixed_report_findings() {
       "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-dismissed-id.out
 
     grep -q 'Previously dismissed on this PR' "$tmp/comment.md"
-    grep -Fq 'F-001 [medium] auth' "$tmp/comment.md"
+    grep -Fq 'RAVF001 [medium] auth' "$tmp/comment.md"
     grep -q 'local-test-dismissal' "$tmp/comment.md"
+    assert_file_missing "$report"
+    assert_file_missing "$tmp/report.md.approval.json"
+}
+
+test_compact_handles_tables_and_legacy_id_prefixes() {
+    local tmp report
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+
+    report="$tmp/report.md"
+    {
+        printf '# review-anvil report\n\n'
+        printf '**Result:** legacy ID compatibility fixture.\n\n'
+        printf '## Findings\n'
+        printf '| ID | Sev | Area | Location | Finding |\n'
+        printf '|---|---|---|---|---|\n'
+        printf '| RAVF001 | H | db | `src/db.ts:8` | table rows compact as individual findings. |\n'
+        printf -- '- **F-001 [medium] auth** `src/auth.ts:12` — dashed legacy IDs still compact.\n'
+        printf '\n## Fixes / Would Apply\n'
+        printf -- '- **RAVW001 [medium] auth** — would commit as `fix(auth): validate state`; covers RAVF001\n'
+        printf '\n## Deferred / Out-of-Scope\n'
+        printf -- '- **W-001 [medium] config** — legacy would-apply IDs still compact.\n'
+    } >"$report"
+
+    REVIEW_ANVIL_GITHUB_MAX_CHARS=1 "$HELPER" compact-report "$report" >/tmp/review-anvil-legacy-compact.out
+
+    grep -Fq 'RAVF001 [high] db' "$report"
+    grep -Fq 'F-001 [medium] auth' "$report"
+    grep -Fq 'RAVW001 [medium] auth' "$report"
+    grep -Fq 'W-001 [medium] config' "$report"
+    ! grep -Fq '| ID | Sev |' "$report"
+    grep -q 'Compact GitHub summary' "$report"
+}
+
+test_compact_rejects_invalid_and_ignores_fenced_ids() {
+    local tmp report
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+
+    report="$tmp/report.md"
+    {
+        printf '# review-anvil report\n\n'
+        printf '**Result:** invalid ID fixture.\n\n'
+        printf '## Misc\n'
+        printf -- '- **F001 [high] db** — bare transitional IDs are not findings.\n'
+        printf -- '- **F1 [high] auth** — short IDs are not findings.\n'
+        printf -- '- **RAVF-001 [high] api** — dashed RAV IDs are not findings.\n'
+        printf '```md\n'
+        printf -- '- **RAVF999 [high] fenced** — fenced examples are not findings.\n'
+        printf '```\n'
+    } >"$report"
+
+    REVIEW_ANVIL_GITHUB_MAX_CHARS=1 "$HELPER" compact-report "$report" >/tmp/review-anvil-invalid-compact.out
+
+    grep -q 'No in-scope findings were confirmed' "$report"
+    ! grep -Fq 'F001 [high]' "$report"
+    ! grep -Fq 'F1 [high]' "$report"
+    ! grep -Fq 'RAVF-001 [high]' "$report"
+    ! grep -Fq 'RAVF999 [high]' "$report"
+}
+
+test_post_dismisses_table_report_findings() {
+    local tmp bin report dismissals
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+
+    report="$tmp/report.md"
+    dismissals="$tmp/dismissals.json"
+    {
+        printf '# review-anvil report\n\n'
+        printf '**Review decision:** COMMENT — table finding needs attention.\n\n'
+        printf '## Findings\n'
+        printf '| ID | Sev | Area | Location | Finding |\n'
+        printf '|---|---|---|---|---|\n'
+        printf '| RAVF001 | M | auth | `src/auth.ts:12` | finding 01 has a long explanation that should compact while retaining the finding number 01 and still point to the inline comment. |\n'
+    } >"$report"
+    cat >"$dismissals" <<'JSON'
+{
+  "acme/widgets#42": [
+    {
+      "path": "src/auth.ts",
+      "pattern": "RAVF001 [medium] auth — finding 01 has a long explanation that should compact while retaining the finding number 01 and still point to the inline comment.",
+      "reason": "local-table-dismissal"
+    }
+  ]
+}
+JSON
+    printf '{"event":"COMMENT","head_sha":"head-sha"}\n' >"$tmp/report.md.approval.json"
+
+    GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
+    GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
+    REVIEW_ANVIL_DISMISSALS="$dismissals" \
+    REVIEW_ANVIL_GITHUB_MAX_CHARS=12000 \
+    PATH="$bin:$PATH" \
+      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-dismissed-table.out
+
+    grep -q 'Previously dismissed on this PR' "$tmp/comment.md"
+    grep -Fq '| RAVF001 | M | auth | `src/auth.ts:12` |' "$tmp/comment.md"
+    grep -q 'local-table-dismissal' "$tmp/comment.md"
+    assert_file_missing "$report"
+    assert_file_missing "$tmp/report.md.approval.json"
+}
+
+test_dismissal_respects_report_paths() {
+    local tmp bin report dismissals
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+
+    report="$tmp/report.md"
+    dismissals="$tmp/dismissals.json"
+    {
+        printf '# review-anvil report\n\n'
+        printf '**Review decision:** COMMENT — same text in another file remains actionable.\n\n'
+        printf '## Findings\n'
+        printf -- '- **RAVF001 [medium] auth** `src/other.ts:12` — same summary text appears in another file.\n'
+    } >"$report"
+    cat >"$dismissals" <<'JSON'
+{
+  "acme/widgets#42": [
+    {
+      "path": "src/auth.ts",
+      "pattern": "RAVF001 [medium] auth — same summary text appears in another file.",
+      "reason": "local-path-dismissal"
+    }
+  ]
+}
+JSON
+    printf '{"event":"COMMENT","head_sha":"head-sha"}\n' >"$tmp/report.md.approval.json"
+
+    GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
+    GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
+    REVIEW_ANVIL_DISMISSALS="$dismissals" \
+    REVIEW_ANVIL_GITHUB_MAX_CHARS=12000 \
+    PATH="$bin:$PATH" \
+      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-path-dismissal.out
+
+    ! grep -q 'Previously dismissed on this PR' "$tmp/comment.md"
+    grep -Fq 'same summary text appears in another file' "$tmp/comment.md"
     assert_file_missing "$report"
     assert_file_missing "$tmp/report.md.approval.json"
 }
@@ -325,11 +497,16 @@ test_post_dismisses_id_prefixed_report_findings() {
 main() {
     command -v jq >/dev/null 2>&1 || fail "jq is required"
     test_process_inline
+    test_process_inline_infers_id_prefixed_severity
     test_post_review_success
     test_post_fallback_comment
     test_post_update_success
     test_post_adversarial_off_downgrades_approval
     test_post_dismisses_id_prefixed_report_findings
+    test_compact_handles_tables_and_legacy_id_prefixes
+    test_compact_rejects_invalid_and_ignores_fenced_ids
+    test_post_dismisses_table_report_findings
+    test_dismissal_respects_report_paths
     printf 'test-pr-helper: all e2e checks passed\n'
 }
 

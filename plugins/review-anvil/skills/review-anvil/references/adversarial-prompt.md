@@ -6,8 +6,8 @@ rule as other references.
 
 Adversarial review is a post-synthesis gate. Normal reviewers have already
 reviewed the target and the orchestrator has already deduped, verified, and
-assigned stable IDs to candidate findings (`F-001`, `F-002`, ...) and
-would-apply plans (`W-001`, `W-002`, ...). The adversary does not perform a
+assigned stable IDs to candidate findings (`RAVF001`, `RAVF002`, ...) and
+would-apply plans (`RAVW001`, `RAVW002`, ...). The adversary does not perform a
 fresh broad review. It attacks the candidate synthesis.
 
 ## Core Prompt
@@ -43,7 +43,7 @@ Rules:
 - Do not propose patches. Improve prose fix paths only.
 - Do not create fresh broad-review findings. If attacking a proposed fix reveals
   a second-order risk caused by following that fix plan, target the relevant
-  `W-*` plan and keep the report effect deferred or suggestion-only.
+  `RAVW###` plan and keep the report effect deferred or suggestion-only.
 - Do not use adversarial review to make speculative guidance more
   authoritative. It may uphold, simplify, harden, defer, or drop candidate
   guidance.
@@ -78,7 +78,7 @@ End with a fenced `adversarial` block containing YAML:
 
 ```adversarial
 - type: false_positive | over_scoped | over_severe | dismissed | harmful_fix | bloated_fix | tech_debt | second_order_risk | harden_fix | simplify_fix | wording | approval | uphold
-  target: F-001 | W-001 | report | approval
+  target: RAVF001 | RAVW001 | report | approval
   verdict: uphold | modify | defer | drop
   severity: critical | high | medium | low | nit
   evidence: <specific code/scope/test/dismissal evidence>
@@ -110,7 +110,7 @@ that preserves the behavior, a dismissed thread, a legacy compatibility path,
 or a specific place where the proposed fix adds avoidable architecture.
 
 Adversarial reviewers do not emit new actionable findings. A
-`type: second_order_risk` verdict must target a `W-*` plan and explain how the
+`type: second_order_risk` verdict must target a `RAVW###` plan and explain how the
 proposed guidance would create a regression, bloat, tech debt, or a missing
 edge-case. Truly unrelated new baseline issues require a separate normal review
 pass.

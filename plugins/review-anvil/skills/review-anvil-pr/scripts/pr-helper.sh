@@ -253,20 +253,83 @@ def shorten(value, limit):
         cut = max(0, limit - 3)
     return value[:cut].rstrip() + "..."
 
+ID_PATTERN = r"(?:RAV[FW]\d{3,}|[FW]-\d{3,})"
+SEVERITY_NAMES = {"critical", "high", "medium", "low", "nit"}
+SEVERITY_INITIALS = {"c": "critical", "h": "high", "m": "medium", "l": "low", "n": "nit"}
+
 FINDING_RE = re.compile(
-    r"\*\*(?:(?:[FW]-\d+)\s+)?\[(critical|high|medium|low|nit)\]\s*([^*]+?)\*\*(?:\s+`[^`]+`)?\s*[-—:]+\s*([^\n]+)",
+    rf"\*\*(?:{ID_PATTERN}\s+)?\[(?P<severity>critical|high|medium|low|nit)\]\s*(?P<area>[^*]+?)\*\*(?:\s+`(?P<location>[^`]+)`)?\s*[-—:]+\s*(?P<finding>[^\n]+)",
     re.I,
 )
+
+def severity_name(value):
+    value = (value or "").strip().lower()
+    if value in SEVERITY_NAMES:
+        return value
+    return SEVERITY_INITIALS.get(value)
+
+def table_finding(line):
+    stripped = (line or "").strip()
+    if not stripped.startswith("|") or not stripped.endswith("|"):
+        return None
+    cells = [cell.strip() for cell in stripped.strip("|").split("|")]
+    if len(cells) < 5 or not re.fullmatch(ID_PATTERN, cells[0], re.I):
+        return None
+    sev = severity_name(cells[1])
+    if not sev:
+        return None
+    finding = " | ".join(cells[4:]).strip()
+    if not cells[2] or not finding:
+        return None
+    return {"id": cells[0], "severity": sev, "area": cells[2],
+            "location": cells[3], "finding": finding}
+
+def is_table_noise(line):
+    stripped = (line or "").strip()
+    if not stripped.startswith("|") or not stripped.endswith("|"):
+        return False
+    cells = [cell.strip().lower() for cell in stripped.strip("|").split("|")]
+    if cells[:5] == ["id", "sev", "area", "location", "finding"]:
+        return True
+    return bool(cells) and all(re.fullmatch(r":?-{3,}:?", cell or "") for cell in cells)
+
+def render_table_finding(line):
+    item = table_finding(line)
+    if not item:
+        return None
+    location = item["location"]
+    loc = f" {location}" if location and location not in {"-", "—"} else ""
+    return f'- **{item["id"]} [{item["severity"]}] {item["area"]}**{loc} — {item["finding"]}'
 
 def bullet_blocks(section_lines):
     blocks = []
     current = []
-    saw_bullet = False
+    saw_structured = False
+    in_fence = False
     for line in section_lines:
+        stripped = line.lstrip()
+        if stripped.startswith(("```", "~~~")):
+            if current:
+                blocks.append(current)
+                current = []
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
         if line.startswith("## "):
             break
+        table_block = render_table_finding(line)
+        if table_block:
+            saw_structured = True
+            if current:
+                blocks.append(current)
+                current = []
+            blocks.append([table_block])
+            continue
+        if is_table_noise(line):
+            continue
         if re.match(r"^\s*(?:[-*]|\d+\.)\s+", line):
-            saw_bullet = True
+            saw_structured = True
             if current:
                 blocks.append(current)
             current = [line]
@@ -276,7 +339,7 @@ def bullet_blocks(section_lines):
             blocks.append([line])
     if current:
         blocks.append(current)
-    if saw_bullet:
+    if saw_structured:
         return blocks
     paragraph = "\n".join(section_lines).strip()
     return [[paragraph]] if paragraph else []
@@ -297,10 +360,14 @@ def blocks_for(*names):
 
 def severity(block):
     text = "\n".join(block)
-    match = re.search(r"\*\*(?:(?:[FW]-\d+)\s+)?\[(critical|high|medium|low|nit)\]", text, re.I)
-    if not match:
-        return 99
-    return {"critical": 0, "high": 1, "medium": 2, "low": 3, "nit": 4}[match.group(1).lower()]
+    match = re.search(rf"\*\*(?:{ID_PATTERN}\s+)?\[(critical|high|medium|low|nit)\]", text, re.I)
+    if match:
+        return {"critical": 0, "high": 1, "medium": 2, "low": 3, "nit": 4}[match.group(1).lower()]
+    for line in block:
+        item = table_finding(line)
+        if item:
+            return {"critical": 0, "high": 1, "medium": 2, "low": 3, "nit": 4}[item["severity"]]
+    return 99
 
 def render_blocks(blocks, limit=520):
     return [render_block(block, limit) for block in blocks]
@@ -449,7 +516,8 @@ def infer_severity(item):
     if explicit in rank:
         return explicit
     body = item.get("body") or ""
-    m = re.search(r"\*\*\[(critical|high|medium|low|nit)\]", body, re.I)
+    id_pattern = r"(?:RAV[FW]\d{3,}|[FW]-\d{3,})"
+    m = re.search(rf"\*\*(?:{id_pattern}\s+)?\[(critical|high|medium|low|nit)\]", body, re.I)
     if m:
         return m.group(1).lower()
     m = re.search(r"\b(critical|high|medium|low|nit)\s*:", body, re.I)
@@ -644,22 +712,81 @@ def norm(text: str) -> str:
     words = [w for w in text.split() if len(w) > 2 and w not in {"the", "and", "for", "with", "this", "that", "from", "into", "when", "because"}]
     return " ".join(words)
 
+ID_PATTERN = r"(?:RAV[FW]\d{3,}|[FW]-\d{3,})"
+SEVERITY_NAMES = {"critical", "high", "medium", "low", "nit"}
+SEVERITY_INITIALS = {"c": "critical", "h": "high", "m": "medium", "l": "low", "n": "nit"}
+
 FINDING_RE = re.compile(
-    r"\*\*(?:(?:[FW]-\d+)\s+)?\[(critical|high|medium|low|nit)\]\s*([^*]+?)\*\*(?:\s+`[^`]+`)?\s*[-—:]+\s*([^\n]+)",
+    rf"\*\*(?:{ID_PATTERN}\s+)?\[(?P<severity>critical|high|medium|low|nit)\]\s*(?P<area>[^*]+?)\*\*(?:\s+`(?P<location>[^`]+)`)?\s*[-—:]+\s*(?P<finding>[^\n]+)",
+    re.I,
+)
+SUMMARY_RE = re.compile(
+    rf"^\s*(?:[-*]\s+)?(?:{ID_PATTERN}\s+)?\[(?P<severity>critical|high|medium|low|nit)\]\s*(?P<area>.+?)\s*[-—:]+\s*(?P<finding>.+)$",
     re.I,
 )
 
+def severity_name(value):
+    value = (value or "").strip().lower()
+    if value in SEVERITY_NAMES:
+        return value
+    return SEVERITY_INITIALS.get(value)
+
+def table_finding(line):
+    stripped = (line or "").strip()
+    if not stripped.startswith("|") or not stripped.endswith("|"):
+        return None
+    cells = [cell.strip() for cell in stripped.strip("|").split("|")]
+    if len(cells) < 5 or not re.fullmatch(ID_PATTERN, cells[0], re.I):
+        return None
+    sev = severity_name(cells[1])
+    if not sev:
+        return None
+    finding = " | ".join(cells[4:]).strip()
+    if not cells[2] or not finding:
+        return None
+    return {"id": cells[0], "severity": sev, "area": cells[2],
+            "location": cells[3], "finding": finding}
+
+def path_from_location(location):
+    loc = (location or "").strip().strip("`")
+    if not loc or loc in {"-", "—"}:
+        return ""
+    match = re.match(r"([^:\s]+)(?::\d+(?:-\d+)?)?$", loc)
+    return match.group(1) if match else ""
+
+def path_from_block(block):
+    for line in block:
+        m = FINDING_RE.search(line or "")
+        if m:
+            path = path_from_location(m.group("location"))
+            if path:
+                return path
+        item = table_finding(line)
+        if item:
+            path = path_from_location(item.get("location"))
+            if path:
+                return path
+    return ""
+
 def is_finding_line(line: str) -> bool:
-    return bool(FINDING_RE.search(line or ""))
+    return bool(FINDING_RE.search(line or "") or table_finding(line))
 
 def signature(body: str) -> str:
     body = body or ""
     # review-anvil body: **[medium] area** -- What ...
-    # Stable IDs are optional: **F-001 [medium] area** -- What ...
+    # Stable IDs are optional: **RAVF001 [medium] area** -- What ...
+    # Legacy dashed F/W IDs are accepted too.
     # Report rows may include a code location between the bold label and dash.
     m = FINDING_RE.search(body)
     if m:
-        return norm(f"{m.group(2)} {m.group(3)}")
+        return norm(f'{m.group("area")} {m.group("finding")}')
+    for line in body.splitlines():
+        item = table_finding(line)
+        if item:
+            return norm(f'{item["area"]} {item["finding"]}')
+        m = SUMMARY_RE.search(line)
+        if m:
+            return norm(f'{m.group("area")} {m.group("finding")}')
     # GitHub/Codex-style body: Medium: what...
     m = re.search(r"\b(critical|high|medium|low|nit)\s*:\s*([^\n]+)", body, re.I)
     if m:
@@ -671,7 +798,14 @@ def summary(body: str) -> str:
     body = body or ""
     m = FINDING_RE.search(body)
     if m:
-        return f"[{m.group(1).lower()}] {m.group(2).strip()} — {m.group(3).strip()}"[:160]
+        return f'[{m.group("severity").lower()}] {m.group("area").strip()} — {m.group("finding").strip()}'[:160]
+    for line in body.splitlines():
+        item = table_finding(line)
+        if item:
+            return f'[{item["severity"]}] {item["area"]} — {item["finding"]}'[:160]
+        m = SUMMARY_RE.search(line)
+        if m:
+            return f'[{m.group("severity").lower()}] {m.group("area").strip()} — {m.group("finding").strip()}'[:160]
     lines = [ln.strip() for ln in body.splitlines() if ln.strip() and not ln.strip().startswith("<!--")]
     return (lines[0] if lines else "")[:160]
 
@@ -706,10 +840,10 @@ if sp and sp.exists():
     try:
         state = json.loads(sp.read_text())
         for item in state.get(f"{owner}/{repo}#{n}", []):
-            sig = norm(item.get("pattern", ""))
+            sig = signature(item.get("pattern", ""))
             if sig:
                 dismissed.append({"path": item.get("path", ""), "line": item.get("line"),
-                                  "sig": sig, "summary": item.get("pattern", "")[:160],
+                                  "sig": sig, "summary": summary(item.get("pattern", "")),
                                   "source": item.get("reason", "local-suppression")})
     except Exception as exc:
         raise SystemExit(f"pr-helper: invalid dismissal state {sp}: {exc}")
@@ -821,7 +955,7 @@ if report.exists():
         if not in_fence and is_finding_line(line):
             j2 = block_end(i)
             block = lines[i:j2]
-            cand = {"path": "", "sig": signature("\n".join(block))}
+            cand = {"path": path_from_block(block), "sig": signature("\n".join(block))}
             hit = next((d for d in dismissed if same_finding(cand, d, require_path=False)), None)
             if hit:
                 demoted.append({"line": block[0].strip(), "sig": cand["sig"], "source": hit["source"]})
