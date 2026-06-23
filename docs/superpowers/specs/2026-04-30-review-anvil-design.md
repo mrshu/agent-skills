@@ -38,7 +38,7 @@ Reconstructed from ~15 instances across the user's transcripts:
 | 1 | What does `agents` mean? | Single number, single tool by default, plain-English overrides parsed by the skill (e.g. `"2 codex + 1 claude"`). |
 | 2 | What's the review target? | Auto-detect with override (PR if checked out → branch-vs-main diff → uncommitted changes; explicit `target=` overrides). |
 | 3 | Who applies fixes? | Orchestrator (main session) only. Subagents are read-only critics. |
-| 4 | Stop criteria? | Always run all `rounds`. Flag convergence (`clean`/`nits_only`/`material_findings`) so user can shrink `rounds` next time. |
+| 4 | Stop criteria? | Run requested `rounds`, stop early on productive-loop convergence, and allow bounded adaptive continuation up to `max_rounds` (default 6 for `per_fix`) when material findings keep appearing. |
 | 5 | `focus` semantics? | User-supplied focus is *appended* to the four-pillar default. `only:` prefix replaces. |
 | 6 | Two-phase (design + code)? | Out of scope for v1. Single-phase fix/review only. The `focus` parameter is flexible enough to retarget the loop at non-code artifacts (e.g., a design doc) when the user wants. |
 | 7 | Commit cadence? | One commit per logical fix-group within a round. No knob in v1. |
@@ -64,7 +64,8 @@ and report.
 
 | Param | Default | Notes |
 |---|---|---|
-| `rounds` | `3` | Integer ≥1. Always runs all rounds (convergence is flagged, not stopped on). |
+| `rounds` | `3` | Integer ≥1. Requested round count; productive loops may stop early on convergence or continue adaptively up to `max_rounds`. |
+| `max_rounds` | `6` for productive loops | Hard cap for adaptive continuation; exact/no-extra phrasing collapses it to `rounds`. |
 | `agents` | `3` | Total reviewers per round. Plain-English mix override (`"2 codex + 1 claude"`, `"three claude reviewers"`). |
 | `focus` | the four pillars (correctness, maintainability, simplicity, production blast-radius) | User input is appended. `only:` prefix replaces. |
 | `target` | auto-detect | PR if checked out → branch-vs-main diff → uncommitted changes. Override: `pr:123`, `branch`, `uncommitted`, `path:src/foo.py`, `commits:HEAD~3..HEAD`. |
@@ -114,8 +115,9 @@ Each round runs this sequence:
    with reasons, **convergence flag** (`clean`, `nits_only`,
    `material_findings`).
 
-6. **Continue** until `rounds` reached. Final report includes per-round
-   summaries and a top-level digest.
+6. **Continue** until requested `rounds` are reached, convergence stops the
+   productive loop, or adaptive continuation reaches `max_rounds`. Final report
+   includes per-round summaries and a top-level digest.
 
 **Failure handling:** if a reviewer fails or returns malformed output, log
 in the round summary and continue with the others. No retries — a failed
@@ -161,7 +163,7 @@ labels the agent's output "unstructured findings."
 Single markdown report at end of run:
 
 ```
-# review-anvil report
+# ⚒️ review-anvil report
 
 **Target:** PR #42 (feature/auth-rewrite, 12 files, +340/-89)
 **Rounds:** 3
@@ -217,7 +219,8 @@ plugins/review-anvil/
   `target` parameters can retarget the loop at non-code artifacts when
   needed; a separate phase is not required.
 - **Reviewer-applied patches.** Reviewers stay read-only.
-- **Early stopping on convergence.** Always runs all rounds.
+- **Early stopping / adaptive continuation.** Included in the current engine:
+  productive loops stop on convergence and may continue up to `max_rounds`.
 - **Per-fix vs per-round commit knob.** Hardcoded to per-logical-fix.
 - **A "judge" / synthesis subagent.** The orchestrator synthesizes directly.
 

@@ -1,18 +1,18 @@
 ---
 name: review-anvil-improve-pr
-description: Multi-agent review-and-improve loop for a GitHub PR you have checked out — posts a "starting" PR comment cc'ing the original author, runs N rounds of parallel reviewers, applies fix commits to the local branch after each round, pushes everything back to the PR, then edits the starting comment in-place with the synthesized report (or a failure summary). Auto-detects the PR from the currently checked-out branch when no locator is supplied. Use when the user wants to "improve a PR", "review and commit fixes", "iterate on my PR", or "review and push back" against a checked-out PR branch. Requires `gh` on PATH. Activates the `review-anvil` engine in per_fix mode.
+description: Multi-agent review-and-improve loop for a GitHub PR you have checked out — posts a "starting" PR comment cc'ing the original author, runs requested rounds plus any adaptive continuation, applies fix commits to the local branch after each round, pushes everything back to the PR, then edits the starting comment in-place with the synthesized report (or a failure summary). Auto-detects the PR from the currently checked-out branch when no locator is supplied. Use when the user wants to "improve a PR", "review and commit fixes", "iterate on my PR", or "review and push back" against a checked-out PR branch. Requires `gh` on PATH. Activates the `review-anvil` engine in per_fix mode.
 ---
 
 # review-anvil-improve-pr
 
-Productive counterpart to `review-anvil-pr`. Where `review-anvil-pr` is read-only and posts a review comment, this preset **actually modifies the code**: it announces itself on the PR up front, runs the review loop with `commit_mode=per_fix`, applies fix commits to the local branch across N rounds, pushes the result back to update the PR, then **edits the starting comment in-place** with the synthesized report (or a failure summary) — one comment in the PR timeline, two states.
+Productive counterpart to `review-anvil-pr`. Where `review-anvil-pr` is read-only and posts a review comment, this preset **actually modifies the code**: it announces itself on the PR up front, runs the review loop with `commit_mode=per_fix`, applies fix commits to the local branch across requested rounds plus any adaptive continuation, pushes the result back to update the PR, then **edits the starting comment in-place** with the synthesized report (or a failure summary) — one comment in the PR timeline, two states.
 
 The skill orchestrates six steps:
 
 1. `scripts/pr-helper.sh verify-checkout [<locator>]` — locator parsing or auto-detect, then verify the local checkout matches the PR's head branch and is in a clean state. Captures the PR's base branch, author, marker UUID, and report path.
 2. `scripts/pr-helper.sh post-start` — post a "starting" top-level PR comment cc'ing the original author, explaining what's about to happen and that the comment will be edited with the final summary. Captures the comment's ID (for the later edit) and start timestamp. The author gets a GitHub notification.
 3. The [`review-anvil`](../review-anvil/SKILL.md) engine in `commit_mode=per_fix` on a branch-vs-base diff (NOT a PR-locator target — the engine's "PR-target / per_fix incompatibility" rule forbids that combination; this preset deliberately routes around it by targeting the local branch directly). The engine writes the final synthesized report to `report_path` — on failure paths too.
-4. `git push` — once, after all rounds complete (or converge early) and only if the engine reported no failures and the build/test gate ended green, to publish the fix commits to the PR.
+4. `git push` — once, after requested rounds plus any adaptive continuation complete (or converge early) and only if the engine reported no failures and the build/test gate ended green, to publish the fix commits to the PR.
 5. `scripts/pr-helper.sh post-update` — compact the final report if needed, then PATCH-edit the starting comment to replace its body with the final report (outcome=success) or a failure summary (outcome=failure). GitHub does NOT notify on edits, so the author isn't pinged again — the original `cc @author` notification at step 2 is the only ping.
 6. Surface the final report inline + the comment URL to the user.
 
@@ -111,7 +111,7 @@ If `post-start` fails *before* posting (network blip, gh auth issue), abort — 
 
 ### 4. Activate the engine
 
-Activate the `review-anvil` skill with this argument string (extra user args go after the pinned params; the engine's own `rounds: 3` default applies when the user doesn't pass one):
+Activate the `review-anvil` skill with this argument string (extra user args go after the pinned params; the engine's own `rounds: 3` and `max_rounds: 6` defaults apply when the user doesn't pass them):
 
 ```
 commit_mode: per_fix, target: <BASE_BRANCH>...HEAD, report_path: <REPORT_PATH>, <extra-user-args>
@@ -123,13 +123,13 @@ Supply the dismissed-findings list captured in step 2 as the engine's `DISMISSED
 
 Note: do **not** pin a PR locator as `target` — the engine's "PR-target / per_fix incompatibility" rule would force `commit_mode=none` and defeat the point of this preset. Targeting the branch directly is the intended escape hatch.
 
-The user may override `rounds:` (default is the engine's `rounds: 3` for productive loops). They should not override `commit_mode`, `target`, or `report_path` — these are pinned for safety; the step-0 segment-rejection above blocks override attempts.
+The user may override `rounds:` or `max_rounds:` (defaults are the engine's `rounds: 3`, `max_rounds: 6` for productive loops). They should not override `commit_mode`, `target`, or `report_path` — these are pinned for safety; the step-0 segment-rejection above blocks override attempts.
 
 The engine runs the multi-round loop, committing fix-groups along the way and writing the final synthesized report to `<REPORT_PATH>` when it's done. The engine's build/test gate (`verify_cmd`, auto-detected unless the user passes one) runs after each round's fixes, so the report's Verification lines are the evidence the PR author needs to trust the pushed commits — if the engine recorded `Verification: none detected`, that caveat travels to the PR in the posted report. If any round fails (reviewer-all-fail, git-commit error, build/test gate newly red after the revert path), the engine stops the loop and surfaces the failure — **skip the push (step 5) and call `post-update` with `outcome=failure`** (step 6) so the starting comment gets replaced with a failure summary rather than dangling.
 
 ### 5. Push
 
-Only after the engine reports a successful run: all requested rounds completed (or the loop converged early — that counts as success), no `git commit failed` or `all reviewers failed` errors in the round summaries, and **every round's Verification state is one of** `passed`, `failed → round reverted`, `pre-existing failures (no new)`, `none detected`, or `skipped` — i.e. never newly red (these are exactly the engine's round-summary states):
+Only after the engine reports a successful run: all requested rounds and any adaptive continuation completed (or the loop converged early — that counts as success), no `git commit failed` or `all reviewers failed` errors in the round summaries, and **every round's Verification state is one of** `passed`, `failed → round reverted`, `pre-existing failures (no new)`, `none detected`, or `skipped` — i.e. never newly red (these are exactly the engine's round-summary states):
 
 ```bash
 git push origin "$HEAD_BRANCH"
@@ -166,7 +166,7 @@ If `post-update` itself fails (rare: transient `gh` issue, comment was deleted b
 ### 7. Report back
 
 Surface the engine's final report inline. Echo a two-line summary:
-- `pushed N commits to $HOST/$OWNER/$REPO#$N ($HEAD_BRANCH)` with `N` from the final report's Total section. If step 5 was skipped (failure path), say `did not push (engine/run failure)` instead.
+- `pushed N commits to $HOST/$OWNER/$REPO#$N ($HEAD_BRANCH)` with `N` from the pushed fix commits or the final report's `Fixes / Would Apply` commit list. If step 5 was skipped (failure path), say `did not push (engine/run failure)` instead.
 - `comment $COMMENT_URL updated with outcome=$OUTCOME` (or `comment update failed: ...` if step 6 errored).
 
 ## Examples

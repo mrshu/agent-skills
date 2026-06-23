@@ -20,7 +20,7 @@ assert_file_missing() {
 make_report() {
     local path="$1"
     {
-        printf '# review-anvil report\n\n'
+        printf '# ⚒️ review-anvil report\n\n'
         printf '**Review decision:** COMMENT — material findings need attention.\n'
         printf '**Result:** 3 findings confirmed.\n'
         printf '**Scope:** Inline processing e2e fixture.\n\n'
@@ -357,7 +357,7 @@ test_compact_handles_tables_and_legacy_id_prefixes() {
 
     report="$tmp/report.md"
     {
-        printf '# review-anvil report\n\n'
+        printf '# ⚒️ review-anvil report\n\n'
         printf '**Result:** legacy ID compatibility fixture.\n\n'
         printf '## Findings\n'
         printf '| ID | Sev | Area | Location | Finding |\n'
@@ -387,7 +387,7 @@ test_compact_rejects_invalid_and_ignores_fenced_ids() {
 
     report="$tmp/report.md"
     {
-        printf '# review-anvil report\n\n'
+        printf '# ⚒️ review-anvil report\n\n'
         printf '**Result:** invalid ID fixture.\n\n'
         printf '## Misc\n'
         printf -- '- **F001 [high] db** — bare transitional IDs are not findings.\n'
@@ -418,7 +418,7 @@ test_post_dismisses_table_report_findings() {
     report="$tmp/report.md"
     dismissals="$tmp/dismissals.json"
     {
-        printf '# review-anvil report\n\n'
+        printf '# ⚒️ review-anvil report\n\n'
         printf '**Review decision:** COMMENT — table finding needs attention.\n\n'
         printf '## Findings\n'
         printf '| ID | Sev | Area | Location | Finding |\n'
@@ -463,7 +463,7 @@ test_dismissal_respects_report_paths() {
     report="$tmp/report.md"
     dismissals="$tmp/dismissals.json"
     {
-        printf '# review-anvil report\n\n'
+        printf '# ⚒️ review-anvil report\n\n'
         printf '**Review decision:** COMMENT — same text in another file remains actionable.\n\n'
         printf '## Findings\n'
         printf -- '- **RAVF001 [medium] auth** `src/other.ts:12` — same summary text appears in another file.\n'

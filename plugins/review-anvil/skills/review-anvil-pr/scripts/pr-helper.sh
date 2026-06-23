@@ -411,7 +411,7 @@ for line in preamble:
         metadata.append(stripped)
 
 if not any(line.startswith("# ") for line in metadata):
-    metadata.insert(0, "# review-anvil report")
+    metadata.insert(0, "# ⚒️ review-anvil report")
 
 icount = inline_count()
 if icount:

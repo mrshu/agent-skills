@@ -1,6 +1,6 @@
 ---
 name: review-anvil-readonly
-description: Multi-agent code review without any edits or commits — N rounds of parallel reviewers, synthesis, and a final report. Use when the user wants a code review of a diff, branch, path, or PR but does NOT want any fixes applied automatically (no edits, no commits, no staging). Activates the `review-anvil` engine in read-only mode.
+description: Multi-agent code review without any edits or commits — requested rounds of parallel reviewers, synthesis, and a final report. Use when the user wants a code review of a diff, branch, path, or PR but does NOT want any fixes applied automatically (no edits, no commits, no staging). Activates the `review-anvil` engine in read-only mode.
 ---
 
 # review-anvil-readonly

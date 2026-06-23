@@ -46,7 +46,7 @@ User `focus:` additions are explicit priorities — append to **every** reviewer
 ### Context block (orchestrator fills in)
 
 ```
-You are a strict code reviewer for round {N} of {ROUNDS}.
+You are a strict code reviewer for round {N} ({ROUND_KIND}; requested {ROUNDS}, max {MAX_ROUNDS}).
 
 TARGET
 {Description — e.g. "PR #42 (12 files, +340/-89) on branch
@@ -180,6 +180,8 @@ If you find nothing worth raising, end with an empty findings block:
 ### Filling in the template
 
 - Concatenate the context block (placeholders filled) and the task block verbatim; hand the result to the dispatch mechanism from §2.
+- Fill `{ROUNDS}` with the requested round count and `{MAX_ROUNDS}` with the resolved cap after final `commit_mode`, PR-locator forcing, exact/no-extra phrasing, and default handling.
+- Fill `{ROUND_KIND}` as `requested` for rounds `N <= ROUNDS` and `adaptive` for rounds after the requested count, so reviewers never see an impossible requested-round label once adaptive continuation starts.
 - Reviewers return **prose findings only** — ignore any embedded patches.
 - Build PRIOR ROUNDS from each prior round's synthesis: header `Round N (K fixes applied, <sha1>..<shaN>; verification <state>):` plus `addressed:`/`deferred:` lists of `- [severity] area — what (reason)` lines. Severity counts alone can't tell a reviewer *which* issues not to re-raise.
 - **`commit_mode=none` multi-round:** nothing changes between rounds, so replace PRIOR ROUNDS with `None — review-only mode; this is an independent reviewer pass.` and drop only the PRIOR-ROUNDS do-not-repeat paragraph from the task block — **keep the DISMISSED FINDINGS paragraph**, which applies regardless of rounds.

@@ -40,7 +40,7 @@ Create `plugins/review-anvil/.claude-plugin/plugin.json` with this exact content
 {
   "name": "review-anvil",
   "version": "0.1.0",
-  "description": "Iterative multi-agent review-and-fix loop. Dispatch N rounds of parallel codex-exec/claude-exec reviewers, synthesize findings, apply fixes with logically-separated commits.",
+  "description": "Iterative multi-agent review-and-fix loop. Dispatch requested rounds of parallel codex-exec/claude-exec reviewers, synthesize findings, apply fixes with logically-separated commits.",
   "author": {
     "name": "mrshu"
   },
@@ -82,12 +82,12 @@ Create `plugins/review-anvil/skills/review-anvil/SKILL.md` with this exact conte
 ```markdown
 ---
 name: review-anvil
-description: Iteratively refine code via N rounds of parallel subagent review and orchestrator-applied fixes. Use when the user says "let's do three rounds", "fix/review loop", "back-and-forth review", "iterative review", or asks to harden a change with multiple rounds of codex/claude review. Configurable rounds, agent count/mix, focus, and target.
+description: Iteratively refine code via requested rounds of parallel subagent review and orchestrator-applied fixes. Use when the user says "let's do three rounds", "fix/review loop", "back-and-forth review", "iterative review", or asks to harden a change with multiple rounds of codex/claude review. Configurable rounds, agent count/mix, focus, and target.
 ---
 
 # review-anvil — Iterative Multi-Agent Fix/Review Loop
 
-Wrap a code change in **N rounds of parallel reviewer subagents + orchestrator-applied fixes**. Each round = (parallel review by M agents) → (you synthesize findings) → (you apply fixes, commit) → next round.
+Wrap a code change in **requested rounds of parallel reviewer subagents + orchestrator-applied fixes**. Each round = (parallel review by M agents) → (you synthesize findings) → (you apply fixes, commit) → next round.
 
 ## How to Use
 
@@ -249,7 +249,8 @@ EOF
 Replace the line `(6-step round procedure — Task 4)` (and the blank line after it) under `## Loop Mechanics` with this content:
 
 ````markdown
-Run the loop **once per round** for `rounds` total. Within a round:
+Run the loop for requested `rounds`, then continue adaptively up to `max_rounds`
+when the current engine's continuation policy allows it. Within a round:
 
 ### 1. Snapshot the target
 
@@ -307,7 +308,10 @@ The convergence flag is one of:
 
 ### 6. Continue or finish
 
-If the round number is less than `rounds`, start the next round (back to step 1). Round N+1 reviews the new state — its prior-round summary input includes the commits from round N.
+If the completed round count is less than `rounds`, start the next requested round
+(back to step 1). After requested rounds, continue only while the current engine's
+adaptive policy allows it and `completed_rounds < max_rounds`. Round N+1 reviews
+the new state — its prior-round summary input includes the commits from round N.
 
 After the final round, emit the **Final Report** described under "Output Format."
 
@@ -507,7 +511,7 @@ Append the round summary block (defined under Loop Mechanics, step 5) after each
 After the last round, emit a single markdown report with this structure:
 
 ```
-# review-anvil report
+# ⚒️ review-anvil report
 
 **Target:** <description, e.g. "PR #42 (feature/auth-rewrite, 12 files, +340/-89)">
 **Rounds:** <N>
@@ -538,8 +542,9 @@ For each deferred item across all rounds:
 
 Look at the convergence flags across rounds:
 
-- If the **last** round was `clean` or `nits_only` and any earlier round was `material_findings`, suggest `rounds = N - 1` (or further if the last two rounds were both clean/nits).
-- If **every** round was `material_findings`, suggest `rounds = N + 1` next time (the loop hadn't converged).
+- If the run converged early or an adaptive round converged, omit the suggestion.
+- If **every** completed round was `material_findings` and `max_rounds == rounds`, suggest re-enabling adaptive continuation or setting `rounds = N + 1` next time.
+- If the adaptive cap was reached and the final round was still `material_findings`, suggest increasing `max_rounds` only when the final round applied verified fixes.
 - Otherwise omit the suggestion.
 ````
 
@@ -639,7 +644,7 @@ The new entry should be exactly:
     {
       "name": "review-anvil",
       "source": "./plugins/review-anvil",
-      "description": "Iterative multi-agent review-and-fix loop. N rounds of parallel codex-exec/claude-exec reviewers, synthesized fixes with logically-separated commits.",
+      "description": "Iterative multi-agent review-and-fix loop. Requested rounds of parallel codex-exec/claude-exec reviewers, synthesized fixes with logically-separated commits.",
       "version": "0.1.0"
     }
 ```

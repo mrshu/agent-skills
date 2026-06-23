@@ -1,11 +1,11 @@
 ---
 name: review-anvil
-description: Iteratively refine code via N rounds of parallel subagent review and orchestrator-applied fixes. Use when the user says "let's do three rounds", "fix/review loop", "back-and-forth review", "iterative review", or asks to harden a change with multiple rounds of codex/claude review.
+description: Iteratively refine code via requested rounds of parallel subagent review and orchestrator-applied fixes, with bounded adaptive continuation enabled by default for productive runs. Use when the user says "let's do three rounds", "fix/review loop", "back-and-forth review", "iterative review", or asks to harden a change with multiple rounds of codex/claude review.
 ---
 
 # review-anvil — Iterative Multi-Agent Fix/Review Loop
 
-Wrap a code change in **N rounds of parallel reviewer subagents + orchestrator-applied fixes**. Each round = (parallel review by M agents, each with a distinct lens) → (you synthesize and **verify** findings) → (you apply fixes, run the build/test gate, commit) → next round.
+Wrap a code change in **requested rounds of parallel reviewer subagents + orchestrator-applied fixes**. Each round = (parallel review by M agents, each with a distinct lens) → (you synthesize and **verify** findings) → (you apply fixes, run the build/test gate, commit) → next round. In productive `per_fix` runs, the orchestrator may continue adaptively after the requested rounds until convergence or `max_rounds`.
 
 ## Preset skills
 
@@ -16,7 +16,7 @@ This is the **engine**. Three preset skills in the same plugin pin common config
 | `review-anvil` (engine) | nothing | Default fix/commit loop, or any custom param combination. |
 | `review-anvil-readonly` | `commit_mode=none`; default `rounds=1` | Read-only review — no edits, no commits. |
 | `review-anvil-pr [<locator>]` | `commit_mode=none`, `target=<locator>`, `report_path=<file>` | Review a GitHub PR and post the report back as a PR comment (orchestrates `scripts/pr-helper.sh`). Locator auto-detected from the current branch when omitted. |
-| `review-anvil-improve-pr [<locator>]` | `commit_mode=per_fix`, `target=<base>...HEAD`, `report_path=<file>` | Improve a checked-out PR: fix commits across N rounds, then push. Targets the branch (not a PR locator), deliberately routing around the PR-target/per_fix rule below. |
+| `review-anvil-improve-pr [<locator>]` | `commit_mode=per_fix`, `target=<base>...HEAD`, `report_path=<file>` | Improve a checked-out PR: fix commits across requested rounds plus any adaptive continuation, then push. Targets the branch (not a PR locator), deliberately routing around the PR-target/per_fix rule below. |
 
 ## Parameters
 
@@ -25,6 +25,7 @@ Parse the user's free-form args string into:
 | Param | Default | Plain-English forms |
 |---|---|---|
 | `rounds` | `3` | "5 rounds", "three rounds", "do 4 passes" |
+| `max_rounds` | `6` for `per_fix` (or `rounds` when `rounds > 6`); `rounds` for `commit_mode=none` | "max 4 rounds", "allow one extra round", "3 rounds, continue if needed"; "exactly 3 rounds", "only 3 rounds", or "no extra rounds" keeps `max_rounds=rounds` |
 | `agents` | `3` | "3 agents", "2 reviewers", or a mix like `"2 codex + 1 claude"` |
 | `focus` | the four pillars (correctness, maintainability, simplicity, production blast-radius) | "focus on async correctness"; an `only:` prefix replaces the defaults instead of appending |
 | `target` | auto-detect | "PR #42", "branch", "uncommitted", "src/auth/", "last 3 commits" |
@@ -47,6 +48,9 @@ Parse the user's free-form args string into:
 - **Pin-rejection (presets; defense in depth against the prose parser being talked into overrides):** before assembling, segment-split `$ARGUMENTS` as above, lowercase each segment's key (the text before its first `:`), and abort with `error: <param> is pinned by <preset-name> and cannot be overridden in args` if any key equals a pinned param. Match segment *keys*, never raw substrings — `focus: "target: PR safety"` has key `focus` and must pass. A host that cannot segment-split must abort (`error: pin-rejection unavailable in this environment; refusing to invoke engine without pin enforcement`), not degrade to substring scanning.
 - `agents`: a count (use the mix table below) or an explicit mix naming `codex`/`codex-exec` / `claude`/`claude-exec` — honor a mix exactly.
 - `target` auto-detect order: currently checked-out PR (e.g. `gh pr view --json number,headRefName`, a GitHub MCP query, or REST) → branch-vs-main diff (`git diff main...HEAD`) → uncommitted changes (`git diff` + `git diff --cached`). Empty args = all defaults.
+- `rounds` is the requested count. Resolve `max_rounds` after `rounds` and the final `commit_mode` (including the PR-locator rule below): default to `max(6, rounds)` for `per_fix`, and to `rounds` for `commit_mode=none`; reject `max_rounds < rounds`. Phrases like "allow one extra round" set `max_rounds=rounds+1`, and explicit caps like `max_rounds: 4` or "up to 4 rounds" set the cap directly. Phrases like "continue if needed" keep the default adaptive cap unless paired with an explicit cap. Phrases like "exactly", "only", or "no extra rounds" force `max_rounds=rounds`.
+- Adaptive continuation is on by default for `per_fix`. A plain "3 rounds" means `rounds=3, max_rounds=6`, so the organizing agent may continue after round 3 if §6 says another pass is justified. Use "exactly 3 rounds", "only 3 rounds", "no extra rounds", or `max_rounds: 3` when the run must stop at the requested count.
+- If `commit_mode=none` and the user explicitly set `max_rounds > rounds`, warn and collapse `max_rounds` to `rounds`. Extra normal rounds review the same baseline, so use `rounds` for reviewer redundancy and `adversarial` for skeptical challenge.
 - `adversarial` applies only when `commit_mode=none`. If set with `per_fix`, warn and ignore it — productive mode already applies real fixes and gates them with the build/test command. Reject `adversarial_rounds > 2`; adversarial loops must be bounded. `auto` means choose the cheapest sufficient adversarial mode after normal synthesis using the default policy below.
 
 ### PR-target / per_fix incompatibility
@@ -60,18 +64,20 @@ Reviewers of a PR locator see the GitHub-fetched diff, which may not match the l
 ### Commit modes
 
 - **`per_fix` (default)** — full loop: review → synthesize/verify → apply fixes → build/test gate → commit, each round.
-- **`none` (review-only)** — review → synthesize/verify only. **No edits, no commits, no staging.** Read-only mode may write temporary prompt/reviewer/report artifacts under `.review-anvil/` and the explicit `report_path`; it must not modify source files, the index, commits, branches, or remotes. Every normal round reviews the same baseline, so `rounds > 1` buys reviewer redundancy, not code refinement; the natural default is `rounds=1`. Skip Loop Mechanics §4 entirely; the round summary reads `Fixes applied: 0 (review-only)`; the auto-fix policy is still evaluated in the abstract so findings classify as would-apply / suggestions / deferred. Optional adversarial review is a separate post-synthesis gate that attacks finding validity and fix proportionality without pretending code changed.
+- **`none` (review-only)** — review → synthesize/verify only. **No edits, no commits, no staging.** Read-only mode may write temporary prompt/reviewer/report artifacts under `.review-anvil/` and the explicit `report_path`; it must not modify source files, the index, commits, branches, or remotes. Every normal round reviews the same baseline, so `rounds > 1` buys reviewer redundancy, not code refinement; the natural default is `rounds=1`, and adaptive continuation is disabled by collapsing `max_rounds` to `rounds`. Skip Loop Mechanics §4 entirely; the round summary reads `Fixes applied: 0 (review-only)`; the auto-fix policy is still evaluated in the abstract so findings classify as would-apply / suggestions / deferred. Optional adversarial review is a separate post-synthesis gate that attacks finding validity and fix proportionality without pretending code changed.
 
 ### Posting reports externally
 
 The engine never posts anywhere. Downstream consumers set `report_path`, let the engine write a GitHub-ready compact report, and post after it returns — `review-anvil-pr` + its `pr-helper.sh` is the reference implementation.
 
 When `report_path` is set, optimize the report for a PR timeline reader, not for archival completeness. The per-round console output and reviewer artifacts are the transcript; the posted report is the decision summary plus the few findings that need action.
+Adaptive continuation details belong in Run Details unless they change the review decision; do not paste per-round continuation reasoning into compact PR reports.
 
 ### Examples
 
-- `Skill review-anvil` → 3 rounds, 2 codex + 1 claude, four-pillar focus, auto-detected target.
+- `Skill review-anvil` → 3 requested rounds, adaptive up to 6 total rounds, 2 codex + 1 claude, four-pillar focus, auto-detected target.
 - `Skill review-anvil "5 rounds, 2 codex + 1 claude, focus: async correctness, target: PR #42"`
+- `Skill review-anvil "3 rounds, max_rounds: 4"` → 3 requested rounds, then at most 1 adaptive round if the continuation policy allows it.
 - `Skill review-anvil "1 round, only: security, target: src/auth/"`
 - `Skill review-anvil "fix only critical"` → severity gate raised to `critical`; everything else surfaces as suggestions.
 - `Skill review-anvil "target: PR #42, adversarial: auto"` → normal review first, then adversarial review only if the synthesized findings/fix plans need a validity or proportionality challenge.
@@ -93,7 +99,8 @@ Rationale: codex-exec surfaces more issues per call in our usage, so it gets the
 
 ## Loop Mechanics
 
-Run the loop once per round for `rounds` total. Within a round:
+Run the loop for the requested `rounds`, then continue adaptively up to
+`max_rounds` only when §6 allows adaptive continuation. Within a round:
 
 ### 1. Snapshot the target
 
@@ -332,7 +339,7 @@ Append to running output:
 
 ```
 ### Round N — <convergence flag>
-- Parameters: rounds=3, target=acme/widgets#42 [pin], commit_mode=none [pin], focus=4-pillar
+- Parameters: rounds=3, max_rounds=3, target=acme/widgets#42 [pin], commit_mode=none [pin], focus=4-pillar
 - Reviewers: <list dispatched>
 - Findings: C critical, H high, M medium, L low, N nit
 - Fixes applied: K commits (<sha1>..<shaN>)   # or "0 (review-only)"
@@ -341,15 +348,48 @@ Append to running output:
 - Adversarial review: off | <mode>, <A> agents, <upheld> upheld, <hardened> hardened, <deferred> deferred, <dropped> dropped
 - Suggestions: S items (sub-threshold severity; not applied)
 - Deferred: D items (reasons: noise / new dependency / size cap / failed verification / product decision)
+- Adaptive continuation: off | not extended because <reason> | extended to round <next_round> because <reason>; cap=<max_rounds>
 ```
 
 Pinned params carry `[pin]` (authority comes from preset argument order; the PR-target/per_fix rule is the final safety net). Convergence flag: `clean` (no findings), `nits_only` (nothing above `low`), `material_findings` (≥1 medium+).
 
 ### 6. Continue or finish
 
-If rounds remain, start the next round; round N+1 reviews the new state including round N's commits.
+If completed rounds are still below `rounds`, start the next requested round;
+round N+1 reviews the new state including round N's commits.
 
-**Early exit on convergence (`per_fix` only).** A `clean` or `nits_only` round ends the loop even if rounds remain — further rounds re-review converged code and mostly produce noise. Note `Converged after round N of R (early exit)` in the Total section. (In `commit_mode=none`, multi-round = reviewer redundancy over the same baseline; no early exit.)
+**Early exit on convergence (`per_fix` only).** A `clean` or `nits_only`
+round ends the loop even if requested or adaptive rounds remain — further
+rounds re-review converged code and mostly produce noise. Note this in Run
+Details, e.g. `Rounds: N completed (R requested + A adaptive, max M); converged
+after round N of R requested`. (In `commit_mode=none`, multi-round = reviewer
+redundancy over the same baseline; no early exit and no adaptive continuation.)
+
+**Adaptive continuation (`per_fix` only).** After the requested `rounds` are
+complete, the orchestrator may start one more round only while
+`completed_rounds < max_rounds` and all continuation criteria hold:
+
+- The latest round was `material_findings`.
+- The latest round applied at least one verified fix commit, or changed a
+  risky/shared surface where another pass is likely to catch second-order bugs.
+- Verification for the latest round ended `passed`; `skipped`, `none detected`,
+  `pre-existing failures (no new)`, and `failed → round reverted` are acceptable
+  for requested rounds but not strong enough to justify extra automatic work.
+- All expected reviewers succeeded with parseable output. Degraded reviewer
+  signal can finish requested rounds, but it must not trigger adaptive rounds.
+  During an adaptive round, this is a hard gate before §4: any reviewer failure,
+  timeout, empty output, or unparseable findings block stops the run before
+  applying fixes from that adaptive round, writes a failure report when
+  `report_path` is set, and prevents improve-PR pushes.
+- The remaining risk is likely to converge with another review/fix pass. Do not
+  extend for low/nit-only feedback, suggestions below `min_fix_severity`, items
+  already Deferred, product decisions, new-dependency deferrals, size-cap
+  deferrals, or repeated findings that were not fixed.
+
+Record the continuation decision in the final requested round's summary and in
+the adaptive round summary when one runs. If an adaptive round still has
+`material_findings` and hits `max_rounds`, finish and use the tuning suggestion
+rule; do not keep extending without a larger explicit cap.
 
 After the final round, emit the **Final Report** (Output Format). If `report_path` is set:
 
@@ -389,7 +429,7 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 
 ### Failure handling
 
-- A reviewer fails or times out → log `<agent>: failed (<reason>)` in the round summary and proceed; no retries. For Bash-dispatched reviewers, failure = wrapper STATUS `timeout`/`empty`/`failed`, reason = tail of `.err`.
+- A reviewer fails or times out in a requested round → log `<agent>: failed (<reason>)` in the round summary and proceed; no retries. For Bash-dispatched reviewers, failure = wrapper STATUS `timeout`/`empty`/`failed`, reason = tail of `.err`. In an adaptive round, any reviewer failure is an abort before fixes from that round are applied.
 - **All** reviewers fail → abort the loop and report. Never carry on with zero findings — that's a misleading clean signal.
 - `git commit` fails (hook, conflict) → surface the error, stop the loop, leave partial fixes in the worktree. Never `--no-verify`, never amend earlier commits.
 - **On any abort, if `report_path` is set, write a failure report to it before stopping** — the usual header block, a `## Failure` section stating what happened and at which round, plus any completed round summaries. Downstream consumers (`review-anvil-improve-pr`'s post-update step) depend on the file existing on every exit path, success or failure. Write `{"event": "COMMENT"}` to `.approval.json` in this case.
@@ -408,7 +448,7 @@ receive the stable candidate finding / would-apply IDs produced by synthesis.
 
 ## Output Format
 
-During execution: print `Round 2/3: dispatching 2 codex-exec + 1 claude-exec on PR #42 …` before each round, the round summary block (§5) after.
+During execution: print `Round 2/3: dispatching 2 codex-exec + 1 claude-exec on PR #42 …` before requested rounds, or `Round 4 (adaptive; requested 3, max 4): dispatching …` for adaptive rounds, then the round summary block (§5) after.
 
 ### Final report
 
@@ -417,7 +457,7 @@ After the last round, emit a fresh top-level report (a new document, not a repla
 The final report is a PR comment body. It must include every finding, but it should read like a scan-friendly review index, not a transcript. Do not paste raw reviewer output, full round transcripts, repeated metadata, or paragraph-sized low-priority notes. Put each finding in exactly one compact row or bullet, grouped by severity/priority; use inline comments and collapsed `<details>` sections for longer explanation.
 
 ```
-# review-anvil report
+# ⚒️ review-anvil report
 
 **Review decision:** APPROVE | COMMENT — <one-sentence reason>   # review-only PR runs
 **Result:** <one sentence: blockers/non-blockers/fixes/verification outcome>
@@ -459,7 +499,8 @@ The final report is a PR comment body. It must include every finding, but it sho
 
 ## Run Details
 - Target: <e.g. "PR #42 (feature/auth-rewrite, 12 files, +340/-89)">
-- Rounds: <completed>/<requested>; <convergence note if early exit fired>
+- Rounds: <completed> completed (<requested> requested + <adaptive> adaptive, max <max_rounds>); <convergence/adaptive stop note>   # productive adaptive-capable runs
+- Rounds: <completed>/<requested> completed; adaptive off; <convergence note>   # review-only/exact/no-extra runs
 - Mix: <e.g. "2 codex-exec + 1 claude-exec">
 - Focus: <focus list actually used>
 - Counts: <C critical, H high, M medium, L low, N nit; deferred D; suggestions S>
@@ -474,7 +515,19 @@ _Reviewed with [review-anvil](https://github.com/mrshu/agent-skills)._
 
 ### Tuning suggestion rule
 
-Early exit already stops the loop when a round comes back clean, so the only tuning case left is non-convergence: if **every** completed round was `material_findings`, suggest `rounds = N + 1`; otherwise omit (the `Converged after round N of R` line covers the early-exit case).
+Omit in review-only. Early exit already stops the loop when a round comes back
+clean, and an adaptive round that converges needs no tuning suggestion. The
+remaining cases:
+
+- If every completed round was `material_findings` and `max_rounds == rounds`,
+  suggest re-enabling adaptive continuation (`max_rounds = rounds + 1`) or
+  setting `rounds = N + 1` for the next run.
+- If the adaptive cap was reached and the final round was still
+  `material_findings`, suggest increasing `max_rounds` by 1 only when the final
+  round applied verified fixes; otherwise suggest resolving Deferred blockers or
+  verification gaps before adding more rounds.
+- If adaptive continuation was blocked by skipped/missing verification, suggest
+  setting a trustworthy `verify_cmd` before increasing `rounds`.
 
 ## Edge Cases
 
@@ -485,9 +538,11 @@ Early exit already stops the loop when a round comes back clean, so the only tun
 | Raw diff > ~5000 lines | Warn in the round status and continue; tell reviewers they may focus on the most impactful slice; double `reviewer_timeout` (unless the user set it explicitly). For `adversarial: auto`, estimate meaningful changed size after exclusions; very large meaningful diffs select at least `full`, but generated/mechanical churn alone does not force deeper adversarial review. |
 | `agents > 8` | Reject before round 1 — more dedup work than signal. |
 | `rounds = 0` | Reject — almost certainly a typo. |
+| `max_rounds < rounds` | Reject before round 1 — the adaptive cap cannot be below the requested round count. |
+| User-supplied `max_rounds > rounds` with `commit_mode=none` | Warn and set `max_rounds=rounds`; read-only extra rounds are explicit redundancy via `rounds`, not adaptive refinement. |
 | `adversarial` with `per_fix` | Warn and ignore — productive mode verifies real fixes with the build/test gate. |
 | `adversarial_rounds > 2` | Reject before dispatch — adversarial review is bounded critique, not an open-ended debate. |
 | Adversary failure | Continue with the normal synthesized report and note the failure in Run Details; in `strict`, any required adversary failure forces `COMMENT`. |
-| Unparseable findings block | Use the prose as free-form findings; no retry; note `<agent>: unstructured findings (parse failed)`. |
+| Unparseable findings block | In requested rounds, use the prose as free-form findings; no retry; note `<agent>: unstructured findings (parse failed)`. In adaptive rounds, abort before fixes from that round are applied. |
 | Reviewers contradict each other | Surface both under the same area with reviewers tagged; orchestrator judgment decides the fix; mention the disagreement in the round summary. |
 | Re-runs | Not idempotent: a new run reviews the latest state, including the prior run's commits. Surface still-present deferred items under "Deferred from previous runs (still present)". |
