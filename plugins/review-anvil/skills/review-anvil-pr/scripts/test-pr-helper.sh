@@ -6,6 +6,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 HELPER="$ROOT/pr-helper.sh"
+REPRODUCTION_LINE='**Reproduction:** 4 candidates; 3 confirmed, 1 deferred after failed reproduction.'
 
 fail() {
     printf 'test-pr-helper: %s\n' "$*" >&2
@@ -24,6 +25,7 @@ make_report() {
         printf '**Review decision:** COMMENT — material findings need attention.\n'
         printf '**Result:** 3 findings confirmed.\n'
         printf '**Scope:** Inline processing e2e fixture.\n\n'
+        printf '%s\n\n' "$REPRODUCTION_LINE"
         printf '**Adversarial review:** targeted, 2 agents; 2 upheld, 1 hardened, 0 deferred, 0 dropped.\n\n'
         printf '## Findings\n'
         printf -- '- **RAVF001 [medium] auth** `src/auth.ts:12` — finding 01 has a long explanation that should compact while retaining the finding number 01 and still point to the inline comment.\n'
@@ -216,6 +218,7 @@ test_post_review_success() {
 
     jq -e '.event == "COMMENT"' "$tmp/review-payload.json" >/dev/null
     jq -e '.body | contains("review-anvil-marker: marker-123")' "$tmp/review-payload.json" >/dev/null
+    jq -e --arg line "$REPRODUCTION_LINE" '.body | split("\n") | index($line)' "$tmp/review-payload.json" >/dev/null
     jq -e '.body | contains("Adversarial review")' "$tmp/review-payload.json" >/dev/null
     jq -e '.body | contains("github.com/mrshu/agent-skills")' "$tmp/review-payload.json" >/dev/null
     jq -e '.body | contains("Inline findings") and contains("2 anchored comment")' "$tmp/review-payload.json" >/dev/null
@@ -253,6 +256,7 @@ test_post_fallback_comment() {
       "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-fallback.out
 
     grep -q 'review-anvil-marker: marker-123' "$tmp/comment.md"
+    grep -Fxq "$REPRODUCTION_LINE" "$tmp/comment.md"
     grep -q 'Adversarial review' "$tmp/comment.md"
     grep -q 'github.com/mrshu/agent-skills' "$tmp/comment.md"
     grep -q 'finding 01' "$tmp/comment.md"
@@ -285,6 +289,7 @@ test_post_update_success() {
 
     jq -e '.body | contains("review-anvil-improve-pr completed on this PR. cc @octocat.")' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("review-anvil-marker: marker-123")' "$tmp/patch.json" >/dev/null
+    jq -e --arg line "$REPRODUCTION_LINE" '.body | split("\n") | index($line)' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("Adversarial review")' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("github.com/mrshu/agent-skills")' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("Inline findings") and contains("2 anchored comment")' "$tmp/patch.json" >/dev/null
@@ -407,6 +412,26 @@ test_compact_rejects_invalid_and_ignores_fenced_ids() {
     ! grep -Fq 'RAVF999 [high]' "$report"
 }
 
+test_compact_preserves_wrapped_reproduction_metadata() {
+    local tmp report
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+
+    report="$tmp/report.md"
+    {
+        printf '# ⚒️ review-anvil report\n\n'
+        printf '**Result:** wrapped metadata fixture.\n'
+        printf '**Reproduction:** 4 candidates; 3 confirmed, 1 deferred after\n'
+        printf 'failed reproduction.\n\n'
+        printf '## Findings\n'
+        printf -- '- **RAVF001 [medium] auth** `src/auth.ts:12` — metadata compaction should preserve the wrapped reproduction line.\n'
+    } >"$report"
+
+    REVIEW_ANVIL_GITHUB_MAX_CHARS=1 "$HELPER" compact-report "$report" >/tmp/review-anvil-wrapped-reproduction.out
+
+    grep -Fxq "$REPRODUCTION_LINE" "$report"
+}
+
 test_post_dismisses_table_report_findings() {
     local tmp bin report dismissals
     tmp="$(mktemp -d)"
@@ -505,6 +530,7 @@ main() {
     test_post_dismisses_id_prefixed_report_findings
     test_compact_handles_tables_and_legacy_id_prefixes
     test_compact_rejects_invalid_and_ignores_fenced_ids
+    test_compact_preserves_wrapped_reproduction_metadata
     test_post_dismisses_table_report_findings
     test_dismissal_respects_report_paths
     printf 'test-pr-helper: all e2e checks passed\n'

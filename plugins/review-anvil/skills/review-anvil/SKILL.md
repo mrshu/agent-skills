@@ -193,6 +193,11 @@ Plausible-but-wrong findings are the dominant failure mode of LLM review, and bo
 - If `reproduction=off`, say so in the round summary and final report. Required reproduction candidates — including single-reviewer `medium`+ findings, deletion/high-risk findings, and orchestrator-uncertain findings — cannot become actionable unless the orchestrator independently reproduces them from code/tests/runtime evidence; otherwise move them to Deferred with reason `reproduction disabled`.
 - `low`/`nit` findings skip verification: they're below the auto-fix gate and surface as suggestions either way.
 
+Canonical examples for where reproduction helps and where it must stay out of
+the way live in `references/reproduction-examples.md`. After changing this
+policy or the reproduction prompt, run `scripts/test-reproduction-policy.sh`
+alongside the PR helper tests.
+
 #### Approving out-of-scope follow-ups
 
 A pre-existing issue outside the PR's scope can still be worth noting, but it must not become an inline/blocking PR finding. Classify each out-of-scope follow-up:
