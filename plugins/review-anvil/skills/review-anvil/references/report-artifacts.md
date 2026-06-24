@@ -32,6 +32,29 @@ Voice rules:
 
 The same voice applies to the report body's Suggestions, Deferred, and Out-of-scope follow-ups prose.
 
+## Reproduction summary
+
+When reproduction runs, the PR-facing report should show only the accounting and
+the resulting guidance. Do not paste reproduction transcripts or long rejected
+finding analysis into the PR timeline.
+
+Use one compact line near the top of the report:
+
+```md
+**Reproduction:** 4 candidates; 2 confirmed, 1 downgraded, 1 deferred after
+failed reproduction.
+```
+
+Then fold effects into the normal sections:
+
+- Confirmed and narrowed findings appear in `## Findings` using their survivor
+  wording.
+- Refuted findings disappear from `## Findings` unless a one-line Deferred note
+  helps explain why a likely-looking issue was not posted.
+- Unclear findings move to `## Deferred / Out-of-Scope` with
+  `failed reproduction: <reason>`.
+- Downgraded findings follow the normal severity gates after downgrade.
+
 ## Adversarial review summary
 
 When adversarial review is enabled, the PR-facing report should show only the

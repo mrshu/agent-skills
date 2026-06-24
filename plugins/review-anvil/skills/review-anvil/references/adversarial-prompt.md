@@ -5,10 +5,11 @@ Resolve this file relative to the engine SKILL.md via the same trusted-root
 rule as other references.
 
 Adversarial review is a post-synthesis gate. Normal reviewers have already
-reviewed the target and the orchestrator has already deduped, verified, and
-assigned stable IDs to candidate findings (`RAVF001`, `RAVF002`, ...) and
-would-apply plans (`RAVW001`, `RAVW002`, ...). The adversary does not perform a
-fresh broad review. It attacks the candidate synthesis.
+reviewed the target and the orchestrator has already deduped findings, checked
+dismissed feedback, run any required reproduction, and assigned stable IDs to
+surviving candidate findings (`RAVF001`, `RAVF002`, ...) and would-apply plans
+(`RAVW001`, `RAVW002`, ...). The adversary does not perform a fresh broad
+review. It attacks the candidate synthesis.
 
 ## Core Prompt
 
@@ -34,6 +35,7 @@ INPUTS
 - DISMISSED FINDINGS: <same dismissed block>
 - CANDIDATE FINDINGS: <stable IDs, severity, evidence, suggested_fix>
 - WOULD-APPLY PLANS: <stable IDs, commit subject/type/area, plan>
+- REPRODUCTION SUMMARY: <off/skipped/effects and any deferred candidates>
 - DEFERRED/SUGGESTIONS: <for consistency checks>
 - CANDIDATE APPROVAL: <APPROVE|COMMENT and reason>
 

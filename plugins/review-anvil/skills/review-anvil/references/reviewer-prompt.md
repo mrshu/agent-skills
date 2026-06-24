@@ -109,6 +109,8 @@ Review principles:
   differently elsewhere in the repo, say so.
 - Only report issues you can defend from the code in front of you.
   A finding that is merely plausible wastes a verification pass.
+- Include the key evidence the reproduction verifier would need: the concrete
+  file/function/config/test/caller fact that makes the issue real and reachable.
 
 - Only report actionable findings that are in scope for this review: caused by
 the PR, a regression in behavior the PR touches, or a direct threat to the PR's
@@ -139,6 +141,9 @@ For each issue, return a structured finding with these keys:
 - why: one-to-three sentences on the mechanism — how the code produces
   the problem at runtime, plus one concrete downstream consequence.
   Tie every claim to this code, not to best practices in the abstract.
+- evidence: (OPTIONAL but encouraged) concrete support for reproduction:
+  caller, test, config, runtime contract, comparable implementation, command
+  output, or PR-scope fact. Keep it short and code-specific.
 - suggested_fix: PROSE description with enough specifics that someone
   could implement it without re-investigating: what to change, where
   (file/function), the intended behavior afterwards, edge cases to

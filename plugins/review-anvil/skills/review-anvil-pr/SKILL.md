@@ -1,6 +1,6 @@
 ---
 name: review-anvil-pr
-description: Read-only multi-agent review of a GitHub Pull Request, with the synthesized report posted back as a PR comment so the author is notified. Use when the user wants to review a GitHub PR (github.com or GitHub Enterprise) and post a structured review back to the PR conversation. Auto-detects the PR from the currently checked-out branch when no locator is supplied. Requires `gh` on PATH. Activates the `review-anvil` engine in read-only mode and orchestrates the shell helper for posting.
+description: Read-only multi-agent review of a GitHub Pull Request, with the synthesized report posted back as a PR comment so the author is notified. Use when the user wants to review a GitHub PR (github.com or GitHub Enterprise) and post a structured review back to the PR conversation. Auto-detects the PR from the currently checked-out branch when no locator is supplied. Requires `gh`, `uuidgen`, `jq`, and `uv` or `python3` on PATH. Activates the `review-anvil` engine in read-only mode and orchestrates the shell helper for posting.
 ---
 
 # review-anvil-pr
@@ -89,6 +89,12 @@ commit_mode: none, target: <locator>, report_path: <REPORT_PATH>, <extra-user-ar
 
 The user may override `rounds:` or `adversarial:` in their args (they are defaults, not pins). They should not override `commit_mode`, `target`, or `report_path` — these are pinned for safety; the step-0 segment-rejection above blocks override attempts.
 
+The engine's default `reproduction: auto` runs before adversarial review and
+reproduces uncertain material findings in one batched confidence pass. The user
+may pass `reproduction: off` for speed, but unreproduced single-reviewer
+`medium`+ findings, deletion/high-risk findings, and orchestrator-uncertain
+findings must stay Deferred rather than becoming inline/actionable PR comments.
+
 The default `adversarial: auto` lets the engine choose `off`, `challenge`,
 `targeted`, or `strict` after normal synthesis. The user may also pass
 `adversarial: off|challenge|targeted|full|strict`.
@@ -147,7 +153,12 @@ Surface the URL (or `posted (URL unavailable)`) to the user. If the helper scrip
 - Requires `gh`, `uuidgen`, `jq` (a real binary — gh's `--jq` is built-in gojq and doesn't count), and `uv` (preferred; falls back to `python3`) for dismissed-finding handling. `init` preflights all of these so a missing dependency fails before the expensive review, not after.
 - Environment switches honored by the helper: `REVIEW_ANVIL_NO_APPROVE=1` (never submit an approval), `REVIEW_ANVIL_SKIP_DISMISSED=1` (skip dismissed-finding lookups for hosts without GraphQL access — degraded mode that also forces COMMENT), `REVIEW_ANVIL_DISMISSALS=<path>` (local-suppressions file, default `~/.review-anvil/dismissed-findings.json`; record entries with `pr-helper.sh dismiss <host> <owner> <repo> <n> <path> <pattern> [<reason>]`), `REVIEW_ANVIL_GITHUB_MAX_CHARS=<N>` (compact reports over `N` characters without dropping findings; default `12000`), `REVIEW_ANVIL_NO_COMPACT=1` (disable report compaction for debugging), `REVIEW_ANVIL_INLINE_MIN_SEVERITY=<critical|high|medium|low|nit>` (minimum severity posted inline; default `medium`), `REVIEW_ANVIL_INLINE_MAX_CHARS=<N>` (compact inline comments over `N` characters; default `900`), and `REVIEW_ANVIL_ENABLE_SUGGESTIONS=0` (disable helper-added GitHub suggestion blocks).
 - **An `APPROVE` decision submits a real GitHub approval from your authenticated `gh` account.** It counts toward branch-protection required reviews and reads to collaborators as your judgment — while the gate behind it is the engine's LLM classification. If that posture isn't acceptable for a repo or org, pass `approve: never` (or "never approve" / "comment only") and the run always posts plain `COMMENT` reviews. `REQUEST_CHANGES` is deliberately unsupported: blocking someone's merge on LLM judgment is a different risk class from commenting or approving.
-- What lands on the PR has passed the engine's verification step: `medium`+ findings raised by a single reviewer are confirmed against the actual code before posting, and findings that fail verification appear under "Deferred items" with reason `failed verification` rather than as actionable review comments. False positives posted to a colleague's PR burn trust — the engine treats precision as the product.
+- What lands on the PR has passed the engine's reproduction/verification gates:
+  uncertain `medium`+ findings are reproduced against the actual code before
+  posting, and findings that fail reproduction appear under "Deferred items"
+  with reason `failed reproduction` rather than as actionable review comments.
+  False positives posted to a colleague's PR burn trust — the engine treats
+  precision as the product.
 - When `adversarial:` is enabled, the posted report should include only the
   final verdict summary and survivor findings. The adversarial transcript stays
   out of GitHub; its effects are folded into dropped findings, deferred

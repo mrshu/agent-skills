@@ -1,6 +1,6 @@
 ---
 name: review-anvil-readonly
-description: Multi-agent code review without any edits or commits — requested rounds of parallel reviewers, synthesis, and a final report. Use when the user wants a code review of a diff, branch, path, or PR but does NOT want any fixes applied automatically (no edits, no commits, no staging). Activates the `review-anvil` engine in read-only mode.
+description: Multi-agent code review without any edits or commits — requested rounds of parallel reviewers, synthesis, default-on reproduction of uncertain material findings, and a final report. Use when the user wants a code review of a diff, branch, path, or PR but does NOT want any fixes applied automatically (no edits, no commits, no staging). Activates the `review-anvil` engine in read-only mode.
 ---
 
 # review-anvil-readonly
@@ -26,6 +26,7 @@ Pass-through args the user may specify (non-exhaustive — any engine param not 
 - `rounds: N` — the user's value wins over the default `rounds: 1`
 - `agents: 2 codex + 1 claude` — custom reviewer mix
 - `min_fix_severity: <sev>` — drives the would-apply/suggestions split in the read-only report
+- `reproduction: auto|on|off` — default-on confidence gate for uncertain material findings before they become actionable report items
 - `adversarial: auto|challenge|targeted|full|strict` — optional adversarial review that attacks false positives and disproportionate/bloated fix plans before the final report
 - `adversarial_rounds: 1|2`, `disagreement_policy: defer|comment` — tune the adversarial gate; it remains read-only and bounded
 - `reviewer_timeout: <seconds>`, `report_path: <file>` — as in the engine

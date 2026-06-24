@@ -394,6 +394,7 @@ metadata_prefixes = (
     "**Result:**",
     "**Scope:**",
     "**Verification:**",
+    "**Reproduction:**",
     "**Adversarial review:**",
     "**Target:**",
     "**Rounds:**",
@@ -403,12 +404,28 @@ metadata_prefixes = (
 )
 
 metadata = []
-for line in preamble:
+i = 0
+while i < len(preamble):
+    line = preamble[i]
     stripped = line.strip()
     if stripped.startswith("**Report path:**"):
+        i += 1
         continue
     if any(stripped.startswith(prefix) for prefix in metadata_prefixes):
         metadata.append(stripped)
+        i += 1
+        while i < len(preamble):
+            continuation = preamble[i].strip()
+            if not continuation:
+                break
+            if any(continuation.startswith(prefix) for prefix in metadata_prefixes):
+                break
+            # Metadata lines are often wrapped by markdown formatters. Preserve
+            # their continuation as part of the same compacted metadata line.
+            metadata[-1] = squeeze(f"{metadata[-1]} {continuation}")
+            i += 1
+        continue
+    i += 1
 
 if not any(line.startswith("# ") for line in metadata):
     metadata.insert(0, "# ⚒️ review-anvil report")
