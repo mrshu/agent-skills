@@ -62,20 +62,52 @@ Delegate code review, plan review, and deep exploration tasks to **Claude Code C
 
 ### review-anvil
 
-Iterative multi-agent review-and-fix loop. Wraps the *"let's do three rounds of fix/review"* pattern: dispatch parallel `codex-exec` and `claude-exec` reviewers, synthesize their findings, reproduce uncertain material findings, apply fixes with logically-separated commits, and repeat. Defaults to 3 requested rounds with adaptive continuation up to 6 total rounds, 3 reviewers (2 codex + 1 claude), and default-on batched reproduction for single-reviewer `medium`+ or otherwise risky findings. Configurable rounds, max rounds, agent count/mix, focus, target, reproduction, and reporting behavior.
+`review-anvil` turns a code review into a repeatable loop: `codex-exec`
+and `claude-exec` reviewers inspect the same snapshot, their findings are
+merged into one report, uncertain claims are checked against the code, and the
+loop either reports, commits fixes, or updates a PR.
 
-The plugin ships **four cross-agent skills** under `plugins/review-anvil/skills/`:
+It is built for the messy middle after a first implementation, when you want
+several independent review passes, fewer bogus findings, and fixes that are
+checked before they land.
 
-- **`review-anvil`** — the engine. The actual review loop with the full parameter surface (`rounds`, `max_rounds`, `agents`, `focus`, `target`, `min_fix_severity`, `allow_new_deps`, `commit_mode`, `reproduction`, `adversarial`, `approve`, `report_path`). The default mode is fix-and-commit (`commit_mode=per_fix`).
-- **`review-anvil-readonly`** — preset. Read-only review pass: activates the engine with `commit_mode=none` and a default of `rounds=1`. No edits, no commits.
-- **`review-anvil-pr`** — preset. **Read-only** review of a GitHub PR (github.com or GitHub Enterprise) with **hybrid posting**: findings with a `file`+`line` anchor become inline review comments threaded next to the code; findings without anchors (architectural / overview) roll into a top-level summary body. The whole thing submits as one PR review (one timeline event). Falls back to a top-level comment if no findings are anchored or if GitHub rejects the inline payload (e.g. reviewer-supplied line numbers outside the diff). Pairs the engine in read-only mode with `scripts/pr-helper.sh` for locator parsing, dependency preflight, posting, compaction, and dismissed-finding suppression. Auto-detects the PR from the current branch when no locator is passed. Requires `gh`, `uuidgen`, `jq`, and either `uv` or `python3` on PATH.
-- **`review-anvil-improve-pr`** — preset. **Productive** PR loop with a "narrate then update" UX: (1) post a top-level "starting" PR comment cc'ing the original author (notifying them what's about to happen), (2) review + apply fix commits across requested rounds plus any adaptive continuation, (3) `git push` back to the PR, (4) PATCH-edit the starting comment in-place with the synthesized report (success) or a failure summary (any failure). One comment in the PR timeline, two states, one notification. Reuses `pr-helper.sh` with `verify-checkout` / `post-start` / `post-update` subcommands. Targets the local branch directly (`<base>...HEAD`) to bypass the engine's "PR-target / per_fix incompatibility" rule. Auto-detects PR from current branch when no locator is passed. Requires `gh`, `uuidgen`, `jq`, and either `uv` or `python3` on PATH; you must be on the PR's branch with a clean worktree.
+| I want to... | Use | Edits code | Commits | Pushes | Posts to PR | Can approve |
+|---|---|---:|---:|---:|---:|---:|
+| Harden local changes with fix commits | `review-anvil` | Yes | Yes | No | No | No |
+| Review without touching files | `review-anvil-readonly` | No | No | No | No | No |
+| Review a PR and post findings | `review-anvil-pr` | No | No | No | Yes | Yes, unless disabled |
+| Improve a checked-out PR branch | `review-anvil-improve-pr` | Yes | Yes | Yes | Yes | No |
 
-Four skills (not four slash commands) because skills are the cross-agent abstraction — anything that supports `Skill <name>` (Claude Code, Codex CLI, Cursor, OpenCode, Continue, Cline, Gemini CLI, …) can activate any of these by description match. The `npx skills add mrshu/agent-skills --all` install carries all four SKILL.mds and the shared helper script under `review-anvil-pr/scripts/`. Multi-forge support (GitLab MR, Gitea PR, …) is a v2 concern.
+What makes it useful:
 
-In Claude Code, you can also invoke directly as `Skill review-anvil "<free-form args>"` — see `skills/review-anvil/SKILL.md` for the full parameter surface.
+- **Parallel review:** Codex and Claude reviewers inspect the same snapshot with
+  different lenses, then the workflow merges overlapping findings.
+- **Claim checking:** single-reviewer material findings, risky deletions, and
+  uncertain claims are checked before they become comments or fix commits.
+- **Verified fixes:** fixing runs use the project's test/build command when
+  available and should not leave the branch newly red.
+- **Adaptive rounds:** fixing runs can stop early when the review converges,
+  or continue up to 6 total rounds when useful fixes are still surfacing. Use
+  "exactly 3 rounds" or `max_rounds: 3` when you want a hard stop.
+- **PR-native output:** anchored findings become inline review comments; broader
+  findings stay in one compact summary.
+- **PR repair flow:** `review-anvil-improve-pr` can announce a run, commit and
+  push verified fixes to a checked-out PR branch, then update the same PR comment
+  with the result.
+- **Approval control:** `review-anvil-pr` can submit a real GitHub approval when
+  review-only checks pass. Use `approve: never` or "comment only" when
+  approval should stay human.
+- **Simplicity lens:** the default focus includes a minimization ladder (need it
+  at all? → stdlib → native feature → existing dependency → one line → the
+  minimum that works), adapted from [ponytail](https://github.com/DietrichGebert/ponytail).
 
-The `simplicity` review lens carries a **minimization ladder** (need it at all? → stdlib → native feature → existing dependency → one line → the minimum that works), so every default run flags over-engineering, not just correctness. The ladder is adapted from and credited to [ponytail](https://github.com/DietrichGebert/ponytail).
+The plugin ships four cross-agent skills under `plugins/review-anvil/skills/`.
+Anything that supports `Skill <name>` (Claude Code, Codex CLI, Cursor, OpenCode,
+Continue, Cline, Gemini CLI, …) can activate them by description match. In
+Claude Code, you can also invoke directly as `Skill review-anvil "<free-form
+args>"`; see `skills/review-anvil/SKILL.md` for the full behavior and advanced
+controls (`rounds`, `max_rounds`, `agents`, `focus`, `target`, `verify_cmd`,
+`reproduction`, `adversarial`, `approve`, `report_path`, and more).
 
 ### overleaf-comment
 
