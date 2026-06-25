@@ -177,9 +177,9 @@ Plausible-but-wrong findings are the dominant failure mode of LLM review, and bo
 - `low`/`nit` findings skip verification: they're below the auto-fix gate and surface as suggestions either way.
 
 Canonical examples for where reproduction helps and where it must stay out of
-the way live in `references/reproduction-examples.md`. After changing this
-policy or the reproduction prompt, run `scripts/test-reproduction-policy.sh`
-alongside the PR helper tests.
+the way live in `scripts/reproduction-examples.md` (the fixture set for the
+policy test). After changing this policy or the reproduction prompt, run
+`scripts/test-reproduction-policy.sh` alongside the PR helper tests.
 
 #### Approving out-of-scope follow-ups
 
@@ -267,7 +267,23 @@ disputes block `APPROVE` and force the review event to `COMMENT`; unresolved
 
 **Skip entirely when `commit_mode=none`** (the policy below is still evaluated in the abstract for the report).
 
-Otherwise **read `references/fix-application.md` before making any edit**: it defines the conventional-commit fix-group style, the auto-fix proportionality rules (severity gate >= `min_fix_severity`; no new dependencies without `allow_new_deps`; per-round size cap; noise is deferred with a reason, never silently dropped), and the build/test gate (`verify_cmd` resolution, baseline run, fix-forward-or-revert, revert-failure escalation). The invariant: **a round never ends with the build/test gate newly red**.
+Otherwise make the edits as the orchestrator. Commit one logical fix-group per commit, conventional-commit style: `fix(area):` correctness, `refactor(area):` maintainability/simplicity, `test(area):` tests, `chore(area):` production-readiness.
+
+**Auto-fix policy (proportionality rules):**
+
+1. **Severity gate.** Auto-fix only at severity ≥ `min_fix_severity`. Below-gate findings land under "Suggestions". Exception: an obvious one-line fix at any severity may be applied without bumping severity.
+2. **No new dependencies (default).** A fix introducing a new import, package, or subsystem is deferred with reason `introduces new dependency: <X>` even above the gate; `allow_new_deps: true` opts in. Don't grow the architecture without permission.
+3. **Round size cap.** A round's fixes may grow the target file by at most ~50% of its starting line count or 200 lines, whichever is larger; apply highest-severity first, defer the rest with `round size cap reached`.
+
+Noise/false positives are also **deferred** with a one-line reason — never silently dropped.
+
+**Build/test gate (`verify_cmd`).** Fix commits must not leave the branch red. In `per_fix`:
+
+- **Resolve:** explicit `verify_cmd` → use it; `verify_cmd: none` → record `Verification: skipped (user)`; unset → auto-detect (repo docs naming a test command; `package.json` `scripts.test`; `Makefile` `test`; pytest/cargo/go-test config). Nothing found → record `Verification: none detected` and proceed (downstream consumers surface the caveat).
+- **Baseline:** run once before round 1; if already failing, gate only on *new* failures and record the round state as `pre-existing failures (no new)`.
+- **Gate each round:** run after the round's fixes. On a new failure: one fix-forward attempt if the cause is obvious (`fix(<area>): repair <verify_cmd> failure from round <N> fixes`), else `git revert --no-edit` the round's fix commits and defer the findings with `fix failed verification`. If the revert itself fails to restore green, stop the loop and surface it (same handling as a failed `git commit`).
+
+The invariant: **a round never ends with the build/test gate newly red**.
 
 ### 5. Round summary
 
