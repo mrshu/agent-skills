@@ -56,7 +56,7 @@ End with a fenced `reproduction` block containing YAML:
 
 ```reproduction
 - target: RAVF001
-  verdict: confirmed | refuted | unclear | narrowed | downgraded
+  verdict: confirmed | refuted | unclear
   severity: critical | high | medium | low | nit
   evidence: <specific code/config/test/runtime evidence>
   reason: <why this classification is correct>
@@ -72,15 +72,14 @@ If there are no candidates, return:
 
 ## Orchestrator Rules
 
-- `confirmed`: keep the finding actionable if it meets the severity/fix gate.
+- `confirmed`: keep the finding actionable at the verifier's returned
+  `severity` (which may be lower than the reporter's — re-apply
+  `min_fix_severity`, inline severity, approval, and suggestion rules to it),
+  using `safer_wording` when it is narrower than the original.
 - `refuted`: drop the finding from final Findings. Mention it only when useful
   as a one-line Deferred note, never as author-actionable guidance.
 - `unclear`: move the finding to Deferred with reason
   `failed reproduction: <reason>`.
-- `narrowed`: keep the finding actionable with the verifier's narrower scope or
-  fix wording.
-- `downgraded`: change the severity, then re-apply `min_fix_severity`, inline
-  severity, approval, and suggestion rules.
 
 If the reproduction verifier fails, times out, or returns unparseable output,
 do not treat required candidates as confirmed. Keep consensus findings that did

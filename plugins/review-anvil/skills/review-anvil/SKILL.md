@@ -170,10 +170,9 @@ Plausible-but-wrong findings are the dominant failure mode of LLM review, and bo
   - every `medium`+ deletion/dead-code/unused/redundant-code/simplification finding, and any deletion/simplification that would remove runtime code, public docs/API, compatibility behavior, or another high-blast-radius surface, regardless of reviewer count,
   - every `critical`/`high` finding whose evidence is mostly inferred from a hunk rather than confirmed from code/runtime context,
   - every finding the orchestrator is materially uncertain about after reading the cited files.
-- When `reproduction=auto` or `on` and candidates exist, dispatch **one batched reproduction verifier** using `references/reproduction-prompt.md`. Do not spawn one verifier per finding unless the batch is too large to fit in one prompt. The verifier is not another broad review pass; it returns `confirmed`, `refuted`, `unclear`, `narrowed`, or `downgraded` verdicts for supplied `RAVF###` IDs only.
+- When `reproduction=auto` or `on` and candidates exist, dispatch **one batched reproduction verifier** using `references/reproduction-prompt.md`. Do not spawn one verifier per finding unless the batch is too large to fit in one prompt. The verifier is not another broad review pass; it returns `confirmed`, `refuted`, or `unclear` verdicts for supplied `RAVF###` IDs only, each with the severity and (optional) narrower wording it can defend.
 - Apply reproduction verdicts before auto-fix/reporting:
-  - `confirmed` and `narrowed` findings may remain actionable, with narrowed wording when supplied.
-  - `downgraded` findings re-enter the normal severity gates after changing severity.
+  - `confirmed` findings remain actionable at the verifier's returned severity (which may be lower than the reporter's — re-apply the severity gate), using its narrower wording when supplied.
   - `refuted` findings are dropped from final Findings (or, if useful for transparency, one-line Deferred notes).
   - `unclear` findings move to Deferred with reason `failed reproduction: <why>`.
 - Findings raised independently by **2+ reviewers** and not listed as reproduction candidates may skip batched reproduction; consensus is the signal (this is why dedup records who raised what). Still open enough code/context before destructive action to ensure the fix path is coherent.
@@ -285,7 +284,7 @@ Append to running output:
 - Findings: C critical, H high, M medium, L low, N nit
 - Fixes applied: K commits (<sha1>..<shaN>)   # or "0 (review-only)"
 - Verification: <cmd> — passed | failed → round reverted | pre-existing failures (no new) | none detected | skipped   # per_fix only
-- Reproduction: off | skipped (no candidates) | <C> candidates, <confirmed> confirmed, <refuted> refuted, <deferred> deferred, <downgraded> downgraded; <elapsed>
+- Reproduction: off | skipped (no candidates) | <C> candidates, <confirmed> confirmed, <refuted> refuted, <deferred> deferred; <elapsed>
 - Would-apply: W items                         # commit_mode=none only
 - Adversarial review: off | on, <A> agents, <upheld> upheld, <hardened> hardened, <deferred> deferred, <dropped> dropped
 - Suggestions: S items (sub-threshold severity; not applied)
@@ -408,7 +407,7 @@ The final report is a PR comment body. It must include every finding, but it sho
 **Result:** <one sentence: blockers/non-blockers/fixes/verification outcome>
 **Scope:** <For PR targets: one sentence summarizing what this PR is trying to change.>
 **Verification:** <verify_cmd used, or "none detected" / "skipped">   # per_fix only
-**Reproduction:** off | skipped (no candidates) | <C> candidates; <confirmed> confirmed, <refuted> refuted, <deferred> deferred, <downgraded> downgraded
+**Reproduction:** off | skipped (no candidates) | <C> candidates; <confirmed> confirmed, <refuted> refuted, <deferred> deferred
 **Adversarial review:** off | on, <A> agents; <upheld> upheld, <hardened> hardened/simplified, <deferred> deferred, <dropped> dropped
 
 ## Findings
@@ -450,7 +449,7 @@ The final report is a PR comment body. It must include every finding, but it sho
 - Mix: <e.g. "2 codex-exec + 1 claude-exec">
 - Focus: <focus list actually used>
 - Counts: <C critical, H high, M medium, L low, N nit; deferred D; suggestions S>
-- Reproduction: off | skipped | candidates=<C>; effects=<confirmed>/<refuted>/<deferred>/<downgraded>; elapsed=<duration>
+- Reproduction: off | skipped | candidates=<C>; effects=<confirmed>/<refuted>/<deferred>; elapsed=<duration>
 - Adversarial: off | on; agents=<A>; effects=<dropped>/<deferred>/<hardened>; approval changed yes/no
 
 ---

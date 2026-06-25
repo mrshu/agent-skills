@@ -130,20 +130,9 @@ effect_with_reproduction() {
 
     case "$verdict" in
         confirmed)
-            if at_least "$final_severity" medium; then
-                printf 'actionable'
-            else
-                printf 'suggestion'
-            fi
-            ;;
-        narrowed)
-            if at_least "$final_severity" medium; then
-                printf 'actionable:narrowed'
-            else
-                printf 'suggestion'
-            fi
-            ;;
-        downgraded)
+            # narrowing and downgrade fold into confirmed: the verifier
+            # returns the narrower wording / lower severity in its own
+            # fields, and the effect keys off final_severity.
             if at_least "$final_severity" medium; then
                 printf 'actionable'
             else
@@ -199,12 +188,12 @@ main() {
             "$final_severity" "$want_candidate" "$want_auto" "$want_off"
     done <<'CASES'
 single-reviewer-false-positive|medium|1|none|refuted|medium|yes|dropped|deferred:reproduction-disabled
-live-doc-drift|medium|1|none|narrowed|medium|yes|actionable:narrowed|deferred:reproduction-disabled
+live-doc-drift|medium|1|none|confirmed|medium|yes|actionable|deferred:reproduction-disabled
 historical-doc-false-positive|medium|1|historical|none|medium|no|dropped:out-of-scope|dropped:out-of-scope
 dependency-doc-drift|medium|1|none|confirmed|medium|yes|actionable|deferred:reproduction-disabled
 delete-needed-compat-shim|medium|2|deletion|refuted|medium|yes|dropped|deferred:reproduction-disabled
 delete-confirmed-dead-code|medium|2|deletion|confirmed|medium|yes|actionable|deferred:reproduction-disabled
-downgrade-to-low|medium|1|none|downgraded|low|yes|suggestion|deferred:reproduction-disabled
+downgrade-to-low|medium|1|none|confirmed|low|yes|suggestion|deferred:reproduction-disabled
 unclear-runtime-contract|high|1|inferred,uncertain|unclear|high|yes|deferred:failed-reproduction|deferred:reproduction-disabled
 consensus-medium-non-risk|medium|2|none|none|medium|no|actionable|actionable
 low-nit-style|low|1|none|none|low|no|suggestion|suggestion
