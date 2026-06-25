@@ -34,7 +34,7 @@ Parse the user's free-form args string into:
 | `reproduction` | `auto` | `auto`, `on`, or `off` — default-on batched reproduction of uncertain `medium`+ findings before auto-fix/reporting; "skip reproduction" disables it and marks single-reviewer material findings as unconfirmed |
 | `adversarial` | `off` | `off` or `on` — read-only post-synthesis gate that attacks candidate findings and would-apply fix plans (false-positive/scope audit + fix-plan proportionality, plus a deletion skeptic when a plan removes code) before they become final guidance. One pass; `per_fix` ignores it (warns) |
 | `verify_cmd` | auto-detect | "verify with `npm test`", `verify_cmd: none` to skip — build/test command run after each round's fixes (see "Build/test gate"; per_fix only) |
-| `reviewer_timeout` | `600` | "timeout 10 minutes" — hard per-reviewer wall-clock cap in seconds for Bash-dispatched reviewers (see `run-reviewer.sh`). Default is ~3× the slowest legitimate reviewer observed in real runs (98–213s); doubled automatically for >5000-line diffs |
+| `reviewer_timeout` | `600` | "timeout 10 minutes" — hard per-reviewer wall-clock cap in seconds for Bash-dispatched reviewers (see `run-reviewer.sh`) |
 | `report_path` | unset | File path; when set, the engine writes the final report there (creating parent dirs) and prints exactly that path as its last output line so downstream consumers can pick it up |
 
 ### Parsing
@@ -82,18 +82,10 @@ Adaptive continuation details belong in Run Details unless they change the revie
 
 ## Default Mix Policy
 
-When the user gives a count but no mix:
-
-| `agents` | Mix |
-|---|---|
-| 1 | 1 codex-exec |
-| 2 | 1 codex-exec + 1 claude-exec |
-| 3 | 2 codex-exec + 1 claude-exec |
-| 4 | 2 codex-exec + 2 claude-exec |
-| 5 | 3 codex-exec + 2 claude-exec |
-| N | ~60/40 codex/claude split, codex gets the odd one |
-
-Rationale: codex-exec surfaces more issues per call in our usage, so it gets the larger share (and the `agents=1` slot).
+When the user gives a count but no mix: split ~60% `codex-exec` / 40%
+`claude-exec`, with `codex-exec` taking the odd agent and the solo (`agents=1`)
+slot. Honor an explicit mix exactly. Rationale: codex-exec surfaces more issues
+per call in our usage, so it gets the larger share.
 
 ## Loop Mechanics
 
@@ -172,7 +164,7 @@ Plausible-but-wrong findings are the dominant failure mode of LLM review, and bo
 
 - **Dismissed check first (orchestrator judgment).** When a DISMISSED FINDINGS list exists, compare every merged finding against it *semantically* — same root cause counts even when the wording differs completely ("missing CSRF check" matches "no token validation on state-changing route"). Matches move to Deferred with reason `previously dismissed (<source>)` and are never auto-fixed or posted. You are the primary matcher here; the post-time script gate in `pr-helper.sh` only catches near-verbatim repeats (path match + text similarity ≥ 0.9) as a deterministic backstop.
 - **Scope/artifact filter next (orchestrator judgment).** Drop or move to out-of-scope follow-ups before reproduction when the claim is about archived design notes, changelogs, old migration examples, generated fixtures, vendored files, or historical docs that are not the review's live product surface. Do not spend verifier budget proving historical provenance is stale. Conversely, live docs that users rely on — README usage, CLI help, API docs, config reference, plugin metadata, or marketplace copy — are product surface and may become reproduction candidates when they drift from code/runtime behavior.
-- Assign stable report-local IDs before reproduction/adversarial dispatch: findings are `RAVF001`, `RAVF002`, ... and would-apply plans are `RAVW001`, `RAVW002`, ... . The canonical grammar is `RAV([FW])([0-9]{3,})`; the PR helper may accept legacy dashed IDs like `F-001` / `W-001` at parsing boundaries, but new reports should emit only the canonical no-punctuation form.
+- Assign stable report-local IDs before reproduction/adversarial dispatch: findings are `RAVF001`, `RAVF002`, ... and would-apply plans are `RAVW001`, `RAVW002`, ... . The only grammar is `RAV([FW])([0-9]{3,})`.
 - Build `REPRODUCTION CANDIDATES` after dismissed-check filtering and ID assignment:
   - every `medium`+ finding raised by exactly one reviewer,
   - every `medium`+ deletion/dead-code/unused/redundant-code/simplification finding, and any deletion/simplification that would remove runtime code, public docs/API, compatibility behavior, or another high-blast-radius surface, regardless of reviewer count,
@@ -473,7 +465,7 @@ _Reviewed with [review-anvil](https://github.com/mrshu/agent-skills)._
 |---|---|
 | Missing reviewer backend | Validate only the backends the resolved mix actually names, before round 1. Abort with: "review-anvil requires the `<missing-skill>` skill from the mrshu-skills marketplace. Install via `/plugin install <missing-skill>@mrshu-skills` (Claude Code) or `npx skills add mrshu/agent-skills --skill <missing-skill>` (cross-agent)." |
 | No diff in auto-detected target | Abort: "No target detected — nothing to review." Don't invent work. |
-| Raw diff > ~5000 lines | Warn in the round status and continue; tell reviewers they may focus on the most impactful slice; double `reviewer_timeout` (unless the user set it explicitly). |
+| Raw diff > ~5000 lines | Warn in the round status and continue; tell reviewers they may focus on the most impactful slice. Raise `reviewer_timeout` if reviewers risk hitting the cap. |
 | `agents > 8` | Reject before round 1 — more dedup work than signal. |
 | `rounds = 0` | Reject — almost certainly a typo. |
 | `max_rounds < rounds` | Reject before round 1 — the adaptive cap cannot be below the requested round count. |

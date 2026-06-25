@@ -355,7 +355,7 @@ test_post_dismisses_id_prefixed_report_findings() {
     assert_file_missing "$tmp/report.md.approval.json"
 }
 
-test_compact_handles_tables_and_legacy_id_prefixes() {
+test_compact_handles_tables() {
     local tmp report
     tmp="$(mktemp -d)"
     trap "rm -rf '$tmp'" RETURN
@@ -363,24 +363,24 @@ test_compact_handles_tables_and_legacy_id_prefixes() {
     report="$tmp/report.md"
     {
         printf '# ⚒️ review-anvil report\n\n'
-        printf '**Result:** legacy ID compatibility fixture.\n\n'
+        printf '**Result:** table compaction fixture.\n\n'
         printf '## Findings\n'
         printf '| ID | Sev | Area | Location | Finding |\n'
         printf '|---|---|---|---|---|\n'
         printf '| RAVF001 | H | db | `src/db.ts:8` | table rows compact as individual findings. |\n'
-        printf -- '- **F-001 [medium] auth** `src/auth.ts:12` — dashed legacy IDs still compact.\n'
+        printf -- '- **RAVF002 [medium] auth** `src/auth.ts:12` — bullet findings compact alongside table rows.\n'
         printf '\n## Fixes / Would Apply\n'
         printf -- '- **RAVW001 [medium] auth** — would commit as `fix(auth): validate state`; covers RAVF001\n'
         printf '\n## Deferred / Out-of-Scope\n'
-        printf -- '- **W-001 [medium] config** — legacy would-apply IDs still compact.\n'
+        printf -- '- **RAVW002 [medium] config** — would-apply items compact.\n'
     } >"$report"
 
-    REVIEW_ANVIL_GITHUB_MAX_CHARS=1 "$HELPER" compact-report "$report" >/tmp/review-anvil-legacy-compact.out
+    REVIEW_ANVIL_GITHUB_MAX_CHARS=1 "$HELPER" compact-report "$report" >/tmp/review-anvil-tables-compact.out
 
     grep -Fq 'RAVF001 [high] db' "$report"
-    grep -Fq 'F-001 [medium] auth' "$report"
+    grep -Fq 'RAVF002 [medium] auth' "$report"
     grep -Fq 'RAVW001 [medium] auth' "$report"
-    grep -Fq 'W-001 [medium] config' "$report"
+    grep -Fq 'RAVW002 [medium] config' "$report"
     ! grep -Fq '| ID | Sev |' "$report"
     grep -q 'Compact GitHub summary' "$report"
 }
@@ -528,7 +528,7 @@ main() {
     test_post_update_success
     test_post_adversarial_off_downgrades_approval
     test_post_dismisses_id_prefixed_report_findings
-    test_compact_handles_tables_and_legacy_id_prefixes
+    test_compact_handles_tables
     test_compact_rejects_invalid_and_ignores_fenced_ids
     test_compact_preserves_wrapped_reproduction_metadata
     test_post_dismisses_table_report_findings
