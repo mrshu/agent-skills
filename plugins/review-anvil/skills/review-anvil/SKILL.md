@@ -468,8 +468,6 @@ The final report is a PR comment body. It must include every finding, but it sho
 _Reviewed with [review-anvil](https://github.com/mrshu/agent-skills)._
 ```
 
-`Findings addressed` = post-dedup count of unique findings auto-applied across all rounds.
-
 ## Edge Cases
 
 | Case | Behavior |
@@ -484,6 +482,6 @@ _Reviewed with [review-anvil](https://github.com/mrshu/agent-skills)._
 | `adversarial` with `per_fix` | Warn and ignore — productive mode verifies real fixes with the build/test gate. |
 | Reproduction verifier failure | Keep consensus findings that did not require reproduction, but move required single-reviewer `medium`+ and deletion/high-risk candidates to Deferred with `failed reproduction: verifier unavailable`; never silently promote them. |
 | Adversary failure | Continue with the normal synthesized report and note the failure in Run Details; if it leaves a `critical`/`high` dispute unresolved, force `COMMENT`. |
-| Unparseable findings block | In requested rounds, use the prose as free-form findings; no retry; note `<agent>: unstructured findings (parse failed)`. In adaptive rounds, abort before fixes from that round are applied. |
+| Unparseable findings block | In requested rounds, use the prose as free-form findings; no retry; note `<agent>: unstructured findings (parse failed)`. In adaptive rounds, the §6 abort gate applies (parse failure stops the run before fixes). |
 | Reviewers contradict each other | Surface both under the same area with reviewers tagged; orchestrator judgment decides the fix; mention the disagreement in the round summary. |
 | Re-runs | Not idempotent: a new run reviews the latest state, including the prior run's commits. Surface still-present deferred items under "Deferred from previous runs (still present)". |
