@@ -27,8 +27,7 @@ Pass-through args the user may specify (non-exhaustive — any engine param not 
 - `agents: 2 codex + 1 claude` — custom reviewer mix
 - `min_fix_severity: <sev>` — drives the would-apply/suggestions split in the read-only report
 - `reproduction: auto|on|off` — default-on confidence gate for uncertain material findings before they become actionable report items
-- `adversarial: auto|challenge|targeted|full|strict` — optional adversarial review that attacks false positives and disproportionate/bloated fix plans before the final report
-- `adversarial_rounds: 1|2`, `disagreement_policy: defer|comment` — tune the adversarial gate; it remains read-only and bounded
+- `adversarial: off|on` — optional one-pass adversarial review that attacks false positives and disproportionate/bloated fix plans before the final report
 - `reviewer_timeout: <seconds>`, `report_path: <file>` — as in the engine
 
 After the engine completes, surface the synthesized report inline. **Do not** follow with edits, commits, or any side effects — that's exactly what `commit_mode=none` rules out.
@@ -41,7 +40,7 @@ tech-debt-heavy fix plans, hardening fix prose, or stripping unsafe suggestion
 blocks.
 
 Default local policy: leave adversarial review off for ordinary fast/local
-reviews. Append `adversarial: auto` when the user asks for a careful,
+reviews. Append `adversarial: on` when the user asks for a careful,
 skeptical, high-confidence, low-noise, thorough, or production-ready read-only
 review. Do not append it when the user asks for a quick/rough/sanity pass unless
 they explicitly request adversarial review.

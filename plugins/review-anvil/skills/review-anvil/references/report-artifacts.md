@@ -65,7 +65,7 @@ timeline.
 Use one compact line near the top of the report:
 
 ```md
-**Adversarial review:** targeted, 2 agents; 5 upheld, 1 simplified, 1 deferred as disproportionate, 1 dropped as false positive.
+**Adversarial review:** on, 2 agents; 5 upheld, 1 simplified, 1 deferred as disproportionate, 1 dropped as false positive.
 ```
 
 Then fold effects into the normal sections:
