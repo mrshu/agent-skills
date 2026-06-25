@@ -25,7 +25,7 @@ Parse the user's free-form args string into:
 | Param | Default | Plain-English forms |
 |---|---|---|
 | `rounds` | `3` | "5 rounds", "three rounds", "do 4 passes" |
-| `max_rounds` | `6` for `per_fix` (or `rounds` when `rounds > 6`); `rounds` for `commit_mode=none` | "max 4 rounds", "allow one extra round", "3 rounds, continue if needed"; "exactly 3 rounds", "only 3 rounds", or "no extra rounds" keeps `max_rounds=rounds` |
+| `max_rounds` | `per_fix`: `max(6, rounds)`; `commit_mode=none`: `rounds` | "max 4 rounds"; "exactly/only N rounds" or "no extra rounds" pins it to `rounds` (see Parsing for the full mapping) |
 | `agents` | `3` | "3 agents", "2 reviewers", or a mix like `"2 codex + 1 claude"` |
 | `focus` | the four pillars (correctness, maintainability, simplicity, production blast-radius) | "focus on async correctness"; an `only:` prefix replaces the defaults instead of appending |
 | `target` | auto-detect | "PR #42", "branch", "uncommitted", "src/auth/", "last 3 commits" |
@@ -45,8 +45,7 @@ Parse the user's free-form args string into:
 - **Pin-rejection (presets; defense in depth against the prose parser being talked into overrides):** before assembling, segment-split `$ARGUMENTS` as above, lowercase each segment's key (the text before its first `:`), and abort with `error: <param> is pinned by <preset-name> and cannot be overridden in args` if any key equals a pinned param. Match segment *keys*, never raw substrings — `focus: "target: PR safety"` has key `focus` and must pass. A host that cannot segment-split must abort (`error: pin-rejection unavailable in this environment; refusing to invoke engine without pin enforcement`), not degrade to substring scanning.
 - `agents`: a count (use the mix table below) or an explicit mix naming `codex`/`codex-exec` / `claude`/`claude-exec` — honor a mix exactly.
 - `target` auto-detect order: currently checked-out PR (e.g. `gh pr view --json number,headRefName`, a GitHub MCP query, or REST) → branch-vs-main diff (`git diff main...HEAD`) → uncommitted changes (`git diff` + `git diff --cached`). Empty args = all defaults.
-- `rounds` is the requested count. Resolve `max_rounds` after `rounds` and the final `commit_mode` (including the PR-locator rule below): default to `max(6, rounds)` for `per_fix`, and to `rounds` for `commit_mode=none`; reject `max_rounds < rounds`. Phrases like "allow one extra round" set `max_rounds=rounds+1`, and explicit caps like `max_rounds: 4` or "up to 4 rounds" set the cap directly. Phrases like "continue if needed" keep the default adaptive cap unless paired with an explicit cap. Phrases that constrain the round count itself — "exactly 3 rounds", "only 3 rounds", "3 rounds only", or "no extra rounds" — force `max_rounds=rounds`. Do **not** treat `only:` focus syntax or severity gates like "fix only critical" as exact-round requests.
-- Adaptive continuation is on by default for `per_fix`. A plain "3 rounds" means `rounds=3, max_rounds=6`, so the organizing agent may continue after round 3 if §6 says another pass is justified. Use "exactly 3 rounds", "only 3 rounds", "no extra rounds", or `max_rounds: 3` when the run must stop at the requested count.
+- `rounds` is the requested count. Resolve `max_rounds` after `rounds` and the final `commit_mode` (including the PR-locator rule below): default to `max(6, rounds)` for `per_fix` and to `rounds` for `commit_mode=none`; reject `max_rounds < rounds`. Explicit caps (`max_rounds: 4`, "up to 4 rounds", "allow one extra round" → `rounds+1`) set the cap directly. "exactly 3 rounds", "only 3 rounds", "3 rounds only", or "no extra rounds" force `max_rounds=rounds`. Do **not** treat `only:` focus syntax or severity gates like "fix only critical" as exact-round requests. Adaptive continuation is then on by default for `per_fix` (a plain "3 rounds" → `rounds=3, max_rounds=6`); §6 decides whether to use it.
 - If `commit_mode=none` and the user explicitly set `max_rounds > rounds`, warn and collapse `max_rounds` to `rounds`. Extra normal rounds review the same baseline, so use `rounds` for reviewer redundancy and `adversarial` for skeptical challenge.
 - `reproduction=auto` and `reproduction=on` both run the selective batched reproduction gate in §3. `auto` may skip dispatch only when there are no candidates. `off` is allowed for speed, but the round summary and final report must say it was disabled; unconfirmed single-reviewer `medium`+ findings stay in Deferred unless the orchestrator independently reproduced them from code/tests/runtime evidence.
 - `adversarial` applies only when `commit_mode=none`. If set with `per_fix`, warn and ignore it — productive mode already applies real fixes and gates them with the build/test command. `on` runs one bounded post-synthesis adversarial pass (§3); `off` skips it.
@@ -339,8 +338,8 @@ complete, the orchestrator may start one more round only while
 
 Record the continuation decision in the final requested round's summary and in
 the adaptive round summary when one runs. If an adaptive round still has
-`material_findings` and hits `max_rounds`, finish and use the tuning suggestion
-rule; do not keep extending without a larger explicit cap.
+`material_findings` and hits `max_rounds`, finish; do not keep extending without
+a larger explicit cap.
 
 After the final round, emit the **Final Report** (Output Format). If `report_path` is set:
 
@@ -461,29 +460,12 @@ The final report is a PR comment body. It must include every finding, but it sho
 - Counts: <C critical, H high, M medium, L low, N nit; deferred D; suggestions S>
 - Reproduction: off | skipped | candidates=<C>; effects=<confirmed>/<refuted>/<deferred>/<downgraded>; elapsed=<duration>
 - Adversarial: off | on; agents=<A>; effects=<dropped>/<deferred>/<hardened>; approval changed yes/no
-- Tuning suggestion: <one line; see rule below>   # omit in review-only
 
 ---
 _Reviewed with [review-anvil](https://github.com/mrshu/agent-skills)._
 ```
 
 `Findings addressed` = post-dedup count of unique findings auto-applied across all rounds.
-
-### Tuning suggestion rule
-
-Omit in review-only. Early exit already stops the loop when a round comes back
-clean, and an adaptive round that converges needs no tuning suggestion. The
-remaining cases:
-
-- If every completed round was `material_findings` and `max_rounds == rounds`,
-  suggest re-enabling adaptive continuation (`max_rounds = rounds + 1`) or
-  setting `rounds = N + 1` for the next run.
-- If the adaptive cap was reached and the final round was still
-  `material_findings`, suggest increasing `max_rounds` by 1 only when the final
-  round applied verified fixes; otherwise suggest resolving Deferred blockers or
-  verification gaps before adding more rounds.
-- If adaptive continuation was blocked by skipped/missing verification, suggest
-  setting a trustworthy `verify_cmd` before increasing `rounds`.
 
 ## Edge Cases
 
