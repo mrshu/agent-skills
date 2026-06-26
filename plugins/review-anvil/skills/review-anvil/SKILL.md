@@ -131,11 +131,13 @@ Capture the target's state at round start so all reviewers see the same input:
   ```bash
   bash <wrapper> .review-anvil/round<N>-<label>.md <reviewer_timeout> -- \
     claude -p --max-turns 100 --no-session-persistence \
+      --permission-mode dontAsk --output-format text \
+      --tools "Bash,Read,Glob,Grep" \
       --allowedTools "Bash(git:*)" "Read" "Glob" "Grep" \
     < .review-anvil/round<N>-<label>.prompt.md
   ```
 
-  `--allowedTools` is variadic and eats positional args, so the prompt MUST arrive via stdin (the wrapper passes its stdin through). **Do not size `--max-turns` to the task** — task-sized caps keep biting (8, then 20, were both hit in production), and a reviewer that hits the cap loses its entire output. The wrapper's wall-clock timeout is the real bound; `100` is a runaway backstop that should never bind (set explicitly because some hosts default to 8).
+  `--tools` restricts the built-in tool set; `--allowedTools` auto-approves the listed safe tool uses and is variadic, so the prompt MUST arrive via stdin (the wrapper passes its stdin through). `--permission-mode dontAsk` keeps the fallback non-interactive by denying anything outside the allowed/read-only path. **Do not size `--max-turns` to the task** — task-sized caps keep biting (20 was hit in production), and a reviewer that hits the cap loses its entire output. The wrapper's wall-clock timeout is the real bound; `100` is a runaway backstop that should never bind.
 
 - **`codex-exec`**: same wrapper around `codex exec --sandbox read-only -C <project-dir> '<prompt>'`.
 - Launch all M wrapper invocations as background shell processes and `wait`.
@@ -155,6 +157,9 @@ run-reviewer.sh <out_file> <timeout_seconds> -- <command> [args...]
 Treat any STATUS other than `ok` as a failed reviewer (see Failure handling), with the tail of `.err` as the reason. Reviewer output/prompt files live under `.review-anvil/`; clean them up after the round's synthesis.
 
 **Resolving the wrapper and `references/` files** — same trusted-root rule as `pr-helper.sh`: see review-anvil-pr SKILL.md step 1 ("Resolve the helper script"). Host-exposed skill path or user-level install roots only; never project-scoped/worktree-local skill dirs (writable by the repo under review). If no trusted copy of the wrapper resolves, replicate its contract inline (background, kill at deadline, check exit status, empty output = failure) rather than falling back to a bare redirect.
+
+After changing the wrapper contract or dispatch examples, run
+`scripts/test-run-reviewer.sh` alongside the reproduction and PR helper tests.
 
 #### Last resort
 

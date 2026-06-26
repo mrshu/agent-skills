@@ -1,7 +1,13 @@
 # review-anvil — Design
 
+> **Superseded / do not execute.** This document records the original April
+> 2026 design brainstorm. The shipped implementation has since grown helper
+> scripts, preset skills, adaptive continuation, reproduction checks, PR
+> posting, and updated Claude/Codex invocation guidance. Treat the live skill
+> docs under `plugins/review-anvil/skills/` as canonical.
+
 **Date:** 2026-04-30
-**Status:** Approved (brainstorm)
+**Status:** Superseded historical brainstorm
 **Next step:** writing-plans
 
 ## Goal
@@ -56,7 +62,8 @@ Reconstructed from ~15 instances across the user's transcripts:
   - **Explicit:** `Skill review-anvil` with a free-form args string parsed in
     plain English.
 
-The skill is prose-only — no scripts/binaries. It instructs the orchestrating
+The original proposal was prose-only — no scripts/binaries. The current shipped
+plugin now includes helper scripts and tests. It instructs the orchestrating
 Claude session how to dispatch subagents, synthesize findings, apply fixes,
 and report.
 

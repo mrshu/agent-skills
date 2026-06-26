@@ -59,6 +59,22 @@ codex exec 'Explore the codebase for inconsistencies, dead code, and simplificat
 codex exec 'Review src/handlers/webhook.ts for correctness, error handling, and clarity. Be pointed in your response — list problems with file:line references.'
 ```
 
+### Cross-Agent Dispatch
+
+When another agent needs to run Codex as one reviewer in a larger orchestrated
+review, use a read-only sandbox and, when available, the review-anvil wrapper
+so the caller gets timeout, empty-output, and stderr classification:
+
+```bash
+bash <review-anvil-wrapper> out.md 600 -- \
+  codex exec --sandbox read-only -C <project-dir> '<prompt>'
+```
+
+`<review-anvil-wrapper>` is
+`plugins/review-anvil/skills/review-anvil/scripts/run-reviewer.sh` from a
+trusted skill install. The wrapper writes reviewer stdout to `out.md`, stderr
+to `out.md.err`, and prints `STATUS=ok|timeout|empty|failed` for the caller.
+
 ### Iterative Review
 
 Run review in a loop until all issues are resolved:

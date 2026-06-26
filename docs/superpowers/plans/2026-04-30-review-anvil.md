@@ -1,10 +1,22 @@
 # review-anvil Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **Superseded / do not execute.** This plan describes the first implementation
+> pass from April 2026. It is not the current operating spec. The shipped
+> plugin now has multiple preset skills, helper scripts, tests, adaptive
+> continuation, reproduction checks, PR posting, and updated Claude/Codex
+> invocation guidance. Use `plugins/review-anvil/skills/` as the canonical
+> source.
+
+> Historical execution directive, retained for provenance only: this plan was
+> originally intended for agentic workers using
+> `superpowers:subagent-driven-development` or `superpowers:executing-plans`.
+> Do not follow it for current work.
 
 **Goal:** Ship a new `review-anvil` plugin to the `mrshu-skills` marketplace that wraps the recurring "let's do three rounds of fix/review" pattern into a parameterized, prose-driven skill.
 
-**Architecture:** Pure-prose skill (no scripts, no binaries). A single `SKILL.md` instructs the orchestrating Claude session how to dispatch parallel reviewer subagents (`codex-exec` + `claude-exec`), synthesize their findings, apply fixes with logically-separated commits, and report. Each round runs in parallel; rounds run sequentially.
+**Architecture:** This was originally planned as a pure-prose skill (no
+scripts, no binaries). The shipped plugin now includes helper scripts and
+tests; this historical plan is retained for provenance only.
 
 **Tech Stack:** Markdown + YAML frontmatter (skill), JSON (plugin/marketplace manifests). Skill consumes the existing `codex-exec` and `claude-exec` plugins via the `Skill` / `Agent` tools at runtime.
 

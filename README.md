@@ -58,7 +58,10 @@ Delegate code review, plan review, and deep exploration tasks to **Codex CLI** f
 Delegate code review, plan review, and deep exploration tasks to **Claude Code CLI** from Codex or other agents. The mirror of codex-exec — lets non-Claude agents get an independent second opinion. Key commands:
 
 - `claude -p '<prompt>'` — non-interactive review or exploration
-- `claude -p --permission-mode plan '<prompt>'` — read-only safe review mode
+- `claude -p --permission-mode dontAsk --tools "Bash,Read,Glob,Grep" ...`
+  — scripted review with an explicit built-in tool set
+- See `plugins/claude-exec/skills/claude-exec/SKILL.md` for the full
+  fallback recipe, including `--allowedTools`, stdin prompts, and watchdog use.
 
 ### review-anvil
 
