@@ -253,7 +253,7 @@ def shorten(value, limit):
         cut = max(0, limit - 3)
     return value[:cut].rstrip() + "..."
 
-ID_PATTERN = r"(?:RAV[FW]\d{3,}|[FW]-\d{3,})"
+ID_PATTERN = r"RAV[FW]\d{3,}"
 SEVERITY_NAMES = {"critical", "high", "medium", "low", "nit"}
 SEVERITY_INITIALS = {"c": "critical", "h": "high", "m": "medium", "l": "low", "n": "nit"}
 
@@ -533,7 +533,7 @@ def infer_severity(item):
     if explicit in rank:
         return explicit
     body = item.get("body") or ""
-    id_pattern = r"(?:RAV[FW]\d{3,}|[FW]-\d{3,})"
+    id_pattern = r"RAV[FW]\d{3,}"
     m = re.search(rf"\*\*(?:{id_pattern}\s+)?\[(critical|high|medium|low|nit)\]", body, re.I)
     if m:
         return m.group(1).lower()
@@ -729,7 +729,7 @@ def norm(text: str) -> str:
     words = [w for w in text.split() if len(w) > 2 and w not in {"the", "and", "for", "with", "this", "that", "from", "into", "when", "because"}]
     return " ".join(words)
 
-ID_PATTERN = r"(?:RAV[FW]\d{3,}|[FW]-\d{3,})"
+ID_PATTERN = r"RAV[FW]\d{3,}"
 SEVERITY_NAMES = {"critical", "high", "medium", "low", "nit"}
 SEVERITY_INITIALS = {"c": "critical", "h": "high", "m": "medium", "l": "low", "n": "nit"}
 
@@ -792,7 +792,6 @@ def signature(body: str) -> str:
     body = body or ""
     # review-anvil body: **[medium] area** -- What ...
     # Stable IDs are optional: **RAVF001 [medium] area** -- What ...
-    # Legacy dashed F/W IDs are accepted too.
     # Report rows may include a code location between the bold label and dash.
     m = FINDING_RE.search(body)
     if m:

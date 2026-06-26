@@ -62,17 +62,11 @@ Rules:
 : Assume the suggested fix is applied exactly as described. Find regressions,
   lost edge cases, unnecessary abstractions, new dependencies, compatibility
   breaks, unsafe deletions, or tests that would become brittle or still be
-  missing.
-
-`second-order-bug-hunter`
-: Look only for problems introduced by following the proposed guidance or by
-  combining multiple would-apply plans. Do not re-raise ordinary baseline
-  review findings.
-
-`report-auditor`
-: Check that the final guidance follows the report-artifact voice: observable
-  problem, mechanism, consequence, implementable fix path, valid inline
-  suggestion use, and correct approval event.
+  missing. When a would-apply plan removes code, act as a deletion skeptic:
+  demand a concrete reason the code must stay (caller, compatibility path,
+  ordering/aliasing, trust boundary, dedup, edge semantics) before the cut
+  ships. A second-order risk discovered here targets the relevant `RAVW###`
+  plan, not a fresh finding.
 
 ## Output Contract
 

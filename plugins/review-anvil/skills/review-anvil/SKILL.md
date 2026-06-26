@@ -25,20 +25,16 @@ Parse the user's free-form args string into:
 | Param | Default | Plain-English forms |
 |---|---|---|
 | `rounds` | `3` | "5 rounds", "three rounds", "do 4 passes" |
-| `max_rounds` | `6` for `per_fix` (or `rounds` when `rounds > 6`); `rounds` for `commit_mode=none` | "max 4 rounds", "allow one extra round", "3 rounds, continue if needed"; "exactly 3 rounds", "only 3 rounds", or "no extra rounds" keeps `max_rounds=rounds` |
+| `max_rounds` | `per_fix`: `max(6, rounds)`; `commit_mode=none`: `rounds` | "max 4 rounds"; "exactly/only N rounds" or "no extra rounds" pins it to `rounds` (see Parsing for the full mapping) |
 | `agents` | `3` | "3 agents", "2 reviewers", or a mix like `"2 codex + 1 claude"` |
 | `focus` | the four pillars (correctness, maintainability, simplicity, production blast-radius) | "focus on async correctness"; an `only:` prefix replaces the defaults instead of appending |
 | `target` | auto-detect | "PR #42", "branch", "uncommitted", "src/auth/", "last 3 commits" |
-| `allow_new_deps` | `false` | "allow new deps" — auto-apply fixes that introduce new imports/subsystems instead of deferring them |
 | `min_fix_severity` | `medium` | "auto-fix high and above", "fix only critical" — minimum severity for auto-fix; lower findings are listed, not applied |
 | `commit_mode` | `per_fix` | `per_fix` (one commit per fix-group) or `none` ("review only", "don't commit", "no fixes") |
-| `approve` | `allowed` | "never approve", "comment only", `approve: never` — always write `{"event": "COMMENT"}` to `.approval.json`. Presets additionally export `REVIEW_ANVIL_NO_APPROVE=1` so the helper enforces it mechanically. Only meaningful for review-only PR runs |
 | `reproduction` | `auto` | `auto`, `on`, or `off` — default-on batched reproduction of uncertain `medium`+ findings before auto-fix/reporting; "skip reproduction" disables it and marks single-reviewer material findings as unconfirmed |
-| `adversarial` | `off` | `off`, `auto`, `challenge`, `targeted`, `full`, or `strict` — read-only post-synthesis review that attacks candidate findings and would-apply plans before they become final guidance |
-| `adversarial_rounds` | `1` | one adversarial pass by default; max 2, and a second pass runs only when the first pass materially changes `medium`+ guidance |
-| `disagreement_policy` | `defer` | `defer` moves unresolved material disputes to Deferred; `comment` keeps the finding actionable but forces review-only PR approvals to COMMENT |
+| `adversarial` | `off` | `off` or `on` — read-only post-synthesis gate that attacks candidate findings and would-apply fix plans (false-positive/scope audit + fix-plan proportionality, plus a deletion skeptic when a plan removes code) before they become final guidance. One pass; `per_fix` ignores it (warns) |
 | `verify_cmd` | auto-detect | "verify with `npm test`", `verify_cmd: none` to skip — build/test command run after each round's fixes (see "Build/test gate"; per_fix only) |
-| `reviewer_timeout` | `600` | "timeout 10 minutes" — hard per-reviewer wall-clock cap in seconds for Bash-dispatched reviewers (see `run-reviewer.sh`). Default is ~3× the slowest legitimate reviewer observed in real runs (98–213s); doubled automatically for >5000-line diffs |
+| `reviewer_timeout` | `600` | "timeout 10 minutes" — hard per-reviewer wall-clock cap in seconds for Bash-dispatched reviewers (see `run-reviewer.sh`) |
 | `report_path` | unset | File path; when set, the engine writes the final report there (creating parent dirs) and prints exactly that path as its last output line so downstream consumers can pick it up |
 
 ### Parsing
@@ -49,11 +45,11 @@ Parse the user's free-form args string into:
 - **Pin-rejection (presets; defense in depth against the prose parser being talked into overrides):** before assembling, segment-split `$ARGUMENTS` as above, lowercase each segment's key (the text before its first `:`), and abort with `error: <param> is pinned by <preset-name> and cannot be overridden in args` if any key equals a pinned param. Match segment *keys*, never raw substrings — `focus: "target: PR safety"` has key `focus` and must pass. A host that cannot segment-split must abort (`error: pin-rejection unavailable in this environment; refusing to invoke engine without pin enforcement`), not degrade to substring scanning.
 - `agents`: a count (use the mix table below) or an explicit mix naming `codex`/`codex-exec` / `claude`/`claude-exec` — honor a mix exactly.
 - `target` auto-detect order: currently checked-out PR (e.g. `gh pr view --json number,headRefName`, a GitHub MCP query, or REST) → branch-vs-main diff (`git diff main...HEAD`) → uncommitted changes (`git diff` + `git diff --cached`). Empty args = all defaults.
-- `rounds` is the requested count. Resolve `max_rounds` after `rounds` and the final `commit_mode` (including the PR-locator rule below): default to `max(6, rounds)` for `per_fix`, and to `rounds` for `commit_mode=none`; reject `max_rounds < rounds`. Phrases like "allow one extra round" set `max_rounds=rounds+1`, and explicit caps like `max_rounds: 4` or "up to 4 rounds" set the cap directly. Phrases like "continue if needed" keep the default adaptive cap unless paired with an explicit cap. Phrases that constrain the round count itself — "exactly 3 rounds", "only 3 rounds", "3 rounds only", or "no extra rounds" — force `max_rounds=rounds`. Do **not** treat `only:` focus syntax or severity gates like "fix only critical" as exact-round requests.
-- Adaptive continuation is on by default for `per_fix`. A plain "3 rounds" means `rounds=3, max_rounds=6`, so the organizing agent may continue after round 3 if §6 says another pass is justified. Use "exactly 3 rounds", "only 3 rounds", "no extra rounds", or `max_rounds: 3` when the run must stop at the requested count.
+- `rounds` is the requested count. Resolve `max_rounds` after `rounds` and the final `commit_mode` (including the PR-locator rule below): default to `max(6, rounds)` for `per_fix` and to `rounds` for `commit_mode=none`; reject `max_rounds < rounds`. Explicit caps (`max_rounds: 4`, "up to 4 rounds", "allow one extra round" → `rounds+1`) set the cap directly. "exactly 3 rounds", "only 3 rounds", "3 rounds only", or "no extra rounds" force `max_rounds=rounds`. Do **not** treat `only:` focus syntax or severity gates like "fix only critical" as exact-round requests. Adaptive continuation is then on by default for `per_fix` (a plain "3 rounds" → `rounds=3, max_rounds=6`); §6 decides whether to use it.
 - If `commit_mode=none` and the user explicitly set `max_rounds > rounds`, warn and collapse `max_rounds` to `rounds`. Extra normal rounds review the same baseline, so use `rounds` for reviewer redundancy and `adversarial` for skeptical challenge.
 - `reproduction=auto` and `reproduction=on` both run the selective batched reproduction gate in §3. `auto` may skip dispatch only when there are no candidates. `off` is allowed for speed, but the round summary and final report must say it was disabled; unconfirmed single-reviewer `medium`+ findings stay in Deferred unless the orchestrator independently reproduced them from code/tests/runtime evidence.
-- `adversarial` applies only when `commit_mode=none`. If set with `per_fix`, warn and ignore it — productive mode already applies real fixes and gates them with the build/test command. Reject `adversarial_rounds > 2`; adversarial loops must be bounded. `auto` means choose the cheapest sufficient adversarial mode after normal synthesis using the default policy below.
+- `adversarial` applies only when `commit_mode=none`. If set with `per_fix`, warn and ignore it — productive mode already applies real fixes and gates them with the build/test command. `on` runs one bounded post-synthesis adversarial pass (§3); `off` skips it.
+- Approval is opt-out, not a param: `never approve`, `comment only`, or `approve: never` set `REVIEW_ANVIL_NO_APPROVE=1` for the run (the helper enforces it mechanically); presets export it too. Only meaningful for review-only PR runs. New dependencies stay deferred unless `allow_new_deps: true` is passed (auto-fix proportionality lives in §4).
 
 ### PR-target / per_fix incompatibility
 
@@ -82,22 +78,14 @@ Adaptive continuation details belong in Run Details unless they change the revie
 - `Skill review-anvil "3 rounds, max_rounds: 4"` → 3 requested rounds, then at most 1 adaptive round if the continuation policy allows it.
 - `Skill review-anvil "1 round, only: security, target: src/auth/"`
 - `Skill review-anvil "fix only critical"` → severity gate raised to `critical`; everything else surfaces as suggestions.
-- `Skill review-anvil "target: PR #42, adversarial: auto"` → normal review first, then adversarial review only if the synthesized findings/fix plans need a validity or proportionality challenge.
+- `Skill review-anvil "target: PR #42, adversarial: on"` → normal review first, then one post-synthesis adversarial pass attacking finding validity and fix proportionality.
 
 ## Default Mix Policy
 
-When the user gives a count but no mix:
-
-| `agents` | Mix |
-|---|---|
-| 1 | 1 codex-exec |
-| 2 | 1 codex-exec + 1 claude-exec |
-| 3 | 2 codex-exec + 1 claude-exec |
-| 4 | 2 codex-exec + 2 claude-exec |
-| 5 | 3 codex-exec + 2 claude-exec |
-| N | ~60/40 codex/claude split, codex gets the odd one |
-
-Rationale: codex-exec surfaces more issues per call in our usage, so it gets the larger share (and the `agents=1` slot).
+When the user gives a count but no mix: split ~60% `codex-exec` / 40%
+`claude-exec`, with `codex-exec` taking the odd agent and the solo (`agents=1`)
+slot. Honor an explicit mix exactly. Rationale: codex-exec surfaces more issues
+per call in our usage, so it gets the larger share.
 
 ## Loop Mechanics
 
@@ -181,16 +169,11 @@ Plausible-but-wrong findings are the dominant failure mode of LLM review, and bo
 
 - **Dismissed check first (orchestrator judgment).** When a DISMISSED FINDINGS list exists, compare every merged finding against it *semantically* — same root cause counts even when the wording differs completely ("missing CSRF check" matches "no token validation on state-changing route"). Matches move to Deferred with reason `previously dismissed (<source>)` and are never auto-fixed or posted. You are the primary matcher here; the post-time script gate in `pr-helper.sh` only catches near-verbatim repeats (path match + text similarity ≥ 0.9) as a deterministic backstop.
 - **Scope/artifact filter next (orchestrator judgment).** Drop or move to out-of-scope follow-ups before reproduction when the claim is about archived design notes, changelogs, old migration examples, generated fixtures, vendored files, or historical docs that are not the review's live product surface. Do not spend verifier budget proving historical provenance is stale. Conversely, live docs that users rely on — README usage, CLI help, API docs, config reference, plugin metadata, or marketplace copy — are product surface and may become reproduction candidates when they drift from code/runtime behavior.
-- Assign stable report-local IDs before reproduction/adversarial dispatch: findings are `RAVF001`, `RAVF002`, ... and would-apply plans are `RAVW001`, `RAVW002`, ... . The canonical grammar is `RAV([FW])([0-9]{3,})`; the PR helper may accept legacy dashed IDs like `F-001` / `W-001` at parsing boundaries, but new reports should emit only the canonical no-punctuation form.
-- Build `REPRODUCTION CANDIDATES` after dismissed-check filtering and ID assignment:
-  - every `medium`+ finding raised by exactly one reviewer,
-  - every `medium`+ deletion/dead-code/unused/redundant-code/simplification finding, and any deletion/simplification that would remove runtime code, public docs/API, compatibility behavior, or another high-blast-radius surface, regardless of reviewer count,
-  - every `critical`/`high` finding whose evidence is mostly inferred from a hunk rather than confirmed from code/runtime context,
-  - every finding the orchestrator is materially uncertain about after reading the cited files.
-- When `reproduction=auto` or `on` and candidates exist, dispatch **one batched reproduction verifier** using `references/reproduction-prompt.md`. Do not spawn one verifier per finding unless the batch is too large to fit in one prompt. The verifier is not another broad review pass; it returns `confirmed`, `refuted`, `unclear`, `narrowed`, or `downgraded` verdicts for supplied `RAVF###` IDs only.
+- Assign stable report-local IDs before reproduction/adversarial dispatch: findings are `RAVF001`, `RAVF002`, ... and would-apply plans are `RAVW001`, `RAVW002`, ... . The only grammar is `RAV([FW])([0-9]{3,})`.
+- Build `REPRODUCTION CANDIDATES` after dismissed-check filtering and ID assignment. Reproduce: any single-reviewer `medium`+ finding; any `critical`/`high` whose evidence is mostly inferred from the hunk rather than confirmed from code/runtime; any finding the orchestrator is materially uncertain about after reading the cited files; and any destructive (deletion/dead-code/unused/redundant/simplification) finding that is `medium`+ or would remove runtime code, public docs/API, or compatibility behavior — the last regardless of reviewer count. Trust `2+`-reviewer consensus otherwise.
+- When `reproduction=auto` or `on` and candidates exist, dispatch **one batched reproduction verifier** using `references/reproduction-prompt.md`. Do not spawn one verifier per finding unless the batch is too large to fit in one prompt. The verifier is not another broad review pass; it returns `confirmed`, `refuted`, or `unclear` verdicts for supplied `RAVF###` IDs only, each with the severity and (optional) narrower wording it can defend.
 - Apply reproduction verdicts before auto-fix/reporting:
-  - `confirmed` and `narrowed` findings may remain actionable, with narrowed wording when supplied.
-  - `downgraded` findings re-enter the normal severity gates after changing severity.
+  - `confirmed` findings remain actionable at the verifier's returned severity (which may be lower than the reporter's — re-apply the severity gate), using its narrower wording when supplied.
   - `refuted` findings are dropped from final Findings (or, if useful for transparency, one-line Deferred notes).
   - `unclear` findings move to Deferred with reason `failed reproduction: <why>`.
 - Findings raised independently by **2+ reviewers** and not listed as reproduction candidates may skip batched reproduction; consensus is the signal (this is why dedup records who raised what). Still open enough code/context before destructive action to ensure the fix path is coherent.
@@ -199,9 +182,9 @@ Plausible-but-wrong findings are the dominant failure mode of LLM review, and bo
 - `low`/`nit` findings skip verification: they're below the auto-fix gate and surface as suggestions either way.
 
 Canonical examples for where reproduction helps and where it must stay out of
-the way live in `references/reproduction-examples.md`. After changing this
-policy or the reproduction prompt, run `scripts/test-reproduction-policy.sh`
-alongside the PR helper tests.
+the way live in `scripts/reproduction-examples.md` (the fixture set for the
+policy test). After changing this policy or the reproduction prompt, run
+`scripts/test-reproduction-policy.sh` alongside the PR helper tests.
 
 #### Approving out-of-scope follow-ups
 
@@ -215,9 +198,9 @@ When `report_path` is set, write follow-ups once, after the final round, to `<re
 
 #### Optional adversarial review (`commit_mode=none` only)
 
-When `adversarial` is not `off`, run a bounded post-synthesis gate after
-dedup/reproduction and before writing the final report artifacts. Read
-`references/adversarial-prompt.md` before dispatching adversarial reviewers.
+When `adversarial: on` (and `commit_mode=none`), run one bounded post-synthesis
+gate after dedup/reproduction and before writing the final report artifacts.
+Read `references/adversarial-prompt.md` before dispatching the adversaries.
 
 Adversarial review is not another broad review pass and not a simulated patch
 application. It attacks the candidate synthesis:
@@ -232,77 +215,19 @@ application. It attacks the candidate synthesis:
 - **Report safety** — unsafe one-click GitHub suggestions, unclear fix paths,
   overconfident approvals, and actionable comments that should be deferred.
 
-Modes:
+Dispatch: two adversaries — one `false-positive-scope-auditor` and one
+`fix-plan-breaker` — over all `medium`+ findings and would-apply plans. When any
+would-apply plan removes code, fold in the `fix-plan-breaker`'s deletion-skeptic
+behavior. One pass.
 
-| Mode | Dispatch | Intent |
-|---|---|---|
-| `auto` | Chosen after synthesis | Selects `off`, `challenge`, `targeted`, or `strict` using the default policy below. |
-| `challenge` | 1 adversary | Cheap local check over all `medium`+ findings and would-apply plans. |
-| `targeted` | 2 adversaries | Recommended PR mode: false-positive/scope auditor + fix-plan breaker. Force a deletion skeptic when any would-apply item removes code. |
-| `full` | 3 adversaries | Adds second-order bug hunting across interacting plans, config, migrations, and tests. |
-| `strict` | Same as `full` | Approval-sensitive: any required adversary failure or unresolved `high`+ dispute forces COMMENT. |
-
-Role mapping:
-
-- `challenge`: one combined adversary using the core prompt plus both the
-  `false-positive-scope-auditor` and `fix-plan-breaker` role additions.
-- `targeted`: two adversaries, one `false-positive-scope-auditor` and one
-  `fix-plan-breaker`; add/replace with the deletion skeptic behavior from
-  `fix-plan-breaker` when any would-apply plan removes code.
-- `full`/`strict`: `false-positive-scope-auditor`, `fix-plan-breaker`, and
-  `second-order-bug-hunter`; add `report-auditor` only if the report/approval
-  artifact itself is the risky surface.
-
-Default policy:
-
-- Local `review-anvil-readonly` defaults to `off`. If the user asks for careful,
-  skeptical, high-confidence, low-noise, or thorough read-only review, the
-  orchestrator should append `adversarial: auto` unless the user explicitly
-  asked for a fast/rough pass.
-- `review-anvil-pr` defaults to `adversarial: auto` because GitHub output is
-  public reviewer speech and may include inline comments, one-click
-  suggestions, or an approval event.
-- Explicit user input wins: `adversarial: off` disables the gate; explicit
-  `challenge`/`targeted`/`full`/`strict` uses that mode. In review-only PR runs,
-  explicit `adversarial: off` also forces `.approval.json` to `{"event":
-  "COMMENT"}`; unchallenged LLM review should not satisfy branch protection by
-  accident.
-
-`auto` selection after normal synthesis:
-
-- First estimate **meaningful changed size** from the reviewed snapshot. Exclude
-  generated/vendor/build artifacts, lockfiles, and snapshot/fixture churn unless
-  those files are the review's product surface. Treat `>1000` meaningful changed
-  lines or `>20` meaningful files as large, and `>5000` meaningful changed
-  lines, `>50` meaningful files, or several interacting subsystems as very
-  large. Size is an escalation floor, not the only signal: a small risky auth or
-  migration diff can still choose `targeted`, while a huge mechanical rename
-  may stay below `full` after exclusions.
-- Use `off` only when approval is disabled/impossible and the result is clean
-  or low/nit-only, has no `medium`+ inline comments, no GitHub suggestion
-  blocks, no `critical`/`high` actionable or deferred author-action items, and
-  no would-apply plan with deletion, dependency, non-local behavior, or
-  abstraction/churn risk. For local non-PR runs, ignore the approval condition.
-- Use `challenge` for small or self-authored comment-only reviews with material
-  feedback but no suggestion blocks, no high-risk fix plans, and `approve:
-  never` / `REVIEW_ANVIL_NO_APPROVE=1`.
-- Use `targeted` when candidate output includes any `medium`+ inline comment,
-  any GitHub suggestion block, any `critical`/`high` actionable/deferred item,
-  any would-apply plan that removes code, adds dependencies, changes behavior
-  non-locally, touches auth/security/data/schema/migrations/concurrency/config,
-  or looks like abstraction/tech-debt risk, or when dismissed/resolved PR review
-  history touches the same files/root causes, or when the diff is large by
-  meaningful changed size.
-- Use `full` when the meaningful diff is very large or cross-cutting across
-  several subsystems, unless exclusions show it is mostly mechanical/generated
-  churn. `full` adds second-order plan scrutiny without making approval more
-  brittle by itself.
-- Use `strict` only when the user explicitly asks for approval-sensitive
-  behavior or branch protection / CODEOWNER requirements are confirmed. If any
-  required adversary fails, times out, or returns unparseable output in `strict`,
-  force `COMMENT`. Do not escalate to `strict` merely because branch protection
-  is unknown; use `targeted` and force `COMMENT` if approval safety cannot be
-  established.
+Default by preset: `review-anvil-readonly` defaults `off` (append `on` when the
+user asks for a careful, skeptical, high-confidence, low-noise, or thorough
+read-only review, unless they asked for a fast/rough pass); `review-anvil-pr`
+defaults `on` because GitHub output is public reviewer speech that may include
+inline comments, one-click suggestions, or an approval event. Explicit user
+input wins. In review-only PR runs, explicit `adversarial: off` forces
+`.approval.json` to `{"event": "COMMENT"}` — unchallenged LLM review should not
+satisfy branch protection by accident.
 
 Build would-apply plans from the same fix groups `per_fix` would have
 committed: each plan lists covered finding IDs, the simulated conventional-
@@ -336,22 +261,34 @@ from `.inline.json`, move items to Deferred, harden/simplify fix prose, or
 downgrade approval. It must not create patches, commits, or final actionable
 findings from unverified adversarial ideas.
 
-Run at most `adversarial_rounds` passes, capped at 2. A second adversarial pass
-runs only when the first pass materially changes `medium`+ guidance, changes
-approval, or rewrites a would-apply plan. `RAVW###` verdicts affect fix plans,
-suggestions, and fix prose only; linked `RAVF###` findings change only when an
-independent `RAVF###` verdict refutes or defers them. With
-`disagreement_policy=defer`, unresolved `medium` adversarial disputes move the
-item to Deferred but do not by themselves block `APPROVE`; unresolved
-`critical`/`high` disputes block `APPROVE`. With
-`disagreement_policy=comment`, unresolved `medium`+ disputes keep the item
-actionable but force the review event to `COMMENT`.
+The pass runs once. `RAVW###` verdicts affect fix plans, suggestions, and fix
+prose only; linked `RAVF###` findings change only when an independent `RAVF###`
+verdict refutes or defers them. Unresolved `critical`/`high` adversarial
+disputes block `APPROVE` and force the review event to `COMMENT`; unresolved
+`medium` disputes move the item to Deferred but do not by themselves block
+`APPROVE`.
 
 ### 4. Apply fixes
 
 **Skip entirely when `commit_mode=none`** (the policy below is still evaluated in the abstract for the report).
 
-Otherwise **read `references/fix-application.md` before making any edit**: it defines the conventional-commit fix-group style, the auto-fix proportionality rules (severity gate >= `min_fix_severity`; no new dependencies without `allow_new_deps`; per-round size cap; noise is deferred with a reason, never silently dropped), and the build/test gate (`verify_cmd` resolution, baseline run, fix-forward-or-revert, revert-failure escalation). The invariant: **a round never ends with the build/test gate newly red**.
+Otherwise make the edits as the orchestrator. Commit one logical fix-group per commit, conventional-commit style: `fix(area):` correctness, `refactor(area):` maintainability/simplicity, `test(area):` tests, `chore(area):` production-readiness.
+
+**Auto-fix policy (proportionality rules):**
+
+1. **Severity gate.** Auto-fix only at severity ≥ `min_fix_severity`. Below-gate findings land under "Suggestions". Exception: an obvious one-line fix at any severity may be applied without bumping severity.
+2. **No new dependencies (default).** A fix introducing a new import, package, or subsystem is deferred with reason `introduces new dependency: <X>` even above the gate; `allow_new_deps: true` opts in. Don't grow the architecture without permission.
+3. **Round size cap.** A round's fixes may grow the target file by at most ~50% of its starting line count or 200 lines, whichever is larger; apply highest-severity first, defer the rest with `round size cap reached`.
+
+Noise/false positives are also **deferred** with a one-line reason — never silently dropped.
+
+**Build/test gate (`verify_cmd`).** Fix commits must not leave the branch red. In `per_fix`:
+
+- **Resolve:** explicit `verify_cmd` → use it; `verify_cmd: none` → record `Verification: skipped (user)`; unset → auto-detect (repo docs naming a test command; `package.json` `scripts.test`; `Makefile` `test`; pytest/cargo/go-test config). Nothing found → record `Verification: none detected` and proceed (downstream consumers surface the caveat).
+- **Baseline:** run once before round 1; if already failing, gate only on *new* failures and record the round state as `pre-existing failures (no new)`.
+- **Gate each round:** run after the round's fixes. On a new failure: one fix-forward attempt if the cause is obvious (`fix(<area>): repair <verify_cmd> failure from round <N> fixes`), else `git revert --no-edit` the round's fix commits and defer the findings with `fix failed verification`. If the revert itself fails to restore green, stop the loop and surface it (same handling as a failed `git commit`).
+
+The invariant: **a round never ends with the build/test gate newly red**.
 
 ### 5. Round summary
 
@@ -364,9 +301,9 @@ Append to running output:
 - Findings: C critical, H high, M medium, L low, N nit
 - Fixes applied: K commits (<sha1>..<shaN>)   # or "0 (review-only)"
 - Verification: <cmd> — passed | failed → round reverted | pre-existing failures (no new) | none detected | skipped   # per_fix only
-- Reproduction: off | skipped (no candidates) | <C> candidates, <confirmed> confirmed, <refuted> refuted, <deferred> deferred, <downgraded> downgraded; <elapsed>
+- Reproduction: off | skipped (no candidates) | <C> candidates, <confirmed> confirmed, <refuted> refuted, <deferred> deferred; <elapsed>
 - Would-apply: W items                         # commit_mode=none only
-- Adversarial review: off | <mode>, <A> agents, <upheld> upheld, <hardened> hardened, <deferred> deferred, <dropped> dropped
+- Adversarial review: off | on, <A> agents, <upheld> upheld, <hardened> hardened, <deferred> deferred, <dropped> dropped
 - Suggestions: S items (sub-threshold severity; not applied)
 - Deferred: D items (reasons: noise / new dependency / size cap / failed reproduction / failed verification / product decision)
 - Adaptive continuation: off | not extended because <reason> | extended to round <next_round> because <reason>; cap=<max_rounds>
@@ -409,8 +346,8 @@ complete, the orchestrator may start one more round only while
 
 Record the continuation decision in the final requested round's summary and in
 the adaptive round summary when one runs. If an adaptive round still has
-`material_findings` and hits `max_rounds`, finish and use the tuning suggestion
-rule; do not keep extending without a larger explicit cap.
+`material_findings` and hits `max_rounds`, finish; do not keep extending without
+a larger explicit cap.
 
 After the final round, emit the **Final Report** (Output Format). If `report_path` is set:
 
@@ -436,7 +373,7 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
    {
      "event": "APPROVE | COMMENT",
      "head_sha": "<the HEAD_SHA the preset captured at init/verify-checkout>",
-     "adversarial_mode": "off | auto | challenge | targeted | full | strict",
+     "adversarial_mode": "off | on",
      "approval_allowed": true,
      "reason": "No high/critical in-scope findings; medium-and-lower items are left to the author."
    }
@@ -444,7 +381,7 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 
    Include `"head_sha"` — the `HEAD_SHA` the preset captured at init/verify-checkout time — so the posting helper can verify the approval still matches the reviewed state (it downgrades to COMMENT if the PR head moved mid-run). Include `"adversarial_mode"` and set `"approval_allowed": false` when approval must be mechanically disabled (for example explicit `adversarial: off` in a PR run).
 
-   Use `APPROVE` for review-only PR runs when all of these hold: `approve` is not `never`, at least one reviewer succeeded, there are no `critical`/`high` actionable in-scope findings, no `critical`/`high` in-scope deferred finding needs author action, no unresolved `critical`/`high` adversarial dispute remains, and remaining items are only `medium`/`low`/`nit` findings, suggestions, deferred notes, or out-of-scope follow-ups. Medium-and-lower in-scope findings should still be posted clearly, but the review event is approval: leave those fixes to the author. Use `COMMENT` otherwise. Out-of-scope follow-ups do not block approval.
+   Use `APPROVE` for review-only PR runs when all of these hold: `REVIEW_ANVIL_NO_APPROVE` is unset, at least one reviewer succeeded, there are no `critical`/`high` actionable in-scope findings, no `critical`/`high` in-scope deferred finding needs author action, no unresolved `critical`/`high` adversarial dispute remains, and remaining items are only `medium`/`low`/`nit` findings, suggestions, deferred notes, or out-of-scope follow-ups. Medium-and-lower in-scope findings should still be posted clearly, but the review event is approval: leave those fixes to the author. Use `COMMENT` otherwise. Out-of-scope follow-ups do not block approval.
 4. Print the report path as the last output line; the `.inline.json` and `.approval.json` files are implied by convention.
 5. For out-of-scope follow-ups, write the sibling `<report_path>.followups.json` once, after the final round, using the follow-ups schema from §3 "Approving out-of-scope follow-ups" (NOT the `.approval.json` schema above). The posting helper deletes it after a successful post, so any consumer (surfacing follow-ups to the user, filing issues for `auto_approved` entries after duplicate search) must read it **before** the post/post-update step — the presets do this.
 
@@ -487,8 +424,8 @@ The final report is a PR comment body. It must include every finding, but it sho
 **Result:** <one sentence: blockers/non-blockers/fixes/verification outcome>
 **Scope:** <For PR targets: one sentence summarizing what this PR is trying to change.>
 **Verification:** <verify_cmd used, or "none detected" / "skipped">   # per_fix only
-**Reproduction:** off | skipped (no candidates) | <C> candidates; <confirmed> confirmed, <refuted> refuted, <deferred> deferred, <downgraded> downgraded
-**Adversarial review:** off | <mode>, <A> agents; <upheld> upheld, <hardened> hardened/simplified, <deferred> deferred, <dropped> dropped
+**Reproduction:** off | skipped (no candidates) | <C> candidates; <confirmed> confirmed, <refuted> refuted, <deferred> deferred
+**Adversarial review:** off | on, <A> agents; <upheld> upheld, <hardened> hardened/simplified, <deferred> deferred, <dropped> dropped
 
 ## Findings
 <Every confirmed finding appears exactly once. Critical/high findings go first, then medium, then low/nit. Use compact severity initials in tables: C critical, H high, M medium, L low, N nit. Keep each row short; inline comments carry implementation detail for anchored findings, so do not repeat that in every row. If none: "No in-scope findings were confirmed.">
@@ -529,31 +466,12 @@ The final report is a PR comment body. It must include every finding, but it sho
 - Mix: <e.g. "2 codex-exec + 1 claude-exec">
 - Focus: <focus list actually used>
 - Counts: <C critical, H high, M medium, L low, N nit; deferred D; suggestions S>
-- Reproduction: off | skipped | candidates=<C>; effects=<confirmed>/<refuted>/<deferred>/<downgraded>; elapsed=<duration>
-- Adversarial: off | <mode>; agents=<A>; rounds=<R>; effects=<dropped>/<deferred>/<hardened>; approval changed yes/no
-- Tuning suggestion: <one line; see rule below>   # omit in review-only
+- Reproduction: off | skipped | candidates=<C>; effects=<confirmed>/<refuted>/<deferred>; elapsed=<duration>
+- Adversarial: off | on; agents=<A>; effects=<dropped>/<deferred>/<hardened>; approval changed yes/no
 
 ---
 _Reviewed with [review-anvil](https://github.com/mrshu/agent-skills)._
 ```
-
-`Findings addressed` = post-dedup count of unique findings auto-applied across all rounds.
-
-### Tuning suggestion rule
-
-Omit in review-only. Early exit already stops the loop when a round comes back
-clean, and an adaptive round that converges needs no tuning suggestion. The
-remaining cases:
-
-- If every completed round was `material_findings` and `max_rounds == rounds`,
-  suggest re-enabling adaptive continuation (`max_rounds = rounds + 1`) or
-  setting `rounds = N + 1` for the next run.
-- If the adaptive cap was reached and the final round was still
-  `material_findings`, suggest increasing `max_rounds` by 1 only when the final
-  round applied verified fixes; otherwise suggest resolving Deferred blockers or
-  verification gaps before adding more rounds.
-- If adaptive continuation was blocked by skipped/missing verification, suggest
-  setting a trustworthy `verify_cmd` before increasing `rounds`.
 
 ## Edge Cases
 
@@ -561,15 +479,14 @@ remaining cases:
 |---|---|
 | Missing reviewer backend | Validate only the backends the resolved mix actually names, before round 1. Abort with: "review-anvil requires the `<missing-skill>` skill from the mrshu-skills marketplace. Install via `/plugin install <missing-skill>@mrshu-skills` (Claude Code) or `npx skills add mrshu/agent-skills --skill <missing-skill>` (cross-agent)." |
 | No diff in auto-detected target | Abort: "No target detected — nothing to review." Don't invent work. |
-| Raw diff > ~5000 lines | Warn in the round status and continue; tell reviewers they may focus on the most impactful slice; double `reviewer_timeout` (unless the user set it explicitly). For `adversarial: auto`, estimate meaningful changed size after exclusions; very large meaningful diffs select at least `full`, but generated/mechanical churn alone does not force deeper adversarial review. |
+| Raw diff > ~5000 lines | Warn in the round status and continue; tell reviewers they may focus on the most impactful slice. Raise `reviewer_timeout` if reviewers risk hitting the cap. |
 | `agents > 8` | Reject before round 1 — more dedup work than signal. |
 | `rounds = 0` | Reject — almost certainly a typo. |
 | `max_rounds < rounds` | Reject before round 1 — the adaptive cap cannot be below the requested round count. |
 | User-supplied `max_rounds > rounds` with `commit_mode=none` | Warn and set `max_rounds=rounds`; read-only extra rounds are explicit redundancy via `rounds`, not adaptive refinement. |
 | `adversarial` with `per_fix` | Warn and ignore — productive mode verifies real fixes with the build/test gate. |
-| `adversarial_rounds > 2` | Reject before dispatch — adversarial review is bounded critique, not an open-ended debate. |
 | Reproduction verifier failure | Keep consensus findings that did not require reproduction, but move required single-reviewer `medium`+ and deletion/high-risk candidates to Deferred with `failed reproduction: verifier unavailable`; never silently promote them. |
-| Adversary failure | Continue with the normal synthesized report and note the failure in Run Details; in `strict`, any required adversary failure forces `COMMENT`. |
-| Unparseable findings block | In requested rounds, use the prose as free-form findings; no retry; note `<agent>: unstructured findings (parse failed)`. In adaptive rounds, abort before fixes from that round are applied. |
+| Adversary failure | Continue with the normal synthesized report and note the failure in Run Details; if it leaves a `critical`/`high` dispute unresolved, force `COMMENT`. |
+| Unparseable findings block | In requested rounds, use the prose as free-form findings; no retry; note `<agent>: unstructured findings (parse failed)`. In adaptive rounds, the §6 abort gate applies (parse failure stops the run before fixes). |
 | Reviewers contradict each other | Surface both under the same area with reviewers tagged; orchestrator judgment decides the fix; mention the disagreement in the round summary. |
 | Re-runs | Not idempotent: a new run reviews the latest state, including the prior run's commits. Surface still-present deferred items under "Deferred from previous runs (still present)". |

@@ -84,7 +84,7 @@ On non-zero exit, surface the script's stderr verbatim and stop. Do not dispatch
 Activate the `review-anvil` skill with this argument string (extra user args go between the pinned params and the rounds default):
 
 ```
-commit_mode: none, target: <locator>, report_path: <REPORT_PATH>, <extra-user-args>, adversarial: auto, rounds: 1
+commit_mode: none, target: <locator>, report_path: <REPORT_PATH>, <extra-user-args>, adversarial: on, rounds: 1
 ```
 
 The user may override `rounds:` or `adversarial:` in their args (they are defaults, not pins). They should not override `commit_mode`, `target`, or `report_path` — these are pinned for safety; the step-0 segment-rejection above blocks override attempts.
@@ -95,18 +95,17 @@ may pass `reproduction: off` for speed, but unreproduced single-reviewer
 `medium`+ findings, deletion/high-risk findings, and orchestrator-uncertain
 findings must stay Deferred rather than becoming inline/actionable PR comments.
 
-The default `adversarial: auto` lets the engine choose `off`, `challenge`,
-`targeted`, or `strict` after normal synthesis. The user may also pass
-`adversarial: off|challenge|targeted|full|strict`.
+The default `adversarial: on` runs one post-synthesis adversarial pass. The
+user may also pass `adversarial: off`.
 Adversarial review stays read-only: it attacks candidate findings and
 would-apply plans before the report is posted, so false positives can be
 dropped and harmful/bloated/tech-debt-heavy fixes can be deferred instead of
 turned into inline comments. Unresolved `critical`/`high` adversarial disputes
-and `disagreement_policy=comment` material disputes force the review event to
-`COMMENT` rather than `APPROVE`. If the user explicitly passes `adversarial:
-off`, the engine must write `{"event":"COMMENT","adversarial_mode":"off",
-"approval_allowed":false}` to `.approval.json`; unchallenged LLM review should
-not satisfy branch protection by accident.
+force the review event to `COMMENT` rather than `APPROVE`. If the user
+explicitly passes `adversarial: off`, the engine must write
+`{"event":"COMMENT","adversarial_mode":"off","approval_allowed":false}` to
+`.approval.json`; unchallenged LLM review should not satisfy branch protection
+by accident.
 
 Provide `$HEAD_SHA` to the engine for its `.approval.json` `head_sha` field — the posting helper uses it to downgrade a stale APPROVE (PR head moved mid-run) to a COMMENT.
 
@@ -145,7 +144,7 @@ Surface the URL (or `posted (URL unavailable)`) to the user. If the helper scrip
 - *"Review the PR I'm on and post the result back."* — user is checked out on a PR branch. Agent invokes `init` with no locator; helper detects the PR via `gh pr view`.
 - *"Review https://github.com/acme/widgets/pull/137 with a focus on security."* — explicit URL locator; extra arg `focus: security` flows through to the engine.
 - *"Review acme/widgets#42 and use 2 rounds of reviewer redundancy."* — slug locator; `rounds: 2` overrides the preset's `rounds: 1` default.
-- *"Review acme/widgets#42 with adversarial: targeted."* — force targeted adversarial review after normal synthesis.
+- *"Review acme/widgets#42 with adversarial: on."* — force the adversarial pass after normal synthesis.
 - *"Review acme/widgets#42 with adversarial: off."* — skip adversarial review and post COMMENT-only feedback.
 
 ## Constraints
