@@ -4,7 +4,7 @@ Read at final-report time when `report_path` is set (Loop Mechanics §6 of the e
 
 ## Inline-comment voice (bodies in `.inline.json`)
 
-Compose each `body` as compact, code-anchored prose. Inline comments are for localized `critical`/`high`/`medium` findings by default; `low`/`nit` findings usually belong only in the top-level summary. For material findings, use three short parts; for simple findings, one or two short paragraphs is enough.
+Compose each `body` as complete, code-anchored prose. Inline comments are for localized `critical`/`high`/`medium` findings by default; `low`/`nit` findings usually belong only in the top-level summary. For material findings, use three short parts; for simple findings, one or two short paragraphs is enough. Do not rely on the posting helper to shorten or summarize: if a draft is too bulky for a PR reader, rewrite it yourself while preserving the concrete mechanism, consequence, fix path, and test signal.
 
 ```
 **[medium] error-handling** — `save_user` returns success when the INSERT fails
@@ -20,15 +20,15 @@ INSERT raise and asserts `save_user` propagates the error covers this case.
 
 1. **Header line** — severity tag, area, one-line statement of the *observable* problem (what goes wrong, not which rule is broken).
 2. **Mechanism** — how the code produces the problem and one concrete downstream consequence, anchored to files/lines/functions. Explain the failure; don't cite doctrine — every claim ties to *this* code, never to "best practices" in the abstract.
-3. **Fix path** — phrase the change as a polite implementation question when it reads naturally ("Could this handler catch ...?"), then include enough specifics to implement without re-investigation: what to change, where, the intended behavior afterwards, and the most important test or edge case. Prose, not patches.
+3. **Fix path** — phrase the change as a polite implementation question when it reads naturally ("Could this handler catch ...?"), then include enough specifics to implement without re-investigation: what to change, where, the intended behavior afterwards, and the most important test or edge case. Include a small code sketch or exact replacement when it materially reduces ambiguity.
 
 Voice rules:
 
 - Address the code, never the author: "the handler swallows the error", not "you swallow the error". No "should have", no "Obviously / Clearly / Simply / Just".
 - Calm and specific beats emphatic. The severity tag carries the urgency; the prose needs no alarm words, bold warnings, exclamation marks, or rhetorical/scolding questions.
 - When the PR's approach is sound and the finding is an edge of it, say so in one honest clause ("the retry loop is right; the timeout just needs to cover it") — genuine context, not a compliment sandwich.
-- Target 120-150 words for material findings, shorter when the fix is obvious. A one-liner can be fine for low/nit/simple findings; an essay reads as a lecture.
-- Use helper-only `.inline.json` `"suggestion"` only for exact replacements that GitHub can apply to the commented line/range. The regular `body` must still stand on its own; the suggestion is a convenience, not the explanation.
+- Target enough space for the author to implement without re-reading the whole diff; 150-250 words is normal for material findings, and longer is acceptable when the fix needs a code sketch. A one-liner can be fine for low/nit/simple findings; an essay reads as a lecture.
+- Use helper-only `.inline.json` `"suggestion"` for exact replacements that GitHub can apply to the commented line/range whenever it makes the fix clearer. The regular `body` must still stand on its own; the suggestion is executable context, not a substitute for the explanation. If the exact replacement is unsafe because the fix is cross-file, multi-step, or requires judgment, include a concise fenced code sketch in the `body` instead of a helper suggestion.
 
 The same voice applies to the report body's Suggestions, Deferred, and Out-of-scope follow-ups prose.
 
@@ -38,7 +38,7 @@ When reproduction runs, the PR-facing report should show only the accounting and
 the resulting guidance. Do not paste reproduction transcripts or long rejected
 finding analysis into the PR timeline.
 
-Use one compact line near the top of the report:
+Use one accounting line near the top of the report:
 
 ```md
 **Reproduction:** 4 candidates; 2 confirmed, 1 downgraded, 1 deferred after
@@ -62,7 +62,7 @@ verdict summary and the resulting final guidance. Do not paste adversarial
 transcripts, reviewer disagreement, or rejected-finding essays into the PR
 timeline.
 
-Use one compact line near the top of the report:
+Use one accounting line near the top of the report:
 
 ```md
 **Adversarial review:** targeted, 2 agents; 5 upheld, 1 simplified, 1 deferred as disproportionate, 1 dropped as false positive.

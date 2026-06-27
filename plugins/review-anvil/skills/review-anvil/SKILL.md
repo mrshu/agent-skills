@@ -70,10 +70,10 @@ Reviewers of a PR locator see the GitHub-fetched diff, which may not match the l
 
 ### Posting reports externally
 
-The engine never posts anywhere. Downstream consumers set `report_path`, let the engine write a GitHub-ready compact report, and post after it returns — `review-anvil-pr` + its `pr-helper.sh` is the reference implementation.
+The engine never posts anywhere. Downstream consumers set `report_path`, let the engine write a GitHub-ready PR report, and post after it returns — `review-anvil-pr` + its `pr-helper.sh` is the reference implementation.
 
 When `report_path` is set, optimize the report for a PR timeline reader, not for archival completeness. The per-round console output and reviewer artifacts are the transcript; the posted report is the decision summary plus the few findings that need action.
-Adaptive continuation details belong in Run Details unless they change the review decision; do not paste per-round continuation reasoning into compact PR reports.
+Adaptive continuation details belong in Run Details unless they change the review decision; do not paste per-round continuation reasoning into PR reports.
 
 ### Examples
 
@@ -414,13 +414,13 @@ rule; do not keep extending without a larger explicit cap.
 
 After the final round, emit the **Final Report** (Output Format). If `report_path` is set:
 
-1. Write the rendered compact report there (creating parent dirs).
+1. Write the rendered PR report there (creating parent dirs).
 2. Write a sibling `<report_path>.inline.json`: an array of GitHub PR review comment payloads for findings with both `file` and `line` —
 
    ```json
    [
      {"path": "src/auth.ts", "line": 50, "side": "RIGHT", "severity": "high", "body": "**[high] auth** — Refresh can run before CSRF validation\n\nThe handler rotates the session before checking the state token, so a stale tab can mint a new session after the old token should have failed.\n\nCould the state check run before session rotation, with a regression test for missing state?"},
-     {"path": "src/db.ts", "start_line": 100, "line": 110, "side": "RIGHT", "start_side": "RIGHT", "severity": "medium", "body": "...", "suggestion": "exact replacement text"}
+     {"path": "src/db.ts", "start_line": 100, "line": 110, "side": "RIGHT", "start_side": "RIGHT", "severity": "medium", "body": "**[medium] db** — Retry accounting commits before the write result is known\n\nThe retry block increments `attempts_succeeded` before `insert_event` returns, so a timeout records success and suppresses the retry. A caller that sees the counter in `run_summary` will treat the event as persisted even when no row exists.\n\nCould the counter update move after the successful insert, with the timeout path leaving the attempt failed and eligible for retry?", "suggestion": "result = insert_event(payload)\nattempts_succeeded += 1\nreturn result"}
    ]
    ```
 
@@ -428,7 +428,7 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 
    Include helper-only `"severity"` for every inline item. The posting helper strips it before calling GitHub and uses it to keep low/nit findings summary-only by default. Include helper-only `"suggestion"` only when the fix is an exact replacement for the commented line/range; the helper turns it into a GitHub suggestion fenced block and strips the extra key before posting. Do not include suggestions for design fixes, cross-file edits, deleted lines, anything that requires judgment, or any suggestion whose anchor/replacement/blast-radius was disputed by adversarial review.
 
-   Each `body` follows the **inline-comment voice** defined in `references/report-artifacts.md` — read it before composing bodies. In one line: compact, code-anchored prose with an observable-problem header, one concrete downstream consequence, and a fix path complete enough to implement without re-investigation. By default, inline comments are for `critical`/`high`/`medium` anchored findings; `low`/`nit` findings remain in the top-level summary unless the user or environment lowers `REVIEW_ANVIL_INLINE_MIN_SEVERITY`. The same voice applies to the report's Suggestions, Deferred, and Out-of-scope follow-ups prose.
+   Each `body` follows the **inline-comment voice** defined in `references/report-artifacts.md` — read it before composing bodies. In one line: complete, code-anchored prose with an observable-problem header, one concrete downstream consequence, and a fix path complete enough to implement without re-investigation. Include exact helper `"suggestion"` replacements or concise code sketches when they materially reduce ambiguity. By default, inline comments are for `critical`/`high`/`medium` anchored findings; `low`/`nit` findings remain in the top-level summary unless the user or environment lowers `REVIEW_ANVIL_INLINE_MIN_SEVERITY`. The same voice applies to the report's Suggestions, Deferred, and Out-of-scope follow-ups prose.
 
 3. Write a sibling `<report_path>.approval.json` so the PR-posting helper can choose the GitHub review event (review-only PR runs; for other runs write `{"event": "COMMENT"}` or omit the file — the helper defaults to COMMENT):
 
@@ -478,7 +478,7 @@ During execution: print `Round 2/3: dispatching 2 codex-exec + 1 claude-exec on 
 
 After the last round, emit a fresh top-level report (a new document, not a replacement for the per-round blocks).
 
-The final report is a PR comment body. It must include every finding, but it should read like a scan-friendly review index, not a transcript. Do not paste raw reviewer output, full round transcripts, repeated metadata, or paragraph-sized low-priority notes. Put each finding in exactly one compact row or bullet, grouped by severity/priority; use inline comments and collapsed `<details>` sections for longer explanation.
+The final report is a PR comment body. It must include every finding, but it should read like a scan-friendly review index, not a transcript. Do not paste raw reviewer output, full round transcripts, repeated metadata, or paragraph-sized low-priority notes. Put each finding in exactly one focused row or bullet, grouped by severity/priority; use inline comments and collapsed `<details>` sections for longer explanation. If the report feels too bulky, rewrite and organize it yourself; do not depend on the posting helper to compact or shorten it.
 
 ```
 # ⚒️ review-anvil report
@@ -491,7 +491,7 @@ The final report is a PR comment body. It must include every finding, but it sho
 **Adversarial review:** off | <mode>, <A> agents; <upheld> upheld, <hardened> hardened/simplified, <deferred> deferred, <dropped> dropped
 
 ## Findings
-<Every confirmed finding appears exactly once. Critical/high findings go first, then medium, then low/nit. Use compact severity initials in tables: C critical, H high, M medium, L low, N nit. Keep each row short; inline comments carry implementation detail for anchored findings, so do not repeat that in every row. If none: "No in-scope findings were confirmed.">
+<Every confirmed finding appears exactly once. Critical/high findings go first, then medium, then low/nit. Use severity initials in tables: C critical, H high, M medium, L low, N nit. Keep each row focused; inline comments carry implementation detail for anchored findings, so do not repeat that in every row. If none: "No in-scope findings were confirmed.">
 
 | ID | Sev | Area | Location | Finding |
 |---|---|---|---|---|
@@ -510,7 +510,7 @@ The final report is a PR comment body. It must include every finding, but it sho
 </details>
 
 ## Fixes / Would Apply
-<For per_fix: compact commit list or "No fix commits were applied." For review-only: include every would-apply item as a one-line bullet.>
+<For per_fix: focused commit list or "No fix commits were applied." For review-only: include every would-apply item as a one-line bullet.>
 
 - `<sha>` — <subject>                         # per_fix only
 - **RAVW001 [severity] area** — would commit as `<type>(<area>): <subject>`; covers RAVF001   # commit_mode=none only

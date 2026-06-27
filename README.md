@@ -92,8 +92,8 @@ What makes it useful:
 - **Adaptive rounds:** fixing runs can stop early when the review converges,
   or continue up to 6 total rounds when useful fixes are still surfacing. Use
   "exactly 3 rounds" or `max_rounds: 3` when you want a hard stop.
-- **PR-native output:** anchored findings become inline review comments; broader
-  findings stay in one compact summary.
+- **PR-native output:** anchored findings become full inline review comments;
+  broader findings stay in one focused summary.
 - **PR repair flow:** `review-anvil-improve-pr` can announce a run, commit and
   push verified fixes to a checked-out PR branch, then update the same PR comment
   with the result.

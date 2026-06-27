@@ -20,8 +20,8 @@
 #                             threads + local suppressions) for prompt blocks.
 #   dismiss …               — record a local suppression in the dismissals
 #                             state file ($REVIEW_ANVIL_DISMISSALS).
-#   compact-report …        — compact an oversized markdown report for GitHub.
-#   process-inline …        — filter/compact inline review comments.
+#   compact-report …        — legacy no-op; reports are posted without loss.
+#   process-inline …        — filter/prepare inline review comments.
 #   check-pins …            — mechanical preset pin-rejection over raw args.
 #
 # Environment switches:
@@ -31,18 +31,9 @@
 #                                 APPROVE -> COMMENT)
 #   REVIEW_ANVIL_DISMISSALS=path  local-suppressions state file (default
 #                                 ~/.review-anvil/dismissed-findings.json)
-#   REVIEW_ANVIL_GITHUB_MAX_CHARS=N
-#                                 compact posted reports longer than N chars
-#                                 while preserving all findings; this is a
-#                                 compaction trigger, not a truncation limit
-#                                 (default 12000)
-#   REVIEW_ANVIL_NO_COMPACT=1     disable GitHub report compaction
 #   REVIEW_ANVIL_INLINE_MIN_SEVERITY=medium
 #                                 minimum severity posted as inline comments
 #                                 (lower findings stay in the summary)
-#   REVIEW_ANVIL_INLINE_MAX_CHARS=N
-#                                 compact inline prose over N chars
-#                                 (default 900)
 #   REVIEW_ANVIL_ENABLE_SUGGESTIONS=0
 #                                 disable helper-added ```suggestion blocks
 #
@@ -151,355 +142,21 @@ _py() {
 }
 
 compact_report_for_github() {
-    local report_path="${1:-}" inline_json="${2:-}" max_chars="${REVIEW_ANVIL_GITHUB_MAX_CHARS:-12000}"
+    local report_path="${1:-}"
     [[ -f "$report_path" ]] || die "compact-report: report file not found: $report_path"
-    [[ "${REVIEW_ANVIL_NO_COMPACT:-}" != "1" ]] || return 0
-    [[ "$max_chars" =~ ^[0-9]+$ ]] \
-        || die "REVIEW_ANVIL_GITHUB_MAX_CHARS must be a positive integer, got '$max_chars'"
-    [[ "$max_chars" -gt 0 ]] || return 0
 
-    _py - "$report_path" "$inline_json" "$max_chars" <<'PY'
-import json
-import re
-import sys
-from pathlib import Path
-
-report = Path(sys.argv[1])
-inline = Path(sys.argv[2]) if sys.argv[2] else None
-max_chars = int(sys.argv[3])
-text = report.read_text()
-
-if len(text) <= max_chars:
-    raise SystemExit(0)
-
-full = Path(str(report) + ".full.md")
-if not full.exists():
-    full.write_text(text)
-
-lines = text.splitlines()
-marker_lines = []
-while lines and lines[0].startswith("<!-- review-anvil-marker:"):
-    marker_lines.append(lines.pop(0))
-
-def is_tool_footer(line):
-    return line.strip() == "_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills)._"
-
-footer_lines = []
-filtered_lines = []
-i = 0
-while i < len(lines):
-    stripped = lines[i].strip()
-    if (
-        stripped == "---"
-        and i + 1 < len(lines)
-        and is_tool_footer(lines[i + 1])
-    ):
-        footer_lines = ["---", lines[i + 1].strip()]
-        i += 2
-        continue
-    if is_tool_footer(lines[i]):
-        footer_lines = [lines[i].strip()]
-        i += 1
-        continue
-    filtered_lines.append(lines[i])
-    i += 1
-lines = filtered_lines
-
-sections = {}
-order = []
-preamble = []
-current_title = None
-current_lines = []
-
-for line in lines:
-    if line.startswith("## "):
-        if current_title is None:
-            preamble = current_lines
-        else:
-            sections[current_title] = current_lines
-        current_title = line[3:].strip()
-        order.append(current_title)
-        current_lines = []
-    else:
-        current_lines.append(line)
-
-if current_title is None:
-    preamble = current_lines
-else:
-    sections[current_title] = current_lines
-
-def inline_count():
-    if not inline or not inline.exists():
-        return 0
-    raw = inline.read_text().strip()
-    if not raw or raw == "[]":
-        return 0
-    try:
-        data = json.loads(raw)
-    except Exception:
-        return 0
-    return len(data) if isinstance(data, list) else 0
-
-def squeeze(value):
-    value = re.sub(r"\s+", " ", value.strip())
-    return value
-
-def shorten(value, limit):
-    value = squeeze(value)
-    if len(value) <= limit:
-        return value
-    cut = value.rfind(" ", 0, max(0, limit - 3))
-    if cut < 80:
-        cut = max(0, limit - 3)
-    return value[:cut].rstrip() + "..."
-
-ID_PATTERN = r"(?:RAV[FW]\d{3,}|[FW]-\d{3,})"
-SEVERITY_NAMES = {"critical", "high", "medium", "low", "nit"}
-SEVERITY_INITIALS = {"c": "critical", "h": "high", "m": "medium", "l": "low", "n": "nit"}
-
-FINDING_RE = re.compile(
-    rf"\*\*(?:{ID_PATTERN}\s+)?\[(?P<severity>critical|high|medium|low|nit)\]\s*(?P<area>[^*]+?)\*\*(?:\s+`(?P<location>[^`]+)`)?\s*[-—:]+\s*(?P<finding>[^\n]+)",
-    re.I,
-)
-
-def severity_name(value):
-    value = (value or "").strip().lower()
-    if value in SEVERITY_NAMES:
-        return value
-    return SEVERITY_INITIALS.get(value)
-
-def table_finding(line):
-    stripped = (line or "").strip()
-    if not stripped.startswith("|") or not stripped.endswith("|"):
-        return None
-    cells = [cell.strip() for cell in stripped.strip("|").split("|")]
-    if len(cells) < 5 or not re.fullmatch(ID_PATTERN, cells[0], re.I):
-        return None
-    sev = severity_name(cells[1])
-    if not sev:
-        return None
-    finding = " | ".join(cells[4:]).strip()
-    if not cells[2] or not finding:
-        return None
-    return {"id": cells[0], "severity": sev, "area": cells[2],
-            "location": cells[3], "finding": finding}
-
-def is_table_noise(line):
-    stripped = (line or "").strip()
-    if not stripped.startswith("|") or not stripped.endswith("|"):
-        return False
-    cells = [cell.strip().lower() for cell in stripped.strip("|").split("|")]
-    if cells[:5] == ["id", "sev", "area", "location", "finding"]:
-        return True
-    return bool(cells) and all(re.fullmatch(r":?-{3,}:?", cell or "") for cell in cells)
-
-def render_table_finding(line):
-    item = table_finding(line)
-    if not item:
-        return None
-    location = item["location"]
-    loc = f" {location}" if location and location not in {"-", "—"} else ""
-    return f'- **{item["id"]} [{item["severity"]}] {item["area"]}**{loc} — {item["finding"]}'
-
-def bullet_blocks(section_lines):
-    blocks = []
-    current = []
-    saw_structured = False
-    in_fence = False
-    for line in section_lines:
-        stripped = line.lstrip()
-        if stripped.startswith(("```", "~~~")):
-            if current:
-                blocks.append(current)
-                current = []
-            in_fence = not in_fence
-            continue
-        if in_fence:
-            continue
-        if line.startswith("## "):
-            break
-        table_block = render_table_finding(line)
-        if table_block:
-            saw_structured = True
-            if current:
-                blocks.append(current)
-                current = []
-            blocks.append([table_block])
-            continue
-        if is_table_noise(line):
-            continue
-        if re.match(r"^\s*(?:[-*]|\d+\.)\s+", line):
-            saw_structured = True
-            if current:
-                blocks.append(current)
-            current = [line]
-        elif current:
-            current.append(line)
-        elif line.strip():
-            blocks.append([line])
-    if current:
-        blocks.append(current)
-    if saw_structured:
-        return blocks
-    paragraph = "\n".join(section_lines).strip()
-    return [[paragraph]] if paragraph else []
-
-def render_block(block, limit=520):
-    text = "\n".join(block).strip()
-    text = re.sub(r"^\s*\d+\.\s+", "- ", text)
-    if not text.startswith(("- ", "* ")):
-        text = "- " + text
-    return shorten(text, limit)
-
-def blocks_for(*names):
-    blocks = []
-    for name in names:
-        if name in sections:
-            blocks.extend(bullet_blocks(sections[name]))
-    return blocks
-
-def severity(block):
-    text = "\n".join(block)
-    match = re.search(rf"\*\*(?:{ID_PATTERN}\s+)?\[(critical|high|medium|low|nit)\]", text, re.I)
-    if match:
-        return {"critical": 0, "high": 1, "medium": 2, "low": 3, "nit": 4}[match.group(1).lower()]
-    for line in block:
-        item = table_finding(line)
-        if item:
-            return {"critical": 0, "high": 1, "medium": 2, "low": 3, "nit": 4}[item["severity"]]
-    return 99
-
-def render_blocks(blocks, limit=520):
-    return [render_block(block, limit) for block in blocks]
-
-def section_text(name, body, collapse=False):
-    body = [line for line in body if line.strip()]
-    if not body:
-        return []
-    if collapse:
-        return [
-            "<details>",
-            f"<summary>{name} ({len(body)} item(s))</summary>",
-            "",
-            *body,
-            "",
-            "</details>",
-            "",
-        ]
-    return [f"## {name}", *body, ""]
-
-metadata_prefixes = (
-    "# ",
-    "**Review decision:**",
-    "**Result:**",
-    "**Scope:**",
-    "**Verification:**",
-    "**Reproduction:**",
-    "**Adversarial review:**",
-    "**Target:**",
-    "**Rounds:**",
-    "**Mix per round:**",
-    "**Focus:**",
-    "**Commit mode:**",
-)
-
-metadata = []
-i = 0
-while i < len(preamble):
-    line = preamble[i]
-    stripped = line.strip()
-    if stripped.startswith("**Report path:**"):
-        i += 1
-        continue
-    if any(stripped.startswith(prefix) for prefix in metadata_prefixes):
-        metadata.append(stripped)
-        i += 1
-        while i < len(preamble):
-            continuation = preamble[i].strip()
-            if not continuation:
-                break
-            if any(continuation.startswith(prefix) for prefix in metadata_prefixes):
-                break
-            # Metadata lines are often wrapped by markdown formatters. Preserve
-            # their continuation as part of the same compacted metadata line.
-            metadata[-1] = squeeze(f"{metadata[-1]} {continuation}")
-            i += 1
-        continue
-    i += 1
-
-if not any(line.startswith("# ") for line in metadata):
-    metadata.insert(0, "# ⚒️ review-anvil report")
-
-icount = inline_count()
-if icount:
-    metadata.append(f"**Inline findings:** {icount} anchored comment(s) posted with this review.")
-
-metadata.append(
-    f"_Compact GitHub summary: generated report was {len(text)} characters; "
-    "findings were converted to a scan-friendly index._"
-)
-
-failure = blocks_for("Failure")
-needs = blocks_for("Findings", "Needs Attention")
-if not needs:
-    all_blocks = []
-    for name in order:
-        all_blocks.extend(bullet_blocks(sections.get(name, [])))
-    material = [block for block in all_blocks if severity(block) <= 2]
-    material.sort(key=severity)
-    needs = material
-
-fixes = blocks_for("Fixes / Would Apply", "Would-apply summary")
-notes = blocks_for("Non-Blocking Notes", "Suggestions")
-deferred = blocks_for("Deferred / Out-of-Scope", "Deferred items", "Out-of-scope follow-ups")
-details = blocks_for("Run Details", "Total")
-
-out = []
-out.extend(marker_lines)
-out.extend(metadata)
-out.append("")
-
-out.extend(section_text("Failure", render_blocks(failure, 900)))
-
-if needs:
-    out.extend(section_text("Findings", render_blocks(needs, 140)))
-else:
-    out.extend(section_text("Findings", ["No in-scope findings were confirmed."]))
-
-out.extend(section_text("Fixes / Would Apply", render_blocks(fixes, 140), collapse=len(fixes) > 6))
-out.extend(section_text("Non-Blocking Notes", render_blocks(notes, 140), collapse=True))
-out.extend(section_text("Deferred / Out-of-Scope", render_blocks(deferred, 140), collapse=True))
-out.extend(section_text("Run Details", render_blocks(details, 140), collapse=True))
-if footer_lines:
-    if footer_lines[0] != "---":
-        out.append("---")
-    out.extend(footer_lines)
-    out.append("")
-
-compact = "\n".join(out).rstrip() + "\n"
-if len(compact) > max_chars:
-    compact += (
-        "\n_This compact summary still exceeds the configured compaction "
-        "trigger because all findings are preserved._\n"
-    )
-
-report.write_text(compact)
-print(
-    f"pr-helper: compacted oversized GitHub report from {len(text)} to {len(compact)} chars "
-    f"(full copy: {full})",
-    file=sys.stderr,
-)
-PY
+    # Historical versions rewrote long reports into a compact summary before
+    # posting. Review output is now kept lossless; if GitHub rejects an
+    # unusually large payload, the original report remains on disk for the
+    # caller to rewrite intentionally and retry.
+    return 0
 }
 
 process_inline_comments_for_github() {
-    local inline_json="${1:-}" min_severity="${REVIEW_ANVIL_INLINE_MIN_SEVERITY:-medium}" max_chars="${REVIEW_ANVIL_INLINE_MAX_CHARS:-900}"
+    local inline_json="${1:-}" min_severity="${REVIEW_ANVIL_INLINE_MIN_SEVERITY:-medium}"
     [[ -n "$inline_json" && -f "$inline_json" ]] || return 0
-    [[ "$max_chars" =~ ^[0-9]+$ ]] \
-        || die "REVIEW_ANVIL_INLINE_MAX_CHARS must be a positive integer, got '$max_chars'"
-    [[ "$max_chars" -gt 0 ]] || return 0
 
-    _py - "$inline_json" "$min_severity" "$max_chars" <<'PY'
+    _py - "$inline_json" "$min_severity" <<'PY'
 import json
 import os
 import re
@@ -508,7 +165,6 @@ from pathlib import Path
 
 inline = Path(sys.argv[1])
 min_severity = sys.argv[2].lower()
-max_chars = int(sys.argv[3])
 enable_suggestions = os.environ.get("REVIEW_ANVIL_ENABLE_SUGGESTIONS", "1") != "0"
 
 rank = {"critical": 0, "high": 1, "medium": 2, "low": 3, "nit": 4}
@@ -543,27 +199,6 @@ def infer_severity(item):
     # Unknown severity stays visible; medium is the least surprising default.
     return "medium"
 
-def squeeze(value):
-    return re.sub(r"\s+", " ", (value or "").strip())
-
-def shorten(value, limit):
-    value = squeeze(value)
-    if len(value) <= limit:
-        return value
-    cut = value.rfind(" ", 0, max(0, limit - 3))
-    if cut < 80:
-        cut = max(0, limit - 3)
-    return value[:cut].rstrip() + "..."
-
-def split_blocks(body):
-    body = body.strip()
-    if not body:
-        return "", []
-    parts = [p.strip() for p in re.split(r"\n\s*\n", body) if p.strip()]
-    if not parts:
-        return "", []
-    return parts[0], parts[1:]
-
 def append_suggestion(body, item):
     suggestion = item.get("suggestion")
     if suggestion is None:
@@ -581,40 +216,8 @@ def append_suggestion(body, item):
         return body
     return body.rstrip() + "\n\n```suggestion\n" + suggestion + "\n```"
 
-def compact_body(body, item):
-    body = append_suggestion(body or "", item)
-    if len(body) <= max_chars:
-        return body
-
-    suggestion_blocks = re.findall(r"```suggestion\n.*?```", body, flags=re.S)
-    prose = re.sub(r"\n*```suggestion\n.*?```\n*", "\n\n", body, flags=re.S).strip()
-    header, rest = split_blocks(prose)
-    if not header:
-        header = shorten(prose, min(max_chars, 220))
-        rest = []
-
-    budget = max_chars - sum(len(b) + 2 for b in suggestion_blocks)
-    if budget < 300:
-        budget = 300
-
-    if not rest:
-        compact = shorten(header, budget)
-    elif len(rest) == 1:
-        compact = header + "\n\n" + shorten(rest[0], max(120, budget - len(header) - 2))
-    else:
-        mechanism = shorten(rest[0], 260)
-        fix = shorten(rest[-1], max(120, budget - len(header) - len(mechanism) - 10))
-        if not re.match(r"^(fix|suggested fix|a fix)[:.]", fix, re.I):
-            fix = "Fix: " + fix
-        compact = header + "\n\n" + mechanism + "\n\n" + fix
-
-    if suggestion_blocks:
-        compact = compact.rstrip() + "\n\n" + "\n\n".join(suggestion_blocks)
-    return compact
-
 kept = []
 filtered = 0
-compacted = 0
 suggested = 0
 
 for item in items:
@@ -626,9 +229,7 @@ for item in items:
         filtered += 1
         continue
     original_body = item.get("body") or ""
-    body = compact_body(original_body, item)
-    if body != original_body:
-        compacted += 1
+    body = append_suggestion(original_body, item)
     if "```suggestion" in body and "```suggestion" not in original_body:
         suggested += 1
     clean = {key: item[key] for key in allowed if key in item}
@@ -636,10 +237,10 @@ for item in items:
     kept.append(clean)
 
 inline.write_text(json.dumps(kept, indent=2) + "\n")
-if filtered or compacted or suggested:
+if filtered or suggested:
     print(
         "pr-helper: inline comments processed "
-        f"({filtered} summary-only, {compacted} compacted, {suggested} suggestion block(s) added)",
+        f"({filtered} summary-only, {suggested} suggestion block(s) added)",
         file=sys.stderr,
     )
 PY

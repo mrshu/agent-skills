@@ -13,7 +13,7 @@ The skill orchestrates six steps:
 2. `scripts/pr-helper.sh post-start` — post a "starting" top-level PR comment cc'ing the original author, explaining what's about to happen and that the comment will be edited with the final summary. Captures the comment's ID (for the later edit) and start timestamp. The author gets a GitHub notification.
 3. The [`review-anvil`](../review-anvil/SKILL.md) engine in `commit_mode=per_fix` on a branch-vs-base diff (NOT a PR-locator target — the engine's "PR-target / per_fix incompatibility" rule forbids that combination; this preset deliberately routes around it by targeting the local branch directly). The engine writes the final synthesized report to `report_path` — on failure paths too.
 4. `git push` — once, after requested rounds plus any adaptive continuation complete (or converge early) and only if the engine reported no failures and the build/test gate ended green, to publish the fix commits to the PR.
-5. `scripts/pr-helper.sh post-update` — compact the final report if needed, then PATCH-edit the starting comment to replace its body with the final report (outcome=success) or a failure summary (outcome=failure). GitHub does NOT notify on edits, so the author isn't pinged again — the original `cc @author` notification at step 2 is the only ping.
+5. `scripts/pr-helper.sh post-update` — PATCH-edit the starting comment to replace its body with the full final report (outcome=success) or a failure summary (outcome=failure). GitHub does NOT notify on edits, so the author isn't pinged again — the original `cc @author` notification at step 2 is the only ping.
 6. Surface the final report inline + the comment URL to the user.
 
 ## Inputs
@@ -149,7 +149,7 @@ bash <helper-path> post-update "$HOST" "$OWNER" "$REPO" "$N" "$COMMENT_ID" "$MAR
 
 On a `success` outcome the helper also re-applies dismissed-finding suppression to the report before editing the comment (non-fatal: if the thread lookup fails, it warns and posts the unfiltered report — a dangling "starting" comment would be worse).
 
-The helper compacts oversized report bodies before editing the comment, using the same `REVIEW_ANVIL_GITHUB_MAX_CHARS` default (`12000`) and `<REPORT_PATH>.full.md` local backup as `review-anvil-pr`. Compaction preserves every finding while converting bulky prose into a scan-friendly index, so the PR timeline stays readable even if an engine run produces an archival report instead of a compact summary.
+The helper posts the report body as written instead of compacting or shortening it. If GitHub rejects an unusually large payload, the update fails loudly and leaves the report artifact in place; the running agent should rewrite the report with the same findings, rationale, and actionable detail in a better organized form, then retry the update.
 
 `$OUTCOME` is `success` or `failure`. The script PATCH-edits the starting comment (identified by `$COMMENT_ID`), replacing its body entirely with:
 

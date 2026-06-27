@@ -91,8 +91,8 @@ TASK
 Review the target above. Be very critical. Surface issues across your
 lens. IMPORTANT: research only — do not edit any files.
 Return every finding you can defend from the code in front of you.
-Keep each finding compact: prioritize precise evidence and a usable fix
-path over long explanation.
+Keep each finding focused but complete: include the precise evidence,
+downstream consequence, and a usable fix path without dumping a transcript.
 
 Review principles:
 - Do not review the diff in isolation. You have read access to the

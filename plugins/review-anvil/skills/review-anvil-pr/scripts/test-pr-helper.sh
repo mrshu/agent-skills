@@ -28,7 +28,7 @@ make_report() {
         printf '%s\n\n' "$REPRODUCTION_LINE"
         printf '**Adversarial review:** targeted, 2 agents; 2 upheld, 1 hardened, 0 deferred, 0 dropped.\n\n'
         printf '## Findings\n'
-        printf -- '- **RAVF001 [medium] auth** `src/auth.ts:12` — finding 01 has a long explanation that should compact while retaining the finding number 01 and still point to the inline comment.\n'
+        printf -- '- **RAVF001 [medium] auth** `src/auth.ts:12` — finding 01 has a long explanation that should post in full while retaining the finding number 01 and still point to the inline comment.\n'
         printf -- '- **RAVF002 [high] db** `src/db.ts:8` — finding 02 remains inline.\n'
         printf -- '- **RAVF003 [low] docs** `README.md:4` — finding 03 stays summary-only.\n'
         printf '\n## Non-Blocking Notes\n'
@@ -48,7 +48,7 @@ make_inline() {
     "line": 12,
     "side": "RIGHT",
     "severity": "medium",
-    "body": "**[medium] auth** — Refresh accepts missing state.\n\nThe handler rotates the session before validating the state token, so a stale tab can mint a new session after the old token should have failed. This paragraph is intentionally long so the inline processor has to compact it into something readable without losing the core point.\n\nMove state validation before session rotation and add a regression test for missing state.",
+    "body": "**[medium] auth** — Refresh accepts missing state.\n\nThe handler rotates the session before validating the state token, so a stale tab can mint a new session after the old token should have failed. This paragraph is intentionally long so the inline processor has to preserve it without losing the core point.\n\nMove state validation before session rotation and add a regression test for missing state.",
     "suggestion": "validateState(req);\nreturn refreshSession(req);"
   },
   {
@@ -140,7 +140,7 @@ make_dismissals() {
   "acme/widgets#42": [
     {
       "path": "",
-      "pattern": "auth finding 01 has a long explanation that should compact while retaining the finding number 01 and still point to the inline comment",
+      "pattern": "auth finding 01 has a long explanation that should post in full while retaining the finding number 01 and still point to the inline comment",
       "reason": "local-test-dismissal"
     }
   ]
@@ -161,8 +161,9 @@ test_process_inline() {
     jq -e 'map(select(.path == "README.md")) | length == 0' "$inline" >/dev/null
     jq -e '.[0].severity == null and .[0].suggestion == null' "$inline" >/dev/null
     jq -e '.[0].body | contains("```suggestion")' "$inline" >/dev/null
-    jq -e '.[0].body | contains("without...")' "$inline" >/dev/null
-    jq -e '.[0].body | length <= 520' "$inline" >/dev/null
+    jq -e '.[0].body | contains("without losing the core point")' "$inline" >/dev/null
+    jq -e '.[0].body | contains("preserve it without losing")' "$inline" >/dev/null
+    jq -e '.[0].body | contains("without...") | not' "$inline" >/dev/null
     jq -e 'map(select(.path == "src/db.ts")) | length == 1' "$inline" >/dev/null
 }
 
@@ -221,11 +222,14 @@ test_post_review_success() {
     jq -e --arg line "$REPRODUCTION_LINE" '.body | split("\n") | index($line)' "$tmp/review-payload.json" >/dev/null
     jq -e '.body | contains("Adversarial review")' "$tmp/review-payload.json" >/dev/null
     jq -e '.body | contains("github.com/mrshu/agent-skills")' "$tmp/review-payload.json" >/dev/null
-    jq -e '.body | contains("Inline findings") and contains("2 anchored comment")' "$tmp/review-payload.json" >/dev/null
+    jq -e '.body | contains("finding 01 has a long explanation that should post in full")' "$tmp/review-payload.json" >/dev/null
+    jq -e '.body | contains("Compact GitHub summary") | not' "$tmp/review-payload.json" >/dev/null
     jq -e '.comments | length == 2' "$tmp/review-payload.json" >/dev/null
     jq -e '.comments[] | has("severity") | not' "$tmp/review-payload.json" >/dev/null
     jq -e '.comments[] | has("suggestion") | not' "$tmp/review-payload.json" >/dev/null
     jq -e '.comments[0].body | contains("```suggestion")' "$tmp/review-payload.json" >/dev/null
+    jq -e '.comments[0].body | contains("preserve it without losing the core point")' "$tmp/review-payload.json" >/dev/null
+    jq -e '.comments[0].body | contains("without...") | not' "$tmp/review-payload.json" >/dev/null
     jq -e '[.comments[].path] | index("README.md") | not' "$tmp/review-payload.json" >/dev/null
     assert_file_missing "$report"
     assert_file_missing "$inline"
@@ -260,7 +264,8 @@ test_post_fallback_comment() {
     grep -q 'Adversarial review' "$tmp/comment.md"
     grep -q 'github.com/mrshu/agent-skills' "$tmp/comment.md"
     grep -q 'finding 01' "$tmp/comment.md"
-    grep -q '<details>' "$tmp/comment.md"
+    grep -q 'Non-Blocking Notes' "$tmp/comment.md"
+    ! grep -q 'Compact GitHub summary' "$tmp/comment.md"
     assert_file_missing "$report"
     assert_file_missing "$inline"
     assert_file_missing "$tmp/report.md.approval.json"
@@ -292,7 +297,8 @@ test_post_update_success() {
     jq -e --arg line "$REPRODUCTION_LINE" '.body | split("\n") | index($line)' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("Adversarial review")' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("github.com/mrshu/agent-skills")' "$tmp/patch.json" >/dev/null
-    jq -e '.body | contains("Inline findings") and contains("2 anchored comment")' "$tmp/patch.json" >/dev/null
+    jq -e '.body | contains("finding 01 has a long explanation that should post in full")' "$tmp/patch.json" >/dev/null
+    jq -e '.body | contains("Compact GitHub summary") | not' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("Completed:")' "$tmp/patch.json" >/dev/null
     assert_file_missing "$report"
     assert_file_missing "$inline"
@@ -355,42 +361,41 @@ test_post_dismisses_id_prefixed_report_findings() {
     assert_file_missing "$tmp/report.md.approval.json"
 }
 
-test_compact_handles_tables_and_legacy_id_prefixes() {
-    local tmp report
+test_compact_report_preserves_body_losslessly() {
+    local tmp report expected
     tmp="$(mktemp -d)"
     trap "rm -rf '$tmp'" RETURN
 
     report="$tmp/report.md"
+    expected="$tmp/expected.md"
     {
         printf '# ⚒️ review-anvil report\n\n'
         printf '**Result:** legacy ID compatibility fixture.\n\n'
         printf '## Findings\n'
         printf '| ID | Sev | Area | Location | Finding |\n'
         printf '|---|---|---|---|---|\n'
-        printf '| RAVF001 | H | db | `src/db.ts:8` | table rows compact as individual findings. |\n'
-        printf -- '- **F-001 [medium] auth** `src/auth.ts:12` — dashed legacy IDs still compact.\n'
+        printf '| RAVF001 | H | db | `src/db.ts:8` | table rows stay in the full report. |\n'
+        printf -- '- **F-001 [medium] auth** `src/auth.ts:12` — dashed legacy IDs stay untouched.\n'
         printf '\n## Fixes / Would Apply\n'
         printf -- '- **RAVW001 [medium] auth** — would commit as `fix(auth): validate state`; covers RAVF001\n'
         printf '\n## Deferred / Out-of-Scope\n'
-        printf -- '- **W-001 [medium] config** — legacy would-apply IDs still compact.\n'
+        printf -- '- **W-001 [medium] config** — legacy would-apply IDs stay untouched.\n'
     } >"$report"
+    cp "$report" "$expected"
 
     REVIEW_ANVIL_GITHUB_MAX_CHARS=1 "$HELPER" compact-report "$report" >/tmp/review-anvil-legacy-compact.out
 
-    grep -Fq 'RAVF001 [high] db' "$report"
-    grep -Fq 'F-001 [medium] auth' "$report"
-    grep -Fq 'RAVW001 [medium] auth' "$report"
-    grep -Fq 'W-001 [medium] config' "$report"
-    ! grep -Fq '| ID | Sev |' "$report"
-    grep -q 'Compact GitHub summary' "$report"
+    cmp -s "$expected" "$report"
+    [[ ! -e "$report.full.md" ]] || fail "compact-report should not create a full-copy artifact"
 }
 
-test_compact_rejects_invalid_and_ignores_fenced_ids() {
-    local tmp report
+test_compact_report_preserves_invalid_and_fenced_text() {
+    local tmp report expected
     tmp="$(mktemp -d)"
     trap "rm -rf '$tmp'" RETURN
 
     report="$tmp/report.md"
+    expected="$tmp/expected.md"
     {
         printf '# ⚒️ review-anvil report\n\n'
         printf '**Result:** invalid ID fixture.\n\n'
@@ -402,34 +407,33 @@ test_compact_rejects_invalid_and_ignores_fenced_ids() {
         printf -- '- **RAVF999 [high] fenced** — fenced examples are not findings.\n'
         printf '```\n'
     } >"$report"
+    cp "$report" "$expected"
 
     REVIEW_ANVIL_GITHUB_MAX_CHARS=1 "$HELPER" compact-report "$report" >/tmp/review-anvil-invalid-compact.out
 
-    grep -q 'No in-scope findings were confirmed' "$report"
-    ! grep -Fq 'F001 [high]' "$report"
-    ! grep -Fq 'F1 [high]' "$report"
-    ! grep -Fq 'RAVF-001 [high]' "$report"
-    ! grep -Fq 'RAVF999 [high]' "$report"
+    cmp -s "$expected" "$report"
 }
 
-test_compact_preserves_wrapped_reproduction_metadata() {
-    local tmp report
+test_compact_report_preserves_wrapped_reproduction_metadata() {
+    local tmp report expected
     tmp="$(mktemp -d)"
     trap "rm -rf '$tmp'" RETURN
 
     report="$tmp/report.md"
+    expected="$tmp/expected.md"
     {
         printf '# ⚒️ review-anvil report\n\n'
         printf '**Result:** wrapped metadata fixture.\n'
         printf '**Reproduction:** 4 candidates; 3 confirmed, 1 deferred after\n'
         printf 'failed reproduction.\n\n'
         printf '## Findings\n'
-        printf -- '- **RAVF001 [medium] auth** `src/auth.ts:12` — metadata compaction should preserve the wrapped reproduction line.\n'
+        printf -- '- **RAVF001 [medium] auth** `src/auth.ts:12` — wrapped metadata should stay exactly as generated.\n'
     } >"$report"
+    cp "$report" "$expected"
 
     REVIEW_ANVIL_GITHUB_MAX_CHARS=1 "$HELPER" compact-report "$report" >/tmp/review-anvil-wrapped-reproduction.out
 
-    grep -Fxq "$REPRODUCTION_LINE" "$report"
+    cmp -s "$expected" "$report"
 }
 
 test_post_dismisses_table_report_findings() {
@@ -448,14 +452,14 @@ test_post_dismisses_table_report_findings() {
         printf '## Findings\n'
         printf '| ID | Sev | Area | Location | Finding |\n'
         printf '|---|---|---|---|---|\n'
-        printf '| RAVF001 | M | auth | `src/auth.ts:12` | finding 01 has a long explanation that should compact while retaining the finding number 01 and still point to the inline comment. |\n'
+        printf '| RAVF001 | M | auth | `src/auth.ts:12` | finding 01 has a long explanation that should stay intact while retaining the finding number 01 and still point to the inline comment. |\n'
     } >"$report"
     cat >"$dismissals" <<'JSON'
 {
   "acme/widgets#42": [
     {
       "path": "src/auth.ts",
-      "pattern": "RAVF001 [medium] auth — finding 01 has a long explanation that should compact while retaining the finding number 01 and still point to the inline comment.",
+      "pattern": "RAVF001 [medium] auth — finding 01 has a long explanation that should stay intact while retaining the finding number 01 and still point to the inline comment.",
       "reason": "local-table-dismissal"
     }
   ]
@@ -528,9 +532,9 @@ main() {
     test_post_update_success
     test_post_adversarial_off_downgrades_approval
     test_post_dismisses_id_prefixed_report_findings
-    test_compact_handles_tables_and_legacy_id_prefixes
-    test_compact_rejects_invalid_and_ignores_fenced_ids
-    test_compact_preserves_wrapped_reproduction_metadata
+    test_compact_report_preserves_body_losslessly
+    test_compact_report_preserves_invalid_and_fenced_text
+    test_compact_report_preserves_wrapped_reproduction_metadata
     test_post_dismisses_table_report_findings
     test_dismissal_respects_report_paths
     printf 'test-pr-helper: all e2e checks passed\n'
