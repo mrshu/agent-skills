@@ -111,7 +111,7 @@ If `post-start` fails *before* posting (network blip, gh auth issue), abort — 
 
 ### 4. Activate the engine
 
-Activate the `review-anvil` skill with this argument string (extra user args go after the pinned params; the engine's own `rounds: 3` and `max_rounds: 6` defaults apply when the user doesn't pass them):
+Activate the `review-anvil` skill with this argument string (extra user args go after the pinned params; the engine's own `rounds: 3` default and its diff-size-scaled `max_rounds` cap apply when the user doesn't pass them):
 
 ```
 commit_mode: per_fix, target: <BASE_BRANCH>...HEAD, report_path: <REPORT_PATH>, <extra-user-args>
@@ -123,7 +123,7 @@ Supply the dismissed-findings list captured in step 2 as the engine's `DISMISSED
 
 Note: do **not** pin a PR locator as `target` — the engine's "PR-target / per_fix incompatibility" rule would force `commit_mode=none` and defeat the point of this preset. Targeting the branch directly is the intended escape hatch.
 
-The user may override `rounds:` or `max_rounds:` (defaults are the engine's `rounds: 3`, `max_rounds: 6` for productive loops). They should not override `commit_mode`, `target`, or `report_path` — these are pinned for safety; the step-0 segment-rejection above blocks override attempts.
+The user may override `rounds:` or `max_rounds:` (defaults are the engine's `rounds: 3` and its diff-size-scaled `max_rounds` cap — `rounds` plus 1–3 adaptive rounds, never above the legacy `max(6, rounds)`). They should not override `commit_mode`, `target`, or `report_path` — these are pinned for safety; the step-0 segment-rejection above blocks override attempts.
 
 The engine runs the multi-round loop, committing fix-groups along the way and writing the final synthesized report to `<REPORT_PATH>` when it's done. The engine's default reproduction pass confirms uncertain material findings before they can become fix commits, and the build/test gate (`verify_cmd`, auto-detected unless the user passes one) runs after each round's fixes. Together, the report's Reproduction and Verification lines are the evidence the PR author needs to trust the pushed commits — if the engine recorded `Verification: none detected`, that caveat travels to the PR in the posted report. If reproduction fails for required candidates, those candidates are Deferred and the loop may still finish with other verified fixes. If any round fails (reviewer-all-fail, git-commit error, build/test gate newly red after the revert path), the engine stops the loop and surfaces the failure — **skip the push (step 5) and call `post-update` with `outcome=failure`** (step 6) so the starting comment gets replaced with a failure summary rather than dangling.
 

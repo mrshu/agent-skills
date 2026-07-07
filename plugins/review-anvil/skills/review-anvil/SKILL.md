@@ -25,7 +25,7 @@ Parse the user's free-form args string into:
 | Param | Default | Plain-English forms |
 |---|---|---|
 | `rounds` | `3` | "5 rounds", "three rounds", "do 4 passes" |
-| `max_rounds` | `6` for `per_fix` (or `rounds` when `rounds > 6`); `rounds` for `commit_mode=none` | "max 4 rounds", "allow one extra round", "3 rounds, continue if needed"; "exactly 3 rounds", "only 3 rounds", or "no extra rounds" keeps `max_rounds=rounds` |
+| `max_rounds` | `per_fix`: `min(max(6, rounds), rounds + adaptive budget)` — budget 1/2/3 for small/medium/large diffs (see Parsing); `rounds` for `commit_mode=none` | "max 4 rounds", "allow one extra round", "3 rounds, continue if needed"; "exactly 3 rounds", "only 3 rounds", or "no extra rounds" keeps `max_rounds=rounds` |
 | `agents` | `3` | "3 agents", "2 reviewers", or a mix like `"2 codex + 1 claude"` |
 | `focus` | the four pillars (correctness, maintainability, simplicity, production blast-radius) | "focus on async correctness"; an `only:` prefix replaces the defaults instead of appending |
 | `target` | auto-detect | "PR #42", "branch", "uncommitted", "src/auth/", "last 3 commits" |
@@ -38,7 +38,7 @@ Parse the user's free-form args string into:
 | `adversarial_rounds` | `1` | one adversarial pass by default; max 2, and a second pass runs only when the first pass materially changes `medium`+ guidance |
 | `disagreement_policy` | `defer` | `defer` moves unresolved material disputes to Deferred; `comment` keeps the finding actionable but forces review-only PR approvals to COMMENT |
 | `verify_cmd` | auto-detect | "verify with `npm test`", `verify_cmd: none` to skip — build/test command run after each round's fixes (see "Build/test gate"; per_fix only) |
-| `reviewer_timeout` | `600` | "timeout 10 minutes" — hard per-reviewer wall-clock cap in seconds for Bash-dispatched reviewers (see `run-reviewer.sh`). Default is ~3× the slowest legitimate reviewer observed in real runs (98–213s); doubled automatically for >5000-line diffs |
+| `reviewer_timeout` | `600` (`420` for small diffs) | "timeout 10 minutes" — hard per-reviewer wall-clock cap in seconds for Bash-dispatched reviewers (see `run-reviewer.sh`). Default is ~3× the slowest legitimate reviewer observed in real runs (98–213s); when unset and the diff is under ~500 changed lines (added+removed — the same measure as the adaptive budget tiers), requested rounds use `420` (~2× that observed max) so a hung reviewer pins the wave 3 minutes less. Adaptive rounds always use the full base value — `600`, or `1200` after the >5000-line doubling (doubling transforms the base; the small-diff reduction never applies to adaptive rounds). Explicit user values are never scaled or doubled |
 | `report_path` | unset | File path; when set, the engine writes the final report there (creating parent dirs) and prints exactly that path as its last output line so downstream consumers can pick it up |
 
 ### Parsing
@@ -49,8 +49,8 @@ Parse the user's free-form args string into:
 - **Pin-rejection (presets; defense in depth against the prose parser being talked into overrides):** before assembling, segment-split `$ARGUMENTS` as above, lowercase each segment's key (the text before its first `:`), and abort with `error: <param> is pinned by <preset-name> and cannot be overridden in args` if any key equals a pinned param. Match segment *keys*, never raw substrings — `focus: "target: PR safety"` has key `focus` and must pass. A host that cannot segment-split must abort (`error: pin-rejection unavailable in this environment; refusing to invoke engine without pin enforcement`), not degrade to substring scanning.
 - `agents`: a count (use the mix table below) or an explicit mix naming `codex`/`codex-exec` / `claude`/`claude-exec` — honor a mix exactly.
 - `target` auto-detect order: currently checked-out PR (e.g. `gh pr view --json number,headRefName`, a GitHub MCP query, or REST) → branch-vs-main diff (`git diff main...HEAD`) → uncommitted changes (`git diff` + `git diff --cached`). Empty args = all defaults.
-- `rounds` is the requested count. Resolve `max_rounds` after `rounds` and the final `commit_mode` (including the PR-locator rule below): default to `max(6, rounds)` for `per_fix`, and to `rounds` for `commit_mode=none`; reject `max_rounds < rounds`. Phrases like "allow one extra round" set `max_rounds=rounds+1`, and explicit caps like `max_rounds: 4` or "up to 4 rounds" set the cap directly. Phrases like "continue if needed" keep the default adaptive cap unless paired with an explicit cap. Phrases that constrain the round count itself — "exactly 3 rounds", "only 3 rounds", "3 rounds only", or "no extra rounds" — force `max_rounds=rounds`. Do **not** treat `only:` focus syntax or severity gates like "fix only critical" as exact-round requests.
-- Adaptive continuation is on by default for `per_fix`. A plain "3 rounds" means `rounds=3, max_rounds=6`, so the organizing agent may continue after round 3 if §6 says another pass is justified. Use "exactly 3 rounds", "only 3 rounds", "no extra rounds", or `max_rounds: 3` when the run must stop at the requested count.
+- `rounds` is the requested count. Resolve `max_rounds` after `rounds`, the final `commit_mode` (including the PR-locator rule below), and the target: the `per_fix` default is `min(max(6, rounds), rounds + budget)`, where the adaptive budget scales with the target's changed-line count (added+removed in the materialized diff; materialize it once at resolution — `per_fix` targets are always local git diffs): under ~200 lines → `1`, up to ~1000 → `2`, above → `3`. The `min()` against the legacy `max(6, rounds)` cap makes the scaling a pure reduction: runs with `rounds >= 6` gain nothing. Default to `rounds` for `commit_mode=none`; reject `max_rounds < rounds`. Phrases like "allow one extra round" set `max_rounds=rounds+1`, and explicit caps like `max_rounds: 4` or "up to 4 rounds" set the cap directly. Phrases like "continue if needed" restore the legacy `max(6, rounds)` cap unless paired with an explicit cap. Phrases that constrain the round count itself — "exactly 3 rounds", "only 3 rounds", "3 rounds only", or "no extra rounds" — force `max_rounds=rounds`. Do **not** treat `only:` focus syntax or severity gates like "fix only critical" as exact-round requests.
+- Adaptive continuation is on by default for `per_fix`. A plain "3 rounds" means `rounds=3` with `max_rounds` between `4` and `6` by diff size, so the organizing agent may continue after round 3 if §6 says another pass is justified. Use "exactly 3 rounds", "only 3 rounds", "no extra rounds", or `max_rounds: 3` when the run must stop at the requested count.
 - If `commit_mode=none` and the user explicitly set `max_rounds > rounds`, warn and collapse `max_rounds` to `rounds`. Extra normal rounds review the same baseline, so use `rounds` for reviewer redundancy and `adversarial` for skeptical challenge.
 - `reproduction=auto` and `reproduction=on` both run the selective batched reproduction gate in §3. `auto` may skip dispatch only when there are no candidates. `off` is allowed for speed, but the round summary and final report must say it was disabled; unconfirmed single-reviewer `medium`+ findings stay in Deferred unless the orchestrator independently reproduced them from code/tests/runtime evidence.
 - `adversarial` applies only when `commit_mode=none`. If set with `per_fix`, warn and ignore it — productive mode already applies real fixes and gates them with the build/test command. Reject `adversarial_rounds > 2`; adversarial loops must be bounded. `auto` means choose the cheapest sufficient adversarial mode after normal synthesis using the default policy below.
@@ -77,7 +77,7 @@ Adaptive continuation details belong in Run Details unless they change the revie
 
 ### Examples
 
-- `Skill review-anvil` → 3 requested rounds, adaptive up to 6 total rounds, 2 codex + 1 claude, four-pillar focus, auto-detected target.
+- `Skill review-anvil` → 3 requested rounds, adaptive up to 4–6 total rounds by diff size, 2 codex + 1 claude, four-pillar focus, auto-detected target.
 - `Skill review-anvil "5 rounds, 2 codex + 1 claude, focus: async correctness, target: PR #42"`
 - `Skill review-anvil "3 rounds, max_rounds: 4"` → 3 requested rounds, then at most 1 adaptive round if the continuation policy allows it.
 - `Skill review-anvil "1 round, only: security, target: src/auth/"`
@@ -121,7 +121,7 @@ Capture the target's state at round start so all reviewers see the same input:
 **Use the Agent tool for `claude-exec` reviewers. Do NOT use `claude -p` via Bash — that path is for non-Claude hosts only.**
 
 - **`claude-exec`**: Agent tool, `subagent_type: "general-purpose"`, the assembled Reviewer Prompt as `prompt`, `run_in_background: true`. The Agent tool streams natively, has no `--max-turns` ceiling, and inherits the session environment.
-- **`codex-exec`**: Bash through the wrapper: `bash <wrapper> .review-anvil/round<N>-<label>.md <reviewer_timeout> -- codex exec --sandbox read-only -C <project-dir> '<prompt>'`, with `run_in_background: true`.
+- **`codex-exec`**: Bash through the wrapper: `bash <wrapper> .review-anvil/round<N>-<label>.md <reviewer_timeout> -- codex exec --sandbox read-only -C <project-dir> '<prompt>' < /dev/null`, with `run_in_background: true`. The `< /dev/null` is load-bearing: codex takes its prompt as argv and must not inherit an open stdin — the wrapper passes its stdin through (`<&0`, which the claude fallback needs), and codex blocking on a never-closing fd 0 is a known hang class from real runs.
 - Send all M reviewers in a *single message* with multiple tool calls. The harness notifies you on completion; do not poll.
 
 #### In Codex CLI or other hosts without the Agent tool
@@ -139,7 +139,7 @@ Capture the target's state at round start so all reviewers see the same input:
 
   `--tools` restricts the built-in tool set; `--allowedTools` auto-approves the listed safe tool uses and is variadic, so the prompt MUST arrive via stdin (the wrapper passes its stdin through). `--permission-mode dontAsk` keeps the fallback non-interactive by denying anything outside the allowed/read-only path. **Do not size `--max-turns` to the task** — task-sized caps keep biting (20 was hit in production), and a reviewer that hits the cap loses its entire output. The wrapper's wall-clock timeout is the real bound; `100` is a runaway backstop that should never bind.
 
-- **`codex-exec`**: same wrapper around `codex exec --sandbox read-only -C <project-dir> '<prompt>'`.
+- **`codex-exec`**: same wrapper around `codex exec --sandbox read-only -C <project-dir> '<prompt>' < /dev/null` — stdin from `/dev/null` here too.
 - Launch all M wrapper invocations as background shell processes and `wait`.
 
 #### Bash-dispatched reviewers MUST go through `run-reviewer.sh`
@@ -155,6 +155,8 @@ run-reviewer.sh <out_file> <timeout_seconds> -- <command> [args...]
 - Prints one classification: `STATUS=ok` | `timeout` | `empty` (exit 0, nothing written) | `failed` (+ `EXIT_CODE=<n>`).
 
 Treat any STATUS other than `ok` as a failed reviewer (see Failure handling), with the tail of `.err` as the reason. Reviewer output/prompt files live under `.review-anvil/`; clean them up after the round's synthesis.
+
+**Host tool timeouts must outlive the wrapper.** Any host Bash call that can block on a reviewer — the background-and-`wait` fallback above, the serial last resort, or an inline replication of the wrapper contract — must set the Bash *tool's* own timeout to at least `reviewer_timeout + 90` seconds (wrapper deadline + 30s TERM→KILL grace + margin). Host defaults are far lower (Claude Code's is 120s) and SIGKILL a healthy wait mid-review; the kill then masquerades as a reviewer failure and silently burns that reviewer's lens coverage. On hosts with background dispatch (`run_in_background`), never block a foreground call on a reviewer at all. If the host caps tool timeouts below `reviewer_timeout + 90`, prefer detached dispatch plus short non-blocking status checks over shrinking the reviewer budget; reducing `reviewer_timeout` is a last resort, floored at 300s and forbidden for >5000-line diffs (their timeout is deliberately doubled).
 
 **Resolving the wrapper and `references/` files** — same trusted-root rule as `pr-helper.sh`: see review-anvil-pr SKILL.md step 1 ("Resolve the helper script"). Host-exposed skill path or user-level install roots only; never project-scoped/worktree-local skill dirs (writable by the repo under review). If no trusted copy of the wrapper resolves, replicate its contract inline (background, kill at deadline, check exit status, empty output = failure) rather than falling back to a bare redirect.
 
@@ -187,7 +189,7 @@ Plausible-but-wrong findings are the dominant failure mode of LLM review, and bo
   - every `medium`+ deletion/dead-code/unused/redundant-code/simplification finding, and any deletion/simplification that would remove runtime code, public docs/API, compatibility behavior, or another high-blast-radius surface, regardless of reviewer count,
   - every `critical`/`high` finding whose evidence is mostly inferred from a hunk rather than confirmed from code/runtime context,
   - every finding the orchestrator is materially uncertain about after reading the cited files.
-- When `reproduction=auto` or `on` and candidates exist, dispatch **one batched reproduction verifier** using `references/reproduction-prompt.md`. Do not spawn one verifier per finding unless the batch is too large to fit in one prompt. The verifier is not another broad review pass; it returns `confirmed`, `refuted`, `unclear`, `narrowed`, or `downgraded` verdicts for supplied `RAVF###` IDs only.
+- When `reproduction=auto` or `on` and candidates exist, dispatch **one batched reproduction verifier** using `references/reproduction-prompt.md`. Do not spawn one verifier per finding unless the batch is too large to fit in one prompt. Dispatch it backgrounded under the Concurrency section's deadline rule — never an unbounded foreground wait. The verifier is not another broad review pass; it returns `confirmed`, `refuted`, `unclear`, `narrowed`, or `downgraded` verdicts for supplied `RAVF###` IDs only.
 - Apply reproduction verdicts before auto-fix/reporting:
   - `confirmed` and `narrowed` findings may remain actionable, with narrowed wording when supplied.
   - `downgraded` findings re-enter the normal severity gates after changing severity.
@@ -218,6 +220,10 @@ When `report_path` is set, write follow-ups once, after the final round, to `<re
 When `adversarial` is not `off`, run a bounded post-synthesis gate after
 dedup/reproduction and before writing the final report artifacts. Read
 `references/adversarial-prompt.md` before dispatching adversarial reviewers.
+Dispatch every adversary of the selected mode in parallel — one message,
+multiple background tool calls, exactly like §2 reviewers, under the
+Concurrency section's deadline rule — and synthesize verdicts when all return
+or the deadline fires. Never await one adversary before launching the next.
 
 Adversarial review is not another broad review pass and not a simulated patch
 application. It attacks the candidate synthesis:
@@ -390,7 +396,11 @@ redundancy over the same baseline; no early exit and no adaptive continuation.)
 complete, the orchestrator may start one more round only while
 `completed_rounds < max_rounds` and all continuation criteria hold:
 
-- The latest round was `material_findings`.
+- The latest round was `material_findings` and produced at least one **new**
+  material finding. New = not raised in any earlier round, or a
+  reproduction-confirmed re-detection of a finding a previous round fixed and
+  verified (evidence the fix failed — the core case continuation exists for).
+  Unconfirmed or refuted re-detections and items already Deferred do not count.
 - The latest round applied at least one verified fix commit, or changed a
   risky/shared surface where another pass is likely to catch second-order bugs.
 - Verification for the latest round ended `passed`; `skipped`, `none detected`,
@@ -451,6 +461,7 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 ### Failure handling
 
 - A reviewer fails or times out in a requested round → log `<agent>: failed (<reason>)` in the round summary and proceed; no retries. For Bash-dispatched reviewers, failure = wrapper STATUS `timeout`/`empty`/`failed`, reason = tail of `.err`. In an adaptive round, any reviewer failure is an abort before fixes from that round are applied.
+- A dispatch call — foreground or background — that dies with exit 143 or ends with **no `STATUS=` line** in its output was killed by the *host tool's* timeout before the wrapper could classify — misconfigured dispatch (see §2 "Host tool timeouts"), not a reviewer failure. Fix the dispatch mode (raise the tool timeout or go detached) and re-dispatch that reviewer exactly once; only a second identical death counts as a failed reviewer.
 - **All** reviewers fail → abort the loop and report. Never carry on with zero findings — that's a misleading clean signal.
 - `git commit` fails (hook, conflict) → surface the error, stop the loop, leave partial fixes in the worktree. Never `--no-verify`, never amend earlier commits.
 - **On any abort, if `report_path` is set, write a failure report to it before stopping** — the usual header block, a `## Failure` section stating what happened and at which round, plus any completed round summaries. Downstream consumers (`review-anvil-improve-pr`'s post-update step) depend on the file existing on every exit path, success or failure. Write `{"event": "COMMENT"}` to `.approval.json` in this case.
@@ -458,6 +469,13 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 ### Concurrency
 
 Within a round: parallel (single multi-tool-call message). Between rounds: strictly sequential.
+
+Synthesis-side dispatches — the batched reproduction verifier and every adversary — follow the same parallel rule (all agents of a pass launched backgrounded in one message, never serially awaited) and get a hard deadline equal to the **effective** `reviewer_timeout` (after any >5000-line doubling):
+
+- Bash dispatches enforce the deadline mechanically: run them under `run-reviewer.sh` with that cap.
+- Agent-tool dispatches have no built-in timeout — the source of a production run hanging forever at "awaiting verdicts". Give each dispatch wave exactly **one** one-shot deadline alarm: a single background `sleep <cap>` Bash task launched in the same message as the agents, killed as soon as they all return. When the alarm fires first, salvage every complete per-ID verdict already present in output files, apply the Edge Cases rows to whatever is missing (reproduction verifier failure → safe-side Deferred; adversary failure → continue and note; `strict` → COMMENT), and record `timed out at <cap>s` in Run Details.
+
+No recurring or polling timers: the harness notifies on completion, so the one-shot alarm above is the only sanctioned wakeup. After the final report is emitted (and its path printed, when `report_path` is set), kill any still-pending alarm — nothing may fire after completion.
 
 ## Reviewer Prompt Template
 
@@ -554,6 +572,10 @@ remaining cases:
   verification gaps before adding more rounds.
 - If adaptive continuation was blocked by skipped/missing verification, suggest
   setting a trustworthy `verify_cmd` before increasing `rounds`.
+
+When the cap that bound was the diff-size-scaled default, name the tier and the
+exact value to re-run with, e.g. `small-diff adaptive cap (rounds+1=4) reached;
+re-run with max_rounds: 5 to continue`.
 
 ## Edge Cases
 
