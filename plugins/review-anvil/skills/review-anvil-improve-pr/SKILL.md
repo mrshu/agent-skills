@@ -75,13 +75,13 @@ Capture all values. Echo to the user: `improving PR: $HOST/$OWNER/$REPO#$N — $
 
 On non-zero exit, surface the script's stderr verbatim and stop. Do not dispatch reviewers.
 
-Then fetch the PR's dismissed findings (resolved review threads + local suppressions) for the reviewer prompts:
+Then fetch the PR's complete status-aware review history for the reviewer prompts:
 
 ```bash
-bash <helper-path> dismissed "$HOST" "$OWNER" "$REPO" "$N"
+bash <helper-path> history "$HOST" "$OWNER" "$REPO" "$N"
 ```
 
-Capture the output — an itemized list, or `None.` — for step 4. On non-zero exit, abort: re-litigating feedback the author already resolved is exactly what this lookup prevents.
+Capture the output — an itemized open/resolved/outdated/reported/suppressed ledger, or `None.` — for step 4. On non-zero exit, abort: every PR run must account for feedback already shown to the author.
 
 ### 3. Post the "starting" comment
 
@@ -119,7 +119,7 @@ commit_mode: per_fix, target: <BASE_BRANCH>...HEAD, report_path: <REPORT_PATH>, 
 
 `<BASE_BRANCH>` and `<REPORT_PATH>` come from step 2. Using `<BASE_BRANCH>...HEAD` (three-dot diff) targets exactly the commits that distinguish this PR from its base. Pinning `report_path` makes the engine write the final synthesized report to a file that step 6 (`post-update`) can read.
 
-Supply the dismissed-findings list captured in step 2 as the engine's `DISMISSED FINDINGS FOR THIS PR` reviewer-prompt block — the branch target means the engine won't fetch it itself.
+Supply the ledger captured in step 2 as the engine's `PR REVIEW HISTORY` reviewer-prompt block — the branch target means the engine won't fetch it itself. Reviewers must revalidate open, resolved, and summary-only reported items against the current head; resolved is conversation state, not proof of a fix.
 
 Note: do **not** pin a PR locator as `target` — the engine's "PR-target / per_fix incompatibility" rule would force `commit_mode=none` and defeat the point of this preset. Targeting the branch directly is the intended escape hatch.
 
@@ -147,7 +147,7 @@ Always run this step, regardless of step 4/5 outcome. Pass `outcome=success` onl
 bash <helper-path> post-update "$HOST" "$OWNER" "$REPO" "$N" "$COMMENT_ID" "$MARKER" "$REPORT_PATH" "$AUTHOR" "$OUTCOME" "$STARTED_AT"
 ```
 
-On a `success` outcome the helper also re-applies dismissed-finding suppression to the report before editing the comment (non-fatal: if the thread lookup fails, it warns and posts the unfiltered report — a dangling "starting" comment would be worse).
+On a `success` outcome the helper refreshes the full prior-feedback ledger and re-applies duplicate-thread suppression before editing the comment. If that lookup fails, it changes the update to `outcome=failure` and explains why in the comment; it never posts an unfiltered success report, and it still avoids leaving a dangling "starting" comment.
 
 The helper posts the report body as written instead of compacting or shortening it. If GitHub rejects an unusually large payload, the update fails loudly and leaves the report artifact in place; the running agent should rewrite the report with the same findings, rationale, and actionable detail in a better organized form, then retry the update.
 
@@ -177,7 +177,7 @@ Surface the engine's final report inline. Echo a two-line summary:
 
 ## Constraints
 
-- Requires `gh`, `uuidgen`, `jq` (a real binary — gh's `--jq` is built-in gojq and doesn't count), plus `uv` (preferred; falls back to `python3`) for dismissed-finding handling. `verify-checkout` preflights all of these so a missing dependency fails before the expensive review. The helper honors the same environment switches as `review-anvil-pr` (`REVIEW_ANVIL_NO_APPROVE`, `REVIEW_ANVIL_SKIP_DISMISSED`, `REVIEW_ANVIL_DISMISSALS`).
+- Requires `gh`, `uuidgen`, `jq` (a real binary — gh's `--jq` is built-in gojq and doesn't count), plus `uv` (preferred; falls back to `python3`) for PR-feedback history handling. `verify-checkout` preflights all of these so a missing dependency fails before the expensive review. The helper honors the same environment switches as `review-anvil-pr` (`REVIEW_ANVIL_NO_APPROVE`, legacy-named `REVIEW_ANVIL_SKIP_DISMISSED`, `REVIEW_ANVIL_DISMISSALS`).
 - **Mutates the local working tree and pushes to the PR.** Use `review-anvil-pr` (read-only + comment) when you only want feedback without applying fixes.
 - The user must already be on the PR's branch with a clean worktree. The verify-checkout step enforces this and gives clear recovery instructions on failure (e.g. `gh pr checkout <N>`).
 - The PR must be one you have push access to. `git push` will fail with a normal git error if not — the script doesn't pre-check push permissions.

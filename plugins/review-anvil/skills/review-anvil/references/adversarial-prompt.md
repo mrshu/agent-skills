@@ -6,7 +6,7 @@ rule as other references.
 
 Adversarial review is a post-synthesis gate. Normal reviewers have already
 reviewed the target and the orchestrator has already deduped findings, checked
-dismissed feedback, run any required reproduction, and assigned stable IDs to
+prior PR feedback, run any required reproduction, and assigned stable IDs to
 surviving candidate findings (`RAVF001`, `RAVF002`, ...) and would-apply plans
 (`RAVW001`, `RAVW002`, ...). The adversary does not perform a fresh broad
 review. It attacks the candidate synthesis.
@@ -22,7 +22,7 @@ You are not doing a fresh broad review. Your job is to attack the candidate
 synthesis:
 
 - finding validity: false positives, wrong line anchors, wrong scope,
-  dismissed feedback, over-severity, missing reachability evidence
+  mishandled prior feedback, over-severity, missing reachability evidence
 - fix proportionality: harmful_fix, bloated_fix, tech_debt, unnecessary new
   dependencies, non-local churn, future maintenance burden, unsafe deletions,
   brittle tests, or fixes that solve symptoms instead of root cause
@@ -32,7 +32,8 @@ synthesis:
 INPUTS
 - TARGET: <same snapshot/diff/context normal reviewers saw>
 - SCOPE OF REVIEW: <PR scope sentence, if available>
-- DISMISSED FINDINGS: <same dismissed block>
+- PR REVIEW HISTORY: <same status-aware history block; verify that open and
+  resolved-but-still-present items were not silently treated as new or fixed>
 - CANDIDATE FINDINGS: <stable IDs, severity, evidence, suggested_fix>
 - WOULD-APPLY PLANS: <stable IDs, commit subject/type/area, plan>
 - REPRODUCTION SUMMARY: <off/skipped/effects and any deferred candidates>
@@ -41,7 +42,7 @@ INPUTS
 
 Rules:
 - A generic concern is not enough. Cite concrete code, configuration, tests,
-  runtime behavior, dismissed-thread state, or PR scope evidence.
+  runtime behavior, status-aware PR feedback, or PR scope evidence.
 - Do not propose patches. Improve prose fix paths only.
 - Do not create fresh broad-review findings. If attacking a proposed fix reveals
   a second-order risk caused by following that fix plan, target the relevant

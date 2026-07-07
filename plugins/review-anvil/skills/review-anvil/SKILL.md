@@ -111,7 +111,7 @@ Capture the target's state at round start so all reviewers see the same input:
 - Non-PR targets (branch, uncommitted, path): materialize the diff with the appropriate `git diff …`.
 - PR targets (always `commit_mode=none`): fetch the PR's diff via `gh pr diff <N> -R <owner>/<repo>` (or equivalent MCP/REST). The local worktree is irrelevant — reviewers see the PR as it exists on GitHub.
 - Whenever PR context is available — a PR-locator target, or a preset that supplies it (`review-anvil-improve-pr` does, after `verify-checkout`) — fetch the PR title/body/base branch/file list too, then infer the PR's intended scope in one sentence (e.g. "performance optimization in annotation seeding", "left-sidebar UX reorganization"). Put that scope in every reviewer prompt. A finding is actionable only if the PR introduces/regresses it or if it directly undermines the PR's stated purpose. Obvious, high-confidence pre-existing defects may be mentioned, but only under a separate "Out-of-scope follow-ups" section — never as blockers or inline actionable review comments for the current PR.
-- Likewise gather the **dismissed findings** before dispatch: when a preset supplied the list (improve-pr captures it at verify-checkout time), use that; for PR-locator targets fetch it yourself via `pr-helper.sh dismissed <host> <owner> <repo> <n>` (ships with `review-anvil-pr`; paginated, retried once). Include the itemized list in every reviewer prompt (DISMISSED FINDINGS block) and never report those findings again unless the new diff materially reintroduces the same bug in different code. If the lookup fails after retry, abort rather than risk repeating feedback the author already resolved — unless the user opted into degraded mode (`REVIEW_ANVIL_SKIP_DISMISSED=1`), which also forces the review decision to COMMENT.
+- Likewise gather the complete **PR review history** before dispatch: when a preset supplied the ledger (improve-pr captures it at verify-checkout time), use that; for PR-locator targets fetch it via `pr-helper.sh history <host> <owner> <repo> <n>` (ships with `review-anvil-pr`; threads, review bodies, and fallback comments are paginated and retried once). Include the status-tagged ledger in every reviewer prompt (PR REVIEW HISTORY block): `open` threads, `resolved` threads, `outdated` anchors, summary-only `reported` findings, prior `deferred`/`review-dismissed` items, and explicit local `suppressed` findings. Pending reviews are not shown to the author and are excluded. Before dispatch, semantically coalesce entries with the same root cause (summary wording often differs from its inline comment), retaining every source URL and state; explicit suppression wins, otherwise preserve all observed states. If lookup fails after retry, abort rather than review without prior feedback — unless the user opted into degraded mode (`REVIEW_ANVIL_SKIP_DISMISSED=1`), which also forces the review decision to COMMENT.
 - Note `git rev-parse HEAD` so the round summary can reference the exact baseline (informational-only for PR targets).
 
 ### 2. Dispatch reviewers in parallel
@@ -181,10 +181,10 @@ When all reviewers return:
 
 Plausible-but-wrong findings are the dominant failure mode of LLM review, and both downstream actions are expensive: a bogus fix commit pollutes the branch, a bogus finding posted to a PR burns the author's trust. After dedup:
 
-- **Dismissed check first (orchestrator judgment).** When a DISMISSED FINDINGS list exists, compare every merged finding against it *semantically* — same root cause counts even when the wording differs completely ("missing CSRF check" matches "no token validation on state-changing route"). Matches move to Deferred with reason `previously dismissed (<source>)` and are never auto-fixed or posted. You are the primary matcher here; the post-time script gate in `pr-helper.sh` only catches near-verbatim repeats (path match + text similarity ≥ 0.9) as a deterministic backstop.
+- **Prior-feedback check first (orchestrator judgment).** Compare every merged finding against PR REVIEW HISTORY *semantically* — same root cause counts even when wording differs. Revalidate `open`, `resolved`, and summary-only `reported` items against the current head. An open item that remains real is a carry-forward finding and must retain its effect on severity/approval, but must not create a duplicate inline thread; a resolved item means only that GitHub discussion was closed, not that the code was proven fixed. Record a still-present resolved item as `resolved-but-still-present` in the summary and do not create a new inline thread. Items now fixed/stale become one-line status notes. Explicit local `suppressed` items are never auto-fixed or posted as actionable findings, but remain as compact status-only audit rows. The post-time helper catches near-verbatim repeats (exact path + text similarity ≥ 0.9) as a deterministic duplicate-thread backstop.
 - **Scope/artifact filter next (orchestrator judgment).** Drop or move to out-of-scope follow-ups before reproduction when the claim is about archived design notes, changelogs, old migration examples, generated fixtures, vendored files, or historical docs that are not the review's live product surface. Do not spend verifier budget proving historical provenance is stale. Conversely, live docs that users rely on — README usage, CLI help, API docs, config reference, plugin metadata, or marketplace copy — are product surface and may become reproduction candidates when they drift from code/runtime behavior.
 - Assign stable report-local IDs before reproduction/adversarial dispatch: findings are `RAVF001`, `RAVF002`, ... and would-apply plans are `RAVW001`, `RAVW002`, ... . The canonical grammar is `RAV([FW])([0-9]{3,})`; the PR helper may accept legacy dashed IDs like `F-001` / `W-001` at parsing boundaries, but new reports should emit only the canonical no-punctuation form.
-- Build `REPRODUCTION CANDIDATES` after dismissed-check filtering and ID assignment:
+- Build `REPRODUCTION CANDIDATES` after prior-feedback classification and ID assignment:
   - every `medium`+ finding raised by exactly one reviewer,
   - every `medium`+ deletion/dead-code/unused/redundant-code/simplification finding, and any deletion/simplification that would remove runtime code, public docs/API, compatibility behavior, or another high-blast-radius surface, regardless of reviewer count,
   - every `critical`/`high` finding whose evidence is mostly inferred from a hunk rather than confirmed from code/runtime context,
@@ -209,7 +209,7 @@ alongside the PR helper tests.
 
 A pre-existing issue outside the PR's scope can still be worth noting, but it must not become an inline/blocking PR finding. Classify each out-of-scope follow-up:
 
-- **Auto-approved follow-up** — create/queue separate work when all are true: severity is `critical`/`high` (or clearly reproducible `medium`), the bug is confirmed from code/tests/runtime evidence, it is not a product decision/style preference, it is not already tracked/resolved/dismissed, and the fix is plausibly separable from the current PR.
+- **Auto-approved follow-up** — create/queue separate work when all are true: severity is `critical`/`high` (or clearly reproducible `medium`), the bug is confirmed from code/tests/runtime evidence, it is not a product decision/style preference, it is not already tracked in prior PR feedback or explicitly suppressed, and the fix is plausibly separable from the current PR.
 - **Needs human triage** — mention only as a non-blocking follow-up when the issue is real but severity/ownership/product intent is ambiguous.
 - **Do not surface** — drop if speculative, low/nit, a product decision, already dismissed/tracked, or only discoverable by reviewing unrelated code paths deeply.
 
@@ -296,8 +296,8 @@ Default policy:
   any GitHub suggestion block, any `critical`/`high` actionable/deferred item,
   any would-apply plan that removes code, adds dependencies, changes behavior
   non-locally, touches auth/security/data/schema/migrations/concurrency/config,
-  or looks like abstraction/tech-debt risk, or when dismissed/resolved PR review
-  history touches the same files/root causes, or when the diff is large by
+  or looks like abstraction/tech-debt risk, or when open/resolved prior PR
+  feedback touches the same files/root causes, or when the diff is large by
   meaningful changed size.
 - Use `full` when the meaningful diff is very large or cross-cutting across
   several subsystems, unless exclusions show it is mostly mechanical/generated
@@ -330,7 +330,7 @@ Apply verdicts conservatively:
 - `uphold` when the finding and fix path survive challenge.
 
 Generic uncertainty does **not** defer a finding. The adversary must cite code,
-configuration, tests, runtime behavior, dismissed-thread state, or PR scope
+configuration, tests, runtime behavior, status-aware PR feedback, or PR scope
 evidence. Adversaries must not create new actionable findings. If they notice a
 new issue while attacking a `RAVW###` plan, record it only as a second-order plan
 risk or follow-up; it remains Deferred unless the orchestrator runs a separate
@@ -367,6 +367,7 @@ Append to running output:
 ### Round N — <convergence flag>
 - Parameters: rounds=3, max_rounds=3, target=acme/widgets#42 [pin], commit_mode=none [pin], focus=4-pillar
 - Reviewers: <list dispatched>
+- Prior feedback: none | <open> open, <resolved> resolved, <reported> summary-only, <suppressed> explicit suppressions; <still-present>/<fixed>/<stale> after validation
 - Findings: C critical, H high, M medium, L low, N nit
 - Fixes applied: K commits (<sha1>..<shaN>)   # or "0 (review-only)"
 - Verification: <cmd> — passed | failed → round reverted | pre-existing failures (no new) | none detected | skipped   # per_fix only
@@ -454,7 +455,7 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 
    Include `"head_sha"` — the `HEAD_SHA` the preset captured at init/verify-checkout time — so the posting helper can verify the approval still matches the reviewed state (it downgrades to COMMENT if the PR head moved mid-run). Include `"adversarial_mode"` and set `"approval_allowed": false` when approval must be mechanically disabled (for example explicit `adversarial: off` in a PR run).
 
-   Use `APPROVE` for review-only PR runs when all of these hold: `approve` is not `never`, at least one reviewer succeeded, there are no `critical`/`high` actionable in-scope findings, no `critical`/`high` in-scope deferred finding needs author action, no unresolved `critical`/`high` adversarial dispute remains, and remaining items are only `medium`/`low`/`nit` findings, suggestions, deferred notes, or out-of-scope follow-ups. Medium-and-lower in-scope findings should still be posted clearly, but the review event is approval: leave those fixes to the author. Use `COMMENT` otherwise. Out-of-scope follow-ups do not block approval.
+   Use `APPROVE` for review-only PR runs when all of these hold: `approve` is not `never`, at least one reviewer succeeded, there are no `critical`/`high` actionable in-scope findings, no `critical`/`high` in-scope deferred finding needs author action, no prior `critical`/`high` open or resolved-but-still-present item remains unaddressed, no unresolved `critical`/`high` adversarial dispute remains, and remaining items are only `medium`/`low`/`nit` findings, suggestions, deferred notes, or out-of-scope follow-ups. Medium-and-lower in-scope findings should still be posted clearly, but the review event is approval: leave those fixes to the author. Use `COMMENT` otherwise. Out-of-scope follow-ups do not block approval.
 4. Print the report path as the last output line; the `.inline.json` and `.approval.json` files are implied by convention.
 5. For out-of-scope follow-ups, write the sibling `<report_path>.followups.json` once, after the final round, using the follow-ups schema from §3 "Approving out-of-scope follow-ups" (NOT the `.approval.json` schema above). The posting helper deletes it after a successful post, so any consumer (surfacing follow-ups to the user, filing issues for `auto_approved` entries after duplicate search) must read it **before** the post/post-update step — the presets do this.
 
@@ -479,7 +480,7 @@ No recurring or polling timers: the harness notifies on completion, so the one-s
 
 ## Reviewer Prompt Template
 
-**Read `references/reviewer-prompt.md` (next to this SKILL.md; same trusted-root resolution as scripts) at dispatch time.** It defines the per-reviewer lens assignment (the four pillars partition across reviewers — M identical prompts buy redundancy and dedup work, not coverage), the context block (TARGET / PRIOR ROUNDS / SCOPE OF THIS REVIEW / DISMISSED FINDINGS / YOUR LENS), the fixed task block (review principles, severity guide, structured finding keys, the fenced findings-YAML output contract), and the fill-in rules (itemized PRIOR ROUNDS construction; `commit_mode=none` variations). Reviewers return prose findings only — never patches.
+**Read `references/reviewer-prompt.md` (next to this SKILL.md; same trusted-root resolution as scripts) at dispatch time.** It defines the per-reviewer lens assignment (the four pillars partition across reviewers — M identical prompts buy redundancy and dedup work, not coverage), the context block (TARGET / PRIOR ROUNDS / SCOPE OF THIS REVIEW / PR REVIEW HISTORY / YOUR LENS), the fixed task block (review principles, severity guide, structured finding keys, the fenced findings-YAML output contract), and the fill-in rules (itemized PRIOR ROUNDS construction; `commit_mode=none` variations). Reviewers return prose findings only — never patches.
 
 When `adversarial` is enabled, normal reviewers still use `reviewer-prompt.md`.
 When `reproduction` dispatches, the verifier uses
@@ -507,6 +508,13 @@ The final report is a PR comment body. It must include every finding, but it sho
 **Verification:** <verify_cmd used, or "none detected" / "skipped">   # per_fix only
 **Reproduction:** off | skipped (no candidates) | <C> candidates; <confirmed> confirmed, <refuted> refuted, <deferred> deferred, <downgraded> downgraded
 **Adversarial review:** off | <mode>, <A> agents; <upheld> upheld, <hardened> hardened/simplified, <deferred> deferred, <dropped> dropped
+
+## Prior Feedback Status
+<For PR-context runs, include every semantically coalesced item from PR REVIEW HISTORY exactly once as
+`still-open`, `resolved-but-still-present`, `fixed`, `stale/outdated`, or
+`suppressed`, with its original URL/reason. Omit for non-PR runs. These status
+rows are part of the review decision even when duplicate inline comments are
+suppressed. Never imply that GitHub `resolved` proves a fix.>
 
 ## Findings
 <Every confirmed finding appears exactly once. Critical/high findings go first, then medium, then low/nit. Use severity initials in tables: C critical, H high, M medium, L low, N nit. Keep each row focused; inline comments carry implementation detail for anchored findings, so do not repeat that in every row. If none: "No in-scope findings were confirmed.">
@@ -546,6 +554,7 @@ The final report is a PR comment body. It must include every finding, but it sho
 - Rounds: <completed>/<requested> completed; adaptive off; <convergence note>   # review-only/exact/no-extra runs
 - Mix: <e.g. "2 codex-exec + 1 claude-exec">
 - Focus: <focus list actually used>
+- Prior feedback: none | <total> ledger items; <still-open>/<resolved-but-still-present>/<fixed>/<stale>/<suppressed>
 - Counts: <C critical, H high, M medium, L low, N nit; deferred D; suggestions S>
 - Reproduction: off | skipped | candidates=<C>; effects=<confirmed>/<refuted>/<deferred>/<downgraded>; elapsed=<duration>
 - Adversarial: off | <mode>; agents=<A>; rounds=<R>; effects=<dropped>/<deferred>/<hardened>; approval changed yes/no

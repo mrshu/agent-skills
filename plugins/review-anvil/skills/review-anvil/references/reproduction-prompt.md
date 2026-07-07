@@ -6,7 +6,7 @@ the same trusted-root rule as other references.
 
 Reproduction is a post-synthesis confidence gate. Normal reviewers have already
 reviewed the target and the orchestrator has already deduped findings, checked
-dismissed feedback, and assigned stable candidate IDs (`RAVF001`, `RAVF002`,
+prior PR feedback, and assigned stable candidate IDs (`RAVF001`, `RAVF002`,
 ...). The reproduction verifier does not perform a fresh broad review. It tries
 to prove or disprove the selected candidate findings against concrete evidence.
 
@@ -23,7 +23,7 @@ findings and classify each one.
 INPUTS
 - TARGET: <same snapshot/diff/context normal reviewers saw>
 - SCOPE OF REVIEW: <PR scope sentence, if available>
-- DISMISSED FINDINGS: <same dismissed block>
+- PR REVIEW HISTORY: <same status-aware history block>
 - REPRODUCTION CANDIDATES: <stable IDs, severity, reporter count, anchors,
   reviewer evidence, suggested fix path, and why reproduction is required>
 - RELEVANT RUN CONTEXT: <commit_mode, min_fix_severity, verify_cmd, report mode>

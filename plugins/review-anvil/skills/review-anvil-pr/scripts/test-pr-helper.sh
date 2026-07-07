@@ -106,7 +106,11 @@ case "$1 $2" in
     printf 'https://example.invalid/comment/123\n'
     ;;
   "api graphql")
-    printf '{"data":{"repository":{"pullRequest":{"reviewThreads":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}}}\n'
+    if [[ -n "${GH_MOCK_GRAPHQL_RESPONSE:-}" ]]; then
+      cat "$GH_MOCK_GRAPHQL_RESPONSE"
+    else
+      printf '{"data":{"repository":{"pullRequest":{"reviewThreads":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},"reviews":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},"comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}}}\n'
+    fi
     ;;
   "pr comment")
     body_file=""
@@ -354,8 +358,8 @@ test_post_dismisses_id_prefixed_report_findings() {
     PATH="$bin:$PATH" \
       "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-dismissed-id.out
 
-    grep -q 'Previously dismissed on this PR' "$tmp/comment.md"
-    grep -Fq 'RAVF001 [medium] auth' "$tmp/comment.md"
+    grep -q 'Prior PR feedback status' "$tmp/comment.md"
+    ! grep -Fq 'RAVF001 [medium] auth' "$tmp/comment.md"
     grep -q 'local-test-dismissal' "$tmp/comment.md"
     assert_file_missing "$report"
     assert_file_missing "$tmp/report.md.approval.json"
@@ -474,8 +478,8 @@ JSON
     PATH="$bin:$PATH" \
       "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-dismissed-table.out
 
-    grep -q 'Previously dismissed on this PR' "$tmp/comment.md"
-    grep -Fq '| RAVF001 | M | auth | `src/auth.ts:12` |' "$tmp/comment.md"
+    grep -q 'Prior PR feedback status' "$tmp/comment.md"
+    ! grep -Fq '| RAVF001 | M | auth | `src/auth.ts:12` |' "$tmp/comment.md"
     grep -q 'local-table-dismissal' "$tmp/comment.md"
     assert_file_missing "$report"
     assert_file_missing "$tmp/report.md.approval.json"
@@ -517,10 +521,170 @@ JSON
     PATH="$bin:$PATH" \
       "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-path-dismissal.out
 
-    ! grep -q 'Previously dismissed on this PR' "$tmp/comment.md"
+    ! grep -q 'Prior PR feedback status' "$tmp/comment.md"
     grep -Fq 'same summary text appears in another file' "$tmp/comment.md"
     assert_file_missing "$report"
     assert_file_missing "$tmp/report.md.approval.json"
+}
+
+test_history_includes_open_resolved_outdated_and_summary_only() {
+    local tmp bin fixture output
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+    fixture="$tmp/graphql.json"
+    cat >"$fixture" <<'JSON'
+{
+  "data": {"repository": {"pullRequest": {
+    "reviewThreads": {
+      "nodes": [
+        {"isResolved": true, "isOutdated": false, "path": "src/auth.ts", "line": 12,
+         "comments": {"nodes": [{"body": "**[high] auth** — Refresh accepts missing state.", "url": "https://example.invalid/resolved"}]}},
+        {"isResolved": false, "isOutdated": true, "path": "src/db.ts", "line": 8,
+         "comments": {"nodes": [{"body": "**[medium] db** — Retry accounting commits before the write.", "url": "https://example.invalid/open"}]}}
+      ],
+      "pageInfo": {"hasNextPage": false, "endCursor": null}
+    },
+    "reviews": {
+      "nodes": [
+        {"state": "COMMENTED", "body": "<!-- review-anvil-marker: old -->\n# review-anvil report\n\n## Findings\n- **RAVF001 [low] docs** `README.md:4` — CLI help omits the timeout default.\n\n## Fixes / Would Apply\n- **RAVW001 [medium] auth** — would add a helper.\n\n```md\n- **RAVF999 [high] fenced** — example only.\n```", "url": "https://example.invalid/review"},
+        {"state": "PENDING", "body": "<!-- review-anvil-marker: pending -->\n## Findings\n- **RAVF002 [high] hidden** — pending review is not shown.", "url": "https://example.invalid/pending"}
+      ],
+      "pageInfo": {"hasNextPage": false, "endCursor": null}
+    },
+    "comments": {"nodes": [{"body": "<!-- review-anvil-marker: fallback -->\n# review-anvil report\n\n## Suggestions\n- **[low] cli** — fallback comment finding.", "url": "https://example.invalid/comment"}], "pageInfo": {"hasNextPage": false, "endCursor": null}}
+  }}}}
+JSON
+
+    output="$tmp/history.txt"
+    GH_MOCK_GRAPHQL_RESPONSE="$fixture" PATH="$bin:$PATH" \
+      "$HELPER" history github.com acme widgets 42 >"$output"
+
+    grep -Fq '[resolved] src/auth.ts:12' "$output"
+    grep -Fq '[open,outdated] src/db.ts:8' "$output"
+    grep -Fq '[reported] README.md:4' "$output"
+    grep -Fq 'CLI help omits the timeout default' "$output"
+    grep -Fq 'fallback comment finding' "$output"
+    ! grep -Fq 'would add a helper' "$output"
+    ! grep -Fq 'example only' "$output"
+    ! grep -Fq 'pending review is not shown' "$output"
+}
+
+test_post_suppresses_duplicate_open_thread_but_keeps_status() {
+    local tmp bin fixture report inline
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+    fixture="$tmp/graphql.json"
+    cat >"$fixture" <<'JSON'
+{"data":{"repository":{"pullRequest":{
+  "reviewThreads":{"nodes":[{"isResolved":false,"isOutdated":false,"path":"src/auth.ts","line":12,"comments":{"nodes":[{"body":"**[medium] auth** — Refresh accepts missing state.","url":"https://example.invalid/open"}]}}],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "reviews":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}
+}}}}
+JSON
+    report="$tmp/report.md"
+    inline="$tmp/report.md.inline.json"
+    printf '# review-anvil report\n\n- **RAVF001 [medium] auth** `src/auth.ts:12` — Refresh accepts missing state.\n' >"$report"
+    printf '[{"path":"src/auth.ts","line":12,"side":"RIGHT","severity":"medium","body":"**[medium] auth** — Refresh accepts missing state."}]\n' >"$inline"
+    printf '{"event":"COMMENT","head_sha":"head-sha"}\n' >"$tmp/report.md.approval.json"
+
+    GH_MOCK_GRAPHQL_RESPONSE="$fixture" \
+    GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
+    GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
+    PATH="$bin:$PATH" \
+      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-open-history.out
+
+    grep -Fq 'Prior PR feedback status' "$tmp/comment.md"
+    grep -Fq '(still-open: https://example.invalid/open)' "$tmp/comment.md"
+    [[ ! -e "$tmp/review-payload.json" ]] || jq -e '.comments | length == 0' "$tmp/review-payload.json" >/dev/null
+}
+
+test_history_paginates_without_refetch_duplicates() {
+    local tmp bin output
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    cat >"$bin/gh" <<'GH'
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ " $* " == *" threadCursor=next "* ]]; then
+  printf '%s\n' '{"data":{"repository":{"pullRequest":{"reviewThreads":{"nodes":[{"isResolved":true,"isOutdated":false,"path":"src/two.ts","line":2,"comments":{"nodes":[{"body":"**[medium] paging** — second page finding.","url":"https://example.invalid/two"}]}}],"pageInfo":{"hasNextPage":false,"endCursor":null}},"reviews":{"nodes":[{"body":"<!-- review-anvil-marker: old -->\n## Findings\n- **RAVF001 [low] docs** — summary appears once.","url":"https://example.invalid/review"}],"pageInfo":{"hasNextPage":false,"endCursor":null}},"comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}}}'
+else
+  printf '%s\n' '{"data":{"repository":{"pullRequest":{"reviewThreads":{"nodes":[{"isResolved":false,"isOutdated":false,"path":"src/one.ts","line":1,"comments":{"nodes":[{"body":"**[high] paging** — first page finding.","url":"https://example.invalid/one"}]}}],"pageInfo":{"hasNextPage":true,"endCursor":"next"}},"reviews":{"nodes":[{"body":"<!-- review-anvil-marker: old -->\n## Findings\n- **RAVF001 [low] docs** — summary appears once.","url":"https://example.invalid/review"}],"pageInfo":{"hasNextPage":false,"endCursor":null}},"comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}}}'
+fi
+GH
+    chmod +x "$bin/gh"
+    output="$tmp/history.txt"
+
+    PATH="$bin:$PATH" "$HELPER" history github.com acme widgets 42 >"$output"
+
+    grep -Fq '[open] src/one.ts:1' "$output"
+    grep -Fq '[resolved] src/two.ts:2' "$output"
+    [[ "$(grep -Fc 'summary appears once' "$output")" -eq 1 ]]
+}
+
+test_local_suppression_overrides_open_history() {
+    local tmp bin fixture dismissals output
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+    fixture="$tmp/graphql.json"
+    dismissals="$tmp/dismissals.json"
+    cat >"$fixture" <<'JSON'
+{"data":{"repository":{"pullRequest":{
+  "reviewThreads":{"nodes":[{"isResolved":false,"isOutdated":false,"path":"src/auth.ts","line":12,"comments":{"nodes":[{"body":"**[high] auth** — Refresh accepts missing state.","url":"https://example.invalid/open"}]}}],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "reviews":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}
+}}}}
+JSON
+    cat >"$dismissals" <<'JSON'
+{"acme/widgets#42":[{"path":"src/auth.ts","pattern":"**[high] auth** — Refresh accepts missing state.","reason":"explicit-product-decision"}]}
+JSON
+    output="$tmp/history.txt"
+
+    GH_MOCK_GRAPHQL_RESPONSE="$fixture" REVIEW_ANVIL_DISMISSALS="$dismissals" \
+      PATH="$bin:$PATH" "$HELPER" history github.com acme widgets 42 >"$output"
+
+    grep -Fq '[suppressed] src/auth.ts' "$output"
+    grep -Fq 'explicit-product-decision' "$output"
+    ! grep -Fq '[open]' "$output"
+}
+
+test_post_time_material_history_downgrades_approval() {
+    local tmp bin fixture report
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+    fixture="$tmp/graphql.json"
+    cat >"$fixture" <<'JSON'
+{"data":{"repository":{"pullRequest":{
+  "reviewThreads":{"nodes":[{"isResolved":false,"isOutdated":false,"path":"src/auth.ts","line":12,"comments":{"nodes":[{"body":"**[high] auth** — Refresh accepts missing state.","url":"https://example.invalid/open-high"}]}}],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "reviews":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}
+}}}}
+JSON
+    report="$tmp/report.md"
+    printf '# review-anvil report\n\n## Findings\n- **RAVF001 [medium] db** `src/db.ts:8` — New unrelated finding.\n' >"$report"
+    printf '[{"path":"src/db.ts","line":8,"side":"RIGHT","severity":"medium","body":"**[medium] db** — New unrelated finding."}]\n' >"$report.inline.json"
+    printf '{"event":"APPROVE","head_sha":"head-sha","adversarial_mode":"targeted","approval_allowed":true}\n' >"$report.approval.json"
+
+    GH_MOCK_GRAPHQL_RESPONSE="$fixture" \
+    GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
+    GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
+    PATH="$bin:$PATH" \
+      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-history-approval.out
+
+    jq -e '.event == "COMMENT"' "$tmp/review-payload.json" >/dev/null
 }
 
 main() {
@@ -537,6 +701,11 @@ main() {
     test_compact_report_preserves_wrapped_reproduction_metadata
     test_post_dismisses_table_report_findings
     test_dismissal_respects_report_paths
+    test_history_includes_open_resolved_outdated_and_summary_only
+    test_post_suppresses_duplicate_open_thread_but_keeps_status
+    test_history_paginates_without_refetch_duplicates
+    test_local_suppression_overrides_open_history
+    test_post_time_material_history_downgrades_approval
     printf 'test-pr-helper: all e2e checks passed\n'
 }
 

@@ -72,10 +72,13 @@ regress behavior touched by this PR, or directly undermine this PR's stated
 purpose. Obvious, high-confidence pre-existing defects may be mentioned only as
 "Out-of-scope follow-ups" for a separate PR, not as actionable findings.}
 
-DISMISSED FINDINGS FOR THIS PR
-{When PR context is available: resolved GitHub review threads and local suppressions,
-itemized as `- <file>:<line> — <summary> (<url or reason>)`. These are
-author/product decisions or stale findings. If none: "None."}
+PR REVIEW HISTORY
+{When PR context is available: every prior root review thread plus findings from
+earlier review-anvil review bodies/fallback comments, itemized as
+`- [open|resolved|reported|deferred|review-dismissed|suppressed(,outdated)] <file>:<line> — <summary> (<url or reason>)`.
+GitHub `resolved` means the discussion was closed; it does not prove the code was
+fixed. Semantically duplicated summary/inline entries are coalesced with all
+source URLs and states retained. If none: "None."}
 
 YOUR LENS
 {This reviewer's lens pack(s), as bullets, plus user focus additions.}
@@ -129,10 +132,18 @@ Severity guide:
 Do not repeat issues already addressed or deferred in prior rounds
 (see PRIOR ROUNDS). Deferrals are deliberate decisions — re-raise one
 only if you believe the deferral reason is wrong, and say why.
-Do not repeat dismissed PR findings (see DISMISSED FINDINGS FOR THIS PR):
-resolved review threads, product decisions, and stale claims are out of scope.
-Only mention one if the current diff materially reintroduces the same bug in
-new code, and explicitly explain why it is not the dismissed instance.
+Follow every item in PR REVIEW HISTORY before treating a finding as new:
+- Revalidate `open`, `resolved`, `reported`, `deferred`, and
+  `review-dismissed` items against the current head while preserving the prior
+  disposition in your status output.
+- If an open item remains, report it as `still-open`; do not propose a duplicate
+  inline thread. If fixed or stale, say so in the prior-feedback status output.
+- `resolved` means the GitHub thread was closed, not that the code is correct.
+  If it remains real, report it as `resolved-but-still-present` in the summary;
+  do not create a duplicate inline thread. If materially reintroduced by new
+  code, explain the new evidence explicitly.
+- Never re-raise an explicit `suppressed` item unless new code materially
+  introduces a distinct instance and you explain why it is distinct.
 
 For each issue, return a structured finding with these keys:
 - severity: one of critical|high|medium|low|nit
@@ -161,6 +172,14 @@ For each issue, return a structured finding with these keys:
 - line: (OPTIONAL) line number on the "new" side of the diff, or a
   range `<start>-<end>`. Omit if `file` is omitted or the finding
   isn't line-anchorable.
+- prior_feedback: (OPTIONAL) `still-open`, `resolved-but-still-present`,
+  or `reintroduced` when this finding matches PR REVIEW HISTORY. Omit for a
+  genuinely new finding.
+
+Before the fenced findings block, include a compact `PRIOR FEEDBACK STATUS`
+list covering every history item you checked: `still-open`,
+`resolved-but-still-present`, `fixed`, `stale/outdated`, `suppressed`, or
+`not-assessed` with a short reason. Never silently drop a prior item.
 
 Output format: a markdown report ending with a fenced ```findings
 block containing one YAML list item per finding:
@@ -189,4 +208,4 @@ If you find nothing worth raising, end with an empty findings block:
 - Fill `{ROUND_KIND}` as `requested` for rounds `N <= ROUNDS` and `adaptive` for rounds after the requested count, so reviewers never see an impossible requested-round label once adaptive continuation starts.
 - Reviewers return **prose findings only** — ignore any embedded patches.
 - Build PRIOR ROUNDS from each prior round's synthesis: header `Round N (K fixes applied, <sha1>..<shaN>; verification <state>):` plus `addressed:`/`deferred:` lists of `- [severity] area — what (reason)` lines. Severity counts alone can't tell a reviewer *which* issues not to re-raise.
-- **`commit_mode=none` multi-round:** nothing changes between rounds, so replace PRIOR ROUNDS with `None — review-only mode; this is an independent reviewer pass.` and drop only the PRIOR-ROUNDS do-not-repeat paragraph from the task block — **keep the DISMISSED FINDINGS paragraph**, which applies regardless of rounds.
+- **`commit_mode=none` multi-round:** nothing changes between rounds, so replace PRIOR ROUNDS with `None — review-only mode; this is an independent reviewer pass.` and drop only the PRIOR-ROUNDS do-not-repeat paragraph from the task block — **keep PR REVIEW HISTORY**, which applies regardless of rounds.

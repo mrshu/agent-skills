@@ -7,7 +7,8 @@
 #
 #   init [<locator>]        — locator parse/auto-detect, gh preflight, marker
 #                             UUID + report path; prints KEY=VALUE lines.
-#   post …                  — suppress dismissed findings, prepend marker,
+#   post …                  — classify prior feedback and suppress duplicate
+#                             inline threads, prepend marker,
 #                             post as PR review (inline) or top-level comment;
 #                             prints the comment URL.
 #   verify-checkout […]     — improve-pr preflight: checkout matches PR head,
@@ -16,8 +17,9 @@
 #                             prints COMMENT_ID/COMMENT_URL/STARTED_AT.
 #   post-update …           — PATCH-edit the starting comment with the final
 #                             report (suppression applied on success outcome).
-#   dismissed …             — print itemized dismissed findings (resolved
-#                             threads + local suppressions) for prompt blocks.
+#   history …               — print all prior PR findings with open/resolved/
+#                             outdated/reported/suppressed status for prompts.
+#   dismissed …             — legacy resolved/suppressed-only history view.
 #   dismiss …               — record a local suppression in the dismissals
 #                             state file ($REVIEW_ANVIL_DISMISSALS).
 #   compact-report …        — legacy no-op; reports are posted without loss.
@@ -26,9 +28,9 @@
 #
 # Environment switches:
 #   REVIEW_ANVIL_NO_APPROVE=1     never submit APPROVE (downgrade to COMMENT)
-#   REVIEW_ANVIL_SKIP_DISMISSED=1 skip dismissed-finding lookups (degraded
-#                                 mode for hosts without GraphQL; also forces
-#                                 APPROVE -> COMMENT)
+#   REVIEW_ANVIL_SKIP_DISMISSED=1 legacy name: skip full PR-history lookups
+#                                 (degraded mode for hosts without GraphQL;
+#                                 also forces APPROVE -> COMMENT)
 #   REVIEW_ANVIL_DISMISSALS=path  local-suppressions state file (default
 #                                 ~/.review-anvil/dismissed-findings.json)
 #   REVIEW_ANVIL_INLINE_MIN_SEVERITY=medium
@@ -129,7 +131,7 @@ _emit_post_result() {
 }
 
 # Resolve a Python runner: prefer uv (which can provision an interpreter
-# itself), fall back to system python3. The dismissed-findings logic is
+# itself), fall back to system python3. The PR-history logic is
 # stdlib-only, so --no-project keeps uv from looking for a pyproject.
 _py() {
     if command -v uv >/dev/null 2>&1; then
@@ -137,7 +139,7 @@ _py() {
     elif command -v python3 >/dev/null 2>&1; then
         python3 "$@"
     else
-        die "neither uv nor python3 found; one is required for dismissed-finding handling (install uv: https://docs.astral.sh/uv/)"
+        die "neither uv nor python3 found; one is required for PR-feedback history handling (install uv: https://docs.astral.sh/uv/)"
     fi
 }
 
@@ -246,27 +248,28 @@ if filtered or suggested:
 PY
 }
 
-# Shared dismissed-findings engine. Modes:
+# Shared PR-feedback-history engine. Modes:
+#   history <owner> <repo> <n>
+#       Print every prior root review thread with its open/resolved/outdated
+#       state, plus summary-only findings from earlier review-anvil reports and
+#       explicit local suppressions. This builds the PR REVIEW HISTORY prompt.
 #   list <owner> <repo> <n>
-#       Print itemized dismissed findings (resolved review threads + local
-#       suppressions), one per line: "- <path>:<line> — <summary> (<source>)",
-#       or "None." — used to build the DISMISSED FINDINGS reviewer-prompt block.
+#       Backwards-compatible resolved/suppressed-only view.
 #   suppress <owner> <repo> <n> <report_path> <inline_json>
-#       Remove dismissed findings from the inline-comments artifact and
-#       DEMOTE matching report-body findings into a "Previously dismissed"
-#       section (never silently delete — a false positive must stay visible).
+#       Remove duplicate prior findings from the inline-comments artifact and
+#       classify matching report-body findings in a status-aware section.
 #
 # Matching is deliberately conservative: inline items require an exact path
-# match AND text similarity >= 0.9; silently dropping a real finding is worse
-# than occasionally repeating a dismissed one. Only each thread's root comment
-# counts as the finding (replies are discussion). The GraphQL fetch is
-# paginated and retried once; on persistent failure the script exits non-zero
+# match AND text similarity >= 0.9. Only each thread's root comment counts as
+# the finding (replies are discussion). The GraphQL fetch is paginated across
+# threads, reviews, and issue comments and retried once; on persistent failure
+# the script exits non-zero
 # and the caller decides whether that is fatal (cmd_post) or a warning
 # (cmd_post_update). Local suppressions come from $REVIEW_ANVIL_DISMISSALS,
 # default ~/.review-anvil/dismissed-findings.json (a legacy
 # ~/.hermes/state/review-anvil-dismissed-findings.json is honored if present).
 # Shape: {"<owner>/<repo>#<N>": [{"path":"...", "pattern":"...", "reason":"..."}]}
-_dismissed_py() {
+_review_history_py() {
     _py - "$@" <<'PY'
 import difflib
 import json
@@ -280,10 +283,10 @@ from pathlib import Path
 mode, owner, repo, n = sys.argv[1:5]
 
 QUERY = r'''
-query($owner:String!,$repo:String!,$number:Int!,$cursor:String){
+query($owner:String!,$repo:String!,$number:Int!,$threadCursor:String,$reviewCursor:String,$commentCursor:String){
   repository(owner:$owner,name:$repo){
     pullRequest(number:$number){
-      reviewThreads(first:100, after:$cursor){
+      reviewThreads(first:100, after:$threadCursor){
         pageInfo{ hasNextPage endCursor }
         nodes{
           isResolved
@@ -293,16 +296,27 @@ query($owner:String!,$repo:String!,$number:Int!,$cursor:String){
           comments(first:50){ nodes{ body author{login} url } }
         }
       }
+      reviews(first:100, after:$reviewCursor){
+        pageInfo{ hasNextPage endCursor }
+        nodes{ body state url author{login} }
+      }
+      comments(first:100, after:$commentCursor){
+        pageInfo{ hasNextPage endCursor }
+        nodes{ body url author{login} }
+      }
     }
   }
 }
 '''
 
-def gh_graphql(cursor):
+def gh_graphql(thread_cursor, review_cursor, comment_cursor):
     args = ["gh", "api", "graphql", "-f", f"owner={owner}", "-f", f"repo={repo}",
             "-F", f"number={n}", "-f", f"query={QUERY}"]
-    if cursor:
-        args += ["-f", f"cursor={cursor}"]
+    for key, value in (("threadCursor", thread_cursor),
+                       ("reviewCursor", review_cursor),
+                       ("commentCursor", comment_cursor)):
+        if value:
+            args += ["-f", f"{key}={value}"]
     for attempt in (1, 2):
         cp = subprocess.run(args, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if cp.returncode == 0:
@@ -310,16 +324,55 @@ def gh_graphql(cursor):
         if attempt == 1:
             time.sleep(2)
     print(cp.stderr.strip() or cp.stdout.strip(), file=sys.stderr)
-    raise SystemExit("pr-helper: could not read resolved PR review threads after retry")
+    raise SystemExit("pr-helper: could not read PR review history after retry")
 
-def fetch_threads():
-    nodes, cursor = [], None
+def fetch_history():
+    threads, reviews, comments = [], [], []
+    thread_cursor = review_cursor = comment_cursor = None
+    thread_done = review_done = comment_done = False
     while True:
-        page = json.loads(gh_graphql(cursor).stdout)["data"]["repository"]["pullRequest"]["reviewThreads"]
-        nodes.extend(page["nodes"] or [])
-        if not page["pageInfo"]["hasNextPage"]:
-            return nodes
-        cursor = page["pageInfo"]["endCursor"]
+        try:
+            payload = json.loads(gh_graphql(thread_cursor, review_cursor, comment_cursor).stdout)
+            if not isinstance(payload, dict):
+                raise TypeError("top-level response is not an object")
+            if payload.get("errors"):
+                raise KeyError(f'GraphQL errors: {payload["errors"]}')
+            pr = payload["data"]["repository"]["pullRequest"]
+            if pr is None:
+                raise KeyError("pullRequest")
+            thread_page = pr["reviewThreads"]
+            review_page = pr["reviews"]
+            comment_page = pr["comments"]
+        except (KeyError, TypeError, json.JSONDecodeError) as exc:
+            raise SystemExit(f"pr-helper: malformed PR review history response: {exc}")
+
+        for name, page in (("reviewThreads", thread_page), ("reviews", review_page),
+                           ("comments", comment_page)):
+            if not isinstance(page, dict) or not isinstance(page.get("pageInfo"), dict):
+                raise SystemExit(f"pr-helper: malformed PR review history response: {name} connection/pageInfo")
+            if "hasNextPage" not in page["pageInfo"] or "endCursor" not in page["pageInfo"]:
+                raise SystemExit(f"pr-helper: malformed PR review history response: {name} pageInfo fields")
+
+        if not thread_done:
+            threads.extend(thread_page.get("nodes") or [])
+            thread_done = not thread_page["pageInfo"]["hasNextPage"]
+            thread_cursor = thread_page["pageInfo"]["endCursor"] if not thread_done else None
+            if not thread_done and not thread_cursor:
+                raise SystemExit("pr-helper: malformed PR review history response: reviewThreads page has no endCursor")
+        if not review_done:
+            reviews.extend(review_page.get("nodes") or [])
+            review_done = not review_page["pageInfo"]["hasNextPage"]
+            review_cursor = review_page["pageInfo"]["endCursor"] if not review_done else None
+            if not review_done and not review_cursor:
+                raise SystemExit("pr-helper: malformed PR review history response: reviews page has no endCursor")
+        if not comment_done:
+            comments.extend(comment_page.get("nodes") or [])
+            comment_done = not comment_page["pageInfo"]["hasNextPage"]
+            comment_cursor = comment_page["pageInfo"]["endCursor"] if not comment_done else None
+            if not comment_done and not comment_cursor:
+                raise SystemExit("pr-helper: malformed PR review history response: comments page has no endCursor")
+        if thread_done and review_done and comment_done:
+            return threads, reviews, comments
 
 def norm(text: str) -> str:
     text = re.sub(r"https?://\S+", " ", text or "")
@@ -330,7 +383,7 @@ def norm(text: str) -> str:
     words = [w for w in text.split() if len(w) > 2 and w not in {"the", "and", "for", "with", "this", "that", "from", "into", "when", "because"}]
     return " ".join(words)
 
-ID_PATTERN = r"(?:RAV[FW]\d{3,}|[FW]-\d{3,})"
+ID_PATTERN = r"(?:RAVF\d{3,}|F-\d{3,})"
 SEVERITY_NAMES = {"critical", "high", "medium", "low", "nit"}
 SEVERITY_INITIALS = {"c": "critical", "h": "high", "m": "medium", "l": "low", "n": "nit"}
 
@@ -348,6 +401,19 @@ def severity_name(value):
     if value in SEVERITY_NAMES:
         return value
     return SEVERITY_INITIALS.get(value)
+
+def severity_from_body(body):
+    match = FINDING_RE.search(body or "")
+    if match:
+        return severity_name(match.group("severity"))
+    for line in (body or "").splitlines():
+        item = table_finding(line)
+        if item:
+            return item["severity"]
+        match = SUMMARY_RE.search(line)
+        if match:
+            return severity_name(match.group("severity"))
+    return None
 
 def table_finding(line):
     stripped = (line or "").strip()
@@ -437,10 +503,25 @@ def state_file():
             return p
     return None
 
-dismissed = []
-for t in fetch_threads():
-    if not t.get("isResolved"):
-        continue
+def same_finding(cand, previous, require_path):
+    cs, ps = cand.get("sig", ""), previous.get("sig", "")
+    if not cs or not ps:
+        return False
+    cpath, ppath = cand.get("path") or "", previous.get("path") or ""
+    if require_path:
+        if not cpath or not ppath or cpath != ppath:
+            return False
+    elif cpath and ppath and cpath != ppath:
+        return False
+    if cs == ps:
+        return True
+    if len(cs) > 35 and len(ps) > 35 and (cs in ps or ps in cs):
+        return True
+    return difflib.SequenceMatcher(None, cs, ps).ratio() >= 0.9
+
+threads, reviews, issue_comments = fetch_history()
+history = []
+for t in threads:
     comments = (t.get("comments") or {}).get("nodes") or []
     if not comments:
         continue
@@ -449,9 +530,75 @@ for t in fetch_threads():
     body = comments[0].get("body") or ""
     sig = signature(body)
     if sig:
-        dismissed.append({"path": t.get("path") or "", "line": t.get("line"),
-                          "sig": sig, "summary": summary(body),
-                          "source": comments[0].get("url") or "resolved-thread"})
+        history.append({"path": t.get("path") or "", "line": t.get("line"),
+                        "sig": sig, "summary": summary(body),
+                        "source": comments[0].get("url") or "review-thread",
+                        "status": "resolved" if t.get("isResolved") else "open",
+                        "severity": severity_from_body(body),
+                        "outdated": bool(t.get("isOutdated"))})
+
+def report_findings(node):
+    body = node.get("body") or ""
+    if (node.get("state") or "").upper() == "PENDING":
+        return []
+    if "review-anvil-marker:" not in body and "review-anvil report" not in body:
+        return []
+    found = []
+    section_status = None
+    in_fence = False
+    for line in body.splitlines():
+        stripped = line.strip()
+        if stripped.startswith(("```", "~~~")):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        if line.startswith("## "):
+            heading = line[3:].strip().lower()
+            if heading.startswith(("findings", "suggestions", "non-blocking")):
+                section_status = "reported"
+            elif heading.startswith("deferred / out-of-scope"):
+                section_status = "deferred"
+            else:
+                section_status = None
+            continue
+        if not section_status:
+            continue
+        match = FINDING_RE.search(line)
+        item = table_finding(line)
+        if match:
+            location = match.group("location") or ""
+            finding_body = line
+        elif item:
+            location = item.get("location") or ""
+            finding_body = line
+        else:
+            continue
+        sig = signature(finding_body)
+        if sig:
+            loc_match = re.match(r"([^:\s]+)(?::(\d+)(?:-(\d+))?)?$", location.strip().strip("`"))
+            parsed_line = None
+            if loc_match and loc_match.group(2):
+                parsed_line = loc_match.group(2)
+                if loc_match.group(3):
+                    parsed_line += f'-{loc_match.group(3)}'
+            status = "review-dismissed" if (node.get("state") or "").upper() == "DISMISSED" else section_status
+            found.append({"path": path_from_location(location), "line": parsed_line,
+                          "sig": sig, "summary": summary(finding_body),
+                          "source": node.get("url") or "prior-review-anvil-report",
+                          "status": status,
+                          "severity": severity_from_body(finding_body),
+                          "outdated": False})
+    return found
+
+# Summary-only and unanchored findings do not create GitHub review threads.
+# Preserve them from earlier review-anvil review bodies and fallback comments,
+# but deduplicate findings already represented by a thread root.
+for node in reviews + issue_comments:
+    for candidate in report_findings(node):
+        if not any(same_finding(candidate, previous, require_path=False)
+                   for previous in history):
+            history.append(candidate)
 
 sp = state_file()
 if sp and sp.exists():
@@ -460,22 +607,32 @@ if sp and sp.exists():
         for item in state.get(f"{owner}/{repo}#{n}", []):
             sig = signature(item.get("pattern", ""))
             if sig:
-                dismissed.append({"path": item.get("path", ""), "line": item.get("line"),
-                                  "sig": sig, "summary": summary(item.get("pattern", "")),
-                                  "source": item.get("reason", "local-suppression")})
+                suppression = {"path": item.get("path", ""), "line": item.get("line"),
+                               "sig": sig, "summary": summary(item.get("pattern", "")),
+                               "source": item.get("reason", "local-suppression"),
+                               "status": "suppressed",
+                               "severity": severity_from_body(item.get("pattern", "")),
+                               "outdated": False}
+                history = [previous for previous in history
+                           if not same_finding(suppression, previous, require_path=False)]
+                history.append(suppression)
     except Exception as exc:
         raise SystemExit(f"pr-helper: invalid dismissal state {sp}: {exc}")
 
-if mode == "list":
-    if not dismissed:
+if mode in {"history", "list"}:
+    selected = history if mode == "history" else [
+        item for item in history if item["status"] in {"resolved", "suppressed"}
+    ]
+    if not selected:
         print("None.")
     else:
-        for d in dismissed:
+        for d in selected:
             if d["path"]:
                 loc = f'{d["path"]}:{d["line"]}' if d.get("line") else d["path"]
             else:
                 loc = "(no file anchor)"
-            print(f'- {loc} — {d["summary"]} ({d["source"]})')
+            flags = d["status"] + (",outdated" if d.get("outdated") else "")
+            print(f'- [{flags}] {loc} — {d["summary"]} ({d["source"]})')
     raise SystemExit(0)
 
 if mode != "suppress":
@@ -483,28 +640,23 @@ if mode != "suppress":
 
 report = Path(sys.argv[5])
 inline = Path(sys.argv[6])
-if not dismissed:
+if not history:
     raise SystemExit(0)
 
-def same_finding(cand, dis, require_path):
-    cs, ds = cand.get("sig", ""), dis.get("sig", "")
-    if not cs or not ds:
-        return False
-    cpath, dpath = cand.get("path") or "", dis.get("path") or ""
-    if require_path:
-        # Inline comments get deleted outright, so demand the strongest
-        # evidence: same file, near-identical text.
-        if not cpath or not dpath or cpath != dpath:
-            return False
-    elif cpath and dpath and cpath != dpath:
-        return False
-    if cs == ds:
-        return True
-    if len(cs) > 35 and len(ds) > 35 and (cs in ds or ds in cs):
-        return True
-    return difflib.SequenceMatcher(None, cs, ds).ratio() >= 0.9
+def display_status(item):
+    status = {
+        "open": "still-open",
+        "resolved": "resolved-but-still-present",
+        "reported": "previously-reported-still-present",
+        "deferred": "previously-deferred-still-present",
+        "review-dismissed": "dismissed-review-still-present",
+    }.get(item["status"], item["status"])
+    return status + (",outdated-anchor" if item.get("outdated") else "")
 
 suppressed = []
+matched_history = []
+categorically_removed = 0
+explicit_suppressions = []
 if inline.exists() and inline.read_text().strip() not in {"", "[]"}:
     items = json.loads(inline.read_text())
     if not isinstance(items, list):
@@ -514,18 +666,27 @@ if inline.exists() and inline.read_text().strip() not in {"", "[]"}:
         if not isinstance(item, dict):
             kept.append(item)  # let posting fail loudly on malformed members
             continue
-        cand = {"path": item.get("path") or "", "sig": signature(item.get("body") or "")}
-        hit = next((d for d in dismissed if same_finding(cand, d, require_path=True)), None)
+        cand = {"path": item.get("path") or "", "sig": signature(item.get("body") or ""),
+                "severity": severity_name(item.get("severity")) or severity_from_body(item.get("body") or "")}
+        hit = next((d for d in history if same_finding(cand, d, require_path=True)), None)
         if hit:
-            suppressed.append({**cand, "summary": summary(item.get("body") or ""), "source": hit["source"]})
+            matched_history.append((hit, cand.get("severity")))
+            if hit["status"] == "suppressed":
+                categorically_removed += 1
+                explicit_suppressions.append({"path": cand["path"],
+                                              "summary": summary(item.get("body") or ""),
+                                              "source": hit["source"], "sig": cand["sig"]})
+            else:
+                suppressed.append({**cand, "summary": summary(item.get("body") or ""),
+                                   "source": hit["source"], "status": display_status(hit)})
         else:
             kept.append(item)
     if len(kept) != len(items):
         inline.write_text(json.dumps(kept, indent=2) + "\n")
 
-# Demote (never delete) matching findings in the report body: matched blocks
-# move to a "Previously dismissed" section so a false positive stays visible
-# to the author instead of vanishing. The walk is fence-aware ("**[" inside a
+# Move matching findings in the report body to a prior-feedback status section.
+# This avoids creating duplicate inline threads while keeping open or resolved-
+# but-still-present findings visible to the author. The walk is fence-aware ("**[" inside a
 # code block must not start a finding) and paragraph-aware (a blank line ends
 # a block only when what follows is not indented continuation or a fence).
 demoted = []
@@ -574,47 +735,87 @@ if report.exists():
             j2 = block_end(i)
             block = lines[i:j2]
             cand = {"path": path_from_block(block), "sig": signature("\n".join(block))}
-            hit = next((d for d in dismissed if same_finding(cand, d, require_path=False)), None)
+            hit = next((d for d in history if same_finding(cand, d, require_path=False)), None)
             if hit:
-                demoted.append({"line": block[0].strip(), "sig": cand["sig"], "source": hit["source"]})
+                matched_history.append((hit, severity_from_body("\n".join(block))))
+                if hit["status"] == "suppressed":
+                    categorically_removed += 1
+                    explicit_suppressions.append({"path": cand["path"],
+                                                  "summary": summary("\n".join(block)),
+                                                  "source": hit["source"], "sig": cand["sig"]})
+                else:
+                    demoted.append({"line": block[0].strip(), "sig": cand["sig"],
+                                    "source": hit["source"], "status": display_status(hit)})
                 i = j2
                 continue
         out.append(line)
         i += 1
-    if demoted or suppressed:
+    if demoted or suppressed or explicit_suppressions:
         demoted_sigs = {d["sig"] for d in demoted}
-        tail = ["", "---", "", "### Previously dismissed on this PR (suppressed)", ""]
-        tail += [f'{d["line"]} _(dismissed: {d["source"]})_' for d in demoted]
-        tail += [f'- **(inline)** {s["path"]} — {s["summary"]} _(dismissed: {s["source"]})_'
+        tail = ["", "---", "", "### Prior PR feedback status (duplicate threads suppressed)", ""]
+        tail += [f'{d["line"]} _({d["status"]}: {d["source"]})_' for d in demoted]
+        tail += [f'- **(inline)** {s["path"]} — {s["summary"]} _({s["status"]}: {s["source"]})_'
                  for s in suppressed if s["sig"] not in demoted_sigs]
+        tail += [f'- **[suppressed]** {s["path"] or "(no file anchor)"} — {s["summary"]} _(explicit suppression: {s["source"]})_'
+                 for s in {item["sig"]: item for item in explicit_suppressions}.values()]
         report.write_text("\n".join(out).rstrip() + "\n" + "\n".join(tail) + "\n")
 
-if suppressed or demoted:
-    print(f"pr-helper: suppressed {len(suppressed)} inline / demoted {len(demoted)} report finding(s) already dismissed on this PR", file=sys.stderr)
+# A material item discovered during the post-time refresh must not race with a
+# previously selected APPROVE event. The final report must account for its URL
+# or local reason on a line that explicitly says fixed/stale; absent or
+# still-present assessments block. This lets a validated fix approve even when
+# the author has not yet clicked Resolve in GitHub.
+report_text = report.read_text() if report.exists() else ""
+def material_item_blocks(item):
+    if item.get("severity") not in {"critical", "high"} or item["status"] == "suppressed":
+        return False
+    source = item.get("source") or ""
+    assessment = next((line.lower() for line in report_text.splitlines()
+                       if source and source in line), "")
+    return not assessment or not any(clear in assessment for clear in ("fixed", "stale/outdated", "stale"))
+
+blocking_prior = any(material_item_blocks(item) for item in history)
+blocking_match = any(severity in {"critical", "high"}
+                     and item["status"] != "suppressed"
+                     for item, severity in matched_history)
+approval = Path(str(report) + ".approval.json")
+if (blocking_prior or blocking_match) and approval.exists():
+    try:
+        decision = json.loads(approval.read_text())
+        if decision.get("event") == "APPROVE":
+            decision["event"] = "COMMENT"
+            decision["approval_allowed"] = False
+            decision["reason"] = "Prior critical/high PR feedback remains open or was matched as still present during the post-time history refresh."
+            approval.write_text(json.dumps(decision, indent=2) + "\n")
+            print("pr-helper: downgraded APPROVE to COMMENT because material prior feedback remains", file=sys.stderr)
+    except Exception as exc:
+        raise SystemExit(f"pr-helper: invalid approval artifact {approval}: {exc}")
+
+if suppressed or demoted or categorically_removed:
+    print(f"pr-helper: suppressed {len(suppressed)} duplicate inline / classified {len(demoted)} prior report finding(s) / removed {categorically_removed} explicit suppression match(es)", file=sys.stderr)
 PY
 }
 
-# Remove/demote findings the PR author already dismissed. Callers choose the
-# failure semantics: cmd_post treats a non-zero exit as fatal (refuse to post
-# possible repeat feedback), cmd_post_update degrades to a warning (the
-# starting comment must always be updated).
-suppress_dismissed_findings() {
+# Refresh prior feedback, suppress duplicate inline threads, and classify
+# matching report findings. cmd_post fails closed; cmd_post_update converts a
+# refresh failure into an explicit failure outcome so its starting comment is
+# still updated without publishing an unfiltered success report.
+suppress_prior_feedback() {
     local host="$1" owner="$2" repo="$3" n="$4" report_path="$5" inline_json="$6"
     if [[ "${REVIEW_ANVIL_SKIP_DISMISSED:-}" == "1" ]]; then
         # Escape hatch for hosts where the GraphQL reviewThreads API is
         # unavailable (GHE without GraphQL, restricted token scopes).
-        # Degraded mode: dismissed findings may be repeated; cmd_post
+        # Degraded mode: prior feedback may be missed or repeated; cmd_post
         # also forces APPROVE -> COMMENT when this is set.
-        printf 'warning: REVIEW_ANVIL_SKIP_DISMISSED=1 — skipping dismissed-finding suppression (degraded mode)\n' >&2
+        printf 'warning: REVIEW_ANVIL_SKIP_DISMISSED=1 — skipping full PR-feedback history handling (degraded mode)\n' >&2
         return 0
     fi
     export GH_HOST="$host"
-    _dismissed_py suppress "$owner" "$repo" "$n" "$report_path" "$inline_json"
+    _review_history_py suppress "$owner" "$repo" "$n" "$report_path" "$inline_json"
 }
 
 cmd_dismissed() {
-    # Print the itemized dismissed-findings list for a PR — consumed by the
-    # presets to build the DISMISSED FINDINGS reviewer-prompt block.
+    # Legacy resolved/suppressed-only view retained for older callers.
     local host="${1:-}" owner="${2:-}" repo="${3:-}" n="${4:-}"
     for v in host owner repo n; do
         [[ -n "${!v}" ]] || die "dismissed: missing <$v>"
@@ -624,7 +825,21 @@ cmd_dismissed() {
         return 0
     fi
     export GH_HOST="$host"
-    _dismissed_py list "$owner" "$repo" "$n"
+    _review_history_py list "$owner" "$repo" "$n"
+}
+
+cmd_history() {
+    # Print the complete status-aware PR feedback ledger for reviewer prompts.
+    local host="${1:-}" owner="${2:-}" repo="${3:-}" n="${4:-}"
+    for v in host owner repo n; do
+        [[ -n "${!v}" ]] || die "history: missing <$v>"
+    done
+    if [[ "${REVIEW_ANVIL_SKIP_DISMISSED:-}" == "1" ]]; then
+        printf 'None. (PR review history lookup skipped: REVIEW_ANVIL_SKIP_DISMISSED=1 — degraded mode)\n'
+        return 0
+    fi
+    export GH_HOST="$host"
+    _review_history_py history "$owner" "$repo" "$n"
 }
 
 cmd_dismiss() {
@@ -695,7 +910,7 @@ _preflight_deps() {
     command -v jq >/dev/null 2>&1 \
         || die "jq not found — required at post time (gh's --jq is built-in gojq, not a jq binary; install jq now so the run doesn't fail after the review)"
     command -v uv >/dev/null 2>&1 || command -v python3 >/dev/null 2>&1 \
-        || die "neither uv nor python3 found — required for dismissed-finding handling (install uv: https://docs.astral.sh/uv/)"
+        || die "neither uv nor python3 found — required for PR-feedback history handling (install uv: https://docs.astral.sh/uv/)"
 }
 
 cmd_init() {
@@ -827,7 +1042,7 @@ cmd_post() {
     fi
 
     # Mechanical approve kill-switches: the engine's approve:never rule is
-    # LLM-enforced prose; these make it (and skipped dismissed lookups, which
+    # LLM-enforced prose; these make it (and skipped PR-history lookups, which
     # invalidate the approval criteria) binding regardless of what the
     # orchestrator wrote into approval.json.
     if [[ "$review_event" == "APPROVE" && "${REVIEW_ANVIL_NO_APPROVE:-}" == "1" ]]; then
@@ -835,7 +1050,7 @@ cmd_post() {
         review_event="COMMENT"
     fi
     if [[ "$review_event" == "APPROVE" && "${REVIEW_ANVIL_SKIP_DISMISSED:-}" == "1" ]]; then
-        printf 'warning: dismissed-finding lookup was skipped, so the approval criteria cannot hold — downgrading APPROVE to COMMENT\n' >&2
+        printf 'warning: PR-feedback history lookup was skipped, so the approval criteria cannot hold — downgrading APPROVE to COMMENT\n' >&2
         review_event="COMMENT"
     fi
     if [[ "$review_event" == "APPROVE" && -f "$approval_json" ]]; then
@@ -870,8 +1085,13 @@ cmd_post() {
         fi
     fi
 
-    suppress_dismissed_findings "$host" "$owner" "$repo" "$n" "$report_path" "$inline_json" \
-        || die "dismissed-finding suppression failed; refusing to post possible repeat findings (report left at $report_path)"
+    suppress_prior_feedback "$host" "$owner" "$repo" "$n" "$report_path" "$inline_json" \
+        || die "prior-feedback refresh failed; refusing to post a review that may ignore or repeat earlier findings (report left at $report_path)"
+    if [[ "$review_event" == "APPROVE" && -f "$approval_json" ]] \
+       && [[ "$(jq -r '.event // "COMMENT"' "$approval_json" 2>/dev/null || printf 'COMMENT')" != "APPROVE" ]]; then
+        printf 'warning: post-time prior-feedback refresh invalidated approval — downgrading to COMMENT\n' >&2
+        review_event="COMMENT"
+    fi
 
     process_inline_comments_for_github "$inline_json"
     compact_report_for_github "$report_path" "$inline_json"
@@ -1171,13 +1391,18 @@ cmd_post_update() {
     command -v jq >/dev/null 2>&1 \
         || die "jq not found — required to PATCH-encode the comment body (gh's --jq is built-in gojq, not a jq binary; install jq)"
 
-    # Suppress dismissed findings on the success path only (a failure summary
-    # has nothing to suppress). Non-fatal: the starting comment must be
-    # updated even if GitHub's thread state is momentarily unreadable —
-    # aborting here would create a dangling "starting" comment.
+    # Refresh prior-feedback state on the success path. If that fails, update
+    # the starting comment as a failure instead of publishing an unfiltered
+    # success report that may ignore or duplicate earlier feedback.
     if [[ "$outcome" == "success" ]]; then
-        suppress_dismissed_findings "$host" "$owner" "$repo" "$n" "$report_path" "${report_path}.inline.json" \
-            || printf 'pr-helper: warning: dismissed-finding suppression failed; updating comment with unfiltered report\n' >&2
+        if ! suppress_prior_feedback "$host" "$owner" "$repo" "$n" "$report_path" "${report_path}.inline.json"; then
+            outcome="failure"
+            {
+                printf '\n\n## Failure\n\n'
+                printf 'Could not refresh prior PR review history before posting; refusing to publish a success report that may ignore earlier feedback.\n'
+            } >>"$report_path"
+            printf 'pr-helper: warning: prior-feedback refresh failed; updating comment with outcome=failure\n' >&2
+        fi
     fi
 
     process_inline_comments_for_github "${report_path}.inline.json"
@@ -1231,11 +1456,12 @@ case "${1:-}" in
     verify-checkout)  shift; cmd_verify_checkout "$@" ;;
     post-start)       shift; cmd_post_start "$@" ;;
     post-update)      shift; cmd_post_update "$@" ;;
+    history)          shift; cmd_history "$@" ;;
     dismissed)        shift; cmd_dismissed "$@" ;;
     dismiss)          shift; cmd_dismiss "$@" ;;
     compact-report)   shift; compact_report_for_github "$@" ;;
     process-inline)   shift; process_inline_comments_for_github "$@" ;;
     check-pins)       shift; cmd_check_pins "$@" ;;
-    "")               die "usage: pr-helper.sh {init [<locator>] | post <host> <owner> <repo> <n> <marker> <report_path> | verify-checkout [<locator>] | post-start <host> <owner> <repo> <n> <marker> <author> | post-update <host> <owner> <repo> <n> <comment_id> <marker> <report_path> <author> <success|failure> [<started_at>] | dismissed <host> <owner> <repo> <n> | dismiss <host> <owner> <repo> <n> <path> <pattern> [<reason>] | compact-report <report_path> [<inline_json>] | process-inline <inline_json> | check-pins <preset> <pins-csv> [<raw-args>]}" ;;
+    "")               die "usage: pr-helper.sh {init [<locator>] | post <host> <owner> <repo> <n> <marker> <report_path> | verify-checkout [<locator>] | post-start <host> <owner> <repo> <n> <marker> <author> | post-update <host> <owner> <repo> <n> <comment_id> <marker> <report_path> <author> <success|failure> [<started_at>] | history <host> <owner> <repo> <n> | dismissed <host> <owner> <repo> <n> | dismiss <host> <owner> <repo> <n> <path> <pattern> [<reason>] | compact-report <report_path> [<inline_json>] | process-inline <inline_json> | check-pins <preset> <pins-csv> [<raw-args>]}" ;;
     *)                die "unknown subcommand: $1" ;;
 esac
