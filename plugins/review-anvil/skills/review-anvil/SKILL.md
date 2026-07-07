@@ -121,7 +121,7 @@ Capture the target's state at round start so all reviewers see the same input:
 **Use the Agent tool for `claude-exec` reviewers. Do NOT use `claude -p` via Bash — that path is for non-Claude hosts only.**
 
 - **`claude-exec`**: Agent tool, `subagent_type: "general-purpose"`, the assembled Reviewer Prompt as `prompt`, `run_in_background: true`. The Agent tool streams natively, has no `--max-turns` ceiling, and inherits the session environment.
-- **`codex-exec`**: Bash through the wrapper: `bash <wrapper> .review-anvil/round<N>-<label>.md <reviewer_timeout> -- codex exec --sandbox read-only -C <project-dir> '<prompt>' < /dev/null`, with `run_in_background: true`. The `< /dev/null` is load-bearing: codex takes its prompt as argv and must not inherit an open stdin — the wrapper passes its stdin through (`<&0`, which the claude fallback needs), and codex blocking on a never-closing fd 0 is a known hang class from real runs.
+- **`codex-exec`**: Bash through the wrapper: `REVIEW_ANVIL_REQUIRE_FINDINGS=1 bash <wrapper> .review-anvil/round<N>-<label>.md <reviewer_timeout> -- codex exec --ephemeral --sandbox read-only -C <project-dir> '<prompt>' < /dev/null`, with `run_in_background: true`. The validation flag makes the wrapper reject confirmation-only, plan-only, or otherwise incomplete responses that do not end with the required fenced findings block. `--ephemeral` prevents reviewer sessions from leaking into later dispatches. The `< /dev/null` is load-bearing: codex takes its prompt as argv and must not inherit an open stdin — the wrapper passes its stdin through (`<&0`, which the claude fallback needs), and codex blocking on a never-closing fd 0 is a known hang class from real runs.
 - Send all M reviewers in a *single message* with multiple tool calls. The harness notifies you on completion; do not poll.
 
 #### In Codex CLI or other hosts without the Agent tool
@@ -129,7 +129,7 @@ Capture the target's state at round start so all reviewers see the same input:
 - **`claude-exec`**: write the assembled prompt to a file, then:
 
   ```bash
-  bash <wrapper> .review-anvil/round<N>-<label>.md <reviewer_timeout> -- \
+  REVIEW_ANVIL_REQUIRE_FINDINGS=1 bash <wrapper> .review-anvil/round<N>-<label>.md <reviewer_timeout> -- \
     claude -p --max-turns 100 --no-session-persistence \
       --permission-mode dontAsk --output-format text \
       --tools "Bash,Read,Glob,Grep" \
@@ -139,7 +139,7 @@ Capture the target's state at round start so all reviewers see the same input:
 
   `--tools` restricts the built-in tool set; `--allowedTools` auto-approves the listed safe tool uses and is variadic, so the prompt MUST arrive via stdin (the wrapper passes its stdin through). `--permission-mode dontAsk` keeps the fallback non-interactive by denying anything outside the allowed/read-only path. **Do not size `--max-turns` to the task** — task-sized caps keep biting (20 was hit in production), and a reviewer that hits the cap loses its entire output. The wrapper's wall-clock timeout is the real bound; `100` is a runaway backstop that should never bind.
 
-- **`codex-exec`**: same wrapper around `codex exec --sandbox read-only -C <project-dir> '<prompt>' < /dev/null` — stdin from `/dev/null` here too.
+- **`codex-exec`**: same validation-enabled wrapper around `codex exec --ephemeral --sandbox read-only -C <project-dir> '<prompt>' < /dev/null` — stdin from `/dev/null` here too.
 - Launch all M wrapper invocations as background shell processes and `wait`.
 
 #### Bash-dispatched reviewers MUST go through `run-reviewer.sh`
@@ -152,9 +152,9 @@ run-reviewer.sh <out_file> <timeout_seconds> -- <command> [args...]
 
 - Hard wall-clock timeout (`reviewer_timeout`, default 600s): TERM at the deadline, KILL 30s later.
 - Captures exit status; stderr goes to `<out_file>.err` (kept for diagnosis).
-- Prints one classification: `STATUS=ok` | `timeout` | `empty` (exit 0, nothing written) | `failed` (+ `EXIT_CODE=<n>`).
+- Prints one classification: `STATUS=ok` | `timeout` | `empty` (exit 0, nothing written) | `protocol` (normal-review output did not end with a complete fenced findings block) | `failed` (+ `EXIT_CODE=<n>`).
 
-Treat any STATUS other than `ok` as a failed reviewer (see Failure handling), with the tail of `.err` as the reason. Reviewer output/prompt files live under `.review-anvil/`; clean them up after the round's synthesis.
+Treat any STATUS other than `ok` as a failed reviewer (see Failure handling), with the tail of `.err` as the reason. `protocol` gets the one corrective retry defined there before it becomes a failure. Set `REVIEW_ANVIL_REQUIRE_FINDINGS=1` only for normal reviewer waves; reproduction and adversarial prompts have different output schemas. Reviewer output/prompt files live under `.review-anvil/`; clean them up after the round's synthesis.
 
 **Host tool timeouts must outlive the wrapper.** Any host Bash call that can block on a reviewer — the background-and-`wait` fallback above, the serial last resort, or an inline replication of the wrapper contract — must set the Bash *tool's* own timeout to at least `reviewer_timeout + 90` seconds (wrapper deadline + 30s TERM→KILL grace + margin). Host defaults are far lower (Claude Code's is 120s) and SIGKILL a healthy wait mid-review; the kill then masquerades as a reviewer failure and silently burns that reviewer's lens coverage. On hosts with background dispatch (`run_in_background`), never block a foreground call on a reviewer at all. If the host caps tool timeouts below `reviewer_timeout + 90`, prefer detached dispatch plus short non-blocking status checks over shrinking the reviewer budget; reducing `reviewer_timeout` is a last resort, floored at 300s and forbidden for >5000-line diffs (their timeout is deliberately doubled).
 
@@ -461,7 +461,8 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 
 ### Failure handling
 
-- A reviewer fails or times out in a requested round → log `<agent>: failed (<reason>)` in the round summary and proceed; no retries. For Bash-dispatched reviewers, failure = wrapper STATUS `timeout`/`empty`/`failed`, reason = tail of `.err`. In an adaptive round, any reviewer failure is an abort before fixes from that round are applied.
+- A reviewer fails or times out in a requested round → log `<agent>: failed (<reason>)` in the round summary and proceed; no retries except the protocol-only case below. For Bash-dispatched reviewers, failure = wrapper STATUS `timeout`/`empty`/`failed`, reason = tail of `.err`; `protocol` follows the next rule. In an adaptive round, any reviewer failure is an abort before fixes from that round are applied.
+- **Protocol-only corrective retry:** a non-empty response that asks for confirmation, emits only a plan/status update, or otherwise omits the complete fenced findings block is not review output. Bash reviewers surface this as `STATUS=protocol`; detect the same shape directly for Agent-tool reviewers. Re-dispatch that reviewer exactly once on the same snapshot and lens with this prefix: `PROTOCOL RETRY: Begin the already-authorized read-only review immediately. Do not ask for confirmation or present a plan. Return the completed review now and end with the required fenced findings block.` Do not answer the confirmation request and do not count the first attempt as a reviewer result. If the retry also violates the protocol, record the reviewer as failed (`confirmation/plan-only output after corrective retry`) and follow the normal requested/adaptive-round failure rules. This is the only content-level retry; do not retry weak, clean, or merely unstructured reviews.
 - A dispatch call — foreground or background — that dies with exit 143 or ends with **no `STATUS=` line** in its output was killed by the *host tool's* timeout before the wrapper could classify — misconfigured dispatch (see §2 "Host tool timeouts"), not a reviewer failure. Fix the dispatch mode (raise the tool timeout or go detached) and re-dispatch that reviewer exactly once; only a second identical death counts as a failed reviewer.
 - **All** reviewers fail → abort the loop and report. Never carry on with zero findings — that's a misleading clean signal.
 - `git commit` fails (hook, conflict) → surface the error, stop the loop, leave partial fixes in the worktree. Never `--no-verify`, never amend earlier commits.
@@ -601,6 +602,6 @@ re-run with max_rounds: 5 to continue`.
 | `adversarial_rounds > 2` | Reject before dispatch — adversarial review is bounded critique, not an open-ended debate. |
 | Reproduction verifier failure | Keep consensus findings that did not require reproduction, but move required single-reviewer `medium`+ and deletion/high-risk candidates to Deferred with `failed reproduction: verifier unavailable`; never silently promote them. |
 | Adversary failure | Continue with the normal synthesized report and note the failure in Run Details; in `strict`, any required adversary failure forces `COMMENT`. |
-| Unparseable findings block | In requested rounds, use the prose as free-form findings; no retry; note `<agent>: unstructured findings (parse failed)`. In adaptive rounds, abort before fixes from that round are applied. |
+| Unparseable findings block | Confirmation/plan-only output follows the one protocol retry above. Otherwise, in requested rounds use substantive review prose as free-form findings with no retry and note `<agent>: unstructured findings (parse failed)`; in adaptive rounds, abort before fixes from that round are applied. |
 | Reviewers contradict each other | Surface both under the same area with reviewers tagged; orchestrator judgment decides the fix; mention the disagreement in the round summary. |
 | Re-runs | Not idempotent: a new run reviews the latest state, including the prior run's commits. Surface still-present deferred items under "Deferred from previous runs (still present)". |

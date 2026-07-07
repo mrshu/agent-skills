@@ -45,6 +45,13 @@ codex review --base main --title "Add user authentication middleware"
 
 Use `codex exec` for reviews that go beyond standard code review — plan reviews, architecture critique, or targeted analysis:
 
+Because `codex exec` is non-interactive, make completion authority explicit in
+the prompt: `This read-only review is already authorized. Begin immediately;
+do not present a plan or ask for confirmation. Return the completed review in
+this response.` This prevents models that default to a plan/confirmation
+handshake from stopping before they inspect the target. Never reply to such a
+handshake in automation; treat confirmation-only output as a failed protocol.
+
 ```bash
 # Review a plan or design document
 codex exec 'Review the plan in PLAN.md. Be a strict critic: identify gaps, missing edge cases, and over-engineering. Suggest concrete improvements.'
@@ -67,13 +74,25 @@ so the caller gets timeout, empty-output, and stderr classification:
 
 ```bash
 bash <review-anvil-wrapper> out.md 600 -- \
-  codex exec --sandbox read-only -C <project-dir> '<prompt>'
+  codex exec --ephemeral --sandbox read-only -C <project-dir> '<prompt>'
 ```
 
 `<review-anvil-wrapper>` is
 `plugins/review-anvil/skills/review-anvil/scripts/run-reviewer.sh` from a
 trusted skill install. The wrapper writes reviewer stdout to `out.md`, stderr
 to `out.md.err`, and prints `STATUS=ok|timeout|empty|failed` for the caller.
+
+For normal review-anvil reviewer prompts, enable output-contract validation:
+
+```bash
+REVIEW_ANVIL_REQUIRE_FINDINGS=1 bash <review-anvil-wrapper> out.md 600 -- \
+  codex exec --ephemeral --sandbox read-only -C <project-dir> '<prompt>'
+```
+
+This additionally returns `STATUS=protocol` when the final response is only a
+plan/confirmation request or does not end with the required fenced findings
+block. The orchestrator retries that specific failure once with a corrective
+non-interactive prefix; it must not answer the model's confirmation request.
 
 ### Iterative Review
 

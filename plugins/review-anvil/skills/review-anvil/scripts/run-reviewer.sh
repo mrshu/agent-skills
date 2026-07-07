@@ -22,8 +22,14 @@
 # Prints KEY=VALUE lines on stdout and exits accordingly:
 #   STATUS=ok       exit 0    command exited 0 and <out_file> is non-empty
 #   STATUS=empty    exit 3    command exited 0 but <out_file> is empty
+#   STATUS=protocol exit 4    output violates the requested review protocol
 #   STATUS=failed   exit 1    command exited non-zero (EXIT_CODE=<n> printed)
 #   STATUS=timeout  exit 124  hard timeout hit; command killed (TERM, then KILL)
+#
+# Set REVIEW_ANVIL_REQUIRE_FINDINGS=1 for normal review dispatches. In that
+# mode, successful output must end with a complete fenced `findings` block;
+# plan-only or confirmation-request output is classified as a protocol failure.
+# Reproduction/adversarial dispatches use different schemas and leave it unset.
 #
 # The orchestrator must treat any STATUS other than ok as a failed
 # reviewer per the engine's failure-handling rules, with the tail of
@@ -94,5 +100,20 @@ fi
 if [[ ! -s "$out" ]]; then
     printf 'STATUS=empty\n'
     exit 3
+fi
+if [[ "${REVIEW_ANVIL_REQUIRE_FINDINGS:-}" == "1" ]]; then
+    if ! awk '
+        /^[[:space:]]*```findings[[:space:]]*$/ { in_findings = 1; next }
+        in_findings && /^[[:space:]]*```[[:space:]]*$/ {
+            findings_close = NR
+            in_findings = 0
+        }
+        NF { last_nonblank = NR }
+        END { if (!findings_close || findings_close != last_nonblank) exit 1 }
+    ' "$out"; then
+        printf '%s\n' 'reviewer protocol failure: output did not end with a complete fenced findings block; confirmation requests and plan-only responses are invalid' >>"$err"
+        printf 'STATUS=protocol\n'
+        exit 4
+    fi
 fi
 printf 'STATUS=ok\n'
