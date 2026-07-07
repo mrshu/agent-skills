@@ -22,6 +22,18 @@ Then install plugins:
 /plugin install gdocs-comment
 ```
 
+For hosts that consume skills directly via `npx skills`, install the
+Review Anvil family with its reviewer backends in one command:
+```bash
+npx skills add mrshu/agent-skills \
+  --skill review-anvil \
+  --skill review-anvil-readonly \
+  --skill review-anvil-pr \
+  --skill review-anvil-improve-pr \
+  --skill codex-exec \
+  --skill claude-exec
+```
+
 ## Plugins
 
 ### scholar-search
