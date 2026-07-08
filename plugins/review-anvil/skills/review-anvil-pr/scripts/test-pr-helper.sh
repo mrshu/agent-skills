@@ -33,8 +33,9 @@ make_report() {
         printf -- '- **RAVF003 [low] docs** `README.md:4` — finding 03 stays summary-only.\n'
         printf '\n## Non-Blocking Notes\n'
         printf -- '- **[low] docs** — low priority note should be collapsed but preserved.\n'
-        printf '\n## Run Details\n'
+        printf '\n<details>\n<summary>Run details</summary>\n\n'
         printf -- '- Rounds: 1/1\n- Mix: 2 codex-exec + 1 claude-exec\n'
+        printf '\n</details>\n'
         printf '\n---\n_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills)._\n'
     } >"$path"
 }
@@ -227,6 +228,8 @@ test_post_review_success() {
     jq -e '.body | contains("Adversarial review")' "$tmp/review-payload.json" >/dev/null
     jq -e '.body | contains("github.com/mrshu/agent-skills")' "$tmp/review-payload.json" >/dev/null
     jq -e '.body | contains("finding 01 has a long explanation that should post in full")' "$tmp/review-payload.json" >/dev/null
+    jq -e '.body | contains("<details>\n<summary>Run details</summary>")' "$tmp/review-payload.json" >/dev/null
+    jq -e '.body | contains("- Mix: 2 codex-exec + 1 claude-exec\n\n</details>")' "$tmp/review-payload.json" >/dev/null
     jq -e '.body | contains("Compact GitHub summary") | not' "$tmp/review-payload.json" >/dev/null
     jq -e '.comments | length == 2' "$tmp/review-payload.json" >/dev/null
     jq -e '.comments[] | has("severity") | not' "$tmp/review-payload.json" >/dev/null

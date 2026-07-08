@@ -2,6 +2,22 @@
 
 Read at final-report time when `report_path` is set (Loop Mechanics §6 of the engine SKILL.md).
 
+## Progressive disclosure for external reports
+
+Keep the decision, result, scope, and actionable critical/high/medium findings
+visible without an extra click. Preserve supporting evidence and auditability
+without filling the destination's conversation surface: use the destination's
+native collapsed/expandable sections for run metadata and longer supporting
+sections. On GitHub, wrap Run details in `<details>` for every external report,
+and collapse prior-feedback, would-apply, deferred/out-of-scope, and low/nit
+sections when they exceed the thresholds in the engine's Output Format. Use a
+specific summary with an item count when available, leave a blank line after
+`<summary>`, and place `</details>` on its own line.
+
+If a destination has no disclosure control, send a concise decision summary
+and preserve the full report in an attached artifact or stable link. Never put
+a blocker only in collapsed or linked detail.
+
 ## Inline-comment voice (bodies in `.inline.json`)
 
 Compose each `body` as complete, code-anchored prose. Inline comments are for localized `critical`/`high`/`medium` findings by default; `low`/`nit` findings usually belong only in the top-level summary. For material findings, use three short parts; for simple findings, one or two short paragraphs is enough. Do not rely on the posting helper to shorten or summarize: if a draft is too bulky for a PR reader, rewrite it yourself while preserving the concrete mechanism, consequence, fix path, and test signal.

@@ -498,7 +498,7 @@ During execution: print `Round 2/3: dispatching 2 codex-exec + 1 claude-exec on 
 
 After the last round, emit a fresh top-level report (a new document, not a replacement for the per-round blocks).
 
-The final report is a PR comment body. It must include every finding, but it should read like a scan-friendly review index, not a transcript. Do not paste raw reviewer output, full round transcripts, repeated metadata, or paragraph-sized low-priority notes. Put each finding in exactly one focused row or bullet, grouped by severity/priority; use inline comments and collapsed `<details>` sections for longer explanation. If the report feels too bulky, rewrite and organize it yourself; do not depend on the posting helper to compact or shorten it.
+The final report is an external-facing decision summary. It must include every finding, but it should read like a scan-friendly index, not a transcript. Do not paste raw reviewer output, full round transcripts, repeated metadata, or paragraph-sized low-priority notes. Put each finding in exactly one focused row or bullet, grouped by severity/priority. Keep the decision, result, scope, and actionable critical/high/medium findings visible. Use progressive disclosure for supporting detail whenever the destination supports it: GitHub uses collapsed `<details>` blocks; other destinations should use their native disclosure controls. If the destination cannot collapse content, post a concise decision summary and preserve the complete report in an attached artifact or stable link. Never hide blockers only in an expandable section. If the report feels too bulky, rewrite and organize it yourself; do not depend on the posting helper to compact or shorten it.
 
 ```
 # ⚒️ review-anvil report
@@ -515,7 +515,9 @@ The final report is a PR comment body. It must include every finding, but it sho
 `still-open`, `resolved-but-still-present`, `fixed`, `stale/outdated`, or
 `suppressed`, with its original URL/reason. Omit for non-PR runs. These status
 rows are part of the review decision even when duplicate inline comments are
-suppressed. Never imply that GitHub `resolved` proves a fix.>
+suppressed. Never imply that GitHub `resolved` proves a fix. Keep 1-3 rows
+visible; for 4+ rows replace the heading with a collapsed block whose summary
+is `Prior feedback status (N items)` and put all rows inside.>
 
 ## Findings
 <Every confirmed finding appears exactly once. Critical/high findings go first, then medium, then low/nit. Use severity initials in tables: C critical, H high, M medium, L low, N nit. Keep each row focused; inline comments carry implementation detail for anchored findings, so do not repeat that in every row. If none: "No in-scope findings were confirmed.">
@@ -537,7 +539,7 @@ suppressed. Never imply that GitHub `resolved` proves a fix.>
 </details>
 
 ## Fixes / Would Apply
-<For per_fix: focused commit list or "No fix commits were applied." For review-only: include every would-apply item as a one-line bullet.>
+<For per_fix: focused commit list or "No fix commits were applied." For review-only: include every would-apply item as a one-line bullet. In external reports, collapse this section when it contains more than 3 items; use summary `Would-apply plan (N items)`.>
 
 - `<sha>` — <subject>                         # per_fix only
 - **RAVW001 [severity] area** — would commit as `<type>(<area>): <subject>`; covers RAVF001   # commit_mode=none only
@@ -549,7 +551,9 @@ suppressed. Never imply that GitHub `resolved` proves a fix.>
 - **RAVW002 [medium] config** — deferred after adversarial review: disproportionate fix; adds a registry for a one-line default.
 - **[severity] area** — out-of-scope follow-up (`auto_approved` or `needs_triage`): <why separate>.
 
-## Run Details
+<details>
+<summary>Run details</summary>
+
 - Target: <e.g. "PR #42 (feature/auth-rewrite, 12 files, +340/-89)">
 - Rounds: <completed> completed (<requested> requested + <adaptive> adaptive, max <max_rounds>); <convergence/adaptive stop note>   # productive adaptive-capable runs
 - Rounds: <completed>/<requested> completed; adaptive off; <convergence note>   # review-only/exact/no-extra runs
@@ -560,6 +564,8 @@ suppressed. Never imply that GitHub `resolved` proves a fix.>
 - Reproduction: off | skipped | candidates=<C>; effects=<confirmed>/<refuted>/<deferred>/<downgraded>; elapsed=<duration>
 - Adversarial: off | <mode>; agents=<A>; rounds=<R>; effects=<dropped>/<deferred>/<hardened>; approval changed yes/no
 - Tuning suggestion: <one line; see rule below>   # omit in review-only
+
+</details>
 
 ---
 _Reviewed with [review-anvil](https://github.com/mrshu/agent-skills)._
