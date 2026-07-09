@@ -29,18 +29,28 @@ The `try/except` at line 142 catches `Exception` and logs at debug level, so a
 failed write still returns `True`. `signup_flow` (src/auth.py:88) treats that as
 a completed signup — the user sees success while no row was written.
 
-Could this handler catch only the driver's retryable `OperationalError`,
+Would it make sense to catch only the driver's retryable `OperationalError`,
 re-raise the rest, and log at `error` with the user id? A test that makes the
-INSERT raise and asserts `save_user` propagates the error covers this case.
+INSERT raise and asserts `save_user` propagates the error would cover this case.
 ```
 
 1. **Header line** — severity tag, area, one-line statement of the *observable* problem (what goes wrong, not which rule is broken).
 2. **Mechanism** — how the code produces the problem and one concrete downstream consequence, anchored to files/lines/functions. Explain the failure; don't cite doctrine — every claim ties to *this* code, never to "best practices" in the abstract.
-3. **Fix path** — phrase the change as a polite implementation question when it reads naturally ("Could this handler catch ...?"), then include enough specifics to implement without re-investigation: what to change, where, the intended behavior afterwards, and the most important test or edge case. Include a small code sketch or exact replacement when it materially reduces ambiguity.
+3. **Fix path** — phrase the change as a constructive suggestion, often as a
+   polite implementation question, with enough specifics to implement without
+   re-investigation: what to change, where, the intended behavior afterwards,
+   and the most important test or edge case. Across a review, vary sentence
+   openings naturally — for example, "Would it make sense to ...?", "Can we
+   ...?", "What about ...?", "Consider ...", or an occasional "Could ...?" —
+   instead of repeating one stock lead-in. Include a small code sketch or exact
+   replacement when it materially reduces ambiguity.
 
 Voice rules:
 
 - Address the code, never the author: "the handler swallows the error", not "you swallow the error". No "should have", no "Obviously / Clearly / Simply / Just".
+- Keep the fix path suggestive rather than commanding. Questions are welcome;
+  vary their construction and use a concise "Consider ..." when a statement
+  reads more naturally.
 - Calm and specific beats emphatic. The severity tag carries the urgency; the prose needs no alarm words, bold warnings, exclamation marks, or rhetorical/scolding questions.
 - When the PR's approach is sound and the finding is an edge of it, say so in one honest clause ("the retry loop is right; the timeout just needs to cover it") — genuine context, not a compliment sandwich.
 - Target enough space for the author to implement without re-reading the whole diff; 150-250 words is normal for material findings, and longer is acceptable when the fix needs a code sketch. A one-liner can be fine for low/nit/simple findings; an essay reads as a lecture.
