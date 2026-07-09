@@ -64,13 +64,15 @@ uvx --with 'paper-siphon[mlx]' paper-siphon --vlm paper.pdf
 
 ### Formula enrichment (`--enrich-formula`)
 
-Best for: math-heavy papers where correct LaTeX rendering of equations matters.
+Best for: nudging the **default** pipeline's math when you want to stay on the fast text-extraction path.
 
 ```bash
 uvx paper-siphon --enrich-formula paper.pdf
 ```
 
-This post-processes extracted math expressions for better fidelity. **Warning:** resource-intensive — only enable when the paper's math content is important for the task at hand.
+This post-processes the default pipeline's extracted math expressions for better fidelity. **Warning:** resource-intensive — only enable when the paper's math content is important for the task at hand.
+
+**For genuinely math-heavy papers, prefer `--vlm`.** In our backend benchmark the default (Docling) pipeline frequently drops display equations (emitting `formula-not-decoded`), scoring far lower on math than the VLM backends, which read equations off the page image as LaTeX. `--enrich-formula` improves the default path but does not close that gap.
 
 ### Decision guide
 
@@ -78,10 +80,10 @@ This post-processes extracted math expressions for better fidelity. **Warning:**
 |---|---|
 | Standard text-heavy paper | `uvx paper-siphon paper.pdf` |
 | Complex layout / scanned PDF | `uvx paper-siphon --vlm paper.pdf` |
-| Math-heavy paper | `uvx paper-siphon --enrich-formula paper.pdf` |
-| Math-heavy + complex layout | `uvx paper-siphon --vlm --enrich-formula paper.pdf` |
+| Math-heavy paper | `uvx paper-siphon --vlm paper.pdf` |
+| Math-heavy, staying on the fast path | `uvx paper-siphon --enrich-formula paper.pdf` |
 
-**Rule of thumb:** try the default pipeline first. If the output is garbled or incomplete, escalate to `--vlm`.
+**Rule of thumb:** try the default pipeline first. Escalate to `--vlm` if the output is garbled or incomplete, **or if the paper is math-heavy** — the default pipeline tends to drop display equations, and the VLM path reads them off the page far more reliably.
 
 ## CLI Reference
 
