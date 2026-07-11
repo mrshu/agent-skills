@@ -77,6 +77,8 @@ Delegate code review, plan review, and deep exploration tasks to **Claude Code C
 
 ### review-anvil
 
+<img src="assets/review-anvil-logo.png" alt="review-anvil logo" width="320" />
+
 `review-anvil` turns a code review into a repeatable loop: `codex-exec`
 and `claude-exec` reviewers inspect the same snapshot, their findings are
 merged into one report, uncertain claims are checked against the code, and the
