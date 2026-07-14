@@ -690,6 +690,13 @@ JSON
     jq -e '.event == "COMMENT"' "$tmp/review-payload.json" >/dev/null
 }
 
+test_engine_template_footer_uses_anchor() {
+    local skill="$ROOT/../../review-anvil/SKILL.md"
+    [[ -f "$skill" ]] || fail "engine SKILL.md not found at $skill"
+    grep -Fq '_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._' "$skill" \
+        || fail "engine report template footer must deep-link to the #review-anvil anchor"
+}
+
 main() {
     command -v jq >/dev/null 2>&1 || fail "jq is required"
     test_process_inline
@@ -709,6 +716,7 @@ main() {
     test_history_paginates_without_refetch_duplicates
     test_local_suppression_overrides_open_history
     test_post_time_material_history_downgrades_approval
+    test_engine_template_footer_uses_anchor
     printf 'test-pr-helper: all e2e checks passed\n'
 }
 
