@@ -568,7 +568,7 @@ is `Prior feedback status (N items)` and put all rows inside.>
 </details>
 
 ---
-_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills)._
+_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._
 ```
 
 `Findings addressed` = post-dedup count of unique findings auto-applied across all rounds.

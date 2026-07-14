@@ -36,7 +36,7 @@ make_report() {
         printf '\n<details>\n<summary>Run details</summary>\n\n'
         printf -- '- Rounds: 1/1\n- Mix: 2 codex-exec + 1 claude-exec\n'
         printf '\n</details>\n'
-        printf '\n---\n_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills)._\n'
+        printf '\n---\n_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._\n'
     } >"$path"
 }
 
