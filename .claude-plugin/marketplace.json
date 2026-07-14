@@ -58,6 +58,12 @@
       "source": "./plugins/gdocs-comment",
       "description": "Bulk-post anchored Google Docs comments (with @-mentions) from a JSON plan via Chrome DevTools Protocol. Uses the chrome-cdp skill to drive an existing logged-in browser tab.",
       "version": "0.1.0"
+    },
+    {
+      "name": "gh-pr-image",
+      "source": "./plugins/gh-pr-image",
+      "description": "Upload local images to a GitHub PR description or comment without committing them to the repo, using release assets as a CDN. Works from the CLI for private repos.",
+      "version": "0.1.0"
     }
   ]
 }

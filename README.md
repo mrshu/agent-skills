@@ -20,6 +20,7 @@ Then install plugins:
 /plugin install overleaf-comment
 /plugin install overleaf-compile
 /plugin install gdocs-comment
+/plugin install gh-pr-image
 ```
 
 For hosts that consume skills directly via `npx skills`, install the
@@ -174,6 +175,18 @@ Plan items are `{anchor, text, mentions?}` — `anchor` is a substring of the do
 - Chrome / Brave / Edge with remote debugging enabled
 - The Google Doc tab open and logged in, with comment permission
 - Node.js 22+
+
+### gh-pr-image
+
+Upload local images (screenshots, visual diffs, diagrams) to a GitHub PR description or comment **without committing them to the repo**. GitHub has no public API for PR-description image uploads, so this uses release assets as a CDN — the only fully scriptable, CLI-only approach that also works for private repos.
+
+- Creates a per-PR prerelease tag with the images attached as assets
+- Embeds the `browser_download_url` for each asset in the PR body via standard markdown
+- Asset URLs respect repo read access, so they render correctly in private-repo PRs
+
+**Requirements:**
+- `gh` (GitHub CLI), authenticated
+- Push access to the target repo (release creation)
 
 ### wshot
 
