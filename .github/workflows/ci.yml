@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate manifest JSON
+        run: |
+          set -euo pipefail
+          fail=0
+          for f in .claude-plugin/marketplace.json plugins/*/.claude-plugin/plugin.json; do
+            if ! python3 -m json.tool "$f" >/dev/null; then
+              echo "invalid JSON: $f"
+              fail=1
+            fi
+          done
+          exit "$fail"
+
+      - name: Check plugin/marketplace consistency
+        run: python3 scripts/check-manifests.py
+
+      - name: review-anvil test suites
+        run: |
+          set -euo pipefail
+          bash plugins/review-anvil/skills/review-anvil-pr/scripts/test-pr-helper.sh
+          bash plugins/review-anvil/skills/review-anvil/scripts/test-run-reviewer.sh
+          bash plugins/review-anvil/skills/review-anvil/scripts/test-reproduction-policy.sh
