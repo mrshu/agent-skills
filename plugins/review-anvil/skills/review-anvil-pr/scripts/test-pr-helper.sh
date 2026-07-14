@@ -226,7 +226,7 @@ test_post_review_success() {
     jq -e '.body | contains("review-anvil-marker: marker-123")' "$tmp/review-payload.json" >/dev/null
     jq -e --arg line "$REPRODUCTION_LINE" '.body | split("\n") | index($line)' "$tmp/review-payload.json" >/dev/null
     jq -e '.body | contains("Adversarial review")' "$tmp/review-payload.json" >/dev/null
-    jq -e '.body | contains("github.com/mrshu/agent-skills")' "$tmp/review-payload.json" >/dev/null
+    jq -e '.body | contains("github.com/mrshu/agent-skills/#review-anvil")' "$tmp/review-payload.json" >/dev/null
     jq -e '.body | contains("finding 01 has a long explanation that should post in full")' "$tmp/review-payload.json" >/dev/null
     jq -e '.body | contains("<details>\n<summary>Run details</summary>")' "$tmp/review-payload.json" >/dev/null
     jq -e '.body | contains("- Mix: 2 codex-exec + 1 claude-exec\n\n</details>")' "$tmp/review-payload.json" >/dev/null
@@ -269,7 +269,7 @@ test_post_fallback_comment() {
     grep -q 'review-anvil-marker: marker-123' "$tmp/comment.md"
     grep -Fxq "$REPRODUCTION_LINE" "$tmp/comment.md"
     grep -q 'Adversarial review' "$tmp/comment.md"
-    grep -q 'github.com/mrshu/agent-skills' "$tmp/comment.md"
+    grep -q 'github.com/mrshu/agent-skills/#review-anvil' "$tmp/comment.md"
     grep -q 'finding 01' "$tmp/comment.md"
     grep -q 'Non-Blocking Notes' "$tmp/comment.md"
     ! grep -q 'Compact GitHub summary' "$tmp/comment.md"
@@ -303,7 +303,7 @@ test_post_update_success() {
     jq -e '.body | contains("review-anvil-marker: marker-123")' "$tmp/patch.json" >/dev/null
     jq -e --arg line "$REPRODUCTION_LINE" '.body | split("\n") | index($line)' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("Adversarial review")' "$tmp/patch.json" >/dev/null
-    jq -e '.body | contains("github.com/mrshu/agent-skills")' "$tmp/patch.json" >/dev/null
+    jq -e '.body | contains("github.com/mrshu/agent-skills/#review-anvil")' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("finding 01 has a long explanation that should post in full")' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("Compact GitHub summary") | not' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("Completed:")' "$tmp/patch.json" >/dev/null
