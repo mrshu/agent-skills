@@ -166,7 +166,7 @@ If `post-update` itself fails (rare: transient `gh` issue, comment was deleted b
 ### 7. Report back
 
 Surface the engine's final report inline. Echo a two-line summary:
-- `pushed N commits to $HOST/$OWNER/$REPO#$N ($HEAD_BRANCH)` with `N` from the pushed fix commits or the final report's `Fixes / Would Apply` commit list. If step 5 was skipped (failure path), say `did not push (engine/run failure)` instead.
+- `pushed N commits to $HOST/$OWNER/$REPO#$N ($HEAD_BRANCH)` with `N` from the pushed fix commits or the final report's `Changes made / Things to try` list. If step 5 was skipped (failure path), say `did not push (engine/run failure)` instead.
 - `comment $COMMENT_URL updated with outcome=$OUTCOME` (or `comment update failed: ...` if step 6 errored).
 
 ## Examples

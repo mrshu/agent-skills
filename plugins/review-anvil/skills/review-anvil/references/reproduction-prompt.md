@@ -61,7 +61,7 @@ End with a fenced `reproduction` block containing YAML:
   evidence: <specific code/config/test/runtime evidence>
   reason: <why this classification is correct>
   report_effect: actionable | deferred | suggestion | drop
-  safer_wording: <optional narrower finding/fix wording>
+  safer_wording: <optional author-facing wording in plain language: state what the code does and its effect, then offer a gentle next step>
 ```
 
 If there are no candidates, return:
@@ -75,15 +75,16 @@ If there are no candidates, return:
 - `confirmed`: keep the finding actionable if it meets the severity/fix gate.
 - `refuted`: drop the finding from final Findings. Mention it only when useful
   as a one-line Deferred note, never as author-actionable guidance.
-- `unclear`: move the finding to Deferred with reason
-  `failed reproduction: <reason>`.
+- `unclear`: move the finding to Deferred with `We set this aside because
+  <plain-language description of the missing proof>.` Rewrite the verifier's
+  reason; do not copy it.
 - `narrowed`: keep the finding actionable with the verifier's narrower scope or
-  fix wording.
+  friendly author-facing wording.
 - `downgraded`: change the severity, then re-apply `min_fix_severity`, inline
   severity, approval, and suggestion rules.
 
 If the reproduction verifier fails, times out, or returns unparseable output,
 do not treat required candidates as confirmed. Keep consensus findings that did
 not require reproduction, but move required single-reviewer `medium`+ or
-deletion/high-risk candidates to Deferred with
-`failed reproduction: verifier unavailable`.
+deletion/high-risk candidates to Deferred with `We set this aside because the
+verification check could not be completed.`

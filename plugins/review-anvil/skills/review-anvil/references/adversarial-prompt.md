@@ -86,7 +86,7 @@ End with a fenced `adversarial` block containing YAML:
   severity: critical | high | medium | low | nit
   evidence: <specific code/scope/test/dismissal evidence>
   reason: <why the finding or fix plan should change>
-  safer_path: <optional narrower or safer prose fix path>
+  safer_path: <optional plain, friendly author-facing next step: state what the code does and its effect, then offer a gentle next step>
   report_effect: actionable | deferred | suggestion | none
 ```
 
@@ -105,6 +105,12 @@ If there is nothing to challenge, return:
 - `modify`: use to harden or simplify the fix path while keeping the finding
   actionable.
 - `uphold`: use when the finding and fix plan survive adversarial review.
+- Treat type, verdict, evidence, and reason as internal. Write `safer_path` in
+  plain, friendly author-facing language: state what the code does and its
+  effect, then offer a gentle next step. Do not use review jargon, commands, or
+  alarm language.
+- Rewrite any internal reason before it enters the final report; never copy
+  internal fields or labels verbatim.
 
 The orchestrator must verify any `medium`+ new issue or refutation against
 code/scope before changing the final report. Generic uncertainty does not

@@ -194,10 +194,10 @@ Plausible-but-wrong findings are the dominant failure mode of LLM review, and bo
   - `confirmed` and `narrowed` findings may remain actionable, with narrowed wording when supplied.
   - `downgraded` findings re-enter the normal severity gates after changing severity.
   - `refuted` findings are dropped from final Findings (or, if useful for transparency, one-line Deferred notes).
-  - `unclear` findings move to Deferred with reason `failed reproduction: <why>`.
+  - `unclear` findings move to Deferred with `We set this aside because <plain-language description of the missing proof>.` Rewrite the verifier's reason; do not copy it.
 - Findings raised independently by **2+ reviewers** and not listed as reproduction candidates may skip batched reproduction; consensus is the signal (this is why dedup records who raised what). Still open enough code/context before destructive action to ensure the fix path is coherent.
 - **Deletions ("delete this"/dead/unused/redundant) require reproduction plus execution when `per_fix` applies the cut** — the highest-blast-radius, highest-false-positive class. In `per_fix`, after reproduction confirms the cut, apply it and run the full test suite: a **red gate means keep it**. A green gate is necessary but not sufficient (it only proves *test-covered* behavior), so the reproduction/skeptic pass must also look for a concrete reason the code must stay, visible in the diff (trust boundary, aliasing copy, ordering, back-compat, dedup, edge semantics — or another specific contract). The two cover different blind spots: the gate catches callers the skeptic can't see; the skeptic catches behavior no test exercises. Block **only** on a red gate or a specific skeptic refutation — not on generic "there might be an unseen caller" (that's what the gate tests). Read-only mode has only the skeptic. Blocked → **Deferred** (`failed reproduction: still needed — <what>`).
-- If `reproduction=off`, say so in the round summary and final report. Required reproduction candidates — including single-reviewer `medium`+ findings, deletion/high-risk findings, and orchestrator-uncertain findings — cannot become actionable unless the orchestrator independently reproduces them from code/tests/runtime evidence; otherwise move them to Deferred with reason `reproduction disabled`.
+- If `reproduction=off`, say so in the round summary and final report. Required reproduction candidates — including single-reviewer `medium`+ findings, deletion/high-risk findings, and orchestrator-uncertain findings — cannot become actionable unless the orchestrator independently reproduces them from code/tests/runtime evidence; otherwise move them to Deferred with `We set this aside because the needed check was not run.`
 - `low`/`nit` findings skip verification: they're below the auto-fix gate and surface as suggestions either way.
 
 Canonical examples for where reproduction helps and where it must stay out of
@@ -367,16 +367,16 @@ Append to running output:
 ### Round N — <convergence flag>
 - Parameters: rounds=3, max_rounds=3, target=acme/widgets#42 [pin], commit_mode=none [pin], focus=4-pillar
 - Reviewers: <list dispatched>
-- Prior feedback: none | <open> open, <resolved> resolved, <reported> summary-only, <suppressed> explicit suppressions; <still-present>/<fixed>/<stale> after validation
-- Findings: C critical, H high, M medium, L low, N nit
+- Earlier review comments: none | <open> open, <resolved> closed, <reported> summary-only, <suppressed> skipped; <still-present>/<fixed>/<stale> after checking
+- What I noticed: C critical, H high, M medium, L low, N nit
 - Fixes applied: K commits (<sha1>..<shaN>)   # or "0 (review-only)"
 - Verification: <cmd> — passed | failed → round reverted | pre-existing failures (no new) | none detected | skipped   # per_fix only
-- Reproduction: off | skipped (no candidates) | <C> candidates, <confirmed> confirmed, <refuted> refuted, <deferred> deferred, <downgraded> downgraded; <elapsed>
-- Would-apply: W items                         # commit_mode=none only
-- Adversarial review: off | <mode>, <A> agents, <upheld> upheld, <hardened> hardened, <deferred> deferred, <dropped> dropped
-- Suggestions: S items (sub-threshold severity; not applied)
-- Deferred: D items (reasons: noise / new dependency / size cap / failed reproduction / failed verification / product decision)
-- Adaptive continuation: off | not extended because <reason> | extended to round <next_round> because <reason>; cap=<max_rounds>
+- Checks: off | skipped (no findings needed checking) | <C> concerns checked, <confirmed> confirmed, <refuted> ruled out, <deferred> set aside, <downgraded> lowered in priority; <elapsed>
+- Things to try: W items                         # commit_mode=none only
+- Second check: off | <mode>, <A> reviewers, <upheld> kept, <hardened> clarified, <deferred> set aside, <dropped> removed
+- Other notes: S items (low-priority items; not applied)
+- Set aside: D items (reasons: noise / new dependency / size cap / not confirmed / failed verification / product decision)
+- More rounds: off | not continued because <reason> | continued to round <next_round> because <reason>; cap=<max_rounds>
 ```
 
 Pinned params carry `[pin]` (authority comes from preset argument order; the PR-target/per_fix rule is the final safety net). Convergence flag: `clean` (no findings), `nits_only` (nothing above `low`), `material_findings` (≥1 medium+).
@@ -430,8 +430,8 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 
    ```json
    [
-     {"path": "src/auth.ts", "line": 50, "side": "RIGHT", "severity": "high", "body": "**[high] auth** — Refresh can run before CSRF validation\n\nThe handler rotates the session before checking the state token, so a stale tab can mint a new session after the old token should have failed.\n\nWould it make sense to validate the state token before rotating the session and add a regression test for missing state?"},
-     {"path": "src/db.ts", "start_line": 100, "line": 110, "side": "RIGHT", "start_side": "RIGHT", "severity": "medium", "body": "**[medium] db** — Retry accounting commits before the write result is known\n\nThe retry block increments `attempts_succeeded` before `insert_event` returns, so a timeout records success and suppresses the retry. A caller that sees the counter in `run_summary` will treat the event as persisted even when no row exists.\n\nWhat about moving the counter update after the successful insert so the timeout path leaves the attempt failed and eligible for retry?", "suggestion": "result = insert_event(payload)\nattempts_succeeded += 1\nreturn result"}
+     {"path": "src/auth.ts", "line": 50, "side": "RIGHT", "severity": "high", "body": "**[high] auth** — Refresh creates a session before CSRF validation\n\nThe handler rotates the session before it checks the state token. A stale tab can create a new session with an invalid token.\n\nWe could check the state token before rotating the session. A missing-state-token test would cover this path."},
+     {"path": "src/db.ts", "start_line": 100, "line": 110, "side": "RIGHT", "start_side": "RIGHT", "severity": "medium", "body": "**[medium] db** — Retry accounting records success before the write succeeds\n\nThe retry block increments `attempts_succeeded` before `insert_event` returns. A timeout records success even when no row was written.\n\nOne option is to increment the counter only after `insert_event` succeeds. A timeout test would cover this path.", "suggestion": "result = insert_event(payload)\nattempts_succeeded += 1\nreturn result"}
    ]
    ```
 
@@ -439,7 +439,7 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 
    Include helper-only `"severity"` for every inline item. The posting helper strips it before calling GitHub and uses it to keep low/nit findings summary-only by default. Include helper-only `"suggestion"` only when the fix is an exact replacement for the commented line/range; the helper turns it into a GitHub suggestion fenced block and strips the extra key before posting. Do not include suggestions for design fixes, cross-file edits, deleted lines, anything that requires judgment, or any suggestion whose anchor/replacement/blast-radius was disputed by adversarial review.
 
-   Each `body` follows the **inline-comment voice** defined in `references/report-artifacts.md` — read it before composing bodies. In one line: complete, code-anchored prose with an observable-problem header, one concrete downstream consequence, and a fix path complete enough to implement without re-investigation. Include exact helper `"suggestion"` replacements or concise code sketches when they materially reduce ambiguity. By default, inline comments are for `critical`/`high`/`medium` anchored findings; `low`/`nit` findings remain in the top-level summary unless the user or environment lowers `REVIEW_ANVIL_INLINE_MIN_SEVERITY`. The same voice applies to the report's Suggestions, Deferred, and Out-of-scope follow-ups prose.
+   Each `body` follows the **inline-comment voice** in `references/report-artifacts.md` — read it before composing bodies. Keep it short and plain: say what the code does, what happens because of it, and a friendly next step. A reader must be able to act without reopening the diff. Include a safe exact `"suggestion"` or a short code sketch only when it removes doubt. By default, inline comments are for `critical`/`high`/`medium` anchored findings; `low`/`nit` findings remain in the top-level summary unless the user or environment lowers `REVIEW_ANVIL_INLINE_MIN_SEVERITY`. The same voice applies to the report's Things to try, Set aside, and Outside this change prose.
 
 3. Write a sibling `<report_path>.approval.json` so the PR-posting helper can choose the GitHub review event (review-only PR runs; for other runs write `{"event": "COMMENT"}` or omit the file — the helper defaults to COMMENT):
 
@@ -507,49 +507,56 @@ The final report is an external-facing decision summary. It must include every f
 **Result:** <one sentence: blockers/non-blockers/fixes/verification outcome>
 **Scope:** <For PR targets: one sentence summarizing what this PR is trying to change.>
 **Verification:** <verify_cmd used, or "none detected" / "skipped">   # per_fix only
-**Reproduction:** off | skipped (no candidates) | <C> candidates; <confirmed> confirmed, <refuted> refuted, <deferred> deferred, <downgraded> downgraded
-**Adversarial review:** off | <mode>, <A> agents; <upheld> upheld, <hardened> hardened/simplified, <deferred> deferred, <dropped> dropped
+**Checks:** off | skipped (no findings needed checking) | <C> concerns checked; <confirmed> confirmed, <refuted> ruled out, <deferred> set aside, <downgraded> lowered in priority
+**Second check:** off | <mode>, <A> reviewers; <upheld> kept, <hardened> clarified, <deferred> set aside, <dropped> removed
 
-## Prior Feedback Status
-<For PR-context runs, include every semantically coalesced item from PR REVIEW HISTORY exactly once as
-`still-open`, `resolved-but-still-present`, `fixed`, `stale/outdated`, or
-`suppressed`, with its original URL/reason. Omit for non-PR runs. These status
-rows are part of the review decision even when duplicate inline comments are
-suppressed. Never imply that GitHub `resolved` proves a fix. Keep 1-3 rows
-visible; for 4+ rows replace the heading with a collapsed block whose summary
-is `Prior feedback status (N items)` and put all rows inside.>
+## Earlier review comments
+<For PR-context runs, list each earlier comment once as open, still present after
+being marked resolved, fixed, no longer relevant, or intentionally skipped.
+Keep its original URL and short reason. Omit this section for non-PR runs.
+These rows affect the review decision even when no new inline comment is
+needed. Keep 1-3 rows visible; for 4+ rows use a collapsed block with summary
+`Earlier review comments (N items)`. Preserve the exact internal status in the
+artifact; write the visible explanation in plain language.>
 
-## Findings
-<Every confirmed finding appears exactly once. Critical/high findings go first, then medium, then low/nit. Use severity initials in tables: C critical, H high, M medium, L low, N nit. Keep each row focused; inline comments carry implementation detail for anchored findings, so do not repeat that in every row. If none: "No in-scope findings were confirmed.">
+## What I noticed
+<Show every confirmed issue once. Critical/high issues go first, then medium,
+then low/nit. Start with the facts: what the code does and what happens because
+of it. Inline comments carry supporting evidence and a friendly next step when
+useful. Otherwise, add the smallest supporting fact to what you noticed. If
+none: "No confirmed problems found.">
 
-| ID | Sev | Area | Location | Finding |
+| ID | Priority | Topic | Code location | What I noticed |
 |---|---|---|---|---|
-| RAVF001 | H | auth | `src/auth.ts:42` | Refresh can succeed without CSRF validation |
+| RAVF001 | high | auth | `src/auth.ts:42` | Refresh creates a session before it checks CSRF validation |
 
 <If the table would be hard to read, use grouped bullets instead:>
 
-- **RAVF001 [high] auth** `src/auth.ts:42` — Refresh can succeed without CSRF validation. (inline; RAVW001)
+- **[high] auth** `src/auth.ts:42` — Refresh creates a session before it checks CSRF validation. (`RAVF001`; inline)
 
 <details>
 <summary>Non-blocking low/nit findings</summary>
 
-- **[low] docs** — Keep the option name consistent with the CLI help.
-- **[nit] tests** — Collapse duplicate fixture setup in the new test file.
+- **[low] docs** — The CLI help could use the same option name.
+- **[nit] tests** — One option is to share the duplicate fixture setup.
 
 </details>
 
-## Fixes / Would Apply
-<For per_fix: focused commit list or "No fix commits were applied." For review-only: include every would-apply item as a one-line bullet. In external reports, collapse this section when it contains more than 3 items; use summary `Would-apply plan (N items)`.>
+## Changes made / Things to try
+<For per_fix: focused commit list or "No fixes were made." For review-only:
+include each thing to try as one short, plain-language behavior change. In
+external reports, collapse this section when it contains more than 3 items.>
 
 - `<sha>` — <subject>                         # per_fix only
-- **RAVW001 [severity] area** — would commit as `<type>(<area>): <subject>`; covers RAVF001   # commit_mode=none only
+- **[severity] area** — We could <plain-language behavior change>. (`RAVF001`)   # commit_mode=none only
 
-## Deferred / Out-of-Scope
-<Include every deferred item and follow-up, but keep each to one line. Collapse the section with `<details>` when it contains more than 3 entries. Omit the section if empty.>
+## Set aside / Outside this change
+<Include each item not addressed here in one line. Collapse this section when
+it contains more than 3 items. Omit it when empty.>
 
-- **[severity] area** — deferred because <reason>.
-- **RAVW002 [medium] config** — deferred after adversarial review: disproportionate fix; adds a registry for a one-line default.
-- **[severity] area** — out-of-scope follow-up (`auto_approved` or `needs_triage`): <why separate>.
+- **[severity] area** — set aside because <reason>.
+- **[medium] config** — set aside after the second check: the fix is too large for a one-line default.
+- **[severity] area** — follow-up outside this change: <why separate>.
 
 <details>
 <summary>Run details</summary>
@@ -559,11 +566,12 @@ is `Prior feedback status (N items)` and put all rows inside.>
 - Rounds: <completed>/<requested> completed; adaptive off; <convergence note>   # review-only/exact/no-extra runs
 - Mix: <e.g. "2 codex-exec + 1 claude-exec">
 - Focus: <focus list actually used>
-- Prior feedback: none | <total> ledger items; <still-open>/<resolved-but-still-present>/<fixed>/<stale>/<suppressed>
-- Counts: <C critical, H high, M medium, L low, N nit; deferred D; suggestions S>
-- Reproduction: off | skipped | candidates=<C>; effects=<confirmed>/<refuted>/<deferred>/<downgraded>; elapsed=<duration>
-- Adversarial: off | <mode>; agents=<A>; rounds=<R>; effects=<dropped>/<deferred>/<hardened>; approval changed yes/no
-- Tuning suggestion: <one line; see rule below>   # omit in review-only
+- Earlier review comments: none | <total> comments; <open>/<still-present>/<fixed>/<not-relevant>/<skipped>
+- Finding counts: <C critical, H high, M medium, L low, N nit; other notes S>
+- Checks: off | skipped | concerns=<C>; confirmed=<confirmed>/ruled-out=<refuted>/set-aside=<deferred>/lowered=<downgraded>; elapsed=<duration>
+- Second check: off | <mode>; reviewers=<A>; kept=<kept>/clarified=<clarified>/set-aside=<deferred>/removed=<removed>; approval changed yes/no
+- Set aside: <D> items; reasons=<reasons>
+- Next time: <one line; see rule below>   # omit in review-only
 
 </details>
 

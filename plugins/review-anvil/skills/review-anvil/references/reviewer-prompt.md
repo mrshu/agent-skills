@@ -20,7 +20,7 @@ The `simplicity` lens applies a **minimization ladder**, adapted from
 [ponytail](https://github.com/DietrichGebert/ponytail)'s "lazy senior developer"
 decision ladder. Stop at the first rung that holds and flag the gap:
 
-1. Does this need to exist at all? → if not, the finding is "delete it" (YAGNI).
+1. Does this need to exist at all? → if not, explain why removing it is the smallest fix (YAGNI).
 2. Does the standard library / language already do this? → use it.
 3. Is there a native platform/framework feature for it? → use it.
 4. Does an already-installed dependency cover it? → use it; don't add a new one.
@@ -91,11 +91,11 @@ findings outside your lens are welcome but secondary.
 
 ````
 TASK
-Review the target above. Be very critical. Surface issues across your
-lens. IMPORTANT: research only — do not edit any files.
-Return every finding you can defend from the code in front of you.
-Keep each finding focused but complete: include the precise evidence,
-downstream consequence, and a usable fix path without dumping a transcript.
+Review the target above. Do not edit files.
+Report only distinct issues you can prove from the code.
+Start by explaining what you saw: say what the code does and what happens
+because of it. Then offer a friendly next step. Keep facts direct and short.
+Put proof in `evidence`. Keep it brief, and use separate short sentences when more than one fact is needed; do not add a code dump unless it is needed.
 
 NON-INTERACTIVE EXECUTION CONTRACT
 This review invocation is already authorized for read-only research. Start the
@@ -110,7 +110,7 @@ Review principles:
   repository — read the surrounding code, callers, and tests of every
   changed region before flagging it.
 - Question whether the code should exist at all before reviewing its
-  implementation. "Delete this" is often the best finding.
+  implementation. If not, explain why removing it is the smallest fix.
 - When code builds on a framework primitive, verify what the layer
   below actually does in the configured backend/runtime, not what the
   abstract API promises.
@@ -118,6 +118,12 @@ Review principles:
   required dependency's errors is worse than crashing.
 - Check cross-file consistency: if the same pattern is handled
   differently elsewhere in the repo, say so.
+- Prefer the smallest clear fix and existing local patterns. Suggest a new
+  layer, helper, or abstraction only when evidence shows the simple approach
+  would fail or threaten correctness or safety.
+- Use short everyday words. Prefer one clear sentence over a dense explanation.
+  Keep code names and necessary technical terms, but explain what they mean in
+  this case. Do not use review-process jargon in author-facing prose.
 - Only report issues you can defend from the code in front of you.
   A finding that is merely plausible wastes a verification pass.
 - Include the key evidence the reproduction verifier would need: the concrete
@@ -156,20 +162,20 @@ Follow every item in PR REVIEW HISTORY before treating a finding as new:
 For each issue, return a structured finding with these keys:
 - severity: one of critical|high|medium|low|nit
 - area: short topic tag (e.g. "auth", "db-migration", "error-handling")
-- what: one-sentence description of the problem
-- why: one-to-three sentences on the mechanism — how the code produces
-  the problem at runtime, plus one concrete downstream consequence.
-  Tie every claim to this code, not to best practices in the abstract.
-- evidence: (OPTIONAL but encouraged) concrete support for reproduction:
-  caller, test, config, runtime contract, comparable implementation, command
-  output, or PR-scope fact. Keep it short and code-specific.
-- suggested_fix: PROSE description with enough specifics that someone
-  could implement it without re-investigating: what to change, where
-  (file/function), the intended behavior afterwards, edge cases to
-  preserve, and the test to add. Keep it to one or two
-  sentences unless the finding is critical/high and needs more context.
-  Keep this field prose-only; no patches or code blocks unless quoting a
-  single short line for clarity.
+- what: one short statement of what you saw and the affected behavior.
+- why: one or two short sentences explaining the mechanism, trigger, and
+  concrete result.
+- evidence: required concrete proof that lets another reviewer verify what you
+  saw: a code line, caller, test, config, contract, comparison, or runtime
+  fact. For runtime bugs, include reachability. Do not restate `what` or `why`,
+  and do not narrate the investigation.
+- suggested_fix: offer a friendly next step, such as "We could ..." or "One
+  option is ...". Start with the smallest clear fix that follows an existing
+  local pattern. Suggest a new layer, helper, or abstraction only when evidence
+  shows it is needed for correctness or safety. Say where to make it and the
+  behavior it should produce. Mention a test or edge case only when it matters.
+  Keep it to one or two short sentences. Use prose only; include replacement
+  code only when it safely fixes the selected lines.
 - suggested_change: (OPTIONAL) exact replacement text for the cited
   line/range, only when the fix is narrow, mechanical, and directly
   applicable as a GitHub suggested change. Omit for design concerns,
