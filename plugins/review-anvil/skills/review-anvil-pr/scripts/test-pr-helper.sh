@@ -361,7 +361,7 @@ test_post_dismisses_id_prefixed_report_findings() {
     PATH="$bin:$PATH" \
       "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-dismissed-id.out
 
-    grep -q 'Prior PR feedback status' "$tmp/comment.md"
+    grep -q 'Earlier review comments' "$tmp/comment.md"
     ! grep -Fq 'RAVF001 [medium] auth' "$tmp/comment.md"
     grep -q 'local-test-dismissal' "$tmp/comment.md"
     assert_file_missing "$report"
@@ -481,7 +481,7 @@ JSON
     PATH="$bin:$PATH" \
       "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-dismissed-table.out
 
-    grep -q 'Prior PR feedback status' "$tmp/comment.md"
+    grep -q 'Earlier review comments' "$tmp/comment.md"
     ! grep -Fq '| RAVF001 | M | auth | `src/auth.ts:12` |' "$tmp/comment.md"
     grep -q 'local-table-dismissal' "$tmp/comment.md"
     assert_file_missing "$report"
@@ -632,8 +632,9 @@ JSON
     PATH="$bin:$PATH" \
       "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-open-history.out
 
-    grep -Fq 'Prior PR feedback status' "$tmp/comment.md"
-    grep -Fq '(still-open: https://example.invalid/open)' "$tmp/comment.md"
+    grep -Fq 'Earlier review comments' "$tmp/comment.md"
+    grep -Fq '(This is still present. Source: https://example.invalid/open)' "$tmp/comment.md"
+    ! grep -Eq 'Prior PR feedback status|still-open|\*\*\(inline\)\*\*' "$tmp/comment.md"
     [[ ! -e "$tmp/review-payload.json" ]] || jq -e '.comments | length == 0' "$tmp/review-payload.json" >/dev/null
 }
 

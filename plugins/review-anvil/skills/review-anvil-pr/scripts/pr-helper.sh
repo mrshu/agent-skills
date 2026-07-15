@@ -645,13 +645,15 @@ if not history:
 
 def display_status(item):
     status = {
-        "open": "still-open",
-        "resolved": "resolved-but-still-present",
-        "reported": "previously-reported-still-present",
-        "deferred": "previously-deferred-still-present",
-        "review-dismissed": "dismissed-review-still-present",
-    }.get(item["status"], item["status"])
-    return status + (",outdated-anchor" if item.get("outdated") else "")
+        "open": "This is still present.",
+        "resolved": "This is still present after the thread was closed.",
+        "reported": "This was mentioned earlier and is still present.",
+        "deferred": "This was set aside earlier and is still present.",
+        "review-dismissed": "This was dismissed earlier and is still present.",
+    }.get(item["status"], "This was mentioned earlier.")
+    if item.get("outdated"):
+        status += " The code line has moved."
+    return status
 
 suppressed = []
 matched_history = []
@@ -752,11 +754,11 @@ if report.exists():
         i += 1
     if demoted or suppressed or explicit_suppressions:
         demoted_sigs = {d["sig"] for d in demoted}
-        tail = ["", "---", "", "### Prior PR feedback status (duplicate threads suppressed)", ""]
-        tail += [f'{d["line"]} _({d["status"]}: {d["source"]})_' for d in demoted]
-        tail += [f'- **(inline)** {s["path"]} — {s["summary"]} _({s["status"]}: {s["source"]})_'
+        tail = ["", "---", "", "### Earlier review comments", ""]
+        tail += [f'{d["line"]} _({d["status"]} Source: {d["source"]})_' for d in demoted]
+        tail += [f'- **Earlier inline comment** {s["path"]} — {s["summary"]} _({s["status"]} Source: {s["source"]})_'
                  for s in suppressed if s["sig"] not in demoted_sigs]
-        tail += [f'- **[suppressed]** {s["path"] or "(no file anchor)"} — {s["summary"]} _(explicit suppression: {s["source"]})_'
+        tail += [f'- **Not raised again** {s["path"] or "(no file anchor)"} — {s["summary"]} _(It was intentionally set aside. Source: {s["source"]})_'
                  for s in {item["sig"]: item for item in explicit_suppressions}.values()]
         report.write_text("\n".join(out).rstrip() + "\n" + "\n".join(tail) + "\n")
 
