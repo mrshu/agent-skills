@@ -7,6 +7,7 @@ ROOT=$(cd "$(dirname "$0")/.." && pwd)
 ENGINE="$ROOT/SKILL.md"
 ARTIFACTS="$ROOT/references/report-artifacts.md"
 IMPROVE="$ROOT/../review-anvil-improve-pr/SKILL.md"
+PR_SKILL="$ROOT/../review-anvil-pr/SKILL.md"
 
 fail() {
     printf 'test-report-language: %s\n' "$*" >&2
@@ -68,5 +69,7 @@ reject "$ENGINE" '- Adversarial: off |'
 reject "$ENGINE" '- Tuning suggestion:'
 reject "$ENGINE" '## Diagnoses'
 reject "$ENGINE" 'Possible suggestions'
+reject "$ENGINE" 'failed reproduction:'
+reject "$PR_SKILL" 'failed reproduction'
 
 printf 'test-report-language: all language contract checks passed\n'

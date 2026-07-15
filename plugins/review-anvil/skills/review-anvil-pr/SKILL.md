@@ -155,10 +155,10 @@ Surface the URL (or `posted (URL unavailable)`) to the user. If the helper scrip
 - **An `APPROVE` decision submits a real GitHub approval from your authenticated `gh` account.** It counts toward branch-protection required reviews and reads to collaborators as your judgment — while the gate behind it is the engine's LLM classification. If that posture isn't acceptable for a repo or org, pass `approve: never` (or "never approve" / "comment only") and the run always posts plain `COMMENT` reviews. `REQUEST_CHANGES` is deliberately unsupported: blocking someone's merge on LLM judgment is a different risk class from commenting or approving.
 - What lands on the PR has passed the engine's reproduction/verification gates:
   uncertain `medium`+ findings are reproduced against the actual code before
-  posting, and findings that fail reproduction appear under "Deferred items"
-  with reason `failed reproduction` rather than as actionable review comments.
-  False positives posted to a colleague's PR burn trust — the engine treats
-  precision as the product.
+  posting. When a finding cannot be confirmed, the report says what proof is
+  missing and that it was set aside, rather than presenting it as an actionable
+  review comment. False positives posted to a colleague's PR burn trust — the
+  engine treats precision as the product.
 - When `adversarial:` is enabled, the posted report should include only the
   final verdict summary and survivor findings. The adversarial transcript stays
   out of GitHub; its effects are folded into dropped findings, deferred
