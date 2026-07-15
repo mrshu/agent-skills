@@ -575,6 +575,36 @@ JSON
     ! grep -Fq 'pending review is not shown' "$output"
 }
 
+test_history_reads_new_report_headings() {
+    local tmp bin fixture output
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+    fixture="$tmp/graphql.json"
+    cat >"$fixture" <<'JSON'
+{
+  "data": {"repository": {"pullRequest": {
+    "reviewThreads": {"nodes": [], "pageInfo": {"hasNextPage": false, "endCursor": null}},
+    "reviews": {
+      "nodes": [
+        {"state": "COMMENTED", "body": "<!-- review-anvil-marker: new -->\n# review-anvil report\n\n## What I noticed\n- **RAVF001 [medium] auth** `src/auth.ts:12` — A stale token can create a session.\n\n## Set aside / Outside this change\n- **RAVF002 [low] docs** `README.md:4` — The wording needs a product decision.", "url": "https://example.invalid/new-review"}
+      ],
+      "pageInfo": {"hasNextPage": false, "endCursor": null}
+    },
+    "comments": {"nodes": [], "pageInfo": {"hasNextPage": false, "endCursor": null}}
+  }}}}
+JSON
+
+    output="$tmp/history.txt"
+    GH_MOCK_GRAPHQL_RESPONSE="$fixture" PATH="$bin:$PATH" \
+      "$HELPER" history github.com acme widgets 42 >"$output"
+
+    grep -Fq '[reported] src/auth.ts:12' "$output"
+    grep -Fq '[deferred] README.md:4' "$output"
+}
+
 test_post_suppresses_duplicate_open_thread_but_keeps_status() {
     local tmp bin fixture report inline
     tmp="$(mktemp -d)"
@@ -711,6 +741,7 @@ main() {
     test_compact_report_preserves_wrapped_reproduction_metadata
     test_post_dismisses_table_report_findings
     test_dismissal_respects_report_paths
+    test_history_reads_new_report_headings
     test_history_includes_open_resolved_outdated_and_summary_only
     test_post_suppresses_duplicate_open_thread_but_keeps_status
     test_history_paginates_without_refetch_duplicates

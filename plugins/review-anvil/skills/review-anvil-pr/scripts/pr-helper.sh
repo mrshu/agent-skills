@@ -555,9 +555,9 @@ def report_findings(node):
             continue
         if line.startswith("## "):
             heading = line[3:].strip().lower()
-            if heading.startswith(("findings", "suggestions", "non-blocking")):
+            if heading.startswith(("findings", "diagnoses", "what i noticed", "suggestions", "things to try", "non-blocking")):
                 section_status = "reported"
-            elif heading.startswith("deferred / out-of-scope"):
+            elif heading.startswith(("deferred / out-of-scope", "set aside / outside this change")):
                 section_status = "deferred"
             else:
                 section_status = None
