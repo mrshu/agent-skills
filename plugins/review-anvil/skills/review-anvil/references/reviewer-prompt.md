@@ -94,8 +94,9 @@ TASK
 Review the target above. Do not edit files.
 Report only distinct issues you can prove from the code.
 Start by explaining what you saw: say what the code does and what happens
-because of it. Then offer a friendly next step. Keep facts direct and short.
-Put proof in `evidence`. Keep it brief, and use separate short sentences when more than one fact is needed; do not add a code dump unless it is needed.
+because of it. Keep facts direct and short. Put proof in `evidence`. Keep it
+brief, and use separate short sentences when more than one fact is needed; do
+not add a code dump unless it is needed.
 
 NON-INTERACTIVE EXECUTION CONTRACT
 This review invocation is already authorized for read-only research. Start the
@@ -173,13 +174,15 @@ For each issue, return a structured finding with these keys:
   saw: a code line, caller, test, config, contract, comparison, or runtime
   fact. For runtime bugs, include reachability. Do not restate `what` or `why`,
   and do not narrate the investigation.
-- suggested_fix: offer a friendly next step, such as "We could ..." or "One
-  option is ...". Start with the smallest clear fix that follows an existing
-  local pattern. Suggest a new layer, helper, or abstraction only when evidence
-  shows it is needed for correctness or safety. Say where to make it and the
-  behavior it should produce. Mention a test or edge case only when it matters.
-  Keep it to one or two short sentences. Use prose only; include replacement
-  code only when it safely fixes the selected lines.
+- suggested_fix: state the concrete behavior change and intended result in neutral prose.
+  Do not use author-facing voice, a canned opener, or a rhetorical question.
+  The final report decides whether a finding needs a friendly next step. Start
+  with the smallest clear fix that follows an existing local pattern. Suggest a
+  new layer, helper, or abstraction only when evidence shows it is needed for
+  correctness or safety. Say where to make it and the behavior it should
+  produce. Mention a test or edge case only when it matters. Keep it to one or
+  two short sentences. Use prose only; include replacement code only when it
+  safely fixes the selected lines.
 - suggested_change: (OPTIONAL) exact replacement text for the cited
   line/range, only when the fix is narrow, mechanical, and directly
   applicable as a GitHub suggested change. Omit for design concerns,

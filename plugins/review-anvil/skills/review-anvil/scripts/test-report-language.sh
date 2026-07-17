@@ -8,6 +8,9 @@ ENGINE="$ROOT/SKILL.md"
 ARTIFACTS="$ROOT/references/report-artifacts.md"
 IMPROVE="$ROOT/../review-anvil-improve-pr/SKILL.md"
 PR_SKILL="$ROOT/../review-anvil-pr/SKILL.md"
+REVIEWER="$ROOT/references/reviewer-prompt.md"
+REPRODUCTION="$ROOT/references/reproduction-prompt.md"
+ADVERSARIAL="$ROOT/references/adversarial-prompt.md"
 
 fail() {
     printf 'test-report-language: %s\n' "$*" >&2
@@ -36,7 +39,7 @@ require "$ENGINE" '**Second check:** off | <mode>, <A> reviewers'
 require "$ENGINE" 'Refresh creates a session before CSRF validation'
 require "$ENGINE" 'A missing-state-token test would cover this path.'
 require "$ARTIFACTS" 'Keep the comment as short as the finding allows.'
-require "$ARTIFACTS" 'We could avoid that by letting non-retryable write errors reach `signup_flow`'
+require "$ARTIFACTS" 'stock opener or rotate through canned alternatives.'
 require "$IMPROVE" 'Changes made / Things to try'
 require "$ENGINE" '- Earlier review comments: none |'
 require "$ENGINE" '- Checks: off | skipped | concerns='
@@ -55,13 +58,14 @@ require "$ROOT/references/reviewer-prompt.md" '- evidence: required concrete pro
 require "$ROOT/references/reviewer-prompt.md" 'Prefer the smallest clear fix and existing local patterns.'
 require "$ROOT/references/reviewer-prompt.md" 'Use short everyday words. Prefer one clear sentence over a dense explanation.'
 require "$ROOT/references/reviewer-prompt.md" 'If not, explain why removing it is the smallest fix.'
-require "$ROOT/references/reviewer-prompt.md" 'Keep it brief, and use separate short sentences when more than one fact is needed'
-require "$ENGINE" 'We could check the state token before rotating the session.'
+require "$ROOT/references/reviewer-prompt.md" 'separate short sentences when more than one fact is needed'
+require "$ROOT/references/reviewer-prompt.md" '- suggested_fix: state the concrete behavior change and intended result in neutral prose.'
 require "$ARTIFACTS" 'Use short everyday words. Prefer one clear sentence over a dense explanation.'
-require "$ROOT/references/reproduction-prompt.md" 'author-facing wording in plain language'
-require "$ROOT/references/adversarial-prompt.md" 'Treat type, verdict, evidence, and reason as internal.'
+require "$ARTIFACTS" 'When several inline comments include next steps, vary their grammatical construction.'
+require "$ARTIFACTS" 'rewrite repeated lexical or grammatical openings when they read repetitive'
+require "$ARTIFACTS" 'Never begin a next-step sentence with a bare verb.'
 require "$ENGINE" 'The CLI help could use the same option name.'
-require "$ENGINE" 'We could <plain-language behavior change>. (`RAVF001`)'
+require "$ENGINE" '- **[severity] area** — <plain-language behavior change>. (`RAVF001`)'
 require "$ENGINE" 'We set this aside because <plain-language description of the missing proof>.'
 require "$ENGINE" 'Keep `author-resolved` items in PR REVIEW HISTORY for reviewer context.'
 require "$ENGINE" 'After synthesis and dedup, drop semantic matches to `author-resolved` items before building reproduction candidates.'
@@ -72,6 +76,18 @@ require "$ENGINE" '<!-- review-anvil: prior_feedback=reintroduced -->'
 require "$ENGINE" '"prior_feedback": "reintroduced"'
 require "$ARTIFACTS" 'helper-only `"prior_feedback": "reintroduced"`'
 require "$ROOT/references/reviewer-prompt.md" 'only for a distinct new instance with new evidence.'
+for guide in "$ENGINE" "$ARTIFACTS" "$REVIEWER" "$REPRODUCTION" "$ADVERSARIAL"; do
+    reject "$guide" 'We could '
+    reject "$guide" 'One option is '
+    reject "$guide" 'It may help to '
+done
+reject "$REPRODUCTION" 'author-facing wording'
+reject "$REPRODUCTION" 'offer a gentle next step'
+reject "$ADVERSARIAL" 'author-facing'
+reject "$ADVERSARIAL" 'offer a gentle next step'
+reject "$ENGINE" 'what happens because of it, and a friendly next step.'
+reject "$REVIEWER" 'because of it. Then offer a friendly next step. Keep facts direct and short.'
+reject "$REVIEWER" 'When useful, add a friendly next step.'
 reject "$ROOT/references/reviewer-prompt.md" 'Revalidate `open`, `resolved`, `reported`, `deferred`, and'
 reject "$ENGINE" '- Prior feedback: none |'
 reject "$ENGINE" '- Reproduction: off | skipped | candidates='

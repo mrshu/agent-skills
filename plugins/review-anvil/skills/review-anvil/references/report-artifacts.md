@@ -20,7 +20,7 @@ a blocker only in collapsed or linked detail.
 
 ## Inline-comment voice (bodies in `.inline.json`)
 
-Write each inline comment in plain language about the code at that line. Use comments for `critical`, `high`, and `medium` problems; put `low` and `nit` items in the summary. Start with what you saw. State what the code does and what happens because of it. Then offer a friendly next step. Keep the comment as short as the finding allows. Every claim must point to a concrete code, test, config, caller, or runtime fact.
+Write each inline comment in plain language about the code at that line. Use comments for `critical`, `high`, and `medium` problems; put `low` and `nit` items in the summary. Start with what you saw. State what the code does and what happens because of it. When a next step would help, add it after those facts. Keep the comment as short as the finding allows. Every claim must point to a concrete code, test, config, caller, or runtime fact.
 Keep evidence brief. Use separate short sentences when more than one fact is needed. Do not add an evidence heading or code dump unless it is needed.
 
 For an explicitly reintroduced author-resolved finding, put `<!-- review-anvil: prior_feedback=reintroduced -->` immediately after the visible final-report finding row or bullet. Its matching inline item carries helper-only `"prior_feedback": "reintroduced"`; the posting helper strips that JSON field before the GitHub REST request while preserving the hidden marker in the posted inline body for later PR-history handling.
@@ -32,19 +32,22 @@ Use short everyday words. Prefer one clear sentence over a dense explanation.
 `save_user` catches every database error and returns `True`. `signup_flow`
 then shows success even though no user row was written.
 
-We could avoid that by letting non-retryable write errors reach `signup_flow`
-and returning failure. A test where the INSERT fails would cover it.
+If non-retryable write errors reach `signup_flow`, the failure stays visible
+and the signup returns failure. A test where the INSERT fails would cover it.
 ```
 
 Start with what you saw: the observable problem, the code path, and the result.
-Then offer a friendly next step and, when useful, a test. Write ordinary prose;
-do not label these parts. Use a short code sketch or exact replacement only when
-it removes doubt.
+When a next step would help, add it in context-specific prose. Do not require a
+stock opener or rotate through canned alternatives. A concise finding may omit
+the next step when the behavior and result make the action clear. Use a short
+code sketch or exact replacement only when it removes doubt.
+When several inline comments include next steps, vary their grammatical construction. Compare the first clause of each next step; rewrite repeated lexical or grammatical openings when they read repetitive, but let the finding determine the form. Do not cycle canned phrases.
+Never begin a next-step sentence with a bare verb. Recast a direct instruction as a condition or statement of the intended behavior.
 
 Voice rules:
 
 - Address the code, never the author: "the handler swallows the error", not "you swallow the error". No "should have", no "Obviously / Clearly / Simply / Just".
-- Offer a calm next step: "We could ...", "One option is ...", or "It may help to ...". Do not use commands, rhetorical questions, review jargon, or filler.
+- Keep any next step calm and specific, but derive it from the finding rather than a stock phrase. Do not use commands, rhetorical questions, review jargon, or filler.
 - Calm and specific beats emphatic. The severity tag carries the urgency; the prose needs no alarm words, bold warnings, exclamation marks, or rhetorical/scolding questions.
 - When the PR's approach is sound and the finding is an edge of it, say so in one honest clause ("the retry loop is right; the timeout just needs to cover it") — genuine context, not a compliment sandwich.
 - Keep the comment as short as the finding allows. Add detail only when needed to explain the failure or the safe fix.

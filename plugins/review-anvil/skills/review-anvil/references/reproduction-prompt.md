@@ -61,7 +61,7 @@ End with a fenced `reproduction` block containing YAML:
   evidence: <specific code/config/test/runtime evidence>
   reason: <why this classification is correct>
   report_effect: actionable | deferred | suggestion | drop
-  safer_wording: <optional author-facing wording in plain language: state what the code does and its effect, then offer a gentle next step>
+  safer_wording: <optional neutral description of the concrete behavior change and intended result>
 ```
 
 If there are no candidates, return:
@@ -79,7 +79,7 @@ If there are no candidates, return:
   <plain-language description of the missing proof>.` Rewrite the verifier's
   reason; do not copy it.
 - `narrowed`: keep the finding actionable with the verifier's narrower scope or
-  friendly author-facing wording.
+  neutral concrete behavior description.
 - `downgraded`: change the severity, then re-apply `min_fix_severity`, inline
   severity, approval, and suggestion rules.
 

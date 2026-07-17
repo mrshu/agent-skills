@@ -430,8 +430,8 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 
    ```json
    [
-     {"path": "src/auth.ts", "line": 50, "side": "RIGHT", "severity": "high", "body": "**[high] auth** — Refresh creates a session before CSRF validation\n\nThe handler rotates the session before it checks the state token. A stale tab can create a new session with an invalid token.\n\nWe could check the state token before rotating the session. A missing-state-token test would cover this path."},
-     {"path": "src/db.ts", "start_line": 100, "line": 110, "side": "RIGHT", "start_side": "RIGHT", "severity": "medium", "body": "**[medium] db** — Retry accounting records success before the write succeeds\n\nThe retry block increments `attempts_succeeded` before `insert_event` returns. A timeout records success even when no row was written.\n\nOne option is to increment the counter only after `insert_event` succeeds. A timeout test would cover this path.", "suggestion": "result = insert_event(payload)\nattempts_succeeded += 1\nreturn result"}
+     {"path": "src/auth.ts", "line": 50, "side": "RIGHT", "severity": "high", "body": "**[high] auth** — Refresh creates a session before CSRF validation\n\nThe handler rotates the session before it checks the state token. A stale tab can create a new session with an invalid token.\n\nA state check before rotation would block that path. A missing-state-token test would cover this path."},
+     {"path": "src/db.ts", "start_line": 100, "line": 110, "side": "RIGHT", "start_side": "RIGHT", "severity": "medium", "body": "**[medium] db** — Retry accounting records success before the write succeeds\n\nThe retry block increments `attempts_succeeded` before `insert_event` returns. A timeout records success even when no row was written.\n\nThe counter update belongs after a successful insert; timeout attempts then remain eligible for retry. A timeout test can cover this path.", "suggestion": "result = insert_event(payload)\nattempts_succeeded += 1\nreturn result"}
    ]
    ```
 
@@ -441,7 +441,7 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 
    For an explicitly reintroduced `author-resolved` finding, place `<!-- review-anvil: prior_feedback=reintroduced -->` immediately after its visible final-report finding row or bullet. Its matching inline item must carry helper-only `"prior_feedback": "reintroduced"`; the posting helper uses it before author-resolved suppression, strips the JSON field before the GitHub REST request, and preserves the hidden marker in the posted inline body so later history retains the disposition.
 
-   Each `body` follows the **inline-comment voice** in `references/report-artifacts.md` — read it before composing bodies. Keep it short and plain: say what the code does, what happens because of it, and a friendly next step. A reader must be able to act without reopening the diff. Include a safe exact `"suggestion"` or a short code sketch only when it removes doubt. By default, inline comments are for `critical`/`high`/`medium` anchored findings; `low`/`nit` findings remain in the top-level summary unless the user or environment lowers `REVIEW_ANVIL_INLINE_MIN_SEVERITY`. The same voice applies to the report's Things to try, Set aside, and Outside this change prose.
+   Each `body` follows the **inline-comment voice** in `references/report-artifacts.md` — read it before composing bodies. Keep it short and plain: say what the code does, what happens because of it, and, when useful, a friendly next step. A reader must be able to act without reopening the diff. Include a safe exact `"suggestion"` or a short code sketch only when it removes doubt. By default, inline comments are for `critical`/`high`/`medium` anchored findings; `low`/`nit` findings remain in the top-level summary unless the user or environment lowers `REVIEW_ANVIL_INLINE_MIN_SEVERITY`. The same voice applies to the report's Things to try, Set aside, and Outside this change prose.
 
 3. Write a sibling `<report_path>.approval.json` so the PR-posting helper can choose the GitHub review event (review-only PR runs; for other runs write `{"event": "COMMENT"}` or omit the file — the helper defaults to COMMENT):
 
@@ -542,7 +542,7 @@ none: "No confirmed problems found.">
 <summary>Non-blocking low/nit findings</summary>
 
 - **[low] docs** — The CLI help could use the same option name.
-- **[nit] tests** — One option is to share the duplicate fixture setup.
+- **[nit] tests** — The duplicate fixture setup can be shared.
 
 </details>
 
@@ -552,7 +552,7 @@ include each thing to try as one short, plain-language behavior change. In
 external reports, collapse this section when it contains more than 3 items.>
 
 - `<sha>` — <subject>                         # per_fix only
-- **[severity] area** — We could <plain-language behavior change>. (`RAVF001`)   # commit_mode=none only
+- **[severity] area** — <plain-language behavior change>. (`RAVF001`)   # commit_mode=none only
 
 ## Set aside / Outside this change
 <Include each item not addressed here in one line. Collapse this section when
