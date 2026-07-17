@@ -22,6 +22,8 @@ a blocker only in collapsed or linked detail.
 
 Write each inline comment in plain language about the code at that line. Use comments for `critical`, `high`, and `medium` problems; put `low` and `nit` items in the summary. Start with what you saw. State what the code does and what happens because of it. Then offer a friendly next step. Keep the comment as short as the finding allows. Every claim must point to a concrete code, test, config, caller, or runtime fact.
 Keep evidence brief. Use separate short sentences when more than one fact is needed. Do not add an evidence heading or code dump unless it is needed.
+
+For an explicitly reintroduced author-resolved finding, put `<!-- review-anvil: prior_feedback=reintroduced -->` immediately after the visible final-report finding row or bullet. Its matching inline item carries helper-only `"prior_feedback": "reintroduced"`; the posting helper strips that JSON field before the GitHub REST request while preserving the hidden marker in the posted inline body for later PR-history handling.
 Use short everyday words. Prefer one clear sentence over a dense explanation.
 
 ```

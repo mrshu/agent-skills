@@ -185,6 +185,7 @@ if not isinstance(items, list):
     raise SystemExit(f"pr-helper: {inline} is not a JSON array of comment objects")
 
 allowed = {"path", "position", "body", "line", "side", "start_line", "start_side"}
+reintroduced_marker = "<!-- review-anvil: prior_feedback=reintroduced -->"
 
 def infer_severity(item):
     explicit = str(item.get("severity", "")).lower()
@@ -234,6 +235,8 @@ for item in items:
     body = append_suggestion(original_body, item)
     if "```suggestion" in body and "```suggestion" not in original_body:
         suggested += 1
+    if item.get("prior_feedback") == "reintroduced" and reintroduced_marker not in body:
+        body = body.rstrip() + "\n\n" + reintroduced_marker
     clean = {key: item[key] for key in allowed if key in item}
     clean["body"] = body
     kept.append(clean)
@@ -286,13 +289,16 @@ QUERY = r'''
 query($owner:String!,$repo:String!,$number:Int!,$threadCursor:String,$reviewCursor:String,$commentCursor:String){
   repository(owner:$owner,name:$repo){
     pullRequest(number:$number){
+      author{ login }
       reviewThreads(first:100, after:$threadCursor){
         pageInfo{ hasNextPage endCursor }
         nodes{
           isResolved
           isOutdated
+          resolvedBy{ login }
           path
           line
+          startLine
           comments(first:50){ nodes{ body author{login} url } }
         }
       }
@@ -343,6 +349,7 @@ def fetch_history():
             thread_page = pr["reviewThreads"]
             review_page = pr["reviews"]
             comment_page = pr["comments"]
+            pr_author = ((pr.get("author") or {}).get("login") or "")
         except (KeyError, TypeError, json.JSONDecodeError) as exc:
             raise SystemExit(f"pr-helper: malformed PR review history response: {exc}")
 
@@ -372,7 +379,7 @@ def fetch_history():
             if not comment_done and not comment_cursor:
                 raise SystemExit("pr-helper: malformed PR review history response: comments page has no endCursor")
         if thread_done and review_done and comment_done:
-            return threads, reviews, comments
+            return pr_author, threads, reviews, comments
 
 def norm(text: str) -> str:
     text = re.sub(r"https?://\S+", " ", text or "")
@@ -386,6 +393,7 @@ def norm(text: str) -> str:
 ID_PATTERN = r"(?:RAVF\d{3,}|F-\d{3,})"
 SEVERITY_NAMES = {"critical", "high", "medium", "low", "nit"}
 SEVERITY_INITIALS = {"c": "critical", "h": "high", "m": "medium", "l": "low", "n": "nit"}
+REINTRODUCED_MARKER = "<!-- review-anvil: prior_feedback=reintroduced -->"
 
 FINDING_RE = re.compile(
     rf"\*\*(?:{ID_PATTERN}\s+)?\[(?P<severity>critical|high|medium|low|nit)\]\s*(?P<area>[^*]+?)\*\*(?:\s+`(?P<location>[^`]+)`)?\s*[-—:]+\s*(?P<finding>[^\n]+)",
@@ -519,7 +527,7 @@ def same_finding(cand, previous, require_path):
         return True
     return difflib.SequenceMatcher(None, cs, ps).ratio() >= 0.9
 
-threads, reviews, issue_comments = fetch_history()
+pr_author, threads, reviews, issue_comments = fetch_history()
 history = []
 for t in threads:
     comments = (t.get("comments") or {}).get("nodes") or []
@@ -530,11 +538,24 @@ for t in threads:
     body = comments[0].get("body") or ""
     sig = signature(body)
     if sig:
-        history.append({"path": t.get("path") or "", "line": t.get("line"),
+        resolver = ((t.get("resolvedBy") or {}).get("login") or "")
+        status = (
+            "author-resolved"
+            if t.get("isResolved") and pr_author and resolver == pr_author
+            else "resolved" if t.get("isResolved") else "open"
+        )
+        thread_start = t.get("startLine")
+        thread_end = t.get("line")
+        thread_line = (
+            f"{thread_start}-{thread_end}"
+            if thread_start and thread_end and thread_start != thread_end
+            else thread_end
+        )
+        history.append({"path": t.get("path") or "", "line": thread_line,
                         "sig": sig, "summary": summary(body),
                         "source": comments[0].get("url") or "review-thread",
-                        "status": "resolved" if t.get("isResolved") else "open",
-                        "severity": severity_from_body(body),
+                        "status": status, "severity": severity_from_body(body),
+                        "prior_feedback": "reintroduced" if REINTRODUCED_MARKER in body else None,
                         "outdated": bool(t.get("isOutdated"))})
 
 def report_findings(node):
@@ -546,6 +567,7 @@ def report_findings(node):
     found = []
     section_status = None
     in_fence = False
+    last_finding = None
     for line in body.splitlines():
         stripped = line.strip()
         if stripped.startswith(("```", "~~~")):
@@ -553,6 +575,11 @@ def report_findings(node):
             continue
         if in_fence:
             continue
+        if stripped == REINTRODUCED_MARKER and last_finding is not None:
+            last_finding["prior_feedback"] = "reintroduced"
+            last_finding = None
+            continue
+        last_finding = None
         if line.startswith("## "):
             heading = line[3:].strip().lower()
             if heading.startswith(("findings", "diagnoses", "what i noticed", "suggestions", "things to try", "non-blocking")):
@@ -588,7 +615,9 @@ def report_findings(node):
                           "source": node.get("url") or "prior-review-anvil-report",
                           "status": status,
                           "severity": severity_from_body(finding_body),
+                          "prior_feedback": None,
                           "outdated": False})
+            last_finding = found[-1]
     return found
 
 # Summary-only and unanchored findings do not create GitHub review threads.
@@ -596,8 +625,9 @@ def report_findings(node):
 # but deduplicate findings already represented by a thread root.
 for node in reviews + issue_comments:
     for candidate in report_findings(node):
-        if not any(same_finding(candidate, previous, require_path=False)
-                   for previous in history):
+        if (candidate.get("prior_feedback") == "reintroduced"
+                or not any(same_finding(candidate, previous, require_path=False)
+                           for previous in history)):
             history.append(candidate)
 
 sp = state_file()
@@ -619,9 +649,40 @@ if sp and sp.exists():
     except Exception as exc:
         raise SystemExit(f"pr-helper: invalid dismissal state {sp}: {exc}")
 
+def history_rank(item):
+    if item.get("prior_feedback") == "reintroduced":
+        return 3
+    return {"suppressed": 2, "author-resolved": 1}.get(item["status"], 0)
+
+def same_history_item(item, current):
+    if not same_finding(item, current, require_path=False):
+        return False
+    if (item.get("prior_feedback") == "reintroduced"
+            or current.get("prior_feedback") == "reintroduced"):
+        return True
+    item_line = item.get("line")
+    current_line = current.get("line")
+    return not (item_line and current_line and item_line != current_line)
+
+def coalesce_history(items):
+    coalesced = []
+    for item in items:
+        match_index = next(
+            (index for index, current in enumerate(coalesced)
+             if same_history_item(item, current)),
+            None,
+        )
+        if match_index is None:
+            coalesced.append(item)
+        elif history_rank(item) > history_rank(coalesced[match_index]):
+            coalesced[match_index] = item
+    return coalesced
+
+history = coalesce_history(history)
+
 if mode in {"history", "list"}:
     selected = history if mode == "history" else [
-        item for item in history if item["status"] in {"resolved", "suppressed"}
+        item for item in history if item["status"] in {"resolved", "author-resolved", "suppressed"}
     ]
     if not selected:
         print("None.")
@@ -631,7 +692,7 @@ if mode in {"history", "list"}:
                 loc = f'{d["path"]}:{d["line"]}' if d.get("line") else d["path"]
             else:
                 loc = "(no file anchor)"
-            flags = d["status"] + (",outdated" if d.get("outdated") else "")
+            flags = d["status"] + (",reintroduced" if d.get("prior_feedback") == "reintroduced" else "") + (",outdated" if d.get("outdated") else "")
             print(f'- [{flags}] {loc} — {d["summary"]} ({d["source"]})')
     raise SystemExit(0)
 
@@ -640,8 +701,6 @@ if mode != "suppress":
 
 report = Path(sys.argv[5])
 inline = Path(sys.argv[6])
-if not history:
-    raise SystemExit(0)
 
 def display_status(item):
     status = {
@@ -659,31 +718,172 @@ suppressed = []
 matched_history = []
 categorically_removed = 0
 explicit_suppressions = []
+
+def does_not_reraise(item):
+    return item["status"] in {"suppressed", "author-resolved"}
+
+def location_range_from_block(block):
+    for line in block:
+        match = FINDING_RE.search(line or "")
+        location = match.group("location") if match else None
+        if not location:
+            item = table_finding(line)
+            location = item.get("location") if item else None
+        line_match = re.search(r":(\d+)(?:-(\d+))?$", (location or "").strip().strip("`"))
+        if line_match:
+            start_line = line_match.group(1)
+            return start_line, line_match.group(2) or start_line
+    return None, None
+
+def inline_candidate(item):
+    return {
+        "path": item.get("path") or "",
+        "position": str(item.get("position") or "") or None,
+        "start_line": str(item.get("start_line") or item.get("line") or "") or None,
+        "line": str(item.get("line") or item.get("start_line") or "") or None,
+        "sig": signature(item.get("body") or ""),
+        "severity": severity_name(item.get("severity")) or severity_from_body(item.get("body") or ""),
+    }
+
+inline_items = None
+delivery_candidates = []
+reintroduced_candidates = []
 if inline.exists() and inline.read_text().strip() not in {"", "[]"}:
-    items = json.loads(inline.read_text())
-    if not isinstance(items, list):
+    inline_items = json.loads(inline.read_text())
+    if not isinstance(inline_items, list):
         raise SystemExit(f"pr-helper: {inline} is not a JSON array of comment objects")
+    for item in inline_items:
+        if isinstance(item, dict):
+            candidate = inline_candidate(item)
+            delivery_candidates.append(candidate)
+            if item.get("prior_feedback") == "reintroduced":
+                reintroduced_candidates.append(candidate)
+
+if report.exists():
+    report_lines = report.read_text().splitlines()
+    in_fence = False
+    for index, line in enumerate(report_lines):
+        stripped = line.lstrip()
+        if stripped.startswith(("```", "~~~")):
+            in_fence = not in_fence
+            continue
+        if not in_fence and is_finding_line(line):
+            start_line, end_line = location_range_from_block([line])
+            candidate = {
+                "path": path_from_block([line]),
+                "start_line": start_line,
+                "line": end_line,
+                "sig": signature(line),
+                "severity": severity_from_body(line),
+            }
+            delivery_candidates.append(candidate)
+            if (index + 1 < len(report_lines)
+                    and report_lines[index + 1].strip() == REINTRODUCED_MARKER):
+                reintroduced_candidates.append(candidate)
+
+def same_delivery_candidate_without_position(cand, candidate):
+    if not same_finding(cand, candidate,
+                        require_path=bool(cand.get("path") and candidate.get("path"))):
+        return False
+    start_line = cand.get("start_line") or cand.get("line")
+    end_line = cand.get("line") or start_line
+    candidate_start_line = candidate.get("start_line") or candidate.get("line")
+    candidate_end_line = candidate.get("line") or candidate_start_line
+    return (not start_line or not candidate_start_line
+            or (start_line == candidate_start_line and end_line == candidate_end_line))
+
+def same_delivery_candidate(cand, candidate):
+    if not same_delivery_candidate_without_position(cand, candidate):
+        return False
+    position = cand.get("position")
+    candidate_position = candidate.get("position")
+    return not (position and candidate_position) or position == candidate_position
+
+def explicitly_reintroduced(cand, local_disposition):
+    if local_disposition:
+        return True
+    for candidate in reintroduced_candidates:
+        if not same_delivery_candidate(cand, candidate):
+            continue
+        cand_start_line = cand.get("start_line") or cand.get("line")
+        candidate_start_line = candidate.get("start_line") or candidate.get("line")
+        if not cand_start_line or not candidate_start_line:
+            coordinate_less = cand if not cand_start_line else candidate
+            matches = sum(
+                same_delivery_candidate_without_position(
+                    coordinate_less, delivery_candidate
+                )
+                for delivery_candidate in delivery_candidates
+            )
+            if matches != 2:
+                continue
+        return True
+    return False
+
+def matching_history(cand, require_path):
+    matches = [
+        item for item in history
+        if same_finding(cand, item, require_path=require_path)
+    ]
+    if not matches:
+        return None
+    start_line = cand.get("start_line") or cand.get("line")
+    end_line = cand.get("line") or start_line
+    if start_line:
+        anchors = []
+        if end_line and end_line != start_line:
+            anchors.append(f"{start_line}-{end_line}")
+        anchors.append(str(end_line or start_line))
+        for anchor in anchors:
+            exact = next(
+                (item for item in matches if str(item.get("line") or "") == anchor),
+                None,
+            )
+            if exact:
+                return exact
+    return matches[0]
+
+if inline_items is not None:
+    items = inline_items
     kept = []
+    inline_reintroduced = False
     for item in items:
         if not isinstance(item, dict):
             kept.append(item)  # let posting fail loudly on malformed members
             continue
-        cand = {"path": item.get("path") or "", "sig": signature(item.get("body") or ""),
-                "severity": severity_name(item.get("severity")) or severity_from_body(item.get("body") or "")}
-        hit = next((d for d in history if same_finding(cand, d, require_path=True)), None)
+        cand = inline_candidate(item)
+        reintroduced = explicitly_reintroduced(
+            cand, item.get("prior_feedback") == "reintroduced"
+        )
+        inline_reintroduced |= (
+            reintroduced and item.get("prior_feedback") != "reintroduced"
+        )
+        hit = matching_history(cand, require_path=True)
         if hit:
-            matched_history.append((hit, cand.get("severity")))
-            if hit["status"] == "suppressed":
+            bypass_author_resolved = (
+                hit["status"] == "author-resolved" and reintroduced
+            )
+            matched_history.append((hit, cand.get("severity"), bypass_author_resolved))
+            if does_not_reraise(hit) and not bypass_author_resolved:
                 categorically_removed += 1
-                explicit_suppressions.append({"path": cand["path"],
-                                              "summary": summary(item.get("body") or ""),
-                                              "source": hit["source"], "sig": cand["sig"]})
+                if hit["status"] == "suppressed":
+                    explicit_suppressions.append({"path": cand["path"],
+                                                  "summary": summary(item.get("body") or ""),
+                                                  "source": hit["source"], "sig": cand["sig"]})
+            elif does_not_reraise(hit):
+                kept.append(
+                    {**item, "prior_feedback": "reintroduced"}
+                    if reintroduced else item
+                )
             else:
                 suppressed.append({**cand, "summary": summary(item.get("body") or ""),
                                    "source": hit["source"], "status": display_status(hit)})
         else:
-            kept.append(item)
-    if len(kept) != len(items):
+            kept.append(
+                {**item, "prior_feedback": "reintroduced"}
+                if reintroduced else item
+            )
+    if len(kept) != len(items) or inline_reintroduced:
         inline.write_text(json.dumps(kept, indent=2) + "\n")
 
 # Move matching findings in the report body to a prior-feedback status section.
@@ -692,6 +892,7 @@ if inline.exists() and inline.read_text().strip() not in {"", "[]"}:
 # code block must not start a finding) and paragraph-aware (a blank line ends
 # a block only when what follows is not indented continuation or a fence).
 demoted = []
+report_reintroduced = False
 if report.exists():
     lines = report.read_text().splitlines()
 
@@ -736,31 +937,55 @@ if report.exists():
         if not in_fence and is_finding_line(line):
             j2 = block_end(i)
             block = lines[i:j2]
-            cand = {"path": path_from_block(block), "sig": signature("\n".join(block))}
-            hit = next((d for d in history if same_finding(cand, d, require_path=False)), None)
+            start_line, end_line = location_range_from_block(block)
+            cand = {"path": path_from_block(block), "start_line": start_line,
+                    "line": end_line, "sig": signature("\n".join(block))}
+            reintroduced = explicitly_reintroduced(
+                cand,
+                len(block) > 1 and block[1].strip() == REINTRODUCED_MARKER,
+            )
+            marked_block = (
+                block if len(block) > 1 and block[1].strip() == REINTRODUCED_MARKER
+                else [block[0], REINTRODUCED_MARKER, *block[1:]]
+            )
+            report_reintroduced |= reintroduced and marked_block != block
+            hit = matching_history(cand, require_path=False)
             if hit:
-                matched_history.append((hit, severity_from_body("\n".join(block))))
-                if hit["status"] == "suppressed":
+                bypass_author_resolved = (
+                    hit["status"] == "author-resolved" and reintroduced
+                )
+                matched_history.append((hit, severity_from_body("\n".join(block)), bypass_author_resolved))
+                if does_not_reraise(hit) and not bypass_author_resolved:
                     categorically_removed += 1
-                    explicit_suppressions.append({"path": cand["path"],
-                                                  "summary": summary("\n".join(block)),
-                                                  "source": hit["source"], "sig": cand["sig"]})
+                    if hit["status"] == "suppressed":
+                        explicit_suppressions.append({"path": cand["path"],
+                                                      "summary": summary("\n".join(block)),
+                                                      "source": hit["source"], "sig": cand["sig"]})
+                elif does_not_reraise(hit):
+                    out.extend(marked_block if reintroduced else block)
                 else:
                     demoted.append({"line": block[0].strip(), "sig": cand["sig"],
                                     "source": hit["source"], "status": display_status(hit)})
                 i = j2
                 continue
+            if reintroduced:
+                out.extend(marked_block)
+                i = j2
+                continue
         out.append(line)
         i += 1
-    if demoted or suppressed or explicit_suppressions:
-        demoted_sigs = {d["sig"] for d in demoted}
-        tail = ["", "---", "", "### Earlier review comments", ""]
-        tail += [f'{d["line"]} _({d["status"]} Source: {d["source"]})_' for d in demoted]
-        tail += [f'- **Earlier inline comment** {s["path"]} — {s["summary"]} _({s["status"]} Source: {s["source"]})_'
-                 for s in suppressed if s["sig"] not in demoted_sigs]
-        tail += [f'- **Not raised again** {s["path"] or "(no file anchor)"} — {s["summary"]} _(It was intentionally set aside. Source: {s["source"]})_'
-                 for s in {item["sig"]: item for item in explicit_suppressions}.values()]
-        report.write_text("\n".join(out).rstrip() + "\n" + "\n".join(tail) + "\n")
+    if demoted or suppressed or explicit_suppressions or categorically_removed or report_reintroduced:
+        rewritten = "\n".join(out).rstrip() + "\n"
+        if demoted or suppressed or explicit_suppressions:
+            demoted_sigs = {d["sig"] for d in demoted}
+            tail = ["", "---", "", "### Earlier review comments", ""]
+            tail += [f'{d["line"]} _({d["status"]} Source: {d["source"]})_' for d in demoted]
+            tail += [f'- **Earlier inline comment** {s["path"]} — {s["summary"]} _({s["status"]} Source: {s["source"]})_'
+                     for s in suppressed if s["sig"] not in demoted_sigs]
+            tail += [f'- **Not raised again** {s["path"] or "(no file anchor)"} — {s["summary"]} _(It was intentionally set aside. Source: {s["source"]})_'
+                     for s in {item["sig"]: item for item in explicit_suppressions}.values()]
+            rewritten += "\n".join(tail) + "\n"
+        report.write_text(rewritten)
 
 # A material item discovered during the post-time refresh must not race with a
 # previously selected APPROVE event. The final report must account for its URL
@@ -769,7 +994,7 @@ if report.exists():
 # the author has not yet clicked Resolve in GitHub.
 report_text = report.read_text() if report.exists() else ""
 def material_item_blocks(item):
-    if item.get("severity") not in {"critical", "high"} or item["status"] == "suppressed":
+    if item.get("severity") not in {"critical", "high"} or does_not_reraise(item):
         return False
     source = item.get("source") or ""
     assessment = next((line.lower() for line in report_text.splitlines()
@@ -777,9 +1002,10 @@ def material_item_blocks(item):
     return not assessment or not any(clear in assessment for clear in ("fixed", "stale/outdated", "stale"))
 
 blocking_prior = any(material_item_blocks(item) for item in history)
-blocking_match = any(severity in {"critical", "high"}
-                     and item["status"] != "suppressed"
-                     for item, severity in matched_history)
+blocking_match = any(
+    severity in {"critical", "high"} and (reintroduced or not does_not_reraise(item))
+    for item, severity, reintroduced in matched_history
+)
 approval = Path(str(report) + ".approval.json")
 if (blocking_prior or blocking_match) and approval.exists():
     try:

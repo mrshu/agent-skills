@@ -181,7 +181,7 @@ When all reviewers return:
 
 Plausible-but-wrong findings are the dominant failure mode of LLM review, and both downstream actions are expensive: a bogus fix commit pollutes the branch, a bogus finding posted to a PR burns the author's trust. After dedup:
 
-- **Prior-feedback check first (orchestrator judgment).** Compare every merged finding against PR REVIEW HISTORY *semantically* — same root cause counts even when wording differs. Revalidate `open`, `resolved`, and summary-only `reported` items against the current head. An open item that remains real is a carry-forward finding and must retain its effect on severity/approval, but must not create a duplicate inline thread; a resolved item means only that GitHub discussion was closed, not that the code was proven fixed. Record a still-present resolved item as `resolved-but-still-present` in the summary and do not create a new inline thread. Items now fixed/stale become one-line status notes. Explicit local `suppressed` items are never auto-fixed or posted as actionable findings, but remain as compact status-only audit rows. The post-time helper catches near-verbatim repeats (exact path + text similarity ≥ 0.9) as a deterministic duplicate-thread backstop.
+- **Prior-feedback check first (orchestrator judgment).** Compare every merged finding against PR REVIEW HISTORY *semantically* — same root cause counts even when wording differs. Revalidate `open`, `resolved`, and summary-only `reported` items against the current head. An open item that remains real is a carry-forward finding and must retain its effect on severity/approval, but must not create a duplicate inline thread; a resolved item means only that GitHub discussion was closed, not that the code was proven fixed. Record a still-present resolved item as `resolved-but-still-present` in the summary and do not create a new inline thread. Items now fixed/stale become one-line status notes. Explicit local `suppressed` items are never auto-fixed or posted as actionable findings, but remain as compact status-only audit rows. Keep `author-resolved` items in PR REVIEW HISTORY for reviewer context. After synthesis and dedup, drop semantic matches to `author-resolved` items before building reproduction candidates. Exception: retain a finding when the reviewer explicitly set `prior_feedback: reintroduced` for a distinct new instance with new evidence. Do not report, post, auto-fix, or let ordinary `author-resolved` matches affect approval. A reintroduced finding remains actionable; it affects approval only at `critical` or `high` severity. The post-time helper catches near-verbatim repeats (exact path + text similarity ≥ 0.9) as a deterministic duplicate-thread backstop.
 - **Scope/artifact filter next (orchestrator judgment).** Drop or move to out-of-scope follow-ups before reproduction when the claim is about archived design notes, changelogs, old migration examples, generated fixtures, vendored files, or historical docs that are not the review's live product surface. Do not spend verifier budget proving historical provenance is stale. Conversely, live docs that users rely on — README usage, CLI help, API docs, config reference, plugin metadata, or marketplace copy — are product surface and may become reproduction candidates when they drift from code/runtime behavior.
 - Assign stable report-local IDs before reproduction/adversarial dispatch: findings are `RAVF001`, `RAVF002`, ... and would-apply plans are `RAVW001`, `RAVW002`, ... . The canonical grammar is `RAV([FW])([0-9]{3,})`; the PR helper may accept legacy dashed IDs like `F-001` / `W-001` at parsing boundaries, but new reports should emit only the canonical no-punctuation form.
 - Build `REPRODUCTION CANDIDATES` after prior-feedback classification and ID assignment:
@@ -367,7 +367,7 @@ Append to running output:
 ### Round N — <convergence flag>
 - Parameters: rounds=3, max_rounds=3, target=acme/widgets#42 [pin], commit_mode=none [pin], focus=4-pillar
 - Reviewers: <list dispatched>
-- Earlier review comments: none | <open> open, <resolved> closed, <reported> summary-only, <suppressed> skipped; <still-present>/<fixed>/<stale> after checking
+- Earlier review comments: none | <open> open, <resolved> closed, <reported> summary-only, <author-resolved> author-resolved (skipped), <suppressed> skipped; <still-present>/<fixed>/<stale> after checking
 - What I noticed: C critical, H high, M medium, L low, N nit
 - Fixes applied: K commits (<sha1>..<shaN>)   # or "0 (review-only)"
 - Verification: <cmd> — passed | failed → round reverted | pre-existing failures (no new) | none detected | skipped   # per_fix only
@@ -438,6 +438,8 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
    Single line → `{"line": N, "side": "RIGHT"}`; range `<N>-<M>` → `{"start_line": N, "line": M, "side": "RIGHT", "start_side": "RIGHT"}`. Findings without anchors stay in the markdown body only; no anchored findings → `[]`. A reader must be able to create the fix from each `body` alone.
 
    Include helper-only `"severity"` for every inline item. The posting helper strips it before calling GitHub and uses it to keep low/nit findings summary-only by default. Include helper-only `"suggestion"` only when the fix is an exact replacement for the commented line/range; the helper turns it into a GitHub suggestion fenced block and strips the extra key before posting. Do not include suggestions for design fixes, cross-file edits, deleted lines, anything that requires judgment, or any suggestion whose anchor/replacement/blast-radius was disputed by adversarial review.
+
+   For an explicitly reintroduced `author-resolved` finding, place `<!-- review-anvil: prior_feedback=reintroduced -->` immediately after its visible final-report finding row or bullet. Its matching inline item must carry helper-only `"prior_feedback": "reintroduced"`; the posting helper uses it before author-resolved suppression, strips the JSON field before the GitHub REST request, and preserves the hidden marker in the posted inline body so later history retains the disposition.
 
    Each `body` follows the **inline-comment voice** in `references/report-artifacts.md` — read it before composing bodies. Keep it short and plain: say what the code does, what happens because of it, and a friendly next step. A reader must be able to act without reopening the diff. Include a safe exact `"suggestion"` or a short code sketch only when it removes doubt. By default, inline comments are for `critical`/`high`/`medium` anchored findings; `low`/`nit` findings remain in the top-level summary unless the user or environment lowers `REVIEW_ANVIL_INLINE_MIN_SEVERITY`. The same voice applies to the report's Things to try, Set aside, and Outside this change prose.
 
@@ -513,11 +515,13 @@ The final report is an external-facing decision summary. It must include every f
 ## Earlier review comments
 <For PR-context runs, list each earlier comment once as open, still present after
 being marked resolved, fixed, no longer relevant, or intentionally skipped.
-Keep its original URL and short reason. Omit this section for non-PR runs.
-These rows affect the review decision even when no new inline comment is
-needed. Keep 1-3 rows visible; for 4+ rows use a collapsed block with summary
-`Earlier review comments (N items)`. Preserve the exact internal status in the
-artifact; write the visible explanation in plain language.>
+For `author-resolved` items, count them separately as skipped but omit their
+individual finding text; retain the original URL and a short plain-language
+status reason. Actionable carry-forwards affect the review decision even when no
+new inline comment is needed; `author-resolved` history does not affect the review decision or approval. Keep 1-3 rows visible; for
+4+ rows use a collapsed block with summary `Earlier review comments (N items)`.
+Preserve the exact internal status in the artifact; write the visible
+explanation in plain language.>
 
 ## What I noticed
 <Show every confirmed issue once. Critical/high issues go first, then medium,
@@ -566,7 +570,7 @@ it contains more than 3 items. Omit it when empty.>
 - Rounds: <completed>/<requested> completed; adaptive off; <convergence note>   # review-only/exact/no-extra runs
 - Mix: <e.g. "2 codex-exec + 1 claude-exec">
 - Focus: <focus list actually used>
-- Earlier review comments: none | <total> comments; <open>/<still-present>/<fixed>/<not-relevant>/<skipped>
+- Earlier review comments: none | <total> comments; <open>/<still-present>/<fixed>/<not-relevant>/<author-resolved-skipped>/<skipped>
 - Finding counts: <C critical, H high, M medium, L low, N nit; other notes S>
 - Checks: off | skipped | concerns=<C>; confirmed=<confirmed>/ruled-out=<refuted>/set-aside=<deferred>/lowered=<downgraded>; elapsed=<duration>
 - Second check: off | <mode>; reviewers=<A>; kept=<kept>/clarified=<clarified>/set-aside=<deferred>/removed=<removed>; approval changed yes/no
