@@ -7,6 +7,11 @@ description: Multi-agent review-and-improve loop for a GitHub PR you have checke
 
 Productive counterpart to `review-anvil-pr`. Where `review-anvil-pr` is read-only and posts a review comment, this preset **actually modifies the code**: it announces itself on the PR up front, runs the review loop with `commit_mode=per_fix`, applies fix commits to the local branch across requested rounds plus any adaptive continuation, pushes the result back to update the PR, then **edits the starting comment in-place** with the synthesized report (or a failure summary) — one comment in the PR timeline, two states.
 
+## Generated Language
+
+Apply the [ASD-STE100-inspired language contract](../review-anvil/references/asd-ste100-inspired.md) to this preset.
+Use direct imperatives for internal steps. Use short active declarative sentences in PR comments. Do not use bare-verb commands in author-facing text.
+
 The skill orchestrates six steps:
 
 1. `scripts/pr-helper.sh verify-checkout [<locator>]` — locator parsing or auto-detect, then verify the local checkout matches the PR's head branch and is in a clean state. Captures the PR's base branch, author, marker UUID, and report path.

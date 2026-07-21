@@ -122,6 +122,10 @@ Review principles:
 - Prefer the smallest clear fix and existing local patterns. Suggest a new
   layer, helper, or abstraction only when evidence shows the simple approach
   would fail or threaten correctness or safety.
+- Apply the ASD-STE100-inspired language contract in
+  `asd-ste100-inspired.md` to generated findings and suggested fixes.
+  Preserve code identifiers, diagnostics, URLs, and schema tokens.
+
 - Use short everyday words. Prefer one clear sentence over a dense explanation.
   Keep code names and necessary technical terms, but explain what they mean in
   this case. Do not use review-process jargon in author-facing prose.

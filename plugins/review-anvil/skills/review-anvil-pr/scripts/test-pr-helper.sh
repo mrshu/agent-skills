@@ -94,7 +94,11 @@ case "$1 $2" in
     printf '{"html_url":"https://example.invalid/review/1"}\n'
     ;;
   "api repos/acme/widgets/issues/42/comments")
-    printf 'https://example.invalid/comment/1\n'
+    if [[ "${GH_MOCK_START_COMMENT:-0}" == "1" ]]; then
+      printf '456\thttps://example.invalid/comment/456\n'
+    else
+      printf 'https://example.invalid/comment/1\n'
+    fi
     ;;
   "api repos/acme/widgets/issues/comments/123")
     for arg in "$@"; do
@@ -278,6 +282,27 @@ test_post_fallback_comment() {
     assert_file_missing "$tmp/report.md.approval.json"
 }
 
+test_post_start_uses_short_declarative_comment() {
+    local tmp bin stdout
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+    stdout="$tmp/stdout"
+
+    GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
+    GH_MOCK_START_COMMENT=1 \
+    PATH="$bin:$PATH" \
+      "$HELPER" post-start github.com acme widgets 42 marker-123 octocat >"$stdout"
+
+    grep -Fxq 'review-anvil-improve-pr started on this PR. cc @octocat.' "$tmp/comment.md"
+    grep -Fxq 'Review agents will inspect this PR against its base branch.' "$tmp/comment.md"
+    grep -Fxq 'Fix commits will be applied to this branch after checks pass.' "$tmp/comment.md"
+    grep -Fxq 'This comment will contain the final report or a failure summary.' "$tmp/comment.md"
+    grep -Fxq 'COMMENT_ID=456' "$stdout"
+}
+
 test_post_update_success() {
     local tmp bin report inline
     tmp="$(mktemp -d)"
@@ -300,6 +325,7 @@ test_post_update_success() {
       "$HELPER" post-update github.com acme widgets 42 123 marker-123 "$report" octocat success 2026-06-19T00:00:00Z >/tmp/review-anvil-update.out
 
     jq -e '.body | contains("review-anvil-improve-pr completed on this PR. cc @octocat.")' "$tmp/patch.json" >/dev/null
+    jq -e '.body | contains("review-anvil selected APPROVE") | not' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("review-anvil-marker: marker-123")' "$tmp/patch.json" >/dev/null
     jq -e --arg line "$REPRODUCTION_LINE" '.body | split("\n") | index($line)' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("Adversarial review")' "$tmp/patch.json" >/dev/null
@@ -1263,6 +1289,7 @@ main() {
     test_process_inline_infers_id_prefixed_severity
     test_post_review_success
     test_post_fallback_comment
+    test_post_start_uses_short_declarative_comment
     test_post_update_success
     test_post_adversarial_off_downgrades_approval
     test_post_dismisses_id_prefixed_report_findings

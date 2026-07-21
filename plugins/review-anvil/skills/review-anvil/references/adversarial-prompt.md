@@ -11,6 +11,9 @@ surviving candidate findings (`RAVF001`, `RAVF002`, ...) and would-apply plans
 (`RAVW001`, `RAVW002`, ...). The adversary does not perform a fresh broad
 review. It attacks the candidate synthesis.
 
+Apply the ASD-STE100-inspired internal-instruction profile in
+`asd-ste100-inspired.md` to generated verdict prose.
+
 ## Core Prompt
 
 ```text

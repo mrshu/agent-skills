@@ -7,6 +7,9 @@ description: Multi-agent code review without any edits or commits — requested 
 
 Thin preset that runs the multi-agent review loop without applying any fixes. Activates the [`review-anvil`](../review-anvil/SKILL.md) engine skill with `commit_mode=none` and a default of `rounds=1`.
 
+Use the ASD-STE100-inspired language contract in
+`../review-anvil/references/asd-ste100-inspired.md` for generated prose.
+
 ## How to invoke
 
 The agent reads the user's request, then activates `review-anvil` with this argument string:

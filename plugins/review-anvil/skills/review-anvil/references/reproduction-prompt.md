@@ -10,6 +10,9 @@ prior PR feedback, and assigned stable candidate IDs (`RAVF001`, `RAVF002`,
 ...). The reproduction verifier does not perform a fresh broad review. It tries
 to prove or disprove the selected candidate findings against concrete evidence.
 
+Apply the ASD-STE100-inspired internal-instruction profile in
+`asd-ste100-inspired.md` to generated verdict prose.
+
 ## Core Prompt
 
 ```text

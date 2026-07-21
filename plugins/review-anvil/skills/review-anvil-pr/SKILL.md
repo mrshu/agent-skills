@@ -7,6 +7,11 @@ description: Read-only multi-agent review of a GitHub Pull Request, with the syn
 
 Preset that reviews a GitHub PR with the multi-agent loop and posts the result back as a top-level PR comment. The skill orchestrates three steps:
 
+## Generated Language
+
+Apply the [ASD-STE100-inspired language contract](../review-anvil/references/asd-ste100-inspired.md) to this preset.
+Use direct imperatives for internal steps. Use short active declarative sentences in PR comments. Do not use bare-verb commands in author-facing text.
+
 1. `scripts/pr-helper.sh init [<locator>]` — locator parsing or auto-detect from the current branch, `gh` preflight (auth + PR reachability), marker UUID + report path setup
 2. The [`review-anvil`](../review-anvil/SKILL.md) engine in read-only mode (`commit_mode=none`)
 3. `scripts/pr-helper.sh post <host> <owner> <repo> <n> <marker> <report_path>` — marker injection, lossless report posting as a PR review / `gh pr comment`, race-free URL recovery

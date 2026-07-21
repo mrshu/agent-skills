@@ -18,6 +18,11 @@ If a destination has no disclosure control, send a concise decision summary
 and preserve the full report in an attached artifact or stable link. Never put
 a blocker only in collapsed or linked detail.
 
+## ASD-STE100-Inspired Language
+
+Apply `asd-ste100-inspired.md` to generated reports and comments. Use the
+author-facing profile. Preserve evidence tokens verbatim.
+
 ## Inline-comment voice (bodies in `.inline.json`)
 
 Write each inline comment in plain language about the code at that line. Use comments for `critical`, `high`, and `medium` problems; put `low` and `nit` items in the summary. Start with what you saw. State what the code does and what happens because of it. When a next step would help, add it after those facts. Keep the comment as short as the finding allows. Every claim must point to a concrete code, test, config, caller, or runtime fact.

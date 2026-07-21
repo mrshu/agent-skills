@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # run-reviewer.sh — dispatch wrapper for a single review-anvil reviewer
+# Generated prose follows the ASD-STE100-inspired language contract in
+# ../references/asd-ste100-inspired.md. STATUS and EXIT_CODE stay machine-readable.
 # subprocess (claude -p, codex exec, ...).
 #
 # Solves the silent-hang failure mode: a reviewer whose stdout is
@@ -111,7 +113,7 @@ if [[ "${REVIEW_ANVIL_REQUIRE_FINDINGS:-}" == "1" ]]; then
         NF { last_nonblank = NR }
         END { if (!findings_close || findings_close != last_nonblank) exit 1 }
     ' "$out"; then
-        printf '%s\n' 'reviewer protocol failure: output did not end with a complete fenced findings block; confirmation requests and plan-only responses are invalid' >>"$err"
+        printf '%s\n' 'The reviewer output lacks a complete fenced findings block. Confirmation requests and plan-only responses are invalid.' >>"$err"
         printf 'STATUS=protocol\n'
         exit 4
     fi

@@ -623,3 +623,8 @@ re-run with max_rounds: 5 to continue`.
 | Unparseable findings block | Confirmation/plan-only output follows the one protocol retry above. Otherwise, in requested rounds use substantive review prose as free-form findings with no retry and note `<agent>: unstructured findings (parse failed)`; in adaptive rounds, abort before fixes from that round are applied. |
 | Reviewers contradict each other | Surface both under the same area with reviewers tagged; orchestrator judgment decides the fix; mention the disagreement in the round summary. |
 | Re-runs | Not idempotent: a new run reviews the latest state, including the prior run's commits. Surface still-present deferred items under "Deferred from previous runs (still present)". |
+
+
+## Generated Language
+
+Apply `references/asd-ste100-inspired.md` to every generated message.

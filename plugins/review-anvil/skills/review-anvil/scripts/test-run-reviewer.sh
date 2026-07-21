@@ -265,7 +265,7 @@ test_findings_protocol_rejects_confirmation_only_output() {
 
     assert_eq "$status" "4" "findings protocol failure exit"
     assert_file_text "$stdout" "STATUS=protocol" "findings protocol failure status"
-    assert_contains "$out.err" "confirmation requests and plan-only responses are invalid" "findings protocol failure reason"
+    assert_file_text "$out.err" "The reviewer output lacks a complete fenced findings block. Confirmation requests and plan-only responses are invalid." "findings protocol failure reason"
 }
 
 test_review_protocol_is_wired_into_prompt_and_dispatch() {
@@ -277,6 +277,24 @@ test_review_protocol_is_wired_into_prompt_and_dispatch() {
         "REVIEW_ANVIL_REQUIRE_FINDINGS=1" "reviewer dispatch validation flag"
     assert_contains "$ROOT/../SKILL.md" \
         "PROTOCOL RETRY" "reviewer corrective retry"
+}
+
+test_protocol_failure_uses_short_declarative_diagnostic() {
+    local tmp out stdout stderr status
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    out="$tmp/out.md"
+    stdout="$tmp/wrapper.out"
+    stderr="$tmp/wrapper.err"
+
+    export REVIEW_ANVIL_REQUIRE_FINDINGS=1
+    status="$(run_wrapper "$stdout" "$stderr" "$out" 5 -- bash -c 'printf incomplete')"
+    unset REVIEW_ANVIL_REQUIRE_FINDINGS
+
+    assert_eq "$status" "4" "short diagnostic exit"
+    assert_file_text "$out.err" \
+        "The reviewer output lacks a complete fenced findings block. Confirmation requests and plan-only responses are invalid." \
+        "short declarative protocol diagnostic"
 }
 
 main() {
@@ -291,6 +309,7 @@ main() {
     test_stale_timeout_stamp_is_removed_before_run
     test_findings_protocol_accepts_completed_review
     test_findings_protocol_rejects_confirmation_only_output
+    test_protocol_failure_uses_short_declarative_diagnostic
     test_review_protocol_is_wired_into_prompt_and_dispatch
 
     printf 'test-run-reviewer: all wrapper tests passed\n'

@@ -2,6 +2,8 @@
 # pr-helper.sh — GitHub PR locator parsing, preflight, and report posting
 # for the review-anvil-pr skill. Co-located with the skill so it travels
 # across agents via `npx skills add mrshu/agent-skills --skill review-anvil-pr`.
+# Helper-authored PR comments follow the ASD-STE100-inspired language contract
+# in ../review-anvil/references/asd-ste100-inspired.md.
 #
 # Subcommands (see the case dispatch at the bottom for exact signatures):
 #
@@ -1304,7 +1306,7 @@ cmd_post() {
                 printf 'warning: PR head moved since review (%s -> %s); downgrading APPROVE to COMMENT\n' \
                     "${reviewed_sha:0:8}" "${current_sha:0:8}" >&2
                 # shellcheck disable=SC2016  # backticks are markdown, not expansion
-                printf '\n\n---\n\n_review-anvil decided APPROVE for head `%s`, but the PR has since moved to `%s`; posted as a comment instead — the newer commits were not reviewed._\n' \
+                printf '\n\n---\n\n_review-anvil selected APPROVE for head `%s`. The PR now has head `%s`. review-anvil posted a comment instead. The newer commits were not reviewed._\n' \
                     "${reviewed_sha:0:8}" "${current_sha:0:8}" >> "$report_path"
                 review_event="COMMENT"
             fi
@@ -1357,7 +1359,7 @@ cmd_post() {
         fi
         review_event="COMMENT"
         printf 'warning: approval could not be submitted (common cause: GitHub rejects approving your own PR); downgrading to a comment review\n' >&2
-        printf '\n\n---\n\n_review-anvil decided APPROVE, but GitHub rejected the approval (commonly: self-authored PRs cannot be approved); posted as a comment instead._\n' >> "$report_path"
+        printf '\n\n---\n\n_review-anvil selected APPROVE. GitHub rejected the approval. review-anvil posted a comment instead._\n' >> "$report_path"
         compact_report_for_github "$report_path" "$inline_json"
         if [[ "$has_inline" -eq 1 ]]; then
             if url=$(_submit_review COMMENT "$inline_json"); then
@@ -1575,7 +1577,9 @@ cmd_post_start() {
     {
         printf '<!-- review-anvil-marker: %s -->\n' "$marker"
         printf 'review-anvil-improve-pr started on this PR%s.\n\n' "$(_cc_tail "$author")"
-        printf "I'll run a multi-agent review loop on this PR's diff against its base branch, applying fix commits to this branch as I go, then push everything back. I'll edit this comment with the synthesized report (or a failure summary) when done.\n\n"
+        printf 'Review agents will inspect this PR against its base branch.\n'
+        printf 'Fix commits will be applied to this branch after checks pass.\n'
+        printf 'This comment will contain the final report or a failure summary.\n\n'
         printf 'Started: %s\n' "$started_at"
     } > "$tmp"
 
@@ -1627,7 +1631,7 @@ cmd_post_update() {
             outcome="failure"
             {
                 printf '\n\n## Failure\n\n'
-                printf 'Could not refresh prior PR review history before posting; refusing to publish a success report that may ignore earlier feedback.\n'
+                printf 'The prior-feedback refresh failed. review-anvil did not publish the success report because it can repeat earlier feedback.\n'
             } >>"$report_path"
             printf 'pr-helper: warning: prior-feedback refresh failed; updating comment with outcome=failure\n' >&2
         fi

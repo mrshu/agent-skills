@@ -11,6 +11,11 @@ PR_SKILL="$ROOT/../review-anvil-pr/SKILL.md"
 REVIEWER="$ROOT/references/reviewer-prompt.md"
 REPRODUCTION="$ROOT/references/reproduction-prompt.md"
 ADVERSARIAL="$ROOT/references/adversarial-prompt.md"
+STYLE="$ROOT/references/asd-ste100-inspired.md"
+READONLY="$ROOT/../review-anvil-readonly/SKILL.md"
+IMPROVE_PRESET="$ROOT/../review-anvil-improve-pr/SKILL.md"
+PR_HELPER="$ROOT/../review-anvil-pr/scripts/pr-helper.sh"
+RUN_REVIEWER="$ROOT/scripts/run-reviewer.sh"
 
 fail() {
     printf 'test-report-language: %s\n' "$*" >&2
@@ -76,6 +81,25 @@ require "$ENGINE" '<!-- review-anvil: prior_feedback=reintroduced -->'
 require "$ENGINE" '"prior_feedback": "reintroduced"'
 require "$ARTIFACTS" 'helper-only `"prior_feedback": "reintroduced"`'
 require "$ROOT/references/reviewer-prompt.md" 'only for a distinct new instance with new evidence.'
+require "$STYLE" 'ASD-STE100-inspired, not ASD-STE100 compliant'
+require "$STYLE" 'Use sentences of 20 words or fewer when practical.'
+require "$STYLE" 'Do not rewrite code identifiers, quoted diagnostics, URLs, or required protocol/schema tokens.'
+require "$STYLE" '## Internal Instructions'
+require "$STYLE" 'Use active voice or a direct imperative.'
+require "$STYLE" '## Author-Facing Reports and Comments'
+require "$STYLE" 'Do not give a bare-verb command.'
+for producer in "$ENGINE" "$ARTIFACTS" "$REVIEWER" "$REPRODUCTION" "$ADVERSARIAL" "$PR_SKILL" "$READONLY" "$IMPROVE" "$PR_HELPER" "$RUN_REVIEWER"; do
+    require "$producer" 'asd-ste100-inspired'
+done
+for preset in "$IMPROVE" "$PR_SKILL"; do
+    require "$preset" 'Use direct imperatives for internal steps.'
+    require "$preset" 'Do not use bare-verb commands in author-facing text.'
+done
+require "$PR_HELPER" 'Review agents will inspect this PR against its base branch.'
+require "$PR_HELPER" 'Fix commits will be applied to this branch after checks pass.'
+require "$PR_HELPER" 'This comment will contain the final report or a failure summary.'
+require "$RUN_REVIEWER" 'The reviewer output lacks a complete fenced findings block.'
+reject "$PR_HELPER" "I'll run a multi-agent review loop on this PR's diff against its base branch"
 for guide in "$ENGINE" "$ARTIFACTS" "$REVIEWER" "$REPRODUCTION" "$ADVERSARIAL"; do
     reject "$guide" 'We could '
     reject "$guide" 'One option is '
