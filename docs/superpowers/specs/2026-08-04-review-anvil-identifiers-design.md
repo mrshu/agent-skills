@@ -153,6 +153,13 @@ The same complete identifier is used in:
 - plan-to-finding references;
 - follow-up artifacts and prior-feedback parsing.
 
+PR history extraction preserves the canonical ID from inline comments, bullets,
+and report tables. Semantic coalescing merges this identity into the surviving
+ledger entry instead of discarding it with a duplicate report row. Each
+`PR REVIEW HISTORY` item exposes the retained canonical ID and any legacy source
+aliases to the engine, so a later run can reuse the original ID rather than
+guessing from summary text.
+
 Report metadata states whether the run ordinal was available. Local reports use
 the canonical local form and do not maintain a machine-local counter.
 

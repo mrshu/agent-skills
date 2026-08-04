@@ -180,17 +180,17 @@ history while keeping unavailable history non-fatal.
 EOF
 ```
 
-### Task 2: Parse New Finding IDs Without Breaking History
+### Task 2: Parse and Preserve Finding Identity Across PR History
 
 **Files:**
-- Modify: `plugins/review-anvil/skills/review-anvil-pr/scripts/pr-helper.sh:386-483`
-- Modify: `plugins/review-anvil/skills/review-anvil-pr/scripts/test-pr-helper.sh:21-69,179-205,369-548,559-632`
+- Modify: `plugins/review-anvil/skills/review-anvil-pr/scripts/pr-helper.sh:386-699`
+- Modify: `plugins/review-anvil/skills/review-anvil-pr/scripts/test-pr-helper.sh:21-69,179-205,369-548,559-632,1286-1328`
 
 **Interfaces:**
 - Consumes: canonical finding forms `RAV-RUN3-R2-F001` and `RAV-R2-F001` plus historical forms already accepted by the helper.
-- Produces: one `FINDING_ID_PATTERN` used by bullet, summary, table, severity, path, signature, dismissal, and prior-feedback parsing.
+- Produces: one `FINDING_ID_PATTERN` used by bullet, summary, table, severity, path, signature, dismissal, and prior-feedback parsing; history entries with `finding_id` and `legacy_ids`; rendered `PR REVIEW HISTORY` lines that preserve both the canonical origin ID and legacy source aliases.
 
-- [ ] **Step 1: Add failing parser coverage for PR and local IDs**
+- [ ] **Step 1: Add failing parser and carry-forward coverage**
 
 Change normal generated fixtures to use new IDs and add a focused history test containing both canonical forms:
 
@@ -210,6 +210,23 @@ RAV-RUN3-R2-P001
 
 The last case verifies that a plan token cannot be parsed as a finding.
 
+Add a carry-forward fixture where:
+
+- an open inline thread contains the canonical ID `RAV-RUN2-R1-F003`;
+- a semantically duplicate report row carries the same canonical ID;
+- a legacy report row for the same finding carries `RAVF007`;
+- coalescing prefers the open status but must not lose either identity.
+
+Assert that the rendered history line contains:
+
+```text
+[open] src/auth.ts:12 — Refresh accepts missing state.
+id=RAV-RUN2-R1-F003
+legacy=RAVF007
+```
+
+Add a second table-only case to prove that the ID in the first table cell reaches the history output. These tests defend the engine's ability to retain a prior ID; merely accepting the token syntax is insufficient.
+
 - [ ] **Step 2: Run helper tests and verify RED**
 
 Run:
@@ -218,9 +235,9 @@ Run:
 bash plugins/review-anvil/skills/review-anvil-pr/scripts/test-pr-helper.sh
 ```
 
-Expected: FAIL because the current `ID_PATTERN` accepts only `RAVF###` / `F-###`.
+Expected: FAIL because the current `ID_PATTERN` accepts only `RAVF###` / `F-###`, `FINDING_RE` discards optional IDs, and history rendering omits identity metadata.
 
-- [ ] **Step 3: Replace the finding ID pattern**
+- [ ] **Step 3: Replace the finding ID pattern and capture IDs**
 
 Use a complete-token-safe finding pattern:
 
@@ -233,11 +250,33 @@ LEGACY_FINDING_ID = r"(?:RAVF[0-9]{3,}|F-[0-9]{3,})"
 FINDING_ID_PATTERN = rf"(?:{PROVENANCE_FINDING_ID}|{LEGACY_FINDING_ID})"
 ```
 
-Replace every parser reference to the generic `ID_PATTERN` with `FINDING_ID_PATTERN`. Keep parsing case-insensitive for historical GitHub content, but emit uppercase canonical IDs from the engine.
+Replace every parser reference to the generic `ID_PATTERN` with `FINDING_ID_PATTERN`. Make the optional ID a named `finding_id` capture in `FINDING_RE` and `SUMMARY_RE`; keep `table_finding()["id"]` as the table source. Add one `finding_id_from_body()` helper so thread roots, bullets, summaries, and tables use the same extraction path.
 
-Update comments to distinguish canonical emitted IDs from historical read compatibility. Do not add plan IDs to finding parsing.
+Keep parsing case-insensitive for historical GitHub content, but normalize emitted ledger IDs to their source spelling. Do not add plan IDs to finding parsing.
 
-- [ ] **Step 4: Run helper tests and verify GREEN**
+- [ ] **Step 4: Preserve identity through report extraction and coalescing**
+
+Every history item carries:
+
+```python
+{
+    # existing status/path/line/signature fields
+    "finding_id": "RAV-RUN2-R1-F003",  # canonical modern origin, or None
+    "legacy_ids": ["RAVF007"],         # stable, deduplicated aliases
+}
+```
+
+Classify `RAV-RUN...` and `RAV-R...` as modern IDs. Classify `RAVF...` and `F-...` as legacy aliases. When report findings match an existing thread, merge identity metadata into the existing entry instead of discarding the report candidate. When `coalesce_history()` replaces an item because another status has higher rank, merge identity metadata from both items into the winner first. Preserve the first observed modern ID; never silently replace it with a later run's ID.
+
+Render the metadata inside the source parentheses so the existing status/location/summary prefix remains stable:
+
+```text
+- [open] src/auth.ts:12 — Refresh accepts missing state. (source=https://…; id=RAV-RUN2-R1-F003; legacy=RAVF007)
+```
+
+Omit `id=` or `legacy=` when unavailable. This rendered line is the exact `PR REVIEW HISTORY` input the engine receives.
+
+- [ ] **Step 5: Run helper tests and verify GREEN**
 
 Run:
 
@@ -245,22 +284,23 @@ Run:
 bash plugins/review-anvil/skills/review-anvil-pr/scripts/test-pr-helper.sh
 ```
 
-Expected: all e2e checks pass, including both canonical provenance and legacy fixtures.
+Expected: all e2e checks pass, including canonical provenance parsing, legacy fixtures, bullet/table identity extraction, and carry-forward identity after coalescing.
 
-- [ ] **Step 5: Commit parser migration**
+- [ ] **Step 6: Commit parser and history migration**
 
 ```bash
 git add plugins/review-anvil/skills/review-anvil-pr/scripts/pr-helper.sh \
   plugins/review-anvil/skills/review-anvil-pr/scripts/test-pr-helper.sh
 git commit -F - <<'EOF'
-feat(review-anvil-pr): parse provenance finding IDs
+feat(review-anvil-pr): preserve provenance IDs in PR history
 
-Previously PR history parsing recognized only report-local finding IDs. Accept
-new PR-backed and local provenance IDs while retaining historical read support.
+Previously PR history parsing discarded item IDs while coalescing feedback.
+Parse provenance finding IDs and carry canonical origins plus legacy aliases
+into the reviewer history ledger.
 
-- Parse positive run, origin-round, and finding ordinals
-- Reject malformed and plan identifiers in finding positions
-- Keep legacy ID fixtures as an explicit compatibility boundary
+- Capture IDs from inline, bullet, summary, and table findings
+- Merge identity metadata across duplicate history entries
+- Keep legacy ID fixtures as a historical read boundary
 EOF
 ```
 
@@ -283,11 +323,14 @@ EOF
 Use five fresh-context agent calls with the current `SKILL.md` and this task:
 
 ```text
-You are synthesizing review-anvil PR run 3. Round 1 yields two findings.
-Round 2 re-raises the first finding and adds a third. Round 2 also creates one
-plan covering findings from both rounds. Emit the exact IDs used in reproduction,
-adversarial review, the report table, and the inline comments. Then show the
-same identifiers for a local run with no PR history.
+You are synthesizing review-anvil PR run 3. PR REVIEW HISTORY contains:
+`- [reported] src/auth.ts:12 — stale state creates a session
+(source=https://example.invalid/old; id=RAV-RUN1-R2-F007; legacy=RAVF007)`.
+Round 1 re-raises that finding and adds one new finding. Round 2 re-raises the
+new finding and adds a third. Round 2 also creates one plan covering findings
+from both rounds. Emit the exact IDs used in reproduction, adversarial review,
+the report table, and inline comments. Then show the same newly allocated IDs
+for a local run with no PR history.
 ```
 
 Record the outputs under an uncommitted `.review-anvil/id-skill-tests/baseline/` directory. Expected baseline failure: the current guidance emits `RAVF###` / `RAVW###`, resets or leaves round provenance implicit, or invents no coherent local form. If all five already satisfy the new contract, stop: the proposed skill change lacks a demonstrated behavior gap.
@@ -330,7 +373,7 @@ State the canonical grammar and semantic validation. Define assignment after sem
 - independent `next_finding_ordinal` and `next_plan_ordinal` counters per run;
 - counters never reset each round and never reuse gaps;
 - origin round remains unchanged after confirmation, refutation, priority change, deferral, fix, or re-raise;
-- existing modern IDs remain attached to carried findings from prior reports;
+- carried findings consume the exact `id=` supplied in `PR REVIEW HISTORY`; legacy-only entries use their `legacy=` value as a source alias and receive a new canonical ID only when actionable;
 - deterministic order by priority, normalized path, line, and topic for findings; covered-finding priority, area, and subject for plans;
 - plans get the round in which their concrete fix group is first assembled.
 
@@ -365,8 +408,9 @@ Expected: all three scripts exit 0.
 Use the identical prompt from Step 1. Read every response. Each response must:
 
 - use `RUN3` for PR-backed items and omit `RUN` locally;
-- keep the round-1 finding's `R1` ID when re-raised in round 2;
-- allocate the new finding and plan without resetting type counters;
+- retain `RAV-RUN1-R2-F007` for the carried historical finding;
+- keep the new round-1 finding's `R1` ID when it is re-raised in round 2;
+- allocate the third finding and plan without resetting type counters;
 - use the same IDs in reproduction, adversarial, report, and inline contexts;
 - avoid emitting `RAVF###` or `RAVW###` as new IDs.
 
