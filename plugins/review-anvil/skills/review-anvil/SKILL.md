@@ -15,8 +15,8 @@ This is the **engine**. Three preset skills in the same plugin pin common config
 |---|---|---|
 | `review-anvil` (engine) | nothing | Default fix/commit loop, or any custom param combination. |
 | `review-anvil-readonly` | `commit_mode=none`; default `rounds=1` | Read-only review — no edits, no commits. |
-| `review-anvil-pr [<locator>]` | `commit_mode=none`, `target=<locator>`, `report_path=<file>` | Review a GitHub PR and post the report back as a PR comment (orchestrates `scripts/pr-helper.sh`). Locator auto-detected from the current branch when omitted. |
-| `review-anvil-improve-pr [<locator>]` | `commit_mode=per_fix`, `target=<base>...HEAD`, `report_path=<file>` | Improve a checked-out PR: fix commits across requested rounds plus any adaptive continuation, then push. Targets the branch (not a PR locator), deliberately routing around the PR-target/per_fix rule below. |
+| `review-anvil-pr [<locator>]` | `commit_mode=none`, `target=<locator>`, `report_path=<file>`, trusted `run_ordinal=<observed>` | Review a GitHub PR and post the report back as a PR comment (orchestrates `scripts/pr-helper.sh`). Locator auto-detected from the current branch when omitted. |
+| `review-anvil-improve-pr [<locator>]` | `commit_mode=per_fix`, `target=<base>...HEAD`, `report_path=<file>`, trusted `run_ordinal=<observed>` | Improve a checked-out PR: fix commits across requested rounds plus any adaptive continuation, then push. Targets the branch (not a PR locator), deliberately routing around the PR-target/per_fix rule below. |
 
 ## Parameters
 
