@@ -35,15 +35,15 @@ The helper script aborts cleanly if the current checkout doesn't match the named
 
 ### 0. Reject overrides of pinned params
 
-Pins for this preset: `commit_mode`, `target`, `report_path`. Enforce mechanically — after resolving the helper (step 1), run:
+Pins for this preset: `commit_mode`, `target`, `report_path`, `run_ordinal`. Enforce mechanically — after resolving the helper (step 1), run:
 
 ```bash
-bash <helper-path> check-pins review-anvil-improve-pr "commit_mode,target,report_path" "$ARGUMENTS"
+bash <helper-path> check-pins review-anvil-improve-pr "commit_mode,target,report_path,run_ordinal" "$ARGUMENTS"
 ```
 
 Non-zero exit means a pinned param was overridden: surface the error verbatim and stop.
 
-The pins are non-overridable for safety: `commit_mode=per_fix` is the whole point of this preset (read-only is what `review-anvil-pr` is for), `target=<base>...HEAD` is mechanically tied to the verified PR, and `report_path` is the file the post-summary step needs to read after the engine finishes.
+The pins are non-overridable for safety: `commit_mode=per_fix` is the whole point of this preset (read-only is what `review-anvil-pr` is for), `target=<base>...HEAD` is mechanically tied to the verified PR, `report_path` is the file the post-summary step needs to read after the engine finishes, and `run_ordinal` carries the helper's observed PR history into identifier generation.
 
 ### 1. Resolve the helper script
 
@@ -65,6 +65,7 @@ HOST=github.com
 OWNER=acme
 REPO=widgets
 N=137
+RUN_ORDINAL=3
 HEAD_BRANCH=feature/auth-rewrite
 HEAD_SHA=<the PR head commit at review time>
 BASE_BRANCH=main
@@ -76,7 +77,7 @@ REPORT_PATH=<absolute-path>/.review-anvil/final-report-<uuidv4>.md
 
 If the locator was auto-detected, the script also prints `auto-detected PR: <url>` to stderr before the KEY=VALUE block. If HEAD is ahead of the PR's published head (unpushed local commits), the script prints a `note:` to stderr — surface that to the user so they know what will get pushed.
 
-Capture all values. Echo to the user: `improving PR: $HOST/$OWNER/$REPO#$N — $TITLE ($HEAD_BRANCH → $BASE_BRANCH), author: @$AUTHOR`.
+Capture all values, including `RUN_ORDINAL`. Echo to the user: `improving PR: $HOST/$OWNER/$REPO#$N — $TITLE ($HEAD_BRANCH → $BASE_BRANCH), author: @$AUTHOR`.
 
 On non-zero exit, surface the script's stderr verbatim and stop. Do not dispatch reviewers.
 
@@ -87,6 +88,8 @@ bash <helper-path> history "$HOST" "$OWNER" "$REPO" "$N"
 ```
 
 Capture the output — an itemized open/resolved/outdated/reported/suppressed ledger, or `None.` — for step 4. On non-zero exit, abort: every PR run must account for feedback already shown to the author.
+
+The helper resolves `RUN_ORDINAL` during this preflight, before step 3 posts the starting comment. The unfinished current starting comment therefore cannot count itself as a finalized review run.
 
 ### 3. Post the "starting" comment
 
@@ -119,16 +122,18 @@ If `post-start` fails *before* posting (network blip, gh auth issue), abort — 
 Activate the `review-anvil` skill with this argument string (extra user args go after the pinned params; the engine's own `rounds: 3` default and its diff-size-scaled `max_rounds` cap apply when the user doesn't pass them):
 
 ```
-commit_mode: per_fix, target: <BASE_BRANCH>...HEAD, report_path: <REPORT_PATH>, <extra-user-args>
+commit_mode: per_fix, target: <BASE_BRANCH>...HEAD, report_path: <REPORT_PATH>, run_ordinal: <RUN_ORDINAL>, <extra-user-args>
 ```
 
-`<BASE_BRANCH>` and `<REPORT_PATH>` come from step 2. Using `<BASE_BRANCH>...HEAD` (three-dot diff) targets exactly the commits that distinguish this PR from its base. Pinning `report_path` makes the engine write the final synthesized report to a file that step 6 (`post-update`) can read.
+`<BASE_BRANCH>`, `<REPORT_PATH>`, and `<RUN_ORDINAL>` come from step 2. Using `<BASE_BRANCH>...HEAD` (three-dot diff) targets exactly the commits that distinguish this PR from its base. Pinning `report_path` makes the engine write the final synthesized report to a file that step 6 (`post-update`) can read.
+
+The user cannot override the observed value of `run_ordinal`. When `RUN_ORDINAL` is a positive integer, the engine includes the corresponding `RUN` segment in new provenance IDs. The value `unavailable` makes the engine emit IDs without the `RUN` segment; degraded history must not invent a run number.
 
 Supply the ledger captured in step 2 as the engine's `PR REVIEW HISTORY` reviewer-prompt block — the branch target means the engine won't fetch it itself. Reviewers must revalidate open, resolved, and summary-only reported items against the current head; resolved is conversation state, not proof of a fix.
 
 Note: do **not** pin a PR locator as `target` — the engine's "PR-target / per_fix incompatibility" rule would force `commit_mode=none` and defeat the point of this preset. Targeting the branch directly is the intended escape hatch.
 
-The user may override `rounds:` or `max_rounds:` (defaults are the engine's `rounds: 3` and its diff-size-scaled `max_rounds` cap — `rounds` plus 1–3 adaptive rounds, never above the legacy `max(6, rounds)`). They should not override `commit_mode`, `target`, or `report_path` — these are pinned for safety; the step-0 segment-rejection above blocks override attempts.
+The user may override `rounds:` or `max_rounds:` (defaults are the engine's `rounds: 3` and its diff-size-scaled `max_rounds` cap — `rounds` plus 1–3 adaptive rounds, never above the legacy `max(6, rounds)`). They cannot override `run_ordinal`, `commit_mode`, `target`, or `report_path`; these are pinned for safety, and the step-0 segment-rejection above blocks override attempts.
 
 The engine runs the multi-round loop, committing fix-groups along the way and writing the final synthesized report to `<REPORT_PATH>` when it's done. The engine's default reproduction pass confirms uncertain material findings before they can become fix commits, and the build/test gate (`verify_cmd`, auto-detected unless the user passes one) runs after each round's fixes. Together, the report's Reproduction and Verification lines are the evidence the PR author needs to trust the pushed commits — if the engine recorded `Verification: none detected`, that caveat travels to the PR in the posted report. If reproduction fails for required candidates, those candidates are Deferred and the loop may still finish with other verified fixes. If any round fails (reviewer-all-fail, git-commit error, build/test gate newly red after the revert path), the engine stops the loop and surfaces the failure — **skip the push (step 5) and call `post-update` with `outcome=failure`** (step 6) so the starting comment gets replaced with a failure summary rather than dangling.
 

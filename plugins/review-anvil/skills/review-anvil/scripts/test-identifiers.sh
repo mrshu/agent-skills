@@ -8,6 +8,8 @@ ENGINE="$ROOT/SKILL.md"
 REPRODUCTION="$ROOT/references/reproduction-prompt.md"
 ADVERSARIAL="$ROOT/references/adversarial-prompt.md"
 ARTIFACTS="$ROOT/references/report-artifacts.md"
+PR_PRESET="$ROOT/../review-anvil-pr/SKILL.md"
+IMPROVE_PRESET="$ROOT/../review-anvil-improve-pr/SKILL.md"
 
 fail() {
     printf 'test-identifiers: %s\n' "$*" >&2
@@ -68,6 +70,16 @@ require "$ARTIFACTS" 'carry-forwards do not create a new inline thread.'
 require "$ARTIFACTS" 'The report'
 require "$ARTIFACTS" 'row, inline body, reproduction target, and adversarial target use the same'
 require "$ENGINE" 'Historical `RAVF###`, `RAVW###`, `F-###`, and `W-###` forms are migration/read-boundary aliases only.'
+require "$PR_PRESET" 'RUN_ORDINAL=3'
+require "$PR_PRESET" '"commit_mode,target,report_path,run_ordinal"'
+require "$PR_PRESET" 'report_path: <REPORT_PATH>, run_ordinal: <RUN_ORDINAL>, <extra-user-args>'
+require "$PR_PRESET" '`unavailable` makes the engine emit IDs without the `RUN` segment'
+require "$PR_PRESET" 'cannot override the observed value'
+require "$IMPROVE_PRESET" 'RUN_ORDINAL=3'
+require "$IMPROVE_PRESET" '"commit_mode,target,report_path,run_ordinal"'
+require "$IMPROVE_PRESET" 'report_path: <REPORT_PATH>, run_ordinal: <RUN_ORDINAL>, <extra-user-args>'
+require "$IMPROVE_PRESET" '`unavailable` makes the engine emit IDs without the `RUN` segment'
+require "$IMPROVE_PRESET" 'cannot override the observed value'
 
 reject "$REPRODUCTION" 'RAVF001'
 reject "$REPRODUCTION" 'RAVF###'

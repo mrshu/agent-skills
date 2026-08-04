@@ -1505,6 +1505,19 @@ JSON
     jq -e '.event == "COMMENT" and (.comments | length) == 1 and (.comments[0].line == 8) and (.body | contains("Refresh accepts missing state"))' "$tmp/review-payload.json" >/dev/null
 }
 
+test_run_ordinal_is_pinned_by_pr_presets() {
+    if "$HELPER" check-pins review-anvil-pr \
+        "commit_mode,target,report_path,run_ordinal" \
+        "focus: auth, run_ordinal: 99" >/dev/null 2>&1; then
+        fail "review-anvil-pr must reject run_ordinal overrides"
+    fi
+    if "$HELPER" check-pins review-anvil-improve-pr \
+        "commit_mode,target,report_path,run_ordinal" \
+        "run_ordinal: 99" >/dev/null 2>&1; then
+        fail "review-anvil-improve-pr must reject run_ordinal overrides"
+    fi
+}
+
 test_engine_template_footer_uses_anchor() {
     local skill="$ROOT/../../review-anvil/SKILL.md"
     [[ -f "$skill" ]] || fail "engine SKILL.md not found at $skill"
@@ -1556,6 +1569,7 @@ main() {
     test_author_resolved_outranks_equivalent_open_history
     test_author_resolved_does_not_outrank_distinct_open_history
     test_distinct_open_history_is_revalidated_when_author_resolved_comes_first
+    test_run_ordinal_is_pinned_by_pr_presets
     test_engine_template_footer_uses_anchor
     printf 'test-pr-helper: all e2e checks passed\n'
 }

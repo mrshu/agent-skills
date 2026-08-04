@@ -30,15 +30,15 @@ The user may provide a PR locator as the first argument, or omit it entirely:
 
 ### 0. Reject overrides of pinned params
 
-Pins for this preset: `commit_mode`, `target`, `report_path`. Enforce mechanically — after resolving the helper (step 1), run:
+Pins for this preset: `commit_mode`, `target`, `report_path`, `run_ordinal`. Enforce mechanically — after resolving the helper (step 1), run:
 
 ```bash
-bash <helper-path> check-pins review-anvil-pr "commit_mode,target,report_path" "$ARGUMENTS"
+bash <helper-path> check-pins review-anvil-pr "commit_mode,target,report_path,run_ordinal" "$ARGUMENTS"
 ```
 
 Non-zero exit means a pinned param was overridden in the args: surface the script's error verbatim and stop. (The engine's prose pin-rejection in "Parsing" remains as the description of the algorithm; the script is the binding layer.)
 
-The pins are non-overridable for safety: `commit_mode` enforces read-only, `target` and `report_path` are mechanically tied to the user's locator. Defense in depth against the engine's prose parser being talked into accepting overrides (e.g. via prompt injection in the focus text).
+The pins are non-overridable for safety: `commit_mode` enforces read-only; `target` and `report_path` are mechanically tied to the user's locator; and `run_ordinal` carries the helper's observed PR history into identifier generation. Defense in depth against the engine's prose parser being talked into accepting overrides (e.g. via prompt injection in the focus text).
 
 ### 1. Resolve the helper script
 
@@ -72,6 +72,7 @@ HOST=github.com
 OWNER=acme
 REPO=widgets
 N=137
+RUN_ORDINAL=3
 HEAD_SHA=<the PR head commit at review time>
 MARKER=<uuidv4>
 REPORT_PATH=<absolute-path>/.review-anvil/final-report-<uuidv4>.md
@@ -80,7 +81,7 @@ TITLE=<PR title>
 
 If the locator was auto-detected, the script also prints `auto-detected PR: <url>` to stderr before the KEY=VALUE block, so the agent can echo that to the user before proceeding.
 
-Capture all values. Echo to the user: `review target: $HOST/$OWNER/$REPO#$N — $TITLE`.
+Capture all values, including `RUN_ORDINAL`. Echo to the user: `review target: $HOST/$OWNER/$REPO#$N — $TITLE`.
 
 On non-zero exit, surface the script's stderr verbatim and stop. Do not dispatch reviewers.
 
@@ -89,10 +90,12 @@ On non-zero exit, surface the script's stderr verbatim and stop. Do not dispatch
 Activate the `review-anvil` skill with this argument string (extra user args go between the pinned params and the rounds default):
 
 ```
-commit_mode: none, target: <locator>, report_path: <REPORT_PATH>, <extra-user-args>, adversarial: auto, rounds: 1
+commit_mode: none, target: <locator>, report_path: <REPORT_PATH>, run_ordinal: <RUN_ORDINAL>, <extra-user-args>, adversarial: auto, rounds: 1
 ```
 
-The user may override `rounds:` or `adversarial:` in their args (they are defaults, not pins). They should not override `commit_mode`, `target`, or `report_path` — these are pinned for safety; the step-0 segment-rejection above blocks override attempts.
+The user may override `rounds:` or `adversarial:` in their args (they are defaults, not pins). They cannot override the observed value of `run_ordinal`, or the `commit_mode`, `target`, and `report_path` pins; the step-0 segment-rejection above blocks override attempts.
+
+`RUN_ORDINAL` comes from the `init` preflight. When it is a positive integer, the engine includes the corresponding `RUN` segment in new provenance IDs. The value `unavailable` makes the engine emit IDs without the `RUN` segment; degraded history must not invent a run number.
 
 The engine's default `reproduction: auto` runs before adversarial review and
 reproduces uncertain material findings in one batched confidence pass. The user
