@@ -701,6 +701,48 @@ JSON
     ! grep -Fq 'Plan IDs must not parse as findings' "$output"
 }
 
+test_history_preserves_engine_generated_inline_and_grouped_ids() {
+    local tmp bin fixture output inline_line grouped_line fenced_line
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+    fixture="$tmp/graphql.json"
+    cat >"$fixture" <<'JSON'
+{
+  "data": {"repository": {"pullRequest": {
+    "reviewThreads": {
+      "nodes": [
+        {"isResolved": false, "isOutdated": false, "path": "src/auth.ts", "line": 12,
+         "comments": {"nodes": [{"body": "**RAV-RUN3-R2-F010 [high] auth** — Refresh accepts missing state.", "url": "https://example.invalid/generated-inline"}]}}
+      ],
+      "pageInfo": {"hasNextPage": false, "endCursor": null}
+    },
+    "reviews": {
+      "nodes": [
+        {"state": "COMMENTED", "body": "<!-- review-anvil-marker: generated-report -->\n# review-anvil report\n\n## What I noticed\n- **RAV-RUN3-R2-F011 [medium] db** `src/db.ts:8` — Retry accounting commits before the write.\n\n```md\n- **RAV-RUN3-R2-F012 [low] fenced** `docs/example.md:1` — Fenced examples are not findings.\n```", "url": "https://example.invalid/generated-report"}
+      ],
+      "pageInfo": {"hasNextPage": false, "endCursor": null}
+    },
+    "comments": {"nodes": [], "pageInfo": {"hasNextPage": false, "endCursor": null}}
+  }}}}
+JSON
+
+    output="$tmp/history.txt"
+    GH_MOCK_GRAPHQL_RESPONSE="$fixture" PATH="$bin:$PATH" \
+      "$HELPER" history github.com acme widgets 42 >"$output"
+
+    inline_line="$(grep -F '[open] src/auth.ts:12' "$output")"
+    [[ "$inline_line" == *'; id=RAV-RUN3-R2-F010)'* ]] \
+      || fail "generated inline body lost RAV-RUN3-R2-F010 in history"
+    grouped_line="$(grep -F '[reported] src/db.ts:8' "$output")"
+    [[ "$grouped_line" == *'; id=RAV-RUN3-R2-F011)'* ]] \
+      || fail "generated grouped bullet lost RAV-RUN3-R2-F011 in history"
+    fenced_line="$(grep -F 'Fenced examples are not findings.' "$output" || true)"
+    [[ -z "$fenced_line" ]] || fail "fenced generated example entered history"
+}
+
 test_history_merges_duplicate_identity_into_open_thread() {
     local tmp bin fixture output
     tmp="$(mktemp -d)"
@@ -1488,6 +1530,7 @@ main() {
     test_next_run_counts_distinct_finalized_reports
     test_next_run_degrades_gracefully_when_history_is_unavailable
     test_history_parses_provenance_ids_and_rejects_malformed_tokens
+    test_history_preserves_engine_generated_inline_and_grouped_ids
     test_history_merges_duplicate_identity_into_open_thread
     test_history_preserves_table_finding_identity
     test_post_history_round_trip_preserves_modern_and_legacy_identity

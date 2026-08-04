@@ -198,7 +198,14 @@ Plausible-but-wrong findings are the dominant failure mode of LLM review, and bo
   ```
 
   Canonical grammar: `RAV-(RUN<run>-)?R<origin-round>-(F|P)<ordinal>`.
-  `run` and `origin-round` are positive integers. `ordinal` is a zero-padded positive integer with at least three digits. Validate both the grammar and those numeric semantics; zero is invalid in every numeric slot.
+  `run` and `origin-round` are unpadded positive base-10 integers. Encode
+  `ordinal` from an unpadded positive base-10 integer by left-padding only to a
+  minimum width of three digits: encode 1 as `001`, 10 as `010`, 100 as
+  `100`, and 1000 as `1000`; do not add any other leading zero. Valid
+  multi-digit examples are
+  `RAV-RUN12-R10-F010` and `RAV-R12-P1000`. Invalid forms include
+  `RAV-RUN03-R2-F001`, `RAV-RUN3-R02-F001`, `RAV-RUN3-R2-F0001`,
+  `RAV-RUN0-R2-F001`, `RAV-RUN3-R0-F001`, and `RAV-RUN3-R2-F000`.
 
   ID legend: `RUN` is the observed PR review run, `R` is the immutable origin round, `F` is a finding, and `P` is a plan. Examples are `RAV-RUN3-R2-F001`, `RAV-RUN3-R2-P001`, `RAV-R2-F001`, and `RAV-R2-P001`.
   Cross-round allocation example: in trusted PR run 3, a history finding with
@@ -208,6 +215,8 @@ Plausible-but-wrong findings are the dominant failure mode of LLM review, and bo
   two current-run findings receives `RAV-RUN3-R2-P001`. The matching
   local/degraded allocation for the same newly allocated items has no history
   carry-forward: `RAV-R1-F001`, `RAV-R2-F002`, and `RAV-R2-P001`.
+  The carried `RAV-RUN1-R2-F007` has no new inline comment. It remains
+  available in history, the report, reproduction, and adversarial review.
 
   Finding and plan ordinals are independent, run-wide counters named
   `next_finding_ordinal` and `next_plan_ordinal`. Both start at `001`.
@@ -228,8 +237,11 @@ Plausible-but-wrong findings are the dominant failure mode of LLM review, and bo
   assign a new ID to a non-actionable legacy-only entry. Historical `RAVF###`, `RAVW###`, `F-###`, and `W-###` forms are migration/read-boundary aliases only. New findings and plans always use the recipe above.
 
   Once assigned, keep the complete ID unchanged in reproduction candidates,
-  adversarial targets, report rows, inline bodies, plan coverage, and later
-  round references.
+  adversarial targets, report rows, plan coverage, and later round references.
+  ID reuse flows to an inline body only when the finding is otherwise eligible
+  for a new inline. Ordinary `open`, `resolved`, and `reported` carry-forwards
+  retain their IDs in history, reports, reproduction, and adversarial targets,
+  but do not create a new inline thread.
 - Build `REPRODUCTION CANDIDATES` after prior-feedback classification and ID assignment:
   - every `medium`+ finding raised by exactly one reviewer,
   - every `medium`+ deletion/dead-code/unused/redundant-code/simplification finding, and any deletion/simplification that would remove runtime code, public docs/API, compatibility behavior, or another high-blast-radius surface, regardless of reviewer count,
@@ -479,18 +491,18 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 
    ```json
    [
-     {"path": "src/auth.ts", "line": 50, "side": "RIGHT", "severity": "high", "body": "RAV-RUN3-R2-F001\n\n**[high] auth** — Refresh creates a session before CSRF validation\n\nThe handler rotates the session before it checks the state token. A stale tab can create a new session with an invalid token.\n\nA state check before rotation would block that path. A missing-state-token test would cover this path."},
-     {"path": "src/db.ts", "start_line": 100, "line": 110, "side": "RIGHT", "start_side": "RIGHT", "severity": "medium", "body": "RAV-RUN3-R2-F002\n\n**[medium] db** — Retry accounting records success before the write succeeds\n\nThe retry block increments `attempts_succeeded` before `insert_event` returns. A timeout records success even when no row was written.\n\nThe counter update belongs after a successful insert; timeout attempts then remain eligible for retry. A timeout test can cover this path.", "suggestion": "result = insert_event(payload)\nattempts_succeeded += 1\nreturn result"}
+     {"path": "src/auth.ts", "line": 50, "side": "RIGHT", "severity": "high", "body": "**RAV-RUN3-R2-F001 [high] auth** — Refresh creates a session before CSRF validation\n\nThe handler rotates the session before it checks the state token. A stale tab can create a new session with an invalid token.\n\nA state check before rotation would block that path. A missing-state-token test would cover this path."},
+     {"path": "src/db.ts", "start_line": 100, "line": 110, "side": "RIGHT", "start_side": "RIGHT", "severity": "medium", "body": "**RAV-RUN3-R2-F002 [medium] db** — Retry accounting records success before the write succeeds\n\nThe retry block increments `attempts_succeeded` before `insert_event` returns. A timeout records success even when no row was written.\n\nThe counter update belongs after a successful insert; timeout attempts then remain eligible for retry. A timeout test can cover this path.", "suggestion": "result = insert_event(payload)\nattempts_succeeded += 1\nreturn result"}
    ]
    ```
 
-   Single line → `{"line": N, "side": "RIGHT"}`; range `<N>-<M>` → `{"start_line": N, "line": M, "side": "RIGHT", "start_side": "RIGHT"}`. Findings without anchors stay in the markdown body only; no anchored findings → `[]`. Start every identified inline body with its complete canonical ID. A reader must be able to create the fix from each `body` alone.
+   Single line → `{"line": N, "side": "RIGHT"}`; range `<N>-<M>` → `{"start_line": N, "line": M, "side": "RIGHT", "start_side": "RIGHT"}`. Findings without anchors stay in the markdown body only; no anchored findings → `[]`. Start every identified inline body with the parser-supported bold label `**<complete-id> [<severity>] <area>**` followed by `— <finding>`. A reader must be able to create the fix from each `body` alone.
 
    Include helper-only `"severity"` for every inline item. The posting helper strips it before calling GitHub and uses it to keep low/nit findings summary-only by default. Include helper-only `"suggestion"` only when the fix is an exact replacement for the commented line/range; the helper turns it into a GitHub suggestion fenced block and strips the extra key before posting. Do not include suggestions for design fixes, cross-file edits, deleted lines, anything that requires judgment, or any suggestion whose anchor/replacement/blast-radius was disputed by adversarial review.
 
    For an explicitly reintroduced `author-resolved` finding, place `<!-- review-anvil: prior_feedback=reintroduced -->` immediately after its visible final-report finding row or bullet. Its matching inline item must carry helper-only `"prior_feedback": "reintroduced"`; the posting helper uses it before author-resolved suppression, strips the JSON field before the GitHub REST request, and preserves the hidden marker in the posted inline body so later history retains the disposition.
 
-   Each `body` uses the same complete finding ID as its report row, reproduction target, and adversarial target, then follows the **inline-comment voice** in `references/report-artifacts.md` — read it before composing bodies. Keep it short and plain: say what the code does, what happens because of it, and, when useful, a friendly next step. A reader must be able to act without reopening the diff. Include a safe exact `"suggestion"` or a short code sketch only when it removes doubt. By default, inline comments are for `critical`/`high`/`medium` anchored findings; `low`/`nit` findings remain in the top-level summary unless the user or environment lowers `REVIEW_ANVIL_INLINE_MIN_SEVERITY`. The same voice applies to the report's Things to try, Set aside, and Outside this change prose.
+   Each eligible new `body` puts the same complete finding ID as its report row, reproduction target, and adversarial target inside that bold label, then follows the **inline-comment voice** in `references/report-artifacts.md` — read it before composing bodies. Keep it short and plain: say what the code does, what happens because of it, and, when useful, a friendly next step. A reader must be able to act without reopening the diff. Include a safe exact `"suggestion"` or a short code sketch only when it removes doubt. By default, inline comments are for `critical`/`high`/`medium` anchored findings; `low`/`nit` findings remain in the top-level summary unless the user or environment lowers `REVIEW_ANVIL_INLINE_MIN_SEVERITY`. Ordinary prior-feedback carry-forwards do not produce new inline payloads. The same voice applies to the report's Things to try, Set aside, and Outside this change prose.
 
 3. Write a sibling `<report_path>.approval.json` so the PR-posting helper can choose the GitHub review event (review-only PR runs; for other runs write `{"event": "COMMENT"}` or omit the file — the helper defaults to COMMENT):
 
@@ -587,7 +599,7 @@ ID legend: `RUN` is the observed PR review run, `R` is the immutable origin roun
 
 <If the table would be hard to read, use grouped bullets instead:>
 
-- **[high] auth** `src/auth.ts:42` — Refresh creates a session before it checks CSRF validation. (`RAV-RUN3-R2-F001`; inline)
+- **RAV-RUN3-R2-F001 [high] auth** `src/auth.ts:42` — Refresh creates a session before it checks CSRF validation. (inline)
 
 <details>
 <summary>Non-blocking low/nit findings</summary>
