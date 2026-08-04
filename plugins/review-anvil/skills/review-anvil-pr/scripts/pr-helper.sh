@@ -194,8 +194,12 @@ def infer_severity(item):
     if explicit in rank:
         return explicit
     body = item.get("body") or ""
-    id_pattern = r"(?:RAV[FW]\d{3,}|[FW]-\d{3,})"
-    m = re.search(rf"\*\*(?:{id_pattern}\s+)?\[(critical|high|medium|low|nit)\]", body, re.I)
+    positive_padded_ordinal = r"(?:00[1-9]|0[1-9][0-9]|[1-9][0-9]{2,})"
+    finding_id_pattern = (
+        rf"(?:RAV-(?:RUN[1-9][0-9]*-)?R[1-9][0-9]*-F{positive_padded_ordinal}"
+        r"|RAVF[0-9]{3,}|F-[0-9]{3,})"
+    )
+    m = re.search(rf"\*\*(?:{finding_id_pattern}\s+)?\[(critical|high|medium|low|nit)\]", body, re.I)
     if m:
         return m.group(1).lower()
     m = re.search(r"\b(critical|high|medium|low|nit)\s*:", body, re.I)
@@ -395,17 +399,26 @@ def norm(text: str) -> str:
     words = [w for w in text.split() if len(w) > 2 and w not in {"the", "and", "for", "with", "this", "that", "from", "into", "when", "because"}]
     return " ".join(words)
 
-ID_PATTERN = r"(?:RAVF\d{3,}|F-\d{3,})"
+POSITIVE_PADDED_ORDINAL = r"(?:00[1-9]|0[1-9][0-9]|[1-9][0-9]{2,})"
+PROVENANCE_FINDING_ID = (
+    rf"RAV-(?:RUN[1-9][0-9]*-)?R[1-9][0-9]*-F{POSITIVE_PADDED_ORDINAL}"
+)
+LEGACY_FINDING_ID = r"(?:RAVF[0-9]{3,}|F-[0-9]{3,})"
+FINDING_ID_PATTERN = rf"(?:{PROVENANCE_FINDING_ID}|{LEGACY_FINDING_ID})"
 SEVERITY_NAMES = {"critical", "high", "medium", "low", "nit"}
 SEVERITY_INITIALS = {"c": "critical", "h": "high", "m": "medium", "l": "low", "n": "nit"}
 REINTRODUCED_MARKER = "<!-- review-anvil: prior_feedback=reintroduced -->"
 
 FINDING_RE = re.compile(
-    rf"\*\*(?:{ID_PATTERN}\s+)?\[(?P<severity>critical|high|medium|low|nit)\]\s*(?P<area>[^*]+?)\*\*(?:\s+`(?P<location>[^`]+)`)?\s*[-—:]+\s*(?P<finding>[^\n]+)",
+    rf"\*\*(?:(?P<finding_id>{FINDING_ID_PATTERN})\s+)?\[(?P<severity>critical|high|medium|low|nit)\]\s*(?P<area>[^*]+?)\*\*(?:\s+`(?P<location>[^`]+)`)?\s*[-—:]+\s*(?P<finding>[^\n]+)",
     re.I,
 )
 SUMMARY_RE = re.compile(
-    rf"^\s*(?:[-*]\s+)?(?:{ID_PATTERN}\s+)?\[(?P<severity>critical|high|medium|low|nit)\]\s*(?P<area>.+?)\s*[-—:]+\s*(?P<finding>.+)$",
+    rf"^\s*(?:[-*]\s+)?(?:(?P<finding_id>{FINDING_ID_PATTERN})\s+)?\[(?P<severity>critical|high|medium|low|nit)\]\s*(?P<area>.+?)\s*[-—:]+\s*(?P<finding>.+)$",
+    re.I,
+)
+IDENTITY_METADATA_RE = re.compile(
+    rf"\b(?:id|legacy)=(?P<ids>{FINDING_ID_PATTERN}(?:,{FINDING_ID_PATTERN})*)\b",
     re.I,
 )
 
@@ -433,7 +446,7 @@ def table_finding(line):
     if not stripped.startswith("|") or not stripped.endswith("|"):
         return None
     cells = [cell.strip() for cell in stripped.strip("|").split("|")]
-    if len(cells) < 5 or not re.fullmatch(ID_PATTERN, cells[0], re.I):
+    if len(cells) < 5 or not re.fullmatch(FINDING_ID_PATTERN, cells[0], re.I):
         return None
     sev = severity_name(cells[1])
     if not sev:
@@ -443,6 +456,65 @@ def table_finding(line):
         return None
     return {"id": cells[0], "severity": sev, "area": cells[2],
             "location": cells[3], "finding": finding}
+
+def finding_id_from_body(body):
+    body = body or ""
+    match = FINDING_RE.search(body)
+    if match and match.group("finding_id"):
+        return match.group("finding_id")
+    for line in body.splitlines():
+        item = table_finding(line)
+        if item:
+            return item["id"]
+        match = SUMMARY_RE.search(line)
+        if match and match.group("finding_id"):
+            return match.group("finding_id")
+    return None
+
+def identity_metadata(finding_id):
+    modern_id = None
+    legacy_ids = []
+    if finding_id and re.fullmatch(PROVENANCE_FINDING_ID, finding_id, re.I):
+        modern_id = finding_id
+    elif finding_id and re.fullmatch(LEGACY_FINDING_ID, finding_id, re.I):
+        legacy_ids.append(finding_id)
+    return {"finding_id": modern_id, "legacy_ids": legacy_ids}
+
+def merge_identity(target, *items):
+    finding_id = next(
+        (item.get("finding_id") for item in items if item.get("finding_id")),
+        None,
+    )
+    legacy_ids = []
+    seen = set()
+    for item in items:
+        for legacy_id in item.get("legacy_ids") or []:
+            key = legacy_id.casefold()
+            if key not in seen:
+                seen.add(key)
+                legacy_ids.append(legacy_id)
+    target["finding_id"] = finding_id
+    target["legacy_ids"] = legacy_ids
+
+def identity_from_body(body):
+    identities = []
+    for match in IDENTITY_METADATA_RE.finditer(body or ""):
+        identities.extend(
+            identity_metadata(finding_id)
+            for finding_id in match.group("ids").split(",")
+        )
+    identities.append(identity_metadata(finding_id_from_body(body)))
+    merged = {}
+    merge_identity(merged, *identities)
+    return merged
+
+def rendered_identity_fields(item):
+    fields = []
+    if item.get("finding_id"):
+        fields.append(f'id={item["finding_id"]}')
+    if item.get("legacy_ids"):
+        fields.append(f'legacy={",".join(item["legacy_ids"])}')
+    return fields
 
 def path_from_location(location):
     loc = (location or "").strip().strip("`")
@@ -471,8 +543,7 @@ def is_finding_line(line: str) -> bool:
 def signature(body: str) -> str:
     body = body or ""
     # review-anvil body: **[medium] area** -- What ...
-    # Stable IDs are optional: **RAVF001 [medium] area** -- What ...
-    # Legacy dashed F/W IDs are accepted too.
+    # Provenance and historical finding IDs are optional.
     # Report rows may include a code location between the bold label and dash.
     m = FINDING_RE.search(body)
     if m:
@@ -585,7 +656,8 @@ for t in threads:
                         "source": comments[0].get("url") or "review-thread",
                         "status": status, "severity": severity_from_body(body),
                         "prior_feedback": "reintroduced" if REINTRODUCED_MARKER in body else None,
-                        "outdated": bool(t.get("isOutdated"))})
+                        "outdated": bool(t.get("isOutdated")),
+                        **identity_from_body(body)})
 
 def report_findings(node):
     body = node.get("body") or ""
@@ -594,6 +666,7 @@ def report_findings(node):
     if "review-anvil-marker:" not in body and "review-anvil report" not in body:
         return []
     found = []
+    prior_feedback_section = False
     section_status = None
     in_fence = False
     last_finding = None
@@ -609,8 +682,15 @@ def report_findings(node):
             last_finding = None
             continue
         last_finding = None
+        if line.startswith("### "):
+            heading = line[4:].strip().lower()
+            if heading == "earlier review comments":
+                section_status = "reported"
+                prior_feedback_section = True
+            continue
         if line.startswith("## "):
             heading = line[3:].strip().lower()
+            prior_feedback_section = False
             if heading.startswith(("findings", "diagnoses", "what i noticed", "suggestions", "things to try", "non-blocking")):
                 section_status = "reported"
             elif heading.startswith(("deferred / out-of-scope", "set aside / outside this change")):
@@ -620,14 +700,18 @@ def report_findings(node):
             continue
         if not section_status:
             continue
-        match = FINDING_RE.search(line)
-        item = table_finding(line)
+        parse_line = (
+            re.sub(r"\s+_\(.+\)_\s*$", "", line)
+            if prior_feedback_section else line
+        )
+        match = FINDING_RE.search(parse_line)
+        item = table_finding(parse_line)
         if match:
             location = match.group("location") or ""
-            finding_body = line
+            finding_body = parse_line
         elif item:
             location = item.get("location") or ""
-            finding_body = line
+            finding_body = parse_line
         else:
             continue
         sig = signature(finding_body)
@@ -639,13 +723,15 @@ def report_findings(node):
                 if loc_match.group(3):
                     parsed_line += f'-{loc_match.group(3)}'
             status = "review-dismissed" if (node.get("state") or "").upper() == "DISMISSED" else section_status
+            identity = identity_from_body(line)
             found.append({"path": path_from_location(location), "line": parsed_line,
                           "sig": sig, "summary": summary(finding_body),
                           "source": node.get("url") or "prior-review-anvil-report",
                           "status": status,
                           "severity": severity_from_body(finding_body),
                           "prior_feedback": None,
-                          "outdated": False})
+                          "outdated": False,
+                          **identity})
             last_finding = found[-1]
     return found
 
@@ -654,10 +740,15 @@ def report_findings(node):
 # but deduplicate findings already represented by a thread root.
 for node in reviews + issue_comments:
     for candidate in report_findings(node):
-        if (candidate.get("prior_feedback") == "reintroduced"
-                or not any(same_finding(candidate, previous, require_path=False)
-                           for previous in history)):
+        previous = next(
+            (item for item in history
+             if same_finding(candidate, item, require_path=False)),
+            None,
+        )
+        if candidate.get("prior_feedback") == "reintroduced" or previous is None:
             history.append(candidate)
+        else:
+            merge_identity(previous, previous, candidate)
 
 sp = state_file()
 if sp and sp.exists():
@@ -671,7 +762,8 @@ if sp and sp.exists():
                                "source": item.get("reason", "local-suppression"),
                                "status": "suppressed",
                                "severity": severity_from_body(item.get("pattern", "")),
-                               "outdated": False}
+                               "outdated": False,
+                               **identity_from_body(item.get("pattern", ""))}
                 history = [previous for previous in history
                            if not same_finding(suppression, previous, require_path=False)]
                 history.append(suppression)
@@ -703,8 +795,13 @@ def coalesce_history(items):
         )
         if match_index is None:
             coalesced.append(item)
-        elif history_rank(item) > history_rank(coalesced[match_index]):
+            continue
+        current = coalesced[match_index]
+        if history_rank(item) > history_rank(current):
+            merge_identity(item, current, item)
             coalesced[match_index] = item
+        else:
+            merge_identity(current, current, item)
     return coalesced
 
 history = coalesce_history(history)
@@ -722,7 +819,8 @@ if mode in {"history", "list"}:
             else:
                 loc = "(no file anchor)"
             flags = d["status"] + (",reintroduced" if d.get("prior_feedback") == "reintroduced" else "") + (",outdated" if d.get("outdated") else "")
-            print(f'- [{flags}] {loc} — {d["summary"]} ({d["source"]})')
+            metadata = [f'source={d["source"]}', *rendered_identity_fields(d)]
+            print(f'- [{flags}] {loc} — {d["summary"]} ({"; ".join(metadata)})')
     raise SystemExit(0)
 
 if mode != "suppress":
@@ -967,8 +1065,9 @@ if report.exists():
             j2 = block_end(i)
             block = lines[i:j2]
             start_line, end_line = location_range_from_block(block)
+            block_body = "\n".join(block)
             cand = {"path": path_from_block(block), "start_line": start_line,
-                    "line": end_line, "sig": signature("\n".join(block))}
+                    "line": end_line, "sig": signature(block_body)}
             reintroduced = explicitly_reintroduced(
                 cand,
                 len(block) > 1 and block[1].strip() == REINTRODUCED_MARKER,
@@ -993,8 +1092,11 @@ if report.exists():
                 elif does_not_reraise(hit):
                     out.extend(marked_block if reintroduced else block)
                 else:
+                    identity = {}
+                    merge_identity(identity, hit, identity_from_body(block_body))
                     demoted.append({"line": block[0].strip(), "sig": cand["sig"],
-                                    "source": hit["source"], "status": display_status(hit)})
+                                    "source": hit["source"], "status": display_status(hit),
+                                    **identity})
                 i = j2
                 continue
             if reintroduced:
@@ -1008,7 +1110,15 @@ if report.exists():
         if demoted or suppressed or explicit_suppressions:
             demoted_sigs = {d["sig"] for d in demoted}
             tail = ["", "---", "", "### Earlier review comments", ""]
-            tail += [f'{d["line"]} _({d["status"]} Source: {d["source"]})_' for d in demoted]
+            for d in demoted:
+                identity_fields = rendered_identity_fields(d)
+                identity_suffix = (
+                    f'; {"; ".join(identity_fields)}' if identity_fields else ""
+                )
+                tail.append(
+                    f'{d["line"]} _({d["status"]} Source: {d["source"]}'
+                    f'{identity_suffix})_'
+                )
             tail += [f'- **Earlier inline comment** {s["path"]} — {s["summary"]} _({s["status"]} Source: {s["source"]})_'
                      for s in suppressed if s["sig"] not in demoted_sigs]
             tail += [f'- **Not raised again** {s["path"] or "(no file anchor)"} — {s["summary"]} _(It was intentionally set aside. Source: {s["source"]})_'

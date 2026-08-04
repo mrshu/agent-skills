@@ -28,9 +28,9 @@ make_report() {
         printf '%s\n\n' "$REPRODUCTION_LINE"
         printf '**Adversarial review:** targeted, 2 agents; 2 upheld, 1 hardened, 0 deferred, 0 dropped.\n\n'
         printf '## Findings\n'
-        printf -- '- **RAVF001 [medium] auth** `src/auth.ts:12` — finding 01 has a long explanation that should post in full while retaining the finding number 01 and still point to the inline comment.\n'
-        printf -- '- **RAVF002 [high] db** `src/db.ts:8` — finding 02 remains inline.\n'
-        printf -- '- **RAVF003 [low] docs** `README.md:4` — finding 03 stays summary-only.\n'
+        printf -- '- **RAV-RUN3-R2-F001 [medium] auth** `src/auth.ts:12` — finding 01 has a long explanation that should post in full while retaining the finding number 01 and still point to the inline comment.\n'
+        printf -- '- **RAV-R3-F002 [high] db** `src/db.ts:8` — finding 02 remains inline.\n'
+        printf -- '- **RAV-RUN3-R2-F003 [low] docs** `README.md:4` — finding 03 stays summary-only.\n'
         printf '\n## Non-Blocking Notes\n'
         printf -- '- **[low] docs** — low priority note should be collapsed but preserved.\n'
         printf '\n<details>\n<summary>Run details</summary>\n\n'
@@ -63,7 +63,7 @@ make_inline() {
     "path": "src/db.ts",
     "line": 8,
     "side": "RIGHT",
-    "body": "**RAVF002 [high] db** — Write failures are reported as success."
+    "body": "**RAV-R3-F002 [high] db** — Write failures are reported as success."
   }
 ]
 JSON
@@ -191,13 +191,13 @@ test_process_inline_infers_id_prefixed_severity() {
     "path": "src/db.ts",
     "line": 8,
     "side": "RIGHT",
-    "body": "**RAVF002 [high] db** — Write failures are reported as success."
+    "body": "**RAV-RUN3-R2-F002 [high] db** — Write failures are reported as success."
   },
   {
     "path": "src/cache.ts",
     "line": 4,
     "side": "RIGHT",
-    "body": "**RAVF003 [medium] cache** — Cache misses are logged as hits."
+    "body": "**RAV-R3-F003 [medium] cache** — Cache misses are logged as hits."
   }
 ]
 JSON
@@ -392,7 +392,7 @@ test_post_dismisses_id_prefixed_report_findings() {
       "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-dismissed-id.out
 
     grep -q 'Earlier review comments' "$tmp/comment.md"
-    ! grep -Fq 'RAVF001 [medium] auth' "$tmp/comment.md"
+    ! grep -Fq 'RAV-RUN3-R2-F001 [medium] auth' "$tmp/comment.md"
     grep -q 'local-test-dismissal' "$tmp/comment.md"
     assert_file_missing "$report"
     assert_file_missing "$tmp/report.md.approval.json"
@@ -440,8 +440,12 @@ test_compact_report_preserves_invalid_and_fenced_text() {
         printf -- '- **F001 [high] db** — bare transitional IDs are not findings.\n'
         printf -- '- **F1 [high] auth** — short IDs are not findings.\n'
         printf -- '- **RAVF-001 [high] api** — dashed RAV IDs are not findings.\n'
+        printf -- '- **RAV-RUN0-R2-F001 [high] provenance** — run zero is not a finding.\n'
+        printf -- '- **RAV-RUN3-R0-F001 [high] provenance** — round zero is not a finding.\n'
+        printf -- '- **RAV-RUN3-R2-F000 [high] provenance** — finding zero is not a finding.\n'
+        printf -- '- **RAV-RUN3-R2-P001 [high] provenance** — plan IDs are not findings.\n'
         printf '```md\n'
-        printf -- '- **RAVF999 [high] fenced** — fenced examples are not findings.\n'
+        printf -- '- **RAV-RUN3-R2-F999 [high] fenced** — fenced examples are not findings.\n'
         printf '```\n'
     } >"$report"
     cp "$report" "$expected"
@@ -464,7 +468,7 @@ test_compact_report_preserves_wrapped_reproduction_metadata() {
         printf '**Reproduction:** 4 candidates; 3 confirmed, 1 deferred after\n'
         printf 'failed reproduction.\n\n'
         printf '## Findings\n'
-        printf -- '- **RAVF001 [medium] auth** `src/auth.ts:12` — wrapped metadata should stay exactly as generated.\n'
+        printf -- '- **RAV-RUN3-R2-F001 [medium] auth** `src/auth.ts:12` — wrapped metadata should stay exactly as generated.\n'
     } >"$report"
     cp "$report" "$expected"
 
@@ -489,14 +493,14 @@ test_post_dismisses_table_report_findings() {
         printf '## Findings\n'
         printf '| ID | Sev | Area | Location | Finding |\n'
         printf '|---|---|---|---|---|\n'
-        printf '| RAVF001 | M | auth | `src/auth.ts:12` | finding 01 has a long explanation that should stay intact while retaining the finding number 01 and still point to the inline comment. |\n'
+        printf '| RAV-RUN3-R2-F001 | M | auth | `src/auth.ts:12` | finding 01 has a long explanation that should stay intact while retaining the finding number 01 and still point to the inline comment. |\n'
     } >"$report"
     cat >"$dismissals" <<'JSON'
 {
   "acme/widgets#42": [
     {
       "path": "src/auth.ts",
-      "pattern": "RAVF001 [medium] auth — finding 01 has a long explanation that should stay intact while retaining the finding number 01 and still point to the inline comment.",
+      "pattern": "RAV-RUN3-R2-F001 [medium] auth — finding 01 has a long explanation that should stay intact while retaining the finding number 01 and still point to the inline comment.",
       "reason": "local-table-dismissal"
     }
   ]
@@ -512,7 +516,7 @@ JSON
       "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-dismissed-table.out
 
     grep -q 'Earlier review comments' "$tmp/comment.md"
-    ! grep -Fq '| RAVF001 | M | auth | `src/auth.ts:12` |' "$tmp/comment.md"
+    ! grep -Fq '| RAV-RUN3-R2-F001 | M | auth | `src/auth.ts:12` |' "$tmp/comment.md"
     grep -q 'local-table-dismissal' "$tmp/comment.md"
     assert_file_missing "$report"
     assert_file_missing "$tmp/report.md.approval.json"
@@ -532,14 +536,14 @@ test_dismissal_respects_report_paths() {
         printf '# ⚒️ review-anvil report\n\n'
         printf '**Review decision:** COMMENT — same text in another file remains actionable.\n\n'
         printf '## Findings\n'
-        printf -- '- **RAVF001 [medium] auth** `src/other.ts:12` — same summary text appears in another file.\n'
+        printf -- '- **RAV-RUN3-R2-F001 [medium] auth** `src/other.ts:12` — same summary text appears in another file.\n'
     } >"$report"
     cat >"$dismissals" <<'JSON'
 {
   "acme/widgets#42": [
     {
       "path": "src/auth.ts",
-      "pattern": "RAVF001 [medium] auth — same summary text appears in another file.",
+      "pattern": "RAV-RUN3-R2-F001 [medium] auth — same summary text appears in another file.",
       "reason": "local-path-dismissal"
     }
   ]
@@ -626,8 +630,8 @@ test_history_includes_open_resolved_outdated_and_summary_only() {
     },
     "reviews": {
       "nodes": [
-        {"state": "COMMENTED", "body": "<!-- review-anvil-marker: old -->\n# review-anvil report\n\n## Findings\n- **RAVF001 [low] docs** `README.md:4` — CLI help omits the timeout default.\n\n## Fixes / Would Apply\n- **RAVW001 [medium] auth** — would add a helper.\n\n```md\n- **RAVF999 [high] fenced** — example only.\n```", "url": "https://example.invalid/review"},
-        {"state": "PENDING", "body": "<!-- review-anvil-marker: pending -->\n## Findings\n- **RAVF002 [high] hidden** — pending review is not shown.", "url": "https://example.invalid/pending"}
+        {"state": "COMMENTED", "body": "<!-- review-anvil-marker: old -->\n# review-anvil report\n\n## Findings\n- **RAV-RUN3-R2-F001 [low] docs** `README.md:4` — CLI help omits the timeout default.\n\n## Fixes / Would Apply\n- **RAVW001 [medium] auth** — would add a helper.\n\n```md\n- **RAV-RUN3-R2-F999 [high] fenced** — example only.\n```", "url": "https://example.invalid/review"},
+        {"state": "PENDING", "body": "<!-- review-anvil-marker: pending -->\n## Findings\n- **RAV-RUN3-R2-F002 [high] hidden** — pending review is not shown.", "url": "https://example.invalid/pending"}
       ],
       "pageInfo": {"hasNextPage": false, "endCursor": null}
     },
@@ -649,7 +653,7 @@ JSON
     ! grep -Fq 'pending review is not shown' "$output"
 }
 
-test_history_reads_new_report_headings() {
+test_history_parses_provenance_ids_and_rejects_malformed_tokens() {
     local tmp bin fixture output
     tmp="$(mktemp -d)"
     trap "rm -rf '$tmp'" RETURN
@@ -660,10 +664,16 @@ test_history_reads_new_report_headings() {
     cat >"$fixture" <<'JSON'
 {
   "data": {"repository": {"pullRequest": {
-    "reviewThreads": {"nodes": [], "pageInfo": {"hasNextPage": false, "endCursor": null}},
+    "reviewThreads": {
+      "nodes": [
+        {"isResolved": false, "isOutdated": false, "path": "docs/summary.md", "line": 5,
+         "comments": {"nodes": [{"body": "RAV-R3-F005 [low] docs — Summary bodies preserve finding identity.", "url": "https://example.invalid/summary"}]}}
+      ],
+      "pageInfo": {"hasNextPage": false, "endCursor": null}
+    },
     "reviews": {
       "nodes": [
-        {"state": "COMMENTED", "body": "<!-- review-anvil-marker: new -->\n# review-anvil report\n\n## What I noticed\n- **RAVF001 [medium] auth** `src/auth.ts:12` — A stale token can create a session.\n\n## Set aside / Outside this change\n- **RAVF002 [low] docs** `README.md:4` — The wording needs a product decision.", "url": "https://example.invalid/new-review"}
+        {"state": "COMMENTED", "body": "<!-- review-anvil-marker: new -->\n# review-anvil report\n\n## What I noticed\n- **RAV-RUN3-R2-F001 [medium] auth** `src/auth.ts:12` — A stale token can create a session.\n- **RAV-RUN0-R2-F001 [high] invalid** `src/invalid-run.ts:1` — Run zero must not parse.\n- **RAV-RUN3-R0-F001 [high] invalid** `src/invalid-round.ts:1` — Round zero must not parse.\n- **RAV-RUN3-R2-F000 [high] invalid** `src/invalid-finding.ts:1` — Finding zero must not parse.\n- **RAV-RUN3-R2-P001 [high] invalid** `src/plan.ts:1` — Plan IDs must not parse as findings.\n\n## Set aside / Outside this change\n- **RAV-R3-F002 [low] docs** `README.md:4` — The wording needs a product decision.", "url": "https://example.invalid/new-review"}
       ],
       "pageInfo": {"hasNextPage": false, "endCursor": null}
     },
@@ -676,7 +686,124 @@ JSON
       "$HELPER" history github.com acme widgets 42 >"$output"
 
     grep -Fq '[reported] src/auth.ts:12' "$output"
+    grep -Fq 'id=RAV-RUN3-R2-F001' "$output"
     grep -Fq '[deferred] README.md:4' "$output"
+    grep -Fq 'id=RAV-R3-F002' "$output"
+    grep -Fq '[open] docs/summary.md:5' "$output"
+    grep -Fq 'id=RAV-R3-F005' "$output"
+    ! grep -Fq 'Run zero must not parse' "$output"
+    ! grep -Fq 'Round zero must not parse' "$output"
+    ! grep -Fq 'Finding zero must not parse' "$output"
+    ! grep -Fq 'Plan IDs must not parse as findings' "$output"
+}
+
+test_history_merges_duplicate_identity_into_open_thread() {
+    local tmp bin fixture output
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+    fixture="$tmp/graphql.json"
+    cat >"$fixture" <<'JSON'
+{"data":{"repository":{"pullRequest":{
+  "reviewThreads":{"nodes":[
+    {"isResolved":false,"isOutdated":false,"path":"src/auth.ts","line":12,"comments":{"nodes":[{"body":"**RAV-RUN2-R1-F003 [medium] auth** — Refresh accepts missing state.","url":"https://example.invalid/open"}]}}
+  ],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "reviews":{"nodes":[
+    {"state":"COMMENTED","body":"<!-- review-anvil-marker: duplicate-identity -->\n# review-anvil report\n\n## Findings\n- **RAV-RUN2-R1-F003 [medium] auth** `src/auth.ts:12` — Refresh accepts missing state.\n- **RAVF007 [medium] auth** `src/auth.ts:12` — Refresh accepts missing state.","url":"https://example.invalid/report"}
+  ],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}
+}}}}
+JSON
+
+    output="$tmp/history.txt"
+    GH_MOCK_GRAPHQL_RESPONSE="$fixture" PATH="$bin:$PATH" \
+      "$HELPER" history github.com acme widgets 42 >"$output"
+
+    [[ "$(grep -Fc 'Refresh accepts missing state.' "$output")" -eq 1 ]]
+    grep -Fq '[open] src/auth.ts:12' "$output"
+    grep -Fq 'source=https://example.invalid/open' "$output"
+    grep -Fq 'id=RAV-RUN2-R1-F003' "$output"
+    grep -Fq 'legacy=RAVF007' "$output"
+}
+
+test_history_preserves_table_finding_identity() {
+    local tmp bin fixture output
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+    fixture="$tmp/graphql.json"
+    cat >"$fixture" <<'JSON'
+{"data":{"repository":{"pullRequest":{
+  "reviewThreads":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "reviews":{"nodes":[
+    {"state":"COMMENTED","body":"<!-- review-anvil-marker: table-identity -->\n# review-anvil report\n\n## Findings\n| ID | Sev | Area | Location | Finding |\n|---|---|---|---|---|\n| RAV-R2-F004 | M | cache | `src/cache.ts:9` | Cache misses are logged as hits. |","url":"https://example.invalid/table"}
+  ],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}
+}}}}
+JSON
+
+    output="$tmp/history.txt"
+    GH_MOCK_GRAPHQL_RESPONSE="$fixture" PATH="$bin:$PATH" \
+      "$HELPER" history github.com acme widgets 42 >"$output"
+
+    grep -Fq '[reported] src/cache.ts:9' "$output"
+    grep -Fq 'id=RAV-R2-F004' "$output"
+}
+
+test_post_history_round_trip_preserves_modern_and_legacy_identity() {
+    local tmp bin prior_fixture next_fixture report output
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+    prior_fixture="$tmp/prior-history.json"
+    cat >"$prior_fixture" <<'JSON'
+{"data":{"repository":{"pullRequest":{
+  "reviewThreads":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "reviews":{"nodes":[
+    {"state":"COMMENTED","body":"<!-- review-anvil-marker: legacy-history -->\n# review-anvil report\n\n## Findings\n- **RAVF007 [medium] auth** `src/auth.ts:12` — Refresh accepts missing state.","url":"https://example.invalid/legacy-report"}
+  ],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}
+}}}}
+JSON
+
+    report="$tmp/report.md"
+    printf '# review-anvil report\n\n- **RAV-RUN3-R1-F001 [medium] auth** `src/auth.ts:12` — Refresh accepts missing state.\n' >"$report"
+    printf '[]\n' >"$report.inline.json"
+    printf '{"event":"COMMENT","head_sha":"head-sha"}\n' >"$report.approval.json"
+
+    GH_MOCK_GRAPHQL_RESPONSE="$prior_fixture" \
+    GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
+    GH_MOCK_COMMENT_BODY="$tmp/posted-comment.md" \
+    PATH="$bin:$PATH" \
+      "$HELPER" post github.com acme widgets 42 marker-round-trip "$report" \
+      >/tmp/review-anvil-identity-round-trip.out
+
+    grep -Fq '### Earlier review comments' "$tmp/posted-comment.md"
+    grep -Fq 'RAV-RUN3-R1-F001' "$tmp/posted-comment.md"
+
+    next_fixture="$tmp/next-history.json"
+    jq -n --rawfile body "$tmp/posted-comment.md" '
+      {data:{repository:{pullRequest:{
+        reviewThreads:{nodes:[],pageInfo:{hasNextPage:false,endCursor:null}},
+        reviews:{nodes:[],pageInfo:{hasNextPage:false,endCursor:null}},
+        comments:{nodes:[{body:$body,url:"https://example.invalid/round-trip"}],
+                  pageInfo:{hasNextPage:false,endCursor:null}}
+      }}}}
+    ' >"$next_fixture"
+
+    output="$tmp/history.txt"
+    GH_MOCK_GRAPHQL_RESPONSE="$next_fixture" PATH="$bin:$PATH" \
+      "$HELPER" history github.com acme widgets 42 >"$output"
+
+    grep -Fq '[reported] src/auth.ts:12' "$output"
+    grep -Fq 'id=RAV-RUN3-R1-F001' "$output"
+    grep -Fq 'legacy=RAVF007' "$output"
 }
 
 test_post_suppresses_duplicate_open_thread_but_keeps_status() {
@@ -696,7 +823,7 @@ test_post_suppresses_duplicate_open_thread_but_keeps_status() {
 JSON
     report="$tmp/report.md"
     inline="$tmp/report.md.inline.json"
-    printf '# review-anvil report\n\n- **RAVF001 [medium] auth** `src/auth.ts:12` — Refresh accepts missing state.\n' >"$report"
+    printf '# review-anvil report\n\n- **RAV-RUN3-R2-F001 [medium] auth** `src/auth.ts:12` — Refresh accepts missing state.\n' >"$report"
     printf '[{"path":"src/auth.ts","line":12,"side":"RIGHT","severity":"medium","body":"**[medium] auth** — Refresh accepts missing state."}]\n' >"$inline"
     printf '{"event":"COMMENT","head_sha":"head-sha"}\n' >"$tmp/report.md.approval.json"
 
@@ -707,7 +834,7 @@ JSON
       "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-open-history.out
 
     grep -Fq 'Earlier review comments' "$tmp/comment.md"
-    grep -Fq '(This is still present. Source: https://example.invalid/open)' "$tmp/comment.md"
+    grep -Fq '(This is still present. Source: https://example.invalid/open; id=RAV-RUN3-R2-F001)' "$tmp/comment.md"
     ! grep -Eq 'Prior PR feedback status|still-open|\*\*\(inline\)\*\*' "$tmp/comment.md"
     [[ ! -e "$tmp/review-payload.json" ]] || jq -e '.comments | length == 0' "$tmp/review-payload.json" >/dev/null
 }
@@ -722,9 +849,9 @@ test_history_paginates_without_refetch_duplicates() {
 #!/usr/bin/env bash
 set -euo pipefail
 if [[ " $* " == *" threadCursor=next "* ]]; then
-  printf '%s\n' '{"data":{"repository":{"pullRequest":{"reviewThreads":{"nodes":[{"isResolved":true,"isOutdated":false,"path":"src/two.ts","line":2,"comments":{"nodes":[{"body":"**[medium] paging** — second page finding.","url":"https://example.invalid/two"}]}}],"pageInfo":{"hasNextPage":false,"endCursor":null}},"reviews":{"nodes":[{"body":"<!-- review-anvil-marker: old -->\n## Findings\n- **RAVF001 [low] docs** — summary appears once.","url":"https://example.invalid/review"}],"pageInfo":{"hasNextPage":false,"endCursor":null}},"comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}}}'
+  printf '%s\n' '{"data":{"repository":{"pullRequest":{"reviewThreads":{"nodes":[{"isResolved":true,"isOutdated":false,"path":"src/two.ts","line":2,"comments":{"nodes":[{"body":"**[medium] paging** — second page finding.","url":"https://example.invalid/two"}]}}],"pageInfo":{"hasNextPage":false,"endCursor":null}},"reviews":{"nodes":[{"body":"<!-- review-anvil-marker: old -->\n## Findings\n- **RAV-RUN3-R2-F001 [low] docs** — summary appears once.","url":"https://example.invalid/review"}],"pageInfo":{"hasNextPage":false,"endCursor":null}},"comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}}}'
 else
-  printf '%s\n' '{"data":{"repository":{"pullRequest":{"reviewThreads":{"nodes":[{"isResolved":false,"isOutdated":false,"path":"src/one.ts","line":1,"comments":{"nodes":[{"body":"**[high] paging** — first page finding.","url":"https://example.invalid/one"}]}}],"pageInfo":{"hasNextPage":true,"endCursor":"next"}},"reviews":{"nodes":[{"body":"<!-- review-anvil-marker: old -->\n## Findings\n- **RAVF001 [low] docs** — summary appears once.","url":"https://example.invalid/review"}],"pageInfo":{"hasNextPage":false,"endCursor":null}},"comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}}}'
+  printf '%s\n' '{"data":{"repository":{"pullRequest":{"reviewThreads":{"nodes":[{"isResolved":false,"isOutdated":false,"path":"src/one.ts","line":1,"comments":{"nodes":[{"body":"**[high] paging** — first page finding.","url":"https://example.invalid/one"}]}}],"pageInfo":{"hasNextPage":true,"endCursor":"next"}},"reviews":{"nodes":[{"body":"<!-- review-anvil-marker: old -->\n## Findings\n- **RAV-RUN3-R2-F001 [low] docs** — summary appears once.","url":"https://example.invalid/review"}],"pageInfo":{"hasNextPage":false,"endCursor":null}},"comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}}}}}'
 fi
 GH
     chmod +x "$bin/gh"
@@ -782,7 +909,7 @@ test_post_time_material_history_downgrades_approval() {
 }}}}
 JSON
     report="$tmp/report.md"
-    printf '# review-anvil report\n\n## Findings\n- **RAVF001 [medium] db** `src/db.ts:8` — New unrelated finding.\n' >"$report"
+    printf '# review-anvil report\n\n## Findings\n- **RAV-RUN3-R2-F001 [medium] db** `src/db.ts:8` — New unrelated finding.\n' >"$report"
     printf '[{"path":"src/db.ts","line":8,"side":"RIGHT","severity":"medium","body":"**[medium] db** — New unrelated finding."}]\n' >"$report.inline.json"
     printf '{"event":"APPROVE","head_sha":"head-sha","adversarial_mode":"targeted","approval_allowed":true}\n' >"$report.approval.json"
 
@@ -817,7 +944,7 @@ JSON
     grep -Fq '[author-resolved] src/auth.ts:12' "$output"
 
     report="$tmp/report.md"
-    printf '# review-anvil report\n\n## Findings\n- **RAVF001 [high] auth** `src/auth.ts:12` — Refresh accepts missing state.\n' >"$report"
+    printf '# review-anvil report\n\n## Findings\n- **RAV-RUN3-R2-F001 [high] auth** `src/auth.ts:12` — Refresh accepts missing state.\n' >"$report"
     printf '[{"path":"src/auth.ts","line":12,"side":"RIGHT","severity":"high","body":"**[high] auth** — Refresh accepts missing state."}]\n' >"$report.inline.json"
     printf '{"event":"APPROVE","head_sha":"head-sha","approval_allowed":true}\n' >"$report.approval.json"
     : >"$tmp/comment.md"
@@ -854,8 +981,8 @@ JSON
 # review-anvil report
 
 ## Findings
-- **RAVF001 [high] auth** `src/auth.ts:12` — Refresh accepts missing state.
-- **RAVF002 [high] auth** `src/auth.ts:13` — Refresh accepts missing state.
+- **RAV-RUN3-R2-F001 [high] auth** `src/auth.ts:12` — Refresh accepts missing state.
+- **RAV-R3-F002 [high] auth** `src/auth.ts:13` — Refresh accepts missing state.
 <!-- review-anvil: prior_feedback=reintroduced -->
 REPORT
     cat >"$report.inline.json" <<'JSON'
@@ -872,7 +999,7 @@ JSON
       "$HELPER" post github.com acme widgets 42 marker-123 "$report"
     jq -e '.event == "COMMENT"' "$tmp/review-payload.json" >/dev/null
     jq -e '(.comments | length) == 1 and .comments[0].line == 13 and (.comments[0] | has("prior_feedback") | not) and (.comments[0].body | contains("<!-- review-anvil: prior_feedback=reintroduced -->"))' "$tmp/review-payload.json" >/dev/null
-    jq -e '(.body | contains("RAVF002")) and (.body | contains("RAVF001") | not)' "$tmp/review-payload.json" >/dev/null
+    jq -e '(.body | contains("RAV-R3-F002")) and (.body | contains("RAV-RUN3-R2-F001") | not)' "$tmp/review-payload.json" >/dev/null
 
     cat >"$fixture" <<'JSON'
 {"data":{"repository":{"pullRequest":{
@@ -903,7 +1030,7 @@ test_body_only_report_reintroduction_outranks_author_resolved_history() {
 {"data":{"repository":{"pullRequest":{
   "author":{"login":"pr-author"},
   "reviewThreads":{"nodes":[{"isResolved":true,"isOutdated":false,"resolvedBy":{"login":"pr-author"},"path":"src/auth.ts","line":12,"comments":{"nodes":[{"body":"**[high] auth** — Refresh accepts missing state.","url":"https://example.invalid/author-resolved"}]}}],"pageInfo":{"hasNextPage":false,"endCursor":null}},
-  "reviews":{"nodes":[{"state":"COMMENTED","body":"<!-- review-anvil-marker: body-only -->\n# review-anvil report\n\n## Findings\n- **RAVF002 [high] auth** `src/auth.ts:13` — Refresh accepts missing state.\n<!-- review-anvil: prior_feedback=reintroduced -->","url":"https://example.invalid/body-only-report"}],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "reviews":{"nodes":[{"state":"COMMENTED","body":"<!-- review-anvil-marker: body-only -->\n# review-anvil report\n\n## Findings\n- **RAV-R3-F002 [high] auth** `src/auth.ts:13` — Refresh accepts missing state.\n<!-- review-anvil: prior_feedback=reintroduced -->","url":"https://example.invalid/body-only-report"}],"pageInfo":{"hasNextPage":false,"endCursor":null}},
   "comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}
 }}}}
 JSON
@@ -928,7 +1055,7 @@ test_top_level_fallback_reintroduction_outranks_author_resolved_history() {
   "author":{"login":"pr-author"},
   "reviewThreads":{"nodes":[{"isResolved":true,"isOutdated":false,"resolvedBy":{"login":"pr-author"},"path":"src/auth.ts","line":12,"comments":{"nodes":[{"body":"**[high] auth** — Refresh accepts missing state.","url":"https://example.invalid/author-resolved"}]}}],"pageInfo":{"hasNextPage":false,"endCursor":null}},
   "reviews":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
-  "comments":{"nodes":[{"body":"<!-- review-anvil-marker: fallback-after-invalid-inline -->\n# review-anvil report\n\n## Findings\n- **RAVF002 [high] auth** `src/auth.ts:13` — Refresh accepts missing state.\n<!-- review-anvil: prior_feedback=reintroduced -->","url":"https://example.invalid/top-level-fallback"}],"pageInfo":{"hasNextPage":false,"endCursor":null}}
+  "comments":{"nodes":[{"body":"<!-- review-anvil-marker: fallback-after-invalid-inline -->\n# review-anvil report\n\n## Findings\n- **RAV-R3-F002 [high] auth** `src/auth.ts:13` — Refresh accepts missing state.\n<!-- review-anvil: prior_feedback=reintroduced -->","url":"https://example.invalid/top-level-fallback"}],"pageInfo":{"hasNextPage":false,"endCursor":null}}
 }}}}
 JSON
     output="$tmp/history.txt"
@@ -961,7 +1088,7 @@ JSON
 # review-anvil report
 
 ## Findings
-- **RAVF001 [medium] auth** `src/auth.ts:13` — Refresh accepts missing state.
+- **RAV-RUN3-R2-F001 [medium] auth** `src/auth.ts:13` — Refresh accepts missing state.
 <!-- review-anvil: prior_feedback=reintroduced -->
 REPORT
     cat >"$report.inline.json" <<'JSON'
@@ -1011,7 +1138,7 @@ JSON
 # review-anvil report
 
 ## Findings
-- **RAVF001 [high] auth** `src/auth.ts:13` — Refresh accepts missing state.
+- **RAV-RUN3-R2-F001 [high] auth** `src/auth.ts:13` — Refresh accepts missing state.
 REPORT
     if [[ "$report_signal" == "reintroduced" ]]; then
         printf '<!-- review-anvil: prior_feedback=reintroduced -->\n' >>"$report"
@@ -1030,7 +1157,7 @@ JSON
     PATH="$bin:$PATH" \
       "$HELPER" post github.com acme widgets 42 marker-123 "$report"
     jq -e --arg event "$expected_event" '.event == $event and (.comments | length) == 1 and .comments[0].line == 13 and (.comments[0].body | contains("<!-- review-anvil: prior_feedback=reintroduced -->"))' "$tmp/review-payload.json" >/dev/null
-    jq -e '.body | contains("- **RAVF001 [high] auth** `src/auth.ts:13` — Refresh accepts missing state.\n<!-- review-anvil: prior_feedback=reintroduced -->")' "$tmp/review-payload.json" >/dev/null
+    jq -e '.body | contains("- **RAV-RUN3-R2-F001 [high] auth** `src/auth.ts:13` — Refresh accepts missing state.\n<!-- review-anvil: prior_feedback=reintroduced -->")' "$tmp/review-payload.json" >/dev/null
 
     posted_body="$(jq -r '.comments[0].body' "$tmp/review-payload.json")"
     jq -n --arg body "$posted_body" '
@@ -1085,7 +1212,7 @@ JSON
 # review-anvil report
 
 ## Findings
-- **RAVF001 [high] db** `src/db.ts:100-110` — Write failures are reported as success.
+- **RAV-RUN3-R2-F001 [high] db** `src/db.ts:100-110` — Write failures are reported as success.
 REPORT
     if [[ "$report_signal" == "reintroduced" ]]; then
         printf '<!-- review-anvil: prior_feedback=reintroduced -->\n' >>"$report"
@@ -1104,7 +1231,7 @@ JSON
     PATH="$bin:$PATH" \
       "$HELPER" post github.com acme widgets 42 marker-123 "$report"
     jq -e '.event == "COMMENT" and (.comments | length) == 1 and .comments[0].line == 110' "$tmp/review-payload.json" >/dev/null
-    jq -e '.body | contains("RAVF001")' "$tmp/review-payload.json" >/dev/null
+    jq -e '.body | contains("RAV-RUN3-R2-F001")' "$tmp/review-payload.json" >/dev/null
 }
 
 test_report_marker_range_reintroduction_preserves_inline_companion() {
@@ -1136,7 +1263,7 @@ JSON
 # review-anvil report
 
 ## Findings
-- **RAVF001 [high] auth** `src/auth.ts:13` — Refresh accepts missing state.
+- **RAV-RUN3-R2-F001 [high] auth** `src/auth.ts:13` — Refresh accepts missing state.
 <!-- review-anvil: prior_feedback=reintroduced -->
 REPORT
     cat >"$report.inline.json" <<'JSON'
@@ -1176,7 +1303,7 @@ JSON
 # review-anvil report
 
 ## Findings
-- **RAVF001 [high] auth** `src/auth.ts:13` — Refresh accepts missing state.
+- **RAV-RUN3-R2-F001 [high] auth** `src/auth.ts:13` — Refresh accepts missing state.
 REPORT
     cat >"$report.inline.json" <<'JSON'
 [
@@ -1215,7 +1342,7 @@ JSON
     grep -Fq '[resolved] src/auth.ts:12' "$output"
 
     report="$tmp/report.md"
-    printf '# review-anvil report\n\n## Findings\n- **RAVF001 [high] auth** `src/auth.ts:12` — Refresh accepts missing state.\n' >"$report"
+    printf '# review-anvil report\n\n## Findings\n- **RAV-RUN3-R2-F001 [high] auth** `src/auth.ts:12` — Refresh accepts missing state.\n' >"$report"
     printf '{"event":"APPROVE","head_sha":"head-sha","approval_allowed":true}\n' >"$report.approval.json"
     : >"$tmp/comment.md"
     GH_MOCK_GRAPHQL_RESPONSE="$fixture" \
@@ -1253,7 +1380,7 @@ JSON
     grep -Fq '[author-resolved] src/auth.ts:12' "$output"
 
     report="$tmp/report.md"
-    printf '# review-anvil report\n\n## Findings\n- **RAVF001 [high] auth** `src/auth.ts:12` — Refresh accepts missing state.\n' >"$report"
+    printf '# review-anvil report\n\n## Findings\n- **RAV-RUN3-R2-F001 [high] auth** `src/auth.ts:12` — Refresh accepts missing state.\n' >"$report"
     printf '[{"path":"src/auth.ts","line":12,"side":"RIGHT","severity":"high","body":"**[high] auth** — Refresh accepts missing state."}]\n' >"$report.inline.json"
     printf '{"event":"APPROVE","head_sha":"head-sha","approval_allowed":true}\n' >"$report.approval.json"
     : >"$tmp/comment.md"
@@ -1313,7 +1440,7 @@ test_distinct_open_history_is_revalidated_when_author_resolved_comes_first() {
 }}}}
 JSON
     report="$tmp/report.md"
-    printf '# review-anvil report\n\n## Findings\n- **RAVF001 [high] auth** `src/auth.ts:12-40` — Refresh accepts missing state.\n- **RAVF002 [medium] db** `src/db.ts:8` — New unrelated finding.\n' >"$report"
+    printf '# review-anvil report\n\n## Findings\n- **RAV-RUN3-R2-F001 [high] auth** `src/auth.ts:12-40` — Refresh accepts missing state.\n- **RAV-R3-F002 [medium] db** `src/db.ts:8` — New unrelated finding.\n' >"$report"
     printf '[{"path":"src/auth.ts","start_line":12,"line":40,"side":"RIGHT","start_side":"RIGHT","severity":"high","body":"**[high] auth** — Refresh accepts missing state."},{"path":"src/db.ts","line":8,"side":"RIGHT","severity":"medium","body":"**[medium] db** — New unrelated finding."}]\n' >"$report.inline.json"
     printf '{"event":"APPROVE","head_sha":"head-sha","approval_allowed":true}\n' >"$report.approval.json"
     GH_MOCK_GRAPHQL_RESPONSE="$fixture" \
@@ -1348,7 +1475,10 @@ main() {
     test_dismissal_respects_report_paths
     test_next_run_counts_distinct_finalized_reports
     test_next_run_degrades_gracefully_when_history_is_unavailable
-    test_history_reads_new_report_headings
+    test_history_parses_provenance_ids_and_rejects_malformed_tokens
+    test_history_merges_duplicate_identity_into_open_thread
+    test_history_preserves_table_finding_identity
+    test_post_history_round_trip_preserves_modern_and_legacy_identity
     test_history_includes_open_resolved_outdated_and_summary_only
     test_post_suppresses_duplicate_open_thread_but_keeps_status
     test_history_paginates_without_refetch_duplicates
