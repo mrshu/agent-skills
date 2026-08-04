@@ -26,12 +26,16 @@ author-facing profile. Preserve evidence tokens verbatim.
 ## Inline-comment voice (bodies in `.inline.json`)
 
 Write each inline comment in plain language about the code at that line. Use comments for `critical`, `high`, and `medium` problems; put `low` and `nit` items in the summary. Start with what you saw. State what the code does and what happens because of it. When a next step would help, add it after those facts. Keep the comment as short as the finding allows. Every claim must point to a concrete code, test, config, caller, or runtime fact.
+Start every identified inline finding with its complete canonical ID.
+The report row, inline body, reproduction target, and adversarial target use the same complete finding ID unchanged.
 Keep evidence brief. Use separate short sentences when more than one fact is needed. Do not add an evidence heading or code dump unless it is needed.
 
 For an explicitly reintroduced author-resolved finding, put `<!-- review-anvil: prior_feedback=reintroduced -->` immediately after the visible final-report finding row or bullet. Its matching inline item carries helper-only `"prior_feedback": "reintroduced"`; the posting helper strips that JSON field before the GitHub REST request while preserving the hidden marker in the posted inline body for later PR-history handling.
 Use short everyday words. Prefer one clear sentence over a dense explanation.
 
 ```
+RAV-RUN3-R2-F001
+
 **[medium] error-handling** — `save_user` reports success when the INSERT fails
 
 `save_user` catches every database error and returns `True`. `signup_flow`

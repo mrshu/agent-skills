@@ -6,10 +6,12 @@ rule as other references.
 
 Adversarial review is a post-synthesis gate. Normal reviewers have already
 reviewed the target and the orchestrator has already deduped findings, checked
-prior PR feedback, run any required reproduction, and assigned stable IDs to
-surviving candidate findings (`RAVF001`, `RAVF002`, ...) and would-apply plans
-(`RAVW001`, `RAVW002`, ...). The adversary does not perform a fresh broad
-review. It attacks the candidate synthesis.
+prior PR feedback, run any required reproduction, and assigned complete
+canonical IDs to surviving candidate findings (`RAV-RUN3-R2-F001`,
+`RAV-RUN3-R2-F002`, ...) and would-apply plans (`RAV-RUN3-R2-P001`,
+`RAV-RUN3-R2-P002`, ...). Local/degraded IDs omit the `RUN` segment. The
+adversary does not perform a fresh broad review. It attacks the candidate
+synthesis.
 
 Apply the ASD-STE100-inspired internal-instruction profile in
 `asd-ste100-inspired.md` to generated verdict prose.
@@ -49,10 +51,14 @@ Rules:
 - Do not propose patches. Improve prose fix paths only.
 - Do not create fresh broad-review findings. If attacking a proposed fix reveals
   a second-order risk caused by following that fix plan, target the relevant
-  `RAVW###` plan and keep the report effect deferred or suggestion-only.
+  complete plan ID and keep the report effect deferred or suggestion-only.
 - Do not use adversarial review to make speculative guidance more
   authoritative. It may uphold, simplify, harden, defer, or drop candidate
   guidance.
+- Return each supplied complete canonical ID unchanged. Do not shorten,
+  renumber, or replace it.
+- Reproduction and adversarial passes are not rounds. An adversarial verdict
+  never changes a target's origin round.
 ```
 
 ## Role Additions
@@ -84,7 +90,7 @@ End with a fenced `adversarial` block containing YAML:
 
 ```adversarial
 - type: false_positive | over_scoped | over_severe | dismissed | harmful_fix | bloated_fix | tech_debt | second_order_risk | harden_fix | simplify_fix | wording | approval | uphold
-  target: RAVF001 | RAVW001 | report | approval
+  target: RAV-RUN3-R2-F001 | RAV-RUN3-R2-P001 | report | approval
   verdict: uphold | modify | defer | drop
   severity: critical | high | medium | low | nit
   evidence: <specific code/scope/test/dismissal evidence>
@@ -122,10 +128,10 @@ that preserves the behavior, a dismissed thread, a legacy compatibility path,
 or a specific place where the proposed fix adds avoidable architecture.
 
 Adversarial reviewers do not emit new actionable findings. A
-`type: second_order_risk` verdict must target a `RAVW###` plan and explain how the
-proposed guidance would create a regression, bloat, tech debt, or a missing
-edge-case. Truly unrelated new baseline issues require a separate normal review
-pass.
+`type: second_order_risk` verdict must target a complete plan ID such as
+`RAV-RUN3-R2-P001` and explain how the proposed guidance would create a
+regression, bloat, tech debt, or a missing edge-case. Truly unrelated new
+baseline issues require a separate normal review pass.
 
 Unresolved `critical`/`high` adversarial disputes downgrade approval to
 `COMMENT`. They do not trigger `REQUEST_CHANGES`.

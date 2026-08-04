@@ -70,7 +70,7 @@ require "$ARTIFACTS" 'When several inline comments include next steps, vary thei
 require "$ARTIFACTS" 'rewrite repeated lexical or grammatical openings when they read repetitive'
 require "$ARTIFACTS" 'Never begin a next-step sentence with a bare verb.'
 require "$ENGINE" 'The CLI help could use the same option name.'
-require "$ENGINE" '- **[severity] area** — <plain-language behavior change>. (`RAVF001`)'
+require "$ENGINE" '- **[severity] area** — <plain-language behavior change>. (`RAV-RUN3-R2-P001`; covers `RAV-RUN3-R2-F001`)'
 require "$ENGINE" 'We set this aside because <plain-language description of the missing proof>.'
 require "$ENGINE" 'Keep `author-resolved` items in PR REVIEW HISTORY for reviewer context.'
 require "$ENGINE" 'After synthesis and dedup, drop semantic matches to `author-resolved` items before building reproduction candidates.'
@@ -121,5 +121,7 @@ reject "$ENGINE" '## Diagnoses'
 reject "$ENGINE" 'Possible suggestions'
 reject "$ENGINE" 'failed reproduction:'
 reject "$PR_SKILL" 'failed reproduction'
+
+bash "$ROOT/scripts/test-identifiers.sh"
 
 printf 'test-report-language: all language contract checks passed\n'

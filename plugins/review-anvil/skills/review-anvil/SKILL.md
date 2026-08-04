@@ -41,6 +41,12 @@ Parse the user's free-form args string into:
 | `reviewer_timeout` | `600` (`420` for small diffs) | "timeout 10 minutes" — hard per-reviewer wall-clock cap in seconds for Bash-dispatched reviewers (see `run-reviewer.sh`). Default is ~3× the slowest legitimate reviewer observed in real runs (98–213s); when unset and the diff is under ~500 changed lines (added+removed — the same measure as the adaptive budget tiers), requested rounds use `420` (~2× that observed max) so a hung reviewer pins the wave 3 minutes less. Adaptive rounds always use the full base value — `600`, or `1200` after the >5000-line doubling (doubling transforms the base; the small-diff reduction never applies to adaptive rounds). Explicit user values are never scaled or doubled |
 | `report_path` | unset | File path; when set, the engine writes the final report there (creating parent dirs) and prints exactly that path as its last output line so downstream consumers can pick it up |
 
+`run_ordinal` is trusted invocation context, not a free-form user parameter.
+Use `run_ordinal` only when it is a positive trusted value. Treat an absent
+value or `unavailable` as local/degraded context and omit `RUN` from item IDs.
+Keep UUID markers as the collision-resistant run identity. The ordinal adds
+human-readable provenance; it does not replace the marker.
+
 ### Parsing
 
 - Split the args on top-level commas; canonicalize each segment to a `(param, value)` pair — explicit `key: value` maps directly, plain-English forms per the table. Unrecognized segments are noted and ignored.
@@ -183,13 +189,53 @@ Plausible-but-wrong findings are the dominant failure mode of LLM review, and bo
 
 - **Prior-feedback check first (orchestrator judgment).** Compare every merged finding against PR REVIEW HISTORY *semantically* — same root cause counts even when wording differs. Revalidate `open`, `resolved`, and summary-only `reported` items against the current head. An open item that remains real is a carry-forward finding and must retain its effect on severity/approval, but must not create a duplicate inline thread; a resolved item means only that GitHub discussion was closed, not that the code was proven fixed. Record a still-present resolved item as `resolved-but-still-present` in the summary and do not create a new inline thread. Items now fixed/stale become one-line status notes. Explicit local `suppressed` items are never auto-fixed or posted as actionable findings, but remain as compact status-only audit rows. Keep `author-resolved` items in PR REVIEW HISTORY for reviewer context. After synthesis and dedup, drop semantic matches to `author-resolved` items before building reproduction candidates. Exception: retain a finding when the reviewer explicitly set `prior_feedback: reintroduced` for a distinct new instance with new evidence. Do not report, post, auto-fix, or let ordinary `author-resolved` matches affect approval. A reintroduced finding remains actionable; it affects approval only at `critical` or `high` severity. The post-time helper catches near-verbatim repeats (exact path + text similarity ≥ 0.9) as a deterministic duplicate-thread backstop.
 - **Scope/artifact filter next (orchestrator judgment).** Drop or move to out-of-scope follow-ups before reproduction when the claim is about archived design notes, changelogs, old migration examples, generated fixtures, vendored files, or historical docs that are not the review's live product surface. Do not spend verifier budget proving historical provenance is stale. Conversely, live docs that users rely on — README usage, CLI help, API docs, config reference, plugin metadata, or marketplace copy — are product surface and may become reproduction candidates when they drift from code/runtime behavior.
-- Assign stable report-local IDs before reproduction/adversarial dispatch: findings are `RAVF001`, `RAVF002`, ... and would-apply plans are `RAVW001`, `RAVW002`, ... . The canonical grammar is `RAV([FW])([0-9]{3,})`; the PR helper may accept legacy dashed IDs like `F-001` / `W-001` at parsing boundaries, but new reports should emit only the canonical no-punctuation form.
+- **Assign provenance IDs.** Assign IDs after semantic deduplication, prior-feedback classification, and scope filtering, and before reproduction or adversarial dispatch. Use this output recipe:
+
+  ```text
+  PR finding: `RAV-RUN<run>-R<origin-round>-F<ordinal>`
+  PR plan:    `RAV-RUN<run>-R<origin-round>-P<ordinal>`
+  Local:      `RAV-R<origin-round>-F<ordinal>` / `RAV-R<origin-round>-P<ordinal>`
+  ```
+
+  Canonical grammar: `RAV-(RUN<run>-)?R<origin-round>-(F|P)<ordinal>`.
+  `run` and `origin-round` are positive integers. `ordinal` is a zero-padded positive integer with at least three digits. Validate both the grammar and those numeric semantics; zero is invalid in every numeric slot.
+
+  ID legend: `RUN` is the observed PR review run, `R` is the immutable origin round, `F` is a finding, and `P` is a plan. Examples are `RAV-RUN3-R2-F001`, `RAV-RUN3-R2-P001`, `RAV-R2-F001`, and `RAV-R2-P001`.
+  Cross-round allocation example: in trusted PR run 3, a history finding with
+  `id=RAV-RUN1-R2-F007` keeps that ID. A new round-1 finding receives
+  `RAV-RUN3-R1-F001` and keeps it when re-raised in round 2. The next new
+  round-2 finding receives `RAV-RUN3-R2-F002`. A round-2 plan covering those
+  two current-run findings receives `RAV-RUN3-R2-P001`. The matching
+  local/degraded allocation for the same newly allocated items has no history
+  carry-forward: `RAV-R1-F001`, `RAV-R2-F002`, and `RAV-R2-P001`.
+
+  Finding and plan ordinals are independent, run-wide counters named
+  `next_finding_ordinal` and `next_plan_ordinal`. Both start at `001`.
+  Counters never reset each round and never reuse gaps. Before assignment,
+  order findings by priority, normalized path, line, and topic; order plans by
+  covered-finding priority, area, and subject.
+
+  A finding's origin round is the first normal review round that raises it. A
+  plan's origin round is the normal review round in which its concrete fix
+  group is first assembled.
+  The origin round never changes after confirmation, refutation, priority change, deferral, fix, or re-raise.
+  Reproduction and adversarial passes are not rounds.
+
+  Carried findings consume the exact `id=` value supplied in `PR REVIEW HISTORY`;
+  use that complete ID unchanged without advancing a current-run
+  counter. For an actionable history entry that has only `legacy=`,
+  use the `legacy=` value as a source alias and assign the next canonical ID. Do not
+  assign a new ID to a non-actionable legacy-only entry. Historical `RAVF###`, `RAVW###`, `F-###`, and `W-###` forms are migration/read-boundary aliases only. New findings and plans always use the recipe above.
+
+  Once assigned, keep the complete ID unchanged in reproduction candidates,
+  adversarial targets, report rows, inline bodies, plan coverage, and later
+  round references.
 - Build `REPRODUCTION CANDIDATES` after prior-feedback classification and ID assignment:
   - every `medium`+ finding raised by exactly one reviewer,
   - every `medium`+ deletion/dead-code/unused/redundant-code/simplification finding, and any deletion/simplification that would remove runtime code, public docs/API, compatibility behavior, or another high-blast-radius surface, regardless of reviewer count,
   - every `critical`/`high` finding whose evidence is mostly inferred from a hunk rather than confirmed from code/runtime context,
   - every finding the orchestrator is materially uncertain about after reading the cited files.
-- When `reproduction=auto` or `on` and candidates exist, dispatch **one batched reproduction verifier** using `references/reproduction-prompt.md`. Do not spawn one verifier per finding unless the batch is too large to fit in one prompt. Dispatch it backgrounded under the Concurrency section's deadline rule — never an unbounded foreground wait. The verifier is not another broad review pass; it returns `confirmed`, `refuted`, `unclear`, `narrowed`, or `downgraded` verdicts for supplied `RAVF###` IDs only.
+- When `reproduction=auto` or `on` and candidates exist, dispatch **one batched reproduction verifier** using `references/reproduction-prompt.md`. Do not spawn one verifier per finding unless the batch is too large to fit in one prompt. Dispatch it backgrounded under the Concurrency section's deadline rule — never an unbounded foreground wait. The verifier is not another broad review pass; it returns `confirmed`, `refuted`, `unclear`, `narrowed`, or `downgraded` verdicts for the supplied complete canonical finding IDs only, and returns each ID unchanged.
 - Apply reproduction verdicts before auto-fix/reporting:
   - `confirmed` and `narrowed` findings may remain actionable, with narrowed wording when supplied.
   - `downgraded` findings re-enter the normal severity gates after changing severity.
@@ -310,14 +356,17 @@ Default policy:
   is unknown; use `targeted` and force `COMMENT` if approval safety cannot be
   established.
 
-Build would-apply plans from the same fix groups `per_fix` would have
-committed: each plan lists covered finding IDs, the simulated conventional-
-commit subject, the intended fix path, risk tags such as
+Build would-apply plans from the same concrete fix groups `per_fix` would have
+committed. Assign each plan its provenance ID when that fix group is first
+assembled, before adversarial dispatch; reproduction results may remove or
+reshape a group, but they never renumber a surviving plan or let another plan
+reuse its gap. Each plan lists covered finding IDs unchanged, the simulated
+conventional-commit subject, the intended fix path, risk tags such as
 `deletion`/`dependency`/`non-local`/`abstraction`, and any exact suggestion
-blocks that would be emitted. For local non-PR reviews, set
-`CANDIDATE APPROVAL` to `not-applicable`; for PR/report-path reviews, set it to
-the tentative `.approval.json` event/reason. Adversarial reviewers return
-verdicts against those IDs using the schema in `adversarial-prompt.md`.
+blocks that would be emitted. For local non-PR reviews, set `CANDIDATE APPROVAL`
+to `not-applicable`; for PR/report-path reviews, set it to the tentative
+`.approval.json` event/reason. Adversarial reviewers return verdicts against
+those complete unchanged IDs using the schema in `adversarial-prompt.md`.
 
 Apply verdicts conservatively:
 
@@ -332,9 +381,9 @@ Apply verdicts conservatively:
 Generic uncertainty does **not** defer a finding. The adversary must cite code,
 configuration, tests, runtime behavior, status-aware PR feedback, or PR scope
 evidence. Adversaries must not create new actionable findings. If they notice a
-new issue while attacking a `RAVW###` plan, record it only as a second-order plan
-risk or follow-up; it remains Deferred unless the orchestrator runs a separate
-normal review/verification pass.
+new issue while attacking a plan such as `RAV-RUN3-R2-P001`, record it only as
+a second-order plan risk or follow-up; it remains Deferred unless the
+orchestrator runs a separate normal review/verification pass.
 
 Adversarial review may make the output more conservative. It must never make a
 speculative fix more authoritative. It can strip unsafe `"suggestion"` fields
@@ -344,12 +393,12 @@ findings from unverified adversarial ideas.
 
 Run at most `adversarial_rounds` passes, capped at 2. A second adversarial pass
 runs only when the first pass materially changes `medium`+ guidance, changes
-approval, or rewrites a would-apply plan. `RAVW###` verdicts affect fix plans,
-suggestions, and fix prose only; linked `RAVF###` findings change only when an
-independent `RAVF###` verdict refutes or defers them. With
-`disagreement_policy=defer`, unresolved `medium` adversarial disputes move the
-item to Deferred but do not by themselves block `APPROVE`; unresolved
-`critical`/`high` disputes block `APPROVE`. With
+approval, or rewrites a would-apply plan. Complete `P` target verdicts affect
+fix plans, suggestions, and fix prose only; linked complete `F` finding IDs
+change only when an independent verdict against that same finding ID refutes or
+defers it. With `disagreement_policy=defer`, unresolved `medium` adversarial
+disputes move the item to Deferred but do not by themselves block `APPROVE`;
+unresolved `critical`/`high` disputes block `APPROVE`. With
 `disagreement_policy=comment`, unresolved `medium`+ disputes keep the item
 actionable but force the review event to `COMMENT`.
 
@@ -430,18 +479,18 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 
    ```json
    [
-     {"path": "src/auth.ts", "line": 50, "side": "RIGHT", "severity": "high", "body": "**[high] auth** — Refresh creates a session before CSRF validation\n\nThe handler rotates the session before it checks the state token. A stale tab can create a new session with an invalid token.\n\nA state check before rotation would block that path. A missing-state-token test would cover this path."},
-     {"path": "src/db.ts", "start_line": 100, "line": 110, "side": "RIGHT", "start_side": "RIGHT", "severity": "medium", "body": "**[medium] db** — Retry accounting records success before the write succeeds\n\nThe retry block increments `attempts_succeeded` before `insert_event` returns. A timeout records success even when no row was written.\n\nThe counter update belongs after a successful insert; timeout attempts then remain eligible for retry. A timeout test can cover this path.", "suggestion": "result = insert_event(payload)\nattempts_succeeded += 1\nreturn result"}
+     {"path": "src/auth.ts", "line": 50, "side": "RIGHT", "severity": "high", "body": "RAV-RUN3-R2-F001\n\n**[high] auth** — Refresh creates a session before CSRF validation\n\nThe handler rotates the session before it checks the state token. A stale tab can create a new session with an invalid token.\n\nA state check before rotation would block that path. A missing-state-token test would cover this path."},
+     {"path": "src/db.ts", "start_line": 100, "line": 110, "side": "RIGHT", "start_side": "RIGHT", "severity": "medium", "body": "RAV-RUN3-R2-F002\n\n**[medium] db** — Retry accounting records success before the write succeeds\n\nThe retry block increments `attempts_succeeded` before `insert_event` returns. A timeout records success even when no row was written.\n\nThe counter update belongs after a successful insert; timeout attempts then remain eligible for retry. A timeout test can cover this path.", "suggestion": "result = insert_event(payload)\nattempts_succeeded += 1\nreturn result"}
    ]
    ```
 
-   Single line → `{"line": N, "side": "RIGHT"}`; range `<N>-<M>` → `{"start_line": N, "line": M, "side": "RIGHT", "start_side": "RIGHT"}`. Findings without anchors stay in the markdown body only; no anchored findings → `[]`. A reader must be able to create the fix from each `body` alone.
+   Single line → `{"line": N, "side": "RIGHT"}`; range `<N>-<M>` → `{"start_line": N, "line": M, "side": "RIGHT", "start_side": "RIGHT"}`. Findings without anchors stay in the markdown body only; no anchored findings → `[]`. Start every identified inline body with its complete canonical ID. A reader must be able to create the fix from each `body` alone.
 
    Include helper-only `"severity"` for every inline item. The posting helper strips it before calling GitHub and uses it to keep low/nit findings summary-only by default. Include helper-only `"suggestion"` only when the fix is an exact replacement for the commented line/range; the helper turns it into a GitHub suggestion fenced block and strips the extra key before posting. Do not include suggestions for design fixes, cross-file edits, deleted lines, anything that requires judgment, or any suggestion whose anchor/replacement/blast-radius was disputed by adversarial review.
 
    For an explicitly reintroduced `author-resolved` finding, place `<!-- review-anvil: prior_feedback=reintroduced -->` immediately after its visible final-report finding row or bullet. Its matching inline item must carry helper-only `"prior_feedback": "reintroduced"`; the posting helper uses it before author-resolved suppression, strips the JSON field before the GitHub REST request, and preserves the hidden marker in the posted inline body so later history retains the disposition.
 
-   Each `body` follows the **inline-comment voice** in `references/report-artifacts.md` — read it before composing bodies. Keep it short and plain: say what the code does, what happens because of it, and, when useful, a friendly next step. A reader must be able to act without reopening the diff. Include a safe exact `"suggestion"` or a short code sketch only when it removes doubt. By default, inline comments are for `critical`/`high`/`medium` anchored findings; `low`/`nit` findings remain in the top-level summary unless the user or environment lowers `REVIEW_ANVIL_INLINE_MIN_SEVERITY`. The same voice applies to the report's Things to try, Set aside, and Outside this change prose.
+   Each `body` uses the same complete finding ID as its report row, reproduction target, and adversarial target, then follows the **inline-comment voice** in `references/report-artifacts.md` — read it before composing bodies. Keep it short and plain: say what the code does, what happens because of it, and, when useful, a friendly next step. A reader must be able to act without reopening the diff. Include a safe exact `"suggestion"` or a short code sketch only when it removes doubt. By default, inline comments are for `critical`/`high`/`medium` anchored findings; `low`/`nit` findings remain in the top-level summary unless the user or environment lowers `REVIEW_ANVIL_INLINE_MIN_SEVERITY`. The same voice applies to the report's Things to try, Set aside, and Outside this change prose.
 
 3. Write a sibling `<report_path>.approval.json` so the PR-posting helper can choose the GitHub review event (review-only PR runs; for other runs write `{"event": "COMMENT"}` or omit the file — the helper defaults to COMMENT):
 
@@ -530,13 +579,15 @@ of it. Inline comments carry supporting evidence and a friendly next step when
 useful. Otherwise, add the smallest supporting fact to what you noticed. If
 none: "No confirmed problems found.">
 
+ID legend: `RUN` is the observed PR review run, `R` is the immutable origin round, `F` is a finding, and `P` is a plan.
+
 | ID | Priority | Topic | Code location | What I noticed |
 |---|---|---|---|---|
-| RAVF001 | high | auth | `src/auth.ts:42` | Refresh creates a session before it checks CSRF validation |
+| RAV-RUN3-R2-F001 | high | auth | `src/auth.ts:42` | Refresh creates a session before it checks CSRF validation |
 
 <If the table would be hard to read, use grouped bullets instead:>
 
-- **[high] auth** `src/auth.ts:42` — Refresh creates a session before it checks CSRF validation. (`RAVF001`; inline)
+- **[high] auth** `src/auth.ts:42` — Refresh creates a session before it checks CSRF validation. (`RAV-RUN3-R2-F001`; inline)
 
 <details>
 <summary>Non-blocking low/nit findings</summary>
@@ -552,7 +603,7 @@ include each thing to try as one short, plain-language behavior change. In
 external reports, collapse this section when it contains more than 3 items.>
 
 - `<sha>` — <subject>                         # per_fix only
-- **[severity] area** — <plain-language behavior change>. (`RAVF001`)   # commit_mode=none only
+- **[severity] area** — <plain-language behavior change>. (`RAV-RUN3-R2-P001`; covers `RAV-RUN3-R2-F001`)   # commit_mode=none only
 
 ## Set aside / Outside this change
 <Include each item not addressed here in one line. Collapse this section when
@@ -566,6 +617,7 @@ it contains more than 3 items. Omit it when empty.>
 <summary>Run details</summary>
 
 - Target: <e.g. "PR #42 (feature/auth-rewrite, 12 files, +340/-89)">
+- Run ordinal: <positive observed PR run ordinal | unavailable (local/degraded)>
 - Rounds: <completed> completed (<requested> requested + <adaptive> adaptive, max <max_rounds>); <convergence/adaptive stop note>   # productive adaptive-capable runs
 - Rounds: <completed>/<requested> completed; adaptive off; <convergence note>   # review-only/exact/no-extra runs
 - Mix: <e.g. "2 codex-exec + 1 claude-exec">

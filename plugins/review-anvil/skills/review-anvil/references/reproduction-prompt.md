@@ -6,9 +6,10 @@ the same trusted-root rule as other references.
 
 Reproduction is a post-synthesis confidence gate. Normal reviewers have already
 reviewed the target and the orchestrator has already deduped findings, checked
-prior PR feedback, and assigned stable candidate IDs (`RAVF001`, `RAVF002`,
-...). The reproduction verifier does not perform a fresh broad review. It tries
-to prove or disprove the selected candidate findings against concrete evidence.
+prior PR feedback, and assigned complete canonical candidate IDs such as
+`RAV-RUN3-R2-F001` or local/degraded `RAV-R2-F001`. The reproduction verifier
+does not perform a fresh broad review. It tries to prove or disprove the
+selected candidate findings against concrete evidence.
 
 Apply the ASD-STE100-inspired internal-instruction profile in
 `asd-ste100-inspired.md` to generated verdict prose.
@@ -51,6 +52,10 @@ Rules:
 - Do not propose patches. Improve prose fix paths only when needed.
 - Do not create fresh broad-review findings. If you notice a new unrelated bug,
   mention it only as non-actionable context outside the fenced block.
+- Return the supplied complete canonical ID unchanged. Do not shorten,
+  renumber, or replace it.
+- Reproduction and adversarial passes are not rounds. A reproduction verdict
+  never changes the target finding's origin round.
 ```
 
 ## Output Contract
@@ -58,7 +63,7 @@ Rules:
 End with a fenced `reproduction` block containing YAML:
 
 ```reproduction
-- target: RAVF001
+- target: RAV-RUN3-R2-F001
   verdict: confirmed | refuted | unclear | narrowed | downgraded
   severity: critical | high | medium | low | nit
   evidence: <specific code/config/test/runtime evidence>
