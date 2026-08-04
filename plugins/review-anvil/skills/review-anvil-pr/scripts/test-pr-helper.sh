@@ -654,7 +654,7 @@ JSON
 }
 
 test_history_parses_provenance_ids_and_rejects_malformed_tokens() {
-    local tmp bin fixture output
+    local tmp bin fixture output summary_line fenced_line
     tmp="$(mktemp -d)"
     trap "rm -rf '$tmp'" RETURN
     bin="$tmp/bin"
@@ -667,7 +667,9 @@ test_history_parses_provenance_ids_and_rejects_malformed_tokens() {
     "reviewThreads": {
       "nodes": [
         {"isResolved": false, "isOutdated": false, "path": "docs/summary.md", "line": 5,
-         "comments": {"nodes": [{"body": "RAV-R3-F005 [low] docs — Summary bodies preserve finding identity.", "url": "https://example.invalid/summary"}]}}
+         "comments": {"nodes": [{"body": "RAV-R3-F005 [low] docs — Summary bodies preserve finding identity even when prose says id=RAV-R9-F999-extra.", "url": "https://example.invalid/summary"}]}},
+        {"isResolved": false, "isOutdated": false, "path": "docs/fenced.md", "line": 6,
+         "comments": {"nodes": [{"body": "[low] docs — Real finding has no ID.\n\n```md\nRAV-R3-F777 [low] example — fenced identifier only.\n```", "url": "https://example.invalid/fenced"}]}}
       ],
       "pageInfo": {"hasNextPage": false, "endCursor": null}
     },
@@ -689,8 +691,10 @@ JSON
     grep -Fq 'id=RAV-RUN3-R2-F001' "$output"
     grep -Fq '[deferred] README.md:4' "$output"
     grep -Fq 'id=RAV-R3-F002' "$output"
-    grep -Fq '[open] docs/summary.md:5' "$output"
-    grep -Fq 'id=RAV-R3-F005' "$output"
+    summary_line="$(grep -F '[open] docs/summary.md:5' "$output")"
+    [[ "$summary_line" == *'; id=RAV-R3-F005)'* ]]
+    fenced_line="$(grep -F '[open] docs/fenced.md:6' "$output")"
+    [[ "$fenced_line" != *'; id='* ]]
     ! grep -Fq 'Run zero must not parse' "$output"
     ! grep -Fq 'Round zero must not parse' "$output"
     ! grep -Fq 'Finding zero must not parse' "$output"
@@ -766,14 +770,14 @@ test_post_history_round_trip_preserves_modern_and_legacy_identity() {
 {"data":{"repository":{"pullRequest":{
   "reviewThreads":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
   "reviews":{"nodes":[
-    {"state":"COMMENTED","body":"<!-- review-anvil-marker: legacy-history -->\n# review-anvil report\n\n## Findings\n- **RAVF007 [medium] auth** `src/auth.ts:12` — Refresh accepts missing state.","url":"https://example.invalid/legacy-report"}
+    {"state":"COMMENTED","body":"<!-- review-anvil-marker: legacy-history -->\n# review-anvil report\n\n## Findings\n- **RAVF007 [medium] auth** `src/auth.ts:12` — Refresh accepts missing state _(only in strict mode)_.","url":"https://example.invalid/legacy-report"}
   ],"pageInfo":{"hasNextPage":false,"endCursor":null}},
   "comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}
 }}}}
 JSON
 
     report="$tmp/report.md"
-    printf '# review-anvil report\n\n- **RAV-RUN3-R1-F001 [medium] auth** `src/auth.ts:12` — Refresh accepts missing state.\n' >"$report"
+    printf '# review-anvil report\n\n- **RAV-RUN3-R1-F001 [medium] auth** `src/auth.ts:12` — Refresh accepts missing state _(only in strict mode)_.\n' >"$report"
     printf '[]\n' >"$report.inline.json"
     printf '{"event":"COMMENT","head_sha":"head-sha"}\n' >"$report.approval.json"
 
@@ -791,7 +795,11 @@ JSON
     jq -n --rawfile body "$tmp/posted-comment.md" '
       {data:{repository:{pullRequest:{
         reviewThreads:{nodes:[],pageInfo:{hasNextPage:false,endCursor:null}},
-        reviews:{nodes:[],pageInfo:{hasNextPage:false,endCursor:null}},
+        reviews:{nodes:[{
+          state:"COMMENTED",
+          body:"<!-- review-anvil-marker: duplicate-round-trip -->\n# review-anvil report\n\n## Findings\n- **RAV-RUN3-R1-F001 [medium] auth** `src/auth.ts:12` — Refresh accepts missing state _(only in strict mode)_.",
+          url:"https://example.invalid/round-trip-duplicate"
+        }],pageInfo:{hasNextPage:false,endCursor:null}},
         comments:{nodes:[{body:$body,url:"https://example.invalid/round-trip"}],
                   pageInfo:{hasNextPage:false,endCursor:null}}
       }}}}
@@ -804,6 +812,8 @@ JSON
     grep -Fq '[reported] src/auth.ts:12' "$output"
     grep -Fq 'id=RAV-RUN3-R1-F001' "$output"
     grep -Fq 'legacy=RAVF007' "$output"
+    grep -Fq '_(only in strict mode)_' "$output"
+    [[ "$(grep -Fc 'Refresh accepts missing state' "$output")" -eq 1 ]]
 }
 
 test_post_suppresses_duplicate_open_thread_but_keeps_status() {
@@ -875,8 +885,8 @@ test_local_suppression_overrides_open_history() {
     dismissals="$tmp/dismissals.json"
     cat >"$fixture" <<'JSON'
 {"data":{"repository":{"pullRequest":{
-  "reviewThreads":{"nodes":[{"isResolved":false,"isOutdated":false,"path":"src/auth.ts","line":12,"comments":{"nodes":[{"body":"**[high] auth** — Refresh accepts missing state.","url":"https://example.invalid/open"}]}}],"pageInfo":{"hasNextPage":false,"endCursor":null}},
-  "reviews":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "reviewThreads":{"nodes":[{"isResolved":false,"isOutdated":false,"path":"src/auth.ts","line":12,"comments":{"nodes":[{"body":"**RAV-RUN2-R1-F003 [high] auth** — Refresh accepts missing state.","url":"https://example.invalid/open"}]}}],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "reviews":{"nodes":[{"state":"COMMENTED","body":"<!-- review-anvil-marker: legacy-suppression -->\n# review-anvil report\n\n## Findings\n- **RAVF007 [high] auth** `src/auth.ts:12` — Refresh accepts missing state.","url":"https://example.invalid/legacy"}],"pageInfo":{"hasNextPage":false,"endCursor":null}},
   "comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}
 }}}}
 JSON
@@ -891,6 +901,8 @@ JSON
     grep -Fq '[suppressed] src/auth.ts' "$output"
     grep -Fq 'explicit-product-decision' "$output"
     ! grep -Fq '[open]' "$output"
+    grep -Fq 'id=RAV-RUN2-R1-F003' "$output"
+    grep -Fq 'legacy=RAVF007' "$output"
 }
 
 test_post_time_material_history_downgrades_approval() {

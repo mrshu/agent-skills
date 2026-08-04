@@ -418,7 +418,17 @@ SUMMARY_RE = re.compile(
     re.I,
 )
 IDENTITY_METADATA_RE = re.compile(
-    rf"\b(?:id|legacy)=(?P<ids>{FINDING_ID_PATTERN}(?:,{FINDING_ID_PATTERN})*)\b",
+    rf"(?:^|;\s*)(?:id|legacy)=(?P<ids>{FINDING_ID_PATTERN}(?:,{FINDING_ID_PATTERN})*)"
+    r"(?=\s*(?:;|$))",
+    re.I,
+)
+HELPER_STATUS_SUFFIX_RE = re.compile(
+    r"\s+_\((?P<annotation>(?:This is still present|This was mentioned earlier|"
+    r"This was set aside earlier|This was dismissed earlier)[^\n]*\bSource:\s*[^\n]*)\)_\s*$",
+    re.I,
+)
+LEDGER_IDENTITY_SUFFIX_RE = re.compile(
+    r"\(source=(?P<annotation>[^\n]*)\)\s*$",
     re.I,
 )
 
@@ -458,11 +468,17 @@ def table_finding(line):
             "location": cells[3], "finding": finding}
 
 def finding_id_from_body(body):
-    body = body or ""
-    match = FINDING_RE.search(body)
-    if match and match.group("finding_id"):
-        return match.group("finding_id")
-    for line in body.splitlines():
+    in_fence = False
+    for line in (body or "").splitlines():
+        stripped = line.lstrip()
+        if stripped.startswith(("```", "~~~")):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        match = FINDING_RE.search(line)
+        if match and match.group("finding_id"):
+            return match.group("finding_id")
         item = table_finding(line)
         if item:
             return item["id"]
@@ -496,9 +512,18 @@ def merge_identity(target, *items):
     target["finding_id"] = finding_id
     target["legacy_ids"] = legacy_ids
 
+def generated_identity_annotation(body):
+    text = (body or "").rstrip()
+    for pattern in (HELPER_STATUS_SUFFIX_RE, LEDGER_IDENTITY_SUFFIX_RE):
+        match = pattern.search(text)
+        if match:
+            return match.group("annotation")
+    return ""
+
 def identity_from_body(body):
     identities = []
-    for match in IDENTITY_METADATA_RE.finditer(body or ""):
+    annotation = generated_identity_annotation(body)
+    for match in IDENTITY_METADATA_RE.finditer(annotation):
         identities.extend(
             identity_metadata(finding_id)
             for finding_id in match.group("ids").split(",")
@@ -701,7 +726,7 @@ def report_findings(node):
         if not section_status:
             continue
         parse_line = (
-            re.sub(r"\s+_\(.+\)_\s*$", "", line)
+            HELPER_STATUS_SUFFIX_RE.sub("", line)
             if prior_feedback_section else line
         )
         match = FINDING_RE.search(parse_line)
@@ -764,6 +789,11 @@ if sp and sp.exists():
                                "severity": severity_from_body(item.get("pattern", "")),
                                "outdated": False,
                                **identity_from_body(item.get("pattern", ""))}
+                matches = [
+                    previous for previous in history
+                    if same_finding(suppression, previous, require_path=False)
+                ]
+                merge_identity(suppression, *matches, suppression)
                 history = [previous for previous in history
                            if not same_finding(suppression, previous, require_path=False)]
                 history.append(suppression)
