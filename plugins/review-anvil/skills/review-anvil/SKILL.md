@@ -242,6 +242,8 @@ Plausible-but-wrong findings are the dominant failure mode of LLM review, and bo
   for a new inline. Ordinary `open`, `resolved`, and `reported` carry-forwards
   retain their IDs in history, reports, reproduction, and adversarial targets,
   but do not create a new inline thread.
+  Already-assigned in-scope low/nit and set-aside findings keep their complete canonical F IDs.
+  Truly unassigned out-of-scope follow-ups stay distinct and do not receive an F ID.
 - Build `REPRODUCTION CANDIDATES` after prior-feedback classification and ID assignment:
   - every `medium`+ finding raised by exactly one reviewer,
   - every `medium`+ deletion/dead-code/unused/redundant-code/simplification finding, and any deletion/simplification that would remove runtime code, public docs/API, compatibility behavior, or another high-blast-radius surface, regardless of reviewer count,
@@ -604,8 +606,8 @@ ID legend: `RUN` is the observed PR review run, `R` is the immutable origin roun
 <details>
 <summary>Non-blocking low/nit findings</summary>
 
-- **[low] docs** — The CLI help could use the same option name.
-- **[nit] tests** — The duplicate fixture setup can be shared.
+- **RAV-RUN3-R2-F002 [low] docs** — The CLI help could use the same option name.
+- **RAV-RUN3-R2-F003 [nit] tests** — The duplicate fixture setup can be shared.
 
 </details>
 
@@ -621,8 +623,8 @@ external reports, collapse this section when it contains more than 3 items.>
 <Include each item not addressed here in one line. Collapse this section when
 it contains more than 3 items. Omit it when empty.>
 
-- **[severity] area** — set aside because <reason>.
-- **[medium] config** — set aside after the second check: the fix is too large for a one-line default.
+- **RAV-RUN3-R2-F004 [medium] runtime** — set aside because the failing path could not be confirmed.
+- **RAV-RUN3-R2-F005 [medium] config** — set aside after the second check: the fix is too large for a one-line default.
 - **[severity] area** — follow-up outside this change: <why separate>.
 
 <details>

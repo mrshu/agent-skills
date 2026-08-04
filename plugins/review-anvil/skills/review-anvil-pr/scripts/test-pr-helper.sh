@@ -608,6 +608,36 @@ test_next_run_degrades_gracefully_when_history_is_unavailable() {
       || fail "expected unavailable next run, got $output"
 }
 
+test_next_run_skips_graphql_in_degraded_mode() {
+    local tmp bin output warning call_marker
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    call_marker="$tmp/gh-called"
+    cat >"$bin/gh" <<'GH'
+#!/usr/bin/env bash
+set -euo pipefail
+touch "$GH_CALL_MARKER"
+printf 'fake gh must not be called in degraded mode\n' >&2
+exit 97
+GH
+    chmod +x "$bin/gh"
+
+    output="$tmp/output.txt"
+    warning="$tmp/warning.txt"
+    GH_CALL_MARKER="$call_marker" \
+    REVIEW_ANVIL_SKIP_DISMISSED=1 \
+    PATH="$bin:$PATH" \
+      "$HELPER" next-run github.com acme widgets 42 >"$output" 2>"$warning"
+
+    [[ "$(cat "$output")" == "unavailable" ]] \
+      || fail "expected unavailable next run in degraded mode"
+    grep -Fq 'PR run ordinal unavailable; REVIEW_ANVIL_SKIP_DISMISSED=1 enables degraded mode; IDs will omit RUN' "$warning"
+    [[ ! -e "$call_marker" ]] \
+      || fail "next-run invoked GraphQL despite REVIEW_ANVIL_SKIP_DISMISSED=1"
+}
+
 test_history_includes_open_resolved_outdated_and_summary_only() {
     local tmp bin fixture output
     tmp="$(mktemp -d)"
@@ -856,6 +886,80 @@ JSON
     grep -Fq 'legacy=RAVF007' "$output"
     grep -Fq '_(only in strict mode)_' "$output"
     [[ "$(grep -Fc 'Refresh accepts missing state' "$output")" -eq 1 ]]
+}
+
+test_post_history_round_trip_preserves_low_nit_and_set_aside_ids() {
+    local tmp bin empty_fixture next_fixture report output line
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+    empty_fixture="$tmp/empty-history.json"
+    cat >"$empty_fixture" <<'JSON'
+{"data":{"repository":{"pullRequest":{
+  "reviewThreads":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "reviews":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}
+}}}}
+JSON
+
+    report="$tmp/report.md"
+    cat >"$report" <<'REPORT'
+# review-anvil report
+
+## What I noticed
+<details>
+<summary>Non-blocking low/nit findings</summary>
+
+- **RAV-RUN4-R2-F020 [low] docs** `docs/cli.md:7` — The CLI help uses a different option name.
+- **RAV-RUN4-R2-F021 [nit] tests** `tests/helpers.sh:11` — The duplicate fixture setup can be shared.
+
+</details>
+
+## Set aside / Outside this change
+- **RAV-RUN4-R2-F022 [low] runtime** `src/runtime.sh:18` — set aside because the failing path could not be confirmed.
+- **RAV-RUN4-R2-F023 [medium] config** `config/defaults.yml:5` — set aside after the second check: the fix is too large for a one-line default.
+- **[high] infra** `ops/deploy.yml:9` — follow-up outside this change: deployment ownership needs separate review.
+REPORT
+    printf '[]\n' >"$report.inline.json"
+    printf '{"event":"COMMENT","head_sha":"head-sha"}\n' >"$report.approval.json"
+
+    GH_MOCK_GRAPHQL_RESPONSE="$empty_fixture" \
+    GH_MOCK_COMMENT_BODY="$tmp/posted-comment.md" \
+    PATH="$bin:$PATH" \
+      "$HELPER" post github.com acme widgets 42 marker-generated-forms "$report" \
+      >"$tmp/post-output.txt"
+
+    next_fixture="$tmp/next-history.json"
+    jq -n --rawfile body "$tmp/posted-comment.md" '
+      {data:{repository:{pullRequest:{
+        reviewThreads:{nodes:[],pageInfo:{hasNextPage:false,endCursor:null}},
+        reviews:{nodes:[],pageInfo:{hasNextPage:false,endCursor:null}},
+        comments:{nodes:[{body:$body,url:"https://example.invalid/generated-forms"}],
+                  pageInfo:{hasNextPage:false,endCursor:null}}
+      }}}}
+    ' >"$next_fixture"
+
+    output="$tmp/history.txt"
+    GH_MOCK_GRAPHQL_RESPONSE="$next_fixture" PATH="$bin:$PATH" \
+      "$HELPER" history github.com acme widgets 42 >"$output"
+
+    line="$(grep -F '[reported] docs/cli.md:7' "$output")"
+    [[ "$line" == *'; id=RAV-RUN4-R2-F020)'* ]] \
+      || fail "low generated form lost its original ID"
+    line="$(grep -F '[reported] tests/helpers.sh:11' "$output")"
+    [[ "$line" == *'; id=RAV-RUN4-R2-F021)'* ]] \
+      || fail "nit generated form lost its original ID"
+    line="$(grep -F '[deferred] src/runtime.sh:18' "$output")"
+    [[ "$line" == *'; id=RAV-RUN4-R2-F022)'* ]] \
+      || fail "low set-aside generated form lost its original ID"
+    line="$(grep -F '[deferred] config/defaults.yml:5' "$output")"
+    [[ "$line" == *'; id=RAV-RUN4-R2-F023)'* ]] \
+      || fail "material set-aside generated form lost its original ID"
+    line="$(grep -F '[deferred] ops/deploy.yml:9' "$output")"
+    [[ "$line" != *'; id='* ]] \
+      || fail "unassigned out-of-scope follow-up gained a finding ID"
 }
 
 test_post_suppresses_duplicate_open_thread_but_keeps_status() {
@@ -1542,11 +1646,13 @@ main() {
     test_dismissal_respects_report_paths
     test_next_run_counts_distinct_finalized_reports
     test_next_run_degrades_gracefully_when_history_is_unavailable
+    test_next_run_skips_graphql_in_degraded_mode
     test_history_parses_provenance_ids_and_rejects_malformed_tokens
     test_history_preserves_engine_generated_inline_and_grouped_ids
     test_history_merges_duplicate_identity_into_open_thread
     test_history_preserves_table_finding_identity
     test_post_history_round_trip_preserves_modern_and_legacy_identity
+    test_post_history_round_trip_preserves_low_nit_and_set_aside_ids
     test_history_includes_open_resolved_outdated_and_summary_only
     test_post_suppresses_duplicate_open_thread_but_keeps_status
     test_history_paginates_without_refetch_duplicates

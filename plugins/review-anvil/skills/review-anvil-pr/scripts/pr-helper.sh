@@ -1244,6 +1244,11 @@ cmd_next_run() {
     for v in host owner repo n; do
         [[ -n "${!v}" ]] || die "next-run: missing <$v>"
     done
+    if [[ "${REVIEW_ANVIL_SKIP_DISMISSED:-}" == "1" ]]; then
+        printf 'pr-helper: warning: PR run ordinal unavailable; REVIEW_ANVIL_SKIP_DISMISSED=1 enables degraded mode; IDs will omit RUN\n' >&2
+        printf 'unavailable\n'
+        return 0
+    fi
     export GH_HOST="$host"
     local ordinal
     if ordinal=$(_review_history_py next-run "$owner" "$repo" "$n"); then
