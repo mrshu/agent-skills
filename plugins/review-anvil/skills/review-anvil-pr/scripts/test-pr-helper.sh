@@ -111,6 +111,10 @@ case "$1 $2" in
     printf 'https://example.invalid/comment/123\n'
     ;;
   "api graphql")
+    if [[ "${GH_MOCK_GRAPHQL_FAIL:-0}" == "1" ]]; then
+      printf 'mock GraphQL failure\n' >&2
+      exit 1
+    fi
     if [[ -n "${GH_MOCK_GRAPHQL_RESPONSE:-}" ]]; then
       cat "$GH_MOCK_GRAPHQL_RESPONSE"
     else
@@ -554,6 +558,50 @@ JSON
     grep -Fq 'same summary text appears in another file' "$tmp/comment.md"
     assert_file_missing "$report"
     assert_file_missing "$tmp/report.md.approval.json"
+}
+
+test_next_run_counts_distinct_finalized_reports() {
+    local tmp bin fixture output
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+    fixture="$tmp/graphql.json"
+    cat >"$fixture" <<'JSON'
+{"data":{"repository":{"pullRequest":{
+  "author":{"login":"pr-author"},
+  "reviewThreads":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "reviews":{"nodes":[
+    {"state":"COMMENTED","body":"<!-- review-anvil-marker: run-a -->\n# ⚒️ review-anvil report","url":"https://example.invalid/a"},
+    {"state":"COMMENTED","body":"# review-anvil report","url":"https://example.invalid/legacy"},
+    {"state":"PENDING","body":"<!-- review-anvil-marker: pending -->\n# review-anvil report","url":"https://example.invalid/pending"}
+  ],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "comments":{"nodes":[
+    {"body":"<!-- review-anvil-marker: run-a -->\n# ⚒️ review-anvil report","url":"https://example.invalid/a-copy"},
+    {"body":"<!-- review-anvil-marker: run-b -->\nreview-anvil-improve-pr failed on this PR.\n\n# ⚒️ review-anvil report","url":"https://example.invalid/b"},
+    {"body":"<!-- review-anvil-marker: started -->\nreview-anvil-improve-pr started on this PR.","url":"https://example.invalid/started"}
+  ],"pageInfo":{"hasNextPage":false,"endCursor":null}}
+}}}}
+JSON
+
+    output="$(GH_MOCK_GRAPHQL_RESPONSE="$fixture" PATH="$bin:$PATH" \
+      "$HELPER" next-run github.com acme widgets 42)"
+    [[ "$output" == "4" ]] || fail "expected next run 4, got $output"
+}
+
+test_next_run_degrades_gracefully_when_history_is_unavailable() {
+    local tmp bin output
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+
+    output="$(GH_MOCK_GRAPHQL_FAIL=1 PATH="$bin:$PATH" \
+      "$HELPER" next-run github.com acme widgets 42)"
+    [[ "$output" == "unavailable" ]] \
+      || fail "expected unavailable next run, got $output"
 }
 
 test_history_includes_open_resolved_outdated_and_summary_only() {
@@ -1298,6 +1346,8 @@ main() {
     test_compact_report_preserves_wrapped_reproduction_metadata
     test_post_dismisses_table_report_findings
     test_dismissal_respects_report_paths
+    test_next_run_counts_distinct_finalized_reports
+    test_next_run_degrades_gracefully_when_history_is_unavailable
     test_history_reads_new_report_headings
     test_history_includes_open_resolved_outdated_and_summary_only
     test_post_suppresses_duplicate_open_thread_but_keeps_status

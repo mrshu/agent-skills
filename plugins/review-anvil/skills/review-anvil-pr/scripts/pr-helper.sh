@@ -260,6 +260,9 @@ PY
 #       explicit local suppressions. This builds the PR REVIEW HISTORY prompt.
 #   list <owner> <repo> <n>
 #       Backwards-compatible resolved/suppressed-only view.
+#   next-run <owner> <repo> <n>
+#       Print the next positive run ordinal derived from distinct finalized
+#       review-anvil reports.
 #   suppress <owner> <repo> <n> <report_path> <inline_json>
 #       Remove duplicate prior findings from the inline-comments artifact and
 #       classify matching report-body findings in a status-aware section.
@@ -530,6 +533,30 @@ def same_finding(cand, previous, require_path):
     return difflib.SequenceMatcher(None, cs, ps).ratio() >= 0.9
 
 pr_author, threads, reviews, issue_comments = fetch_history()
+
+if mode == "next-run":
+    report_heading = re.compile(
+        r"^#\s+(?:⚒️\s+)?review-anvil report\s*$", re.I | re.M
+    )
+    marker_pattern = re.compile(
+        r"<!--\s*review-anvil-marker:\s*([^\s>]+)\s*-->", re.I
+    )
+    finalized = set()
+    for index, node in enumerate(reviews + issue_comments):
+        if (node.get("state") or "").upper() == "PENDING":
+            continue
+        body = node.get("body") or ""
+        if not report_heading.search(body):
+            continue
+        marker = marker_pattern.search(body)
+        key = (
+            f"marker:{marker.group(1).lower()}"
+            if marker
+            else f"url:{node.get('url') or index}"
+        )
+        finalized.add(key)
+    print(len(finalized) + 1)
+    raise SystemExit(0)
 history = []
 for t in threads:
     comments = (t.get("comments") or {}).get("nodes") or []
@@ -1072,6 +1099,21 @@ cmd_history() {
     _review_history_py history "$owner" "$repo" "$n"
 }
 
+cmd_next_run() {
+    local host="${1:-}" owner="${2:-}" repo="${3:-}" n="${4:-}"
+    for v in host owner repo n; do
+        [[ -n "${!v}" ]] || die "next-run: missing <$v>"
+    done
+    export GH_HOST="$host"
+    local ordinal
+    if ordinal=$(_review_history_py next-run "$owner" "$repo" "$n"); then
+        printf '%s\n' "$ordinal"
+    else
+        printf 'pr-helper: warning: PR run ordinal unavailable; IDs will omit RUN\n' >&2
+        printf 'unavailable\n'
+    fi
+}
+
 cmd_dismiss() {
     # Record a local suppression in the dismissals state file so future runs
     # against this PR skip the finding. Usage:
@@ -1205,6 +1247,8 @@ cmd_init() {
     local head_sha title
     IFS=$'\t' read -r head_sha title <<<"$pr_data"
     [[ -n "$title" ]] || title='(title unavailable)'
+    local run_ordinal
+    run_ordinal=$(cmd_next_run "$host" "$owner" "$repo" "$n")
 
     # Anchor the report path inside the repo's worktree, not whatever
     # CWD the orchestrator happens to be in. Falls back to CWD if we
@@ -1223,6 +1267,7 @@ cmd_init() {
     printf 'OWNER=%s\n' "$owner"
     printf 'REPO=%s\n' "$repo"
     printf 'N=%s\n' "$n"
+    printf 'RUN_ORDINAL=%s\n' "$run_ordinal"
     printf 'HEAD_SHA=%s\n' "$head_sha"
     printf 'MARKER=%s\n' "$marker"
     printf 'REPORT_PATH=%s\n' "$report_path"
@@ -1471,6 +1516,8 @@ cmd_verify_checkout() {
     IFS=$'\t' read -r head_branch head_sha base_branch title author <<<"$pr_fields"
     [[ -n "$title" ]] || title='(title unavailable)'
     [[ -n "$author" ]] || author='(unknown)'
+    local run_ordinal
+    run_ordinal=$(cmd_next_run "$host" "$owner" "$repo" "$n")
 
     # Verify we are in a git worktree.
     git rev-parse --git-dir >/dev/null 2>&1 || die "not inside a git worktree; check out the PR's branch first (gh pr checkout $n -R $owner/$repo)"
@@ -1539,6 +1586,7 @@ cmd_verify_checkout() {
     printf 'OWNER=%s\n' "$owner"
     printf 'REPO=%s\n' "$repo"
     printf 'N=%s\n' "$n"
+    printf 'RUN_ORDINAL=%s\n' "$run_ordinal"
     printf 'HEAD_BRANCH=%s\n' "$head_branch"
     printf 'HEAD_SHA=%s\n' "$head_sha"
     printf 'BASE_BRANCH=%s\n' "$base_branch"
@@ -1683,6 +1731,7 @@ cmd_post_update() {
 }
 
 case "${1:-}" in
+    next-run)         shift; cmd_next_run "$@" ;;
     init)             shift; cmd_init "$@" ;;
     post)             shift; cmd_post "$@" ;;
     verify-checkout)  shift; cmd_verify_checkout "$@" ;;
@@ -1694,6 +1743,6 @@ case "${1:-}" in
     compact-report)   shift; compact_report_for_github "$@" ;;
     process-inline)   shift; process_inline_comments_for_github "$@" ;;
     check-pins)       shift; cmd_check_pins "$@" ;;
-    "")               die "usage: pr-helper.sh {init [<locator>] | post <host> <owner> <repo> <n> <marker> <report_path> | verify-checkout [<locator>] | post-start <host> <owner> <repo> <n> <marker> <author> | post-update <host> <owner> <repo> <n> <comment_id> <marker> <report_path> <author> <success|failure> [<started_at>] | history <host> <owner> <repo> <n> | dismissed <host> <owner> <repo> <n> | dismiss <host> <owner> <repo> <n> <path> <pattern> [<reason>] | compact-report <report_path> [<inline_json>] | process-inline <inline_json> | check-pins <preset> <pins-csv> [<raw-args>]}" ;;
+    "")               die "usage: pr-helper.sh {init [<locator>] | next-run <host> <owner> <repo> <n> | post <host> <owner> <repo> <n> <marker> <report_path> | verify-checkout [<locator>] | post-start <host> <owner> <repo> <n> <marker> <author> | post-update <host> <owner> <repo> <n> <comment_id> <marker> <report_path> <author> <success|failure> [<started_at>] | history <host> <owner> <repo> <n> | dismissed <host> <owner> <repo> <n> | dismiss <host> <owner> <repo> <n> <path> <pattern> [<reason>] | compact-report <report_path> [<inline_json>] | process-inline <inline_json> | check-pins <preset> <pins-csv> [<raw-args>]}" ;;
     *)                die "unknown subcommand: $1" ;;
 esac
