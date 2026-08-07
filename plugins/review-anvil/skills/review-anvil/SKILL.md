@@ -122,6 +122,11 @@ Use `--dry-run` to inspect the derived plan without booting a VM. If no
 `--cmd` is supplied, the helper runs the base-derived `install && lint && test`
 chain and stops at the first failing stage.
 
+If `krunvm` is not on `PATH` during a real run, the helper installs it with
+Homebrew (`brew install krunvm`) before the VM boot step. Use `--no-install` or
+`REVIEW_ANVIL_KRUNVM_AUTO_INSTALL=0` on machines where dependency installation
+must be managed outside the helper. `--dry-run` never installs krunvm.
+
 Security limits: krunvm provides a guest boundary, but it does not disable
 network egress. A malicious dependency install or test can exfiltrate the code
 and anything reachable inside the guest. The helper prints this warning before

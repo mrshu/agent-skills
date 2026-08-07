@@ -165,11 +165,64 @@ test_allow_flagged_dry_run_continues() {
     assert_contains "$stderr" "--allow-flagged set; continuing" "allow flagged warning"
 }
 
+test_missing_krunvm_installs_with_homebrew() {
+    local tmp remote stdout stderr status bin log_path old_path real_python
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    remote="$(make_remote_repo "$tmp" clean)"
+    stdout="$tmp/stdout"
+    stderr="$tmp/stderr"
+    bin="$tmp/bin"
+    log_path="$bin/install.log"
+    real_python="$(command -v python3)"
+    mkdir -p "$bin"
+
+    cat >"$bin/python3" <<SH
+#!/usr/bin/env bash
+exec "$real_python" "\$@"
+SH
+    cat >"$bin/uname" <<'SH'
+#!/usr/bin/env bash
+printf 'Linux\n'
+SH
+    cat >"$bin/brew" <<'SH'
+#!/usr/bin/env bash
+dir="$(cd "$(dirname "$0")" && pwd)"
+printf 'brew %s\n' "$*" >>"$dir/install.log"
+if [[ "${1:-}" == "install" && "${2:-}" == "krunvm" ]]; then
+    cat >"$dir/krunvm" <<'KRUN'
+#!/usr/bin/env bash
+dir="$(cd "$(dirname "$0")" && pwd)"
+printf 'krunvm %s\n' "$*" >>"$dir/install.log"
+exit 0
+KRUN
+    chmod +x "$dir/krunvm"
+    exit 0
+fi
+exit 97
+SH
+    chmod +x "$bin/python3" "$bin/uname" "$bin/brew"
+
+    old_path="$PATH"
+    PATH="$bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    status="$(run_runner "$stdout" "$stderr" acme/widgets 1 \
+        --repo-url "$remote" --base-ref main --cmd true)"
+    PATH="$old_path"
+
+    assert_eq "$status" "0" "auto-install exit"
+    assert_contains "$stderr" "krunvm not found; installing with Homebrew" "auto-install stderr"
+    assert_contains "$log_path" "brew install krunvm" "brew install log"
+    assert_contains "$log_path" "krunvm create" "krunvm create log"
+    assert_contains "$log_path" "krunvm start" "krunvm start log"
+    assert_contains "$log_path" "krunvm delete" "krunvm delete log"
+}
+
 main() {
     test_pr_inspect_blocks_execution_control_files
     test_dry_run_writes_plan_outside_cleanup
     test_flagged_pr_blocks_before_krunvm
     test_allow_flagged_dry_run_continues
+    test_missing_krunvm_installs_with_homebrew
     printf 'test-pr-sandbox: all PR sandbox helper tests passed\n'
 }
 

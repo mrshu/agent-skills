@@ -30,6 +30,7 @@ Options:
   --cpus <n>             krunvm vCPU count
   --mem <mib>            krunvm memory in MiB
   --allow-flagged        run even when PR changes execution-controlling files
+  --no-install           do not auto-install krunvm when it is missing
   --dry-run              inspect and print the plan without creating a VM
   --plan-out <path>      write the plan JSON outside the cleanup directory
   --keep                 keep the clone and VM for debugging
@@ -57,6 +58,7 @@ test_override=""
 cpus=""
 mem=""
 allow_flagged=0
+auto_install="${REVIEW_ANVIL_KRUNVM_AUTO_INSTALL:-1}"
 dry_run=0
 keep=0
 plan_out=""
@@ -75,6 +77,7 @@ while [[ $# -gt 0 ]]; do
         --cpus)            [[ $# -ge 2 ]] || usage; cpus="$2"; shift 2 ;;
         --mem)             [[ $# -ge 2 ]] || usage; mem="$2"; shift 2 ;;
         --allow-flagged)   allow_flagged=1; shift ;;
+        --no-install)      auto_install=0; shift ;;
         --dry-run)         dry_run=1; shift ;;
         --plan-out)        [[ $# -ge 2 ]] || usage; plan_out="$2"; shift 2 ;;
         --keep)            keep=1; shift ;;
@@ -256,7 +259,25 @@ if [[ "$dry_run" -eq 1 ]]; then
     exit 0
 fi
 
-command -v krunvm >/dev/null 2>&1 || die "krunvm not found"
+ensure_krunvm() {
+    command -v krunvm >/dev/null 2>&1 && return 0
+
+    case "$auto_install" in
+        0|false|FALSE|no|NO)
+            die "krunvm not found; auto-install disabled. Install it or remove --no-install / REVIEW_ANVIL_KRUNVM_AUTO_INSTALL=0."
+            ;;
+    esac
+
+    command -v brew >/dev/null 2>&1 \
+        || die "krunvm not found and Homebrew is not available. Install Homebrew, then run 'brew install krunvm'."
+
+    log "krunvm not found; installing with Homebrew"
+    brew install krunvm
+    command -v krunvm >/dev/null 2>&1 \
+        || die "brew install krunvm completed but krunvm is still not on PATH"
+}
+
+ensure_krunvm
 
 check_macos_krunvm_volume() {
     local config_path volume tmp_case
