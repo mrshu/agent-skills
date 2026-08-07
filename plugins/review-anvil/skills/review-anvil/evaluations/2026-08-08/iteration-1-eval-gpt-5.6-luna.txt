@@ -1,0 +1,168 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "readability_winner": "A",
+      "technical_winner": "A",
+      "reason": "A states the exact mismatched paths, the immediate-child boundary, and the required rejection without B's tentative follow-up framing."
+    },
+    {
+      "id": 3737044354,
+      "readability_winner": "A",
+      "technical_winner": "A",
+      "reason": "A makes the rollback limitation and data-loss outcome definite, then states the recoverability invariant and failure boundary as requirements."
+    },
+    {
+      "id": 3737044361,
+      "readability_winner": "A",
+      "technical_winner": "tie",
+      "reason": "A reads more directly, but both versions preserve the distinction between raw-path identity and reconciled repository metadata and routing."
+    },
+    {
+      "id": 3737044371,
+      "readability_winner": "A",
+      "technical_winner": "tie",
+      "reason": "A uses more decisive corrective language, while both versions preserve the stale-report consequence and the required coverage of failures, exclusions, and clean runs."
+    },
+    {
+      "id": 3737053181,
+      "readability_winner": "A",
+      "technical_winner": "A",
+      "reason": "A names both the Boolean interpretation problem and the missing neutral representation, while B stops short of stating the required semantics."
+    },
+    {
+      "id": 3737053197,
+      "readability_winner": "A",
+      "technical_winner": "A",
+      "reason": "A explicitly connects malformed populated cells and the fallback denominator to missing failure records, then separates validation rules from allowed empty cells."
+    },
+    {
+      "id": 3737053204,
+      "readability_winner": "A",
+      "technical_winner": "tie",
+      "reason": "A leads with confirmed-ID loss and states the incomplete-sweep behavior directly, while B preserves the same triggers and valid 401 boundary."
+    },
+    {
+      "id": 3737181823,
+      "readability_winner": "A",
+      "technical_winner": "tie",
+      "reason": "A more compactly preserves the raw-dictionary path, same-field duplicate diagnostics, and exact deferral boundary."
+    },
+    {
+      "id": 3737266652,
+      "readability_winner": "A",
+      "technical_winner": "tie",
+      "reason": "A puts the loss of all valid rows in the title and gives the expected-versus-unexpected error boundary as a complete correction."
+    },
+    {
+      "id": 3737266656,
+      "readability_winner": "A",
+      "technical_winner": "tie",
+      "reason": "A makes the four-request reproducibility failure and one-time resolution requirement explicit while preserving branch and tag support."
+    },
+    {
+      "id": 3737266661,
+      "readability_winner": "A",
+      "technical_winner": "A",
+      "reason": "A clearly distinguishes lost exclusion evidence from exit status and gives the exact failures-or-exclusions persistence rule."
+    },
+    {
+      "id": 3737291965,
+      "readability_winner": "A",
+      "technical_winner": "tie",
+      "reason": "A preserves the direct-root versus discovered-child symlink distinction and states both directory rejection and file-symlink preservation as requirements."
+    },
+    {
+      "id": 3737383919,
+      "readability_winner": "A",
+      "technical_winner": "tie",
+      "reason": "A summarizes both invalid-filter outcomes in the title and specifies the stop before existing-output discovery and publication."
+    },
+    {
+      "id": 3737383922,
+      "readability_winner": "A",
+      "technical_winner": "A",
+      "reason": "A leads with the named-versus-actual destination mismatch and preserves publication in the single-destination correction."
+    },
+    {
+      "id": 3737449039,
+      "readability_winner": "A",
+      "technical_winner": "tie",
+      "reason": "A foregrounds retrieval time as the unstable identity input and clearly separates the stable ID components from retrieved timestamp."
+    },
+    {
+      "id": 3737449052,
+      "readability_winner": "A",
+      "technical_winner": "tie",
+      "reason": "A states total conversion loss and automation ambiguity immediately and preserves the failure-versus-exclusion boundary."
+    },
+    {
+      "id": 3737449059,
+      "readability_winner": "A",
+      "technical_winner": "tie",
+      "reason": "A identifies the wrong count as dataset size, distinguishes score coverage from provenance, and makes preservation of both counts explicit."
+    },
+    {
+      "id": 3737449070,
+      "readability_winner": "A",
+      "technical_winner": "A",
+      "reason": "A correctly refers to a finite custom value, preserves the verified-semantics gate, and requires unresolved keys to be reported."
+    },
+    {
+      "id": 3737449081,
+      "readability_winner": "A",
+      "technical_winner": "tie",
+      "reason": "A explains why source labels are insufficient and clearly connects canonical and namespaced IDs to the existing definition mapping."
+    },
+    {
+      "id": 3737449090,
+      "readability_winner": "A",
+      "technical_winner": "tie",
+      "reason": "A makes the inconsistent source unit explicit and requires separate file-level and output-log counts."
+    },
+    {
+      "id": 3737449098,
+      "readability_winner": "A",
+      "technical_winner": "tie",
+      "reason": "A clearly contrasts single-file and directory reporting behavior and states the required report-before-raise parity without tentative follow-up framing."
+    },
+    {
+      "id": 3737449101,
+      "readability_winner": "A",
+      "technical_winner": "tie",
+      "reason": "A identifies nested secret reachability, keeps mappings and lists in the sanitizer requirement, and preserves the no-secret-test-record condition."
+    }
+  ],
+  "readability_counts": {
+    "A": 22,
+    "B": 0,
+    "tie": 0
+  },
+  "technical_counts": {
+    "A": 7,
+    "B": 0,
+    "tie": 15
+  },
+  "dimension_winners": {
+    "immediate_comprehension": "A",
+    "consequence_clarity": "A",
+    "actionability": "A",
+    "evidence_preservation": "A",
+    "jargon_load": "tie",
+    "sentence_clarity": "A",
+    "tone": "A",
+    "scanability": "A"
+  },
+  "overall_winner": "A",
+  "material_fact_losses": [
+    "B, comment 3737053181, omits that the neutral representation must avoid assigning either optimization direction.",
+    "B, comment 3737266661, changes the required failures-or-exclusions condition to the unclear phrase 'either collection'.",
+    "B, comment 3737383922, omits publication from the corrected one-destination invariant.",
+    "B, comment 3737449070, changes a finite custom value into a technically incorrect 'finite custom key'."
+  ],
+  "summary": "A wins readability on all pairs because it leads with concrete consequences, preserves the relevant boundaries, and states the corrected behavior directly. Technical content is tied where B preserves the same facts, but A wins when B omits a required distinction or introduces an inaccurate or ambiguous condition."
+}
+
+
+Wall time: 181.78 seconds

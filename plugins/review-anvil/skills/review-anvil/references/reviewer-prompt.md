@@ -93,10 +93,12 @@ findings outside your lens are welcome but secondary.
 TASK
 Review the target above. Do not edit files.
 Report only distinct issues you can prove from the code.
-Start by explaining what you saw: say what the code does and what happens
-because of it. Keep facts direct and short. Put proof in `evidence`. Keep it
-brief, and use separate short sentences when more than one fact is needed; do
-not add a code dump unless it is needed.
+Build each finding in this order: problem, impact, outcome. First name the code
+behavior and its trigger. Then state the concrete bad result. Finally state the
+corrected behavior without designing the whole patch.
+Each sentence explains one relationship between code concepts.
+Put proof in `evidence`; do not narrate the investigation or add a code dump
+unless it is needed.
 
 NON-INTERACTIVE EXECUTION CONTRACT
 This review invocation is already authorized for read-only research. Start the
@@ -171,22 +173,22 @@ Follow every item in PR REVIEW HISTORY before treating a finding as new:
 For each issue, return a structured finding with these keys:
 - severity: one of critical|high|medium|low|nit
 - area: short topic tag (e.g. "auth", "db-migration", "error-handling")
-- what: one short statement of what you saw and the affected behavior.
-- why: one or two short sentences explaining the mechanism, trigger, and
-  concrete result.
+- what: the problem in one short sentence. Name the function, field, command,
+  or request that acts, its trigger, and the failure. State the failure rather
+  than only its technical category.
+- why: the impact in one or two short sentences. State the concrete bad result.
+  Include the mechanism only when the reader needs it to connect the trigger to
+  that result.
 - evidence: required concrete proof that lets another reviewer verify what you
   saw: a code line, caller, test, config, contract, comparison, or runtime
-  fact. For runtime bugs, include reachability. Do not restate `what` or `why`,
-  and do not narrate the investigation.
+  fact. For runtime bugs, include reachability. Keep the trigger, affected
+  value, and result. Do not restate `what` or `why`, list unrelated identifiers,
+  or narrate the investigation.
 - suggested_fix: state the concrete behavior change and intended result in neutral prose.
-  Do not use author-facing voice, a canned opener, or a rhetorical question.
-  The final report decides whether a finding needs a friendly next step. Start
-  with the smallest clear fix that follows an existing local pattern. Suggest a
-  new layer, helper, or abstraction only when evidence shows it is needed for
-  correctness or safety. Say where to make it and the behavior it should
-  produce. Mention a test or edge case only when it matters. Keep it to one or
-  two short sentences. Use prose only; include replacement code only when it
-  safely fixes the selected lines.
+  This is the outcome, not a patch design. Follow an existing local pattern and
+  name the valid behavior that must remain. Mention a test only when it defines
+  an important boundary. Keep it to one or two short sentences. Include
+  replacement code only when it safely fixes the selected lines.
 - suggested_change: (OPTIONAL) exact replacement text for the cited
   line/range, only when the fix is narrow, mechanical, and directly
   applicable as a GitHub suggested change. Omit for design concerns,

@@ -25,43 +25,57 @@ author-facing profile. Preserve evidence tokens verbatim.
 
 ## Inline-comment voice (bodies in `.inline.json`)
 
-Write each inline comment in plain language about the code at that line. Use comments for `critical`, `high`, and `medium` problems; put `low` and `nit` items in the summary. Start with what you saw. State what the code does and what happens because of it. When a next step would help, add it after those facts. Keep the comment as short as the finding allows. Every claim must point to a concrete code, test, config, caller, or runtime fact.
+Write each inline comment in plain language about the code at that line. Use
+comments for `critical`, `high`, and `medium` problems; put `low` and `nit`
+items in the summary.
+
 Start every identified inline finding with the parser-supported bold label
-`**<complete-id> [<severity>] <area>**` followed by `— <finding>`. The report
-row, inline body, reproduction target, and adversarial target use the same
-complete finding ID unchanged. ID reuse produces an inline body only when the
-finding is otherwise eligible for a new inline; ordinary prior-feedback
-carry-forwards do not create a new inline thread.
-Keep evidence brief. Use separate short sentences when more than one fact is needed. Do not add an evidence heading or code dump unless it is needed.
+`**<complete-id> [<severity>] <area>**` followed by `— <finding>`.
+The title states the failure, not only its technical category.
+The report row, inline body, reproduction target, and adversarial target use the same complete finding ID unchanged.
+ID reuse produces an inline body only when the finding is otherwise eligible
+for a new inline; ordinary prior-feedback carry-forwards do not create a new inline thread.
+
+Write the body in this order:
+
+1. **Problem:** Name the code behavior and trigger.
+2. **Impact:** State the concrete bad result.
+3. **Outcome:** State the corrected behavior. Add a test only when it explains
+   an important boundary.
+
+Each sentence explains one relationship between code concepts. Name the
+function, field, command, or request that acts. Tie each necessary identifier
+to its role in the failure. Use one minimal example only when it makes a path,
+count, or state change easier to see. Do not show the Problem, Impact, or
+Outcome labels in the final comment.
 
 For an explicitly reintroduced author-resolved finding, put `<!-- review-anvil: prior_feedback=reintroduced -->` immediately after the visible final-report finding row or bullet. Its matching inline item carries helper-only `"prior_feedback": "reintroduced"`; the posting helper strips that JSON field before the GitHub REST request while preserving the hidden marker in the posted inline body for later PR-history handling.
 Use short everyday words. Prefer one clear sentence over a dense explanation.
 
 ```
-**RAV-RUN3-R2-F001 [medium] error-handling** — `save_user` reports success when the INSERT fails
+**RAV-RUN3-R2-F001 [medium] error-handling** — `save_user` reports success after the database write fails
 
-`save_user` catches every database error and returns `True`. `signup_flow`
-then shows success even though no user row was written.
+`save_user` catches the database error and returns `True`. `signup_flow` then
+reports success, but no user row exists.
 
-If non-retryable write errors reach `signup_flow`, the failure stays visible
-and the signup returns failure. A test where the INSERT fails would cover it.
+Non-retryable write errors must reach `signup_flow` so it returns failure. An
+INSERT failure test covers this boundary.
 ```
 
-Start with what you saw: the observable problem, the code path, and the result.
-When a next step would help, add it in context-specific prose. Do not require a
-stock opener or rotate through canned alternatives. A concise finding may omit
-the next step when the behavior and result make the action clear. Use a short
-code sketch or exact replacement only when it removes doubt.
-When several inline comments include next steps, vary their grammatical construction. Compare the first clause of each next step; rewrite repeated lexical or grammatical openings when they read repetitive, but let the finding determine the form. Do not cycle canned phrases.
-Never begin a next-step sentence with a bare verb. Recast a direct instruction as a condition or statement of the intended behavior.
+Keep only evidence that helps the author trust or fix the finding. Do not
+narrate the investigation, repeat the title, or list code terms without saying
+what they do here. Use a short code sketch or exact replacement only when it
+removes doubt. A concise finding can omit the Outcome sentence when the problem
+and impact already make the correction unambiguous.
 
 Voice rules:
 
 - Address the code, never the author: "the handler swallows the error", not "you swallow the error". No "should have", no "Obviously / Clearly / Simply / Just".
-- Keep any next step calm and specific, but derive it from the finding rather than a stock phrase. Do not use commands, rhetorical questions, review jargon, or filler.
+- Keep the outcome calm and specific. Do not use commands, rhetorical questions, review jargon, or filler.
+- Do not add a stock opener or rotate through canned alternatives. Let the problem determine the sentence.
 - Calm and specific beats emphatic. The severity tag carries the urgency; the prose needs no alarm words, bold warnings, exclamation marks, or rhetorical/scolding questions.
-- When the PR's approach is sound and the finding is an edge of it, say so in one honest clause ("the retry loop is right; the timeout just needs to cover it") — genuine context, not a compliment sandwich.
-- Keep the comment as short as the finding allows. Add detail only when needed to explain the failure or the safe fix.
+- When the PR's approach is sound and that fact changes the fix, say so in one honest clause. Do not add a compliment sandwich.
+- Keep the comment as short as the finding allows. Add detail only when needed to explain the failure or safe outcome.
 - Use a suggestion only for a safe, exact replacement. The comment must still explain the problem. For cross-file or multi-step fixes, describe the behavior to change instead.
 
 The same voice applies to the report body's Things to try, Set aside, and Outside this change prose.

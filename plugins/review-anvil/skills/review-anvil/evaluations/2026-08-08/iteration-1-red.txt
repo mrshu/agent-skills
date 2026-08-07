@@ -1,0 +1,6 @@
+Command: bash skills/review-anvil/scripts/test-report-language.sh
+Working directory: plugins/review-anvil
+Exit: 1
+
+Failure:
+test-report-language: missing Write the body in this order: in plugins/review-anvil/skills/review-anvil/references/report-artifacts.md
