@@ -49,6 +49,15 @@ to its role in the failure. Use one minimal example only when it makes a path,
 count, or state change easier to see. Do not show the Problem, Impact, or
 Outcome labels in the final comment.
 
+Before emitting the body, run this author check:
+
+- The title and first sentence answer: what breaks, and when?
+- Replace an abstract label with the code actor and a direct verb.
+- When a path, count, or state change is hard to picture, give one minimal example instead of making the reader simulate it.
+- Remove a test sentence unless it defines the failure boundary.
+- Remove any sentence that repeats the title without adding a trigger, result,
+  constraint, or fix boundary.
+
 For an explicitly reintroduced author-resolved finding, put `<!-- review-anvil: prior_feedback=reintroduced -->` immediately after the visible final-report finding row or bullet. Its matching inline item carries helper-only `"prior_feedback": "reintroduced"`; the posting helper strips that JSON field before the GitHub REST request while preserving the hidden marker in the posted inline body for later PR-history handling.
 Use short everyday words. Prefer one clear sentence over a dense explanation.
 

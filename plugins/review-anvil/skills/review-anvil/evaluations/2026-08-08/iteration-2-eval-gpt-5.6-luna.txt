@@ -1,0 +1,168 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B names the guard and states the false name-check result more directly, while both versions preserve the destination and validation boundary."
+    },
+    {
+      "id": 3737044354,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B replaces the more abstract preflight wording with the concrete validation-and-write sequence without changing the failure or recovery requirements."
+    },
+    {
+      "id": 3737044361,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B gives the redirect consequence in a more direct causal sentence, and both versions retain the identity-versus-metadata distinction."
+    },
+    {
+      "id": 3737044371,
+      "readability_winner": "tie",
+      "technical_winner": "B",
+      "reason": "A is slightly more definite, but B is more technically calibrated by stating that an older report can remain current rather than implying one always exists."
+    },
+    {
+      "id": 3737053181,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B makes the missing neutral representation and the required preservation of neutral semantics explicit."
+    },
+    {
+      "id": 3737053197,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B states the observable failure-report consequence more plainly and gives a clearer validation rule while retaining the denominator fallback detail."
+    },
+    {
+      "id": 3737053204,
+      "readability_winner": "B",
+      "technical_winner": "A",
+      "reason": "B has a cleaner causal explanation, but A correctly makes preservation of the existing 401 handling a requirement rather than a possibility."
+    },
+    {
+      "id": 3737181823,
+      "readability_winner": "A",
+      "technical_winner": "A",
+      "reason": "A identifies the specific identity-path check that must defer, whereas B broadens the required change to an unspecified semantic check."
+    },
+    {
+      "id": 3737266652,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B makes the narrowness of the row-level exception boundary explicit while preserving the distinction between expected and unexpected errors."
+    },
+    {
+      "id": 3737266656,
+      "readability_winner": "B",
+      "technical_winner": "A",
+      "reason": "B states the moving-reference consequence more compactly, but A explicitly requires reusing one immutable snapshot for all four requests."
+    },
+    {
+      "id": 3737266661,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B is slightly smoother and more direct about preserving exclusions while keeping the exit status conditional, with no material technical change."
+    },
+    {
+      "id": 3737291965,
+      "readability_winner": "A",
+      "technical_winner": "A",
+      "reason": "A keeps the clearer target-path description and the explicit must-cover testing requirement while preserving both symlink boundaries."
+    },
+    {
+      "id": 3737383919,
+      "readability_winner": "A",
+      "technical_winner": "A",
+      "reason": "A preserves the important distinction between an empty filter and a no-match filter instead of grouping both under the broader term invalid."
+    },
+    {
+      "id": 3737383922,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B makes the concrete mismatch with status messages clearer, while both versions preserve the path-shape validation and shared-destination requirement."
+    },
+    {
+      "id": 3737449039,
+      "readability_winner": "tie",
+      "technical_winner": "tie",
+      "reason": "The two versions are identical, so neither has an advantage."
+    },
+    {
+      "id": 3737449052,
+      "readability_winner": "A",
+      "technical_winner": "A",
+      "reason": "A explicitly scopes the zero-conversion case to a directory containing only unconvertible files, which is more precise than B's broader wording."
+    },
+    {
+      "id": 3737449059,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B gives the concrete reporting error earlier in the title, while both versions preserve the effective-versus-original count distinction."
+    },
+    {
+      "id": 3737449070,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B states both the unverified direction and the prohibition on assigning an assumed direction more explicitly."
+    },
+    {
+      "id": 3737449081,
+      "readability_winner": "A",
+      "technical_winner": "A",
+      "reason": "A puts the concrete missing `metric_id` in the title, making the cross-source join defect easier to identify immediately."
+    },
+    {
+      "id": 3737449090,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B uses a slightly more direct causal sentence and a cleaner count label without changing the inconsistent source-unit problem."
+    },
+    {
+      "id": 3737449098,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B repeats the important structured-report consequence in the body, improving scanability without changing the required behavior."
+    },
+    {
+      "id": 3737449101,
+      "readability_winner": "A",
+      "technical_winner": "A",
+      "reason": "A makes the testing obligation explicit with must cover, while the rest of both versions is technically equivalent."
+    }
+  ],
+  "readability_counts": {
+    "A": 6,
+    "B": 14,
+    "tie": 2
+  },
+  "technical_counts": {
+    "A": 8,
+    "B": 5,
+    "tie": 9
+  },
+  "dimension_winners": {
+    "immediate_comprehension": "B",
+    "consequence_clarity": "B",
+    "actionability": "B",
+    "evidence_preservation": "A",
+    "jargon_load": "B",
+    "sentence_clarity": "B",
+    "tone": "tie",
+    "scanability": "B"
+  },
+  "overall_winner": "B",
+  "material_fact_losses": [
+    "B, comment 3737053204, changes the requirement that expected 401 responses must keep their current handling to the weaker statement that they can retain it.",
+    "B, comment 3737181823, changes the specific identity-path check that must defer to a generic semantic check, weakening the required validation boundary.",
+    "B, comment 3737266656, omits the explicit requirement to reuse the one resolved immutable snapshot for all four requests.",
+    "B, comment 3737449052, changes a directory containing only measured-but-unconvertible files to a directory containing those files, weakening the all-unconvertible scope."
+  ],
+  "summary": "B is the overall readability winner because it usually states the concrete consequence and corrected behavior more directly. A retains several technically important boundaries that B weakens or makes less explicit, so B should be adopted only with those fact losses restored."
+}
+
+
+Wall time: 190.10 seconds
