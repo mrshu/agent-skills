@@ -72,7 +72,10 @@ cmd_pid=$!
 ) 2>/dev/null &
 watchdog_pid=$!
 
-wait "$cmd_pid"
+# Bash can print a job-termination diagnostic for signal-killed async jobs
+# when `wait` observes them. The wrapper reports timeout status itself, while
+# the command's stderr is already captured in "$err".
+wait "$cmd_pid" 2>/dev/null
 status=$?
 # Kill the watchdog subshell AND its in-flight sleep child — otherwise an
 # orphaned `sleep <secs>` lingers until the full deadline for every

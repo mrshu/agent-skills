@@ -38,6 +38,7 @@ Parse the user's free-form args string into:
 | `adversarial_rounds` | `1` | one adversarial pass by default; max 2, and a second pass runs only when the first pass materially changes `medium`+ guidance |
 | `disagreement_policy` | `defer` | `defer` moves unresolved material disputes to Deferred; `comment` keeps the finding actionable but forces review-only PR approvals to COMMENT |
 | `verify_cmd` | auto-detect | "verify with `npm test`", `verify_cmd: none` to skip — build/test command run after each round's fixes (see "Build/test gate"; per_fix only) |
+| `execution_env` | `host` | `host` or `krunvm` — where review-anvil may run project code for dependency install, runtime reproduction checks, deletion execution checks, and build/test gates. Reviewer dispatch still uses the normal reviewer backend; this only moves code-under-review execution behind a boundary |
 | `reviewer_timeout` | `600` (`420` for small diffs) | "timeout 10 minutes" — hard per-reviewer wall-clock cap in seconds for Bash-dispatched reviewers (see `run-reviewer.sh`). Default is ~3× the slowest legitimate reviewer observed in real runs (98–213s); when unset and the diff is under ~500 changed lines (added+removed — the same measure as the adaptive budget tiers), requested rounds use `420` (~2× that observed max) so a hung reviewer pins the wave 3 minutes less. Adaptive rounds always use the full base value — `600`, or `1200` after the >5000-line doubling (doubling transforms the base; the small-diff reduction never applies to adaptive rounds). Explicit user values are never scaled or doubled |
 | `report_path` | unset | File path; when set, the engine writes the final report there (creating parent dirs) and prints exactly that path as its last output line so downstream consumers can pick it up |
 
@@ -60,6 +61,7 @@ human-readable provenance; it does not replace the marker.
 - If `commit_mode=none` and the user explicitly set `max_rounds > rounds`, warn and collapse `max_rounds` to `rounds`. Extra normal rounds review the same baseline, so use `rounds` for reviewer redundancy and `adversarial` for skeptical challenge.
 - `reproduction=auto` and `reproduction=on` both run the selective batched reproduction gate in §3. `auto` may skip dispatch only when there are no candidates. `off` is allowed for speed, but the round summary and final report must say it was disabled; unconfirmed single-reviewer `medium`+ findings stay in Deferred unless the orchestrator independently reproduced them from code/tests/runtime evidence.
 - `adversarial` applies only when `commit_mode=none`. If set with `per_fix`, warn and ignore it — productive mode already applies real fixes and gates them with the build/test command. Reject `adversarial_rounds > 2`; adversarial loops must be bounded. `auto` means choose the cheapest sufficient adversarial mode after normal synthesis using the default policy below.
+- `execution_env`: accept only `host` and `krunvm`. The default `host` preserves today's behavior. `krunvm` means project code must not be installed or run on the host when a trusted krunvm helper can execute the same check. It does not move PR metadata fetches, diff materialization, reviewer prompt assembly, or read-only reviewer dispatch into the guest.
 
 ### PR-target / per_fix incompatibility
 
@@ -73,6 +75,66 @@ Reviewers of a PR locator see the GitHub-fetched diff, which may not match the l
 
 - **`per_fix` (default)** — full loop: review → synthesize/reproduce/verify → apply fixes → build/test gate → commit, each round.
 - **`none` (review-only)** — review → synthesize/reproduce/verify only. **No edits, no commits, no staging.** Read-only mode may write temporary prompt/reviewer/report artifacts under `.review-anvil/` and the explicit `report_path`; it must not modify source files, the index, commits, branches, or remotes. Every normal round reviews the same baseline, so `rounds > 1` buys reviewer redundancy, not code refinement; the natural default is `rounds=1`, and adaptive continuation is disabled by collapsing `max_rounds` to `rounds`. Skip Loop Mechanics §4 entirely; the round summary reads `Fixes applied: 0 (review-only)`; the auto-fix policy is still evaluated in the abstract so findings classify as would-apply / suggestions / deferred. Optional adversarial review is a separate post-synthesis gate that attacks finding validity and fix proportionality without pretending code changed.
+
+### Runtime execution isolation
+
+`execution_env=host` is the default. It allows the orchestrator to run local
+read commands and any explicitly chosen reproduction or verification commands
+the same way review-anvil has historically done.
+
+`execution_env=krunvm` is an explicit isolation mode for running code from a
+GitHub PR. Resolve `scripts/pr-sandbox/run_pr_krunvm.sh` from the trusted
+review-anvil skill root, using the same trusted-root rule as `run-reviewer.sh`
+and `pr-helper.sh`: host-exposed skill path or user-level install roots only,
+never project-scoped/worktree-local skill dirs. The helper's inspector lives at
+`scripts/pr-sandbox/pr_inspect.py` next to it.
+
+When a PR-locator target needs runtime evidence under `execution_env=krunvm`:
+
+1. Clone the base repo on the host through the helper. The helper does not
+   recurse submodules, sets `GIT_LFS_SKIP_SMUDGE=1`, and disables git hooks.
+   Git credentials stay on the host; the guest receives only the disposable
+   clone mounted at `/work`.
+2. Let `pr_inspect.py` derive install/lint/test commands from the base ref and
+   inspect changed files. Exit 2 means the PR changed execution-controlling
+   files such as workflows, package manifests, lockfiles, toolchain files,
+   Dockerfiles, or install/test scripts. Refuse to boot unless the user
+   explicitly supplied `--allow-flagged` / "allow flagged sandbox run".
+3. Boot the krunvm VM before any install or test command. Never run `pip
+   install`, `npm ci`, package-manager lifecycle hooks, test suites, codegen, or
+   deletion execution checks on the host when this mode is selected and the
+   helper can run the check.
+4. Run the guest command with stdin closed (`</dev/null`). The helper uses
+   `krunvm start --env CI=1 <vm> /bin/sh -lc <cmd> </dev/null`; the stdin
+   close is required because krunvm can otherwise spin waiting for input.
+5. Destroy the VM and clone via the helper's EXIT/INT/TERM cleanup trap unless
+   `--keep` was selected for debugging.
+
+Default helper command:
+
+```bash
+bash <trusted-review-anvil>/scripts/pr-sandbox/run_pr_krunvm.sh <owner>/<repo> <n> \
+  --host <host> \
+  --cmd '<runtime check>'
+```
+
+Use `--dry-run` to inspect the derived plan without booting a VM. If no
+`--cmd` is supplied, the helper runs the base-derived `install && lint && test`
+chain and stops at the first failing stage.
+
+Security limits: krunvm provides a guest boundary, but it does not disable
+network egress. A malicious dependency install or test can exfiltrate the code
+and anything reachable inside the guest. The helper prints this warning before
+boot. For fork PRs where no network is acceptable, prefer a future/explicit
+Linux container path with gVisor `runsc` and `--network=none`; do not pretend
+krunvm blocks exfiltration.
+
+For `per_fix` branch targets, use `execution_env=krunvm` only when the
+orchestrator can materialize the exact tree being verified into a disposable
+guest-mounted clone. The PR helper clones the published PR head, so it is not a
+valid post-fix gate for unpushed local fix commits. If no trusted exact-tree
+guest runner is available, reject `execution_env=krunvm` for that productive
+run and ask for host execution or read-only PR review instead.
 
 ### Posting reports externally
 
@@ -89,6 +151,7 @@ Adaptive continuation details belong in Run Details unless they change the revie
 - `Skill review-anvil "1 round, only: security, target: src/auth/"`
 - `Skill review-anvil "fix only critical"` → severity gate raised to `critical`; everything else surfaces as suggestions.
 - `Skill review-anvil "target: PR #42, adversarial: auto"` → normal review first, then adversarial review only if the synthesized findings/fix plans need a validity or proportionality challenge.
+- `Skill review-anvil "target: acme/widgets#42, execution_env: krunvm"` → read the PR normally, but any dependency install / runtime reproduction / smoke-test command runs through the trusted krunvm PR sandbox helper instead of on the host.
 
 ## Default Mix Policy
 
@@ -166,8 +229,9 @@ Treat any STATUS other than `ok` as a failed reviewer (see Failure handling), wi
 
 **Resolving the wrapper and `references/` files** — same trusted-root rule as `pr-helper.sh`: see review-anvil-pr SKILL.md step 1 ("Resolve the helper script"). Host-exposed skill path or user-level install roots only; never project-scoped/worktree-local skill dirs (writable by the repo under review). If no trusted copy of the wrapper resolves, replicate its contract inline (background, kill at deadline, check exit status, empty output = failure) rather than falling back to a bare redirect.
 
-After changing the wrapper contract or dispatch examples, run
-`scripts/test-run-reviewer.sh` alongside the reproduction and PR helper tests.
+After changing the wrapper contract, sandbox helper, or dispatch examples, run
+`scripts/test-run-reviewer.sh`, `scripts/test-pr-sandbox.sh`, and the
+reproduction and PR helper tests.
 
 #### Last resort
 
@@ -257,6 +321,11 @@ Plausible-but-wrong findings are the dominant failure mode of LLM review, and bo
   - `unclear` findings move to Deferred with `We set this aside because <plain-language description of the missing proof>.` Rewrite the verifier's reason; do not copy it.
 - Findings raised independently by **2+ reviewers** and not listed as reproduction candidates may skip batched reproduction; consensus is the signal (this is why dedup records who raised what). Still open enough code/context before destructive action to ensure the fix path is coherent.
 - **Deletions ("delete this"/dead/unused/redundant) require reproduction plus execution when `per_fix` applies the cut** — the highest-blast-radius, highest-false-positive class. In `per_fix`, after reproduction confirms the cut, apply it and run the full test suite: a **red gate means keep it**. A green gate is necessary but not sufficient (it only proves *test-covered* behavior), so the reproduction/skeptic pass must also look for a concrete reason the code must stay, visible in the diff (trust boundary, aliasing copy, ordering, back-compat, dedup, edge semantics — or another specific contract). The two cover different blind spots: the gate catches callers the skeptic can't see; the skeptic catches behavior no test exercises. Block **only** on a red gate or a specific skeptic refutation — not on generic "there might be an unseen caller" (that's what the gate tests). Read-only mode has only the skeptic. Blocked → **Deferred** (`We set this aside because the code is still needed — <what>`).
+- When `execution_env=krunvm`, any runtime reproduction or deletion execution
+  check for a PR-locator target must run through the trusted krunvm PR sandbox
+  helper. Do not install dependencies or execute project tests on the host first
+  and then call the helper later; the boundary must exist before untrusted code
+  runs.
 - If `reproduction=off`, say so in the round summary and final report. Required reproduction candidates — including single-reviewer `medium`+ findings, deletion/high-risk findings, and orchestrator-uncertain findings — cannot become actionable unless the orchestrator independently reproduces them from code/tests/runtime evidence; otherwise move them to Deferred with `We set this aside because the needed check was not run.`
 - `low`/`nit` findings skip verification: they're below the auto-fix gate and surface as suggestions either way.
 
@@ -428,7 +497,7 @@ Append to running output:
 
 ```
 ### Round N — <convergence flag>
-- Parameters: rounds=3, max_rounds=3, target=acme/widgets#42 [pin], commit_mode=none [pin], focus=4-pillar
+- Parameters: rounds=3, max_rounds=3, target=acme/widgets#42 [pin], commit_mode=none [pin], execution_env=host, focus=4-pillar
 - Reviewers: <list dispatched>
 - Earlier review comments: none | <open> open, <resolved> closed, <reported> summary-only, <author-resolved> author-resolved (skipped), <suppressed> skipped; <still-present>/<fixed>/<stale> after checking
 - What I noticed: C critical, H high, M medium, L low, N nit
@@ -636,6 +705,7 @@ it contains more than 3 items. Omit it when empty.>
 - Rounds: <completed>/<requested> completed; adaptive off; <convergence note>   # review-only/exact/no-extra runs
 - Mix: <e.g. "2 codex-exec + 1 claude-exec">
 - Focus: <focus list actually used>
+- Execution environment: host | krunvm (<helper plan / warning summary>)
 - Earlier review comments: none | <total> comments; <open>/<still-present>/<fixed>/<not-relevant>/<author-resolved-skipped>/<skipped>
 - Finding counts: <C critical, H high, M medium, L low, N nit; other notes S>
 - Checks: off | skipped | concerns=<C>; confirmed=<confirmed>/ruled-out=<refuted>/set-aside=<deferred>/lowered=<downgraded>; elapsed=<duration>
@@ -683,6 +753,7 @@ re-run with max_rounds: 5 to continue`.
 | `max_rounds < rounds` | Reject before round 1 — the adaptive cap cannot be below the requested round count. |
 | User-supplied `max_rounds > rounds` with `commit_mode=none` | Warn and set `max_rounds=rounds`; read-only extra rounds are explicit redundancy via `rounds`, not adaptive refinement. |
 | `adversarial` with `per_fix` | Warn and ignore — productive mode verifies real fixes with the build/test gate. |
+| `execution_env=krunvm` on a productive run without an exact-tree guest runner | Reject before running project code — the PR sandbox helper tests the published PR head, not unpushed local fix commits. |
 | `adversarial_rounds > 2` | Reject before dispatch — adversarial review is bounded critique, not an open-ended debate. |
 | Reproduction verifier failure | Keep consensus findings that did not require reproduction, but move required single-reviewer `medium`+ and deletion/high-risk candidates to Deferred with `We set this aside because the verification check could not be completed.`; never silently promote them. |
 | Adversary failure | Continue with the normal synthesized report and note the failure in Run Details; in `strict`, any required adversary failure forces `COMMENT`. |

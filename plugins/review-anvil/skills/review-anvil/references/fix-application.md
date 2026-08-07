@@ -17,6 +17,11 @@ Noise/false positives are also **deferred** with a one-line reason — never sil
 Fix commits must not leave the branch red. In `per_fix`:
 
 - **Resolve:** explicit `verify_cmd` → use it; `verify_cmd: none` → record `Verification: skipped (user)`; unset → auto-detect (repo docs naming a test command; `package.json` `scripts.test`; `Makefile` `test`; pytest/cargo/go-test config). Nothing found → record `Verification: none detected` and proceed (downstream consumers surface the caveat).
+- **Execution boundary:** `execution_env=host` runs the gate on the host. If
+  `execution_env=krunvm`, the gate must run inside a guest that contains the
+  exact tree being verified before any dependency install or test command runs.
+  The PR sandbox helper is valid for read-only PR-head checks; it is not valid
+  for unpushed local fix commits unless the orchestrator first materializes
+  that exact post-fix tree into the guest-mounted clone.
 - **Baseline:** run once before round 1; if already failing, gate only on *new* failures and record the round state as `pre-existing failures (no new)`.
 - **Gate each round:** run after the round's fixes. On a new failure: one fix-forward attempt if the cause is obvious (`fix(<area>): repair <verify_cmd> failure from round <N> fixes`), else `git revert --no-edit` the round's fix commits and defer the findings with `fix failed verification`. If the revert itself fails to restore green, stop the loop and surface it (same handling as a failed `git commit`). A round never ends with the gate newly red.
-

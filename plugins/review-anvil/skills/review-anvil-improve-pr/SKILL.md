@@ -137,6 +137,15 @@ The user may override `rounds:` or `max_rounds:` (defaults are the engine's `rou
 
 The engine runs the multi-round loop, committing fix-groups along the way and writing the final synthesized report to `<REPORT_PATH>` when it's done. The engine's default reproduction pass confirms uncertain material findings before they can become fix commits, and the build/test gate (`verify_cmd`, auto-detected unless the user passes one) runs after each round's fixes. Together, the report's Reproduction and Verification lines are the evidence the PR author needs to trust the pushed commits — if the engine recorded `Verification: none detected`, that caveat travels to the PR in the posted report. If reproduction fails for required candidates, those candidates are Deferred and the loop may still finish with other verified fixes. If any round fails (reviewer-all-fail, git-commit error, build/test gate newly red after the revert path), the engine stops the loop and surfaces the failure — **skip the push (step 5) and call `post-update` with `outcome=failure`** (step 6) so the starting comment gets replaced with a failure summary rather than dangling.
 
+If the user passes `execution_env: krunvm`, reject it for this preset unless a
+trusted exact-tree guest runner is available for the local post-fix commits.
+The bundled PR sandbox helper clones the published PR head from GitHub; during
+`review-anvil-improve-pr`, the code that must be verified may exist only in
+local commits until step 5 pushes. Testing the published PR head would give the
+wrong signal. Recommend `review-anvil-pr` with `execution_env: krunvm` for
+read-only isolated runtime checks, or a custom `verify_cmd` that materializes
+the exact local tree inside a VM.
+
 ### 5. Push
 
 Only after the engine reports a successful run: all requested rounds and any adaptive continuation completed (or the loop converged early — that counts as success), no `git commit failed` or `all reviewers failed` errors in the round summaries, and **every round's Verification state is one of** `passed`, `failed → round reverted`, `pre-existing failures (no new)`, `none detected`, or `skipped` — i.e. never newly red (these are exactly the engine's round-summary states). Deferred reproduction candidates do not block the push by themselves; they also must not produce fix commits or actionable PR comments.
@@ -189,6 +198,10 @@ Surface the engine's final report inline. Echo a two-line summary:
 
 - Requires `gh`, `uuidgen`, `jq` (a real binary — gh's `--jq` is built-in gojq and doesn't count), plus `uv` (preferred; falls back to `python3`) for PR-feedback history handling. `verify-checkout` preflights all of these so a missing dependency fails before the expensive review. The helper honors the same environment switches as `review-anvil-pr` (`REVIEW_ANVIL_NO_APPROVE`, legacy-named `REVIEW_ANVIL_SKIP_DISMISSED`, `REVIEW_ANVIL_DISMISSALS`).
 - **Mutates the local working tree and pushes to the PR.** Use `review-anvil-pr` (read-only + comment) when you only want feedback without applying fixes.
+- The bundled krunvm PR sandbox is not a post-fix verification gate for this
+  preset because it tests the published PR head, not unpushed local fix
+  commits. Do not pass `execution_env: krunvm` here without an exact-tree guest
+  runner.
 - The user must already be on the PR's branch with a clean worktree. The verify-checkout step enforces this and gives clear recovery instructions on failure (e.g. `gh pr checkout <N>`).
 - The PR must be one you have push access to. `git push` will fail with a normal git error if not — the script doesn't pre-check push permissions.
 - Supports github.com and GitHub Enterprise — same handling as `review-anvil-pr`.
