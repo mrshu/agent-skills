@@ -1,0 +1,167 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "readability_winner": "B",
+      "technical_winner": "A",
+      "reason": "B presents the bad path more directly, while A better preserves that the faulty guard compares only with the selected collection."
+    },
+    {
+      "id": 3737044354,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B uses shorter, equally precise wording while retaining the deletion order, rollback limitation, and required recovery boundary."
+    },
+    {
+      "id": 3737044361,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B makes the redirect consequence more direct without losing the identity inputs or metadata-routing distinction."
+    },
+    {
+      "id": 3737044371,
+      "readability_winner": "B",
+      "technical_winner": "A",
+      "reason": "B states the desired ledger outcome cleanly, while A more explicitly preserves the requirement not to lose the prior complete ledger on failure."
+    },
+    {
+      "id": 3737053181,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B leads with the externally visible Boolean contract and separates the schema limitation into a clear follow-up sentence."
+    },
+    {
+      "id": 3737053197,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B directly connects each coercion to the failure-report escape and states the validation boundaries more clearly."
+    },
+    {
+      "id": 3737053204,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B removes incidental wording while preserving the non-200 trigger, destructive overwrite consequence, and 401 exception."
+    },
+    {
+      "id": 3737181823,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B uses a more direct condition-and-outcome sequence while retaining the flat-ID scope and valid-warning boundaries."
+    },
+    {
+      "id": 3737266652,
+      "readability_winner": "B",
+      "technical_winner": "A",
+      "reason": "B is easier to scan, while A explicitly preserves the required continuation of valid rows after expected row-level failures."
+    },
+    {
+      "id": 3737266656,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B makes the four-request inconsistency visual and specifies both immutable file URLs and recorded provenance."
+    },
+    {
+      "id": 3737266661,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B states the exclusions-only case, lost data, report condition, and exit-status boundary with less indirection."
+    },
+    {
+      "id": 3737291965,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B retains the root-symlink distinction and required file-symlink exception in shorter, clearer sentences."
+    },
+    {
+      "id": 3737383919,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B foregrounds the empty-filter defect while its body and outcome retain the unmatched-filter behavior and publication boundary."
+    },
+    {
+      "id": 3737383922,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B preserves the exact path transformation and all affected operations while using a more direct validation instruction."
+    },
+    {
+      "id": 3737449039,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B turns the causal explanation into one clear sentence and retains every stable-ID component and timestamp boundary."
+    },
+    {
+      "id": 3737449052,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B makes the silent-loss consequence easier to visualize while preserving the measured-task and derived-row distinction."
+    },
+    {
+      "id": 3737449059,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B directly contrasts dataset provenance with score population and retains the required role for both counts."
+    },
+    {
+      "id": 3737449070,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B keeps the missing-spec trigger, unsupported direction inference, and valid-metric preservation while improving the action wording."
+    },
+    {
+      "id": 3737449081,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B states the missing cross-source join key and the required global and namespaced identifiers more directly."
+    },
+    {
+      "id": 3737449090,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B makes the incompatible counting units and separate reporting requirement concise without losing the source-file boundary."
+    },
+    {
+      "id": 3737449098,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B removes repeated wording while retaining the entry-mode asymmetry and report-before-raise requirement."
+    },
+    {
+      "id": 3737449101,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B expresses the nested-secret publication path and recursive sanitizer requirement more plainly without losing the configuration scope."
+    }
+  ],
+  "readability_counts": {
+    "A": 0,
+    "B": 22,
+    "tie": 0
+  },
+  "technical_counts": {
+    "A": 3,
+    "B": 14,
+    "tie": 5
+  },
+  "dimension_winners": {
+    "immediate_comprehension": "B",
+    "consequence_clarity": "B",
+    "actionability": "B",
+    "evidence_preservation": "B",
+    "jargon_load": "B",
+    "sentence_clarity": "B",
+    "tone": "tie",
+    "scanability": "B"
+  },
+  "overall_winner": "B",
+  "material_fact_losses": [
+    "B, 3737042592, omits that the guard specifically compares the directory name only with the selected collection.",
+    "B, 3737044371, omits the explicit requirement to preserve the last complete ledger if report replacement fails.",
+    "B, 3737266652, omits the explicit requirement that valid rows continue after expected parsing or schema failures."
+  ],
+  "summary": "B is consistently easier to scan because it leads with concrete outcomes, shortens causal chains, and uses direct corrective instructions. A retains stronger technical safeguards in three findings, especially where failure recovery or continued processing must be stated explicitly."
+}
+
+
+Wall time: 76.51 seconds

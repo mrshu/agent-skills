@@ -1,0 +1,165 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B directly connects the false name check to the extra path level while preserving the canonical-data boundary and mismatch cases."
+    },
+    {
+      "id": 3737044354,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B states the recovery requirement more directly, with the same deletion order, rollback limitation, route-transition boundary, and failure scenario."
+    },
+    {
+      "id": 3737044361,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B uses a simpler causal sentence and direct correction while retaining the distinction between raw identity and reconciled metadata or routing."
+    },
+    {
+      "id": 3737044371,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B compresses the outcome into one clear atomic-replacement rule that still covers failures, exclusions, clean runs, and preservation on unsuccessful publication."
+    },
+    {
+      "id": 3737053181,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B makes the Boolean's higher-is-better meaning explicit in the title and body while preserving the need for a shared neutral representation."
+    },
+    {
+      "id": 3737053197,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B separates the malformed-cell conversions from the required validation rules and still preserves the 805 fallback, failure-report outcome, and valid-empty-cell boundary."
+    },
+    {
+      "id": 3737053204,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B presents the non-200 trigger and destructive overwrite consequence more directly while retaining the incomplete-sweep behavior and expected-401 exception."
+    },
+    {
+      "id": 3737181823,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B shortens the causal path without losing the flat-ID trigger, non-string developer condition, duplicate diagnostic, or valid-string warning boundary."
+    },
+    {
+      "id": 3737266652,
+      "readability_winner": "A",
+      "technical_winner": "A",
+      "reason": "A explicitly requires both recording expected row errors and continuing valid rows, whereas B says only to catch those errors at a narrow boundary."
+    },
+    {
+      "id": 3737266656,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B makes the cross-request inconsistency concrete and explicitly requires the resolved commit for both file URLs and recorded provenance."
+    },
+    {
+      "id": 3737266661,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B names the lost source references in the title and states the save and exit conditions directly without dropping either boundary."
+    },
+    {
+      "id": 3737291965,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B clearly contrasts root and child symlinks while preserving direct and glob-expanded rejection, accepted file symlinks, and the required test cases."
+    },
+    {
+      "id": 3737383919,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B leads with the most dangerous concrete result and still explains the unmatched-filter false success and required pre-discovery stop."
+    },
+    {
+      "id": 3737383922,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B uses a direct validation instruction while retaining the parent-path derivation, concrete destination mismatch, required path shape, and affected operations."
+    },
+    {
+      "id": 3737449039,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B combines cause and duplicate-identity consequence cleanly while preserving every stable-ID input and the separate role of retrieval time."
+    },
+    {
+      "id": 3737449052,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B's title visualizes the file disappearing and the rest preserves the empty conversion, false-success consequence, failure-ledger rule, and derived-row exclusion boundary."
+    },
+    {
+      "id": 3737449059,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B more directly distinguishes the score-producing population from dataset provenance while retaining both identifiers and their required roles."
+    },
+    {
+      "id": 3737449070,
+      "readability_winner": "A",
+      "technical_winner": "tie",
+      "reason": "A's title correctly frames the full problem as unverified metric semantics rather than emphasizing bounds alone, while both versions preserve the direction, scale, definition, and unresolved-key behavior."
+    },
+    {
+      "id": 3737449081,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B removes a repeated statement and directly ties the existing metric-definition mapping to canonical and namespaced IDs without losing either branch or metric class."
+    },
+    {
+      "id": 3737449090,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B uses the concrete term source-record grain and preserves the mismatch between task-level log counts, file-level failures, and the required separate totals."
+    },
+    {
+      "id": 3737449098,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B states the shared report-before-raise outcome directly while preserving the single-file call order and directory-mode comparison."
+    },
+    {
+      "id": 3737449101,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B directly says the nested secret is published and retains the top-level filtering limitation, unrestricted environment variables, recursive data shapes, serialization boundary, and safe test case."
+    }
+  ],
+  "readability_counts": {
+    "A": 2,
+    "B": 20,
+    "tie": 0
+  },
+  "technical_counts": {
+    "A": 1,
+    "B": 1,
+    "tie": 20
+  },
+  "dimension_winners": {
+    "immediate_comprehension": "B",
+    "consequence_clarity": "B",
+    "actionability": "B",
+    "evidence_preservation": "tie",
+    "jargon_load": "B",
+    "sentence_clarity": "B",
+    "tone": "tie",
+    "scanability": "B"
+  },
+  "overall_winner": "B",
+  "material_fact_losses": [
+    "B, comment 3737266652, omits the explicit requirements to record caught parsing and schema errors and allow valid rows to continue."
+  ],
+  "summary": "B is consistently easier to scan because it uses direct causal statements and concise corrective outcomes while preserving nearly all technical boundaries. A is stronger where B weakens the row-level failure-accounting contract, and A also gives the unknown-metric problem a more accurate semantics-focused title."
+}
+
+
+Wall time: 147.36 seconds

@@ -1,0 +1,166 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B names the publisher guard's one-sided comparison and makes the incorrect destination and rejection boundary explicit."
+    },
+    {
+      "id": 3737044354,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B makes the transactional requirement and prior-record survival assertion explicit while preserving the rollback limitation."
+    },
+    {
+      "id": 3737044361,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B removes the awkward temporal phrasing, while both versions preserve the canonical-repository and redirect-trigger facts."
+    },
+    {
+      "id": 3737044371,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B adds the important failure-path requirement not to discard the last complete ledger."
+    },
+    {
+      "id": 3737053181,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B states how consumers interpret the Boolean more directly, but both versions preserve the neutral-metric and schema-boundary facts."
+    },
+    {
+      "id": 3737053197,
+      "readability_winner": "B",
+      "technical_winner": "A",
+      "reason": "B makes the two silent-corruption outcomes easier to scan, but A explicitly requires rejected rows to enter the failure report."
+    },
+    {
+      "id": 3737053204,
+      "readability_winner": "B",
+      "technical_winner": "A",
+      "reason": "B makes the request-level transient failure easier to visualize, while A uses the more exact non-200 trigger in the title."
+    },
+    {
+      "id": 3737181823,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B identifies the deferred check by name and states the required conditional more directly."
+    },
+    {
+      "id": 3737266652,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B explicitly says valid rows continue while expected errors are recorded and unexpected errors remain visible."
+    },
+    {
+      "id": 3737266656,
+      "readability_winner": "B",
+      "technical_winner": "A",
+      "reason": "B is easier to scan and preserves branch and tag support, but A explicitly requires the resolved commit in recorded provenance."
+    },
+    {
+      "id": 3737266661,
+      "readability_winner": "A",
+      "technical_winner": "tie",
+      "reason": "A keeps the precise source-reference wording in the title, while both versions preserve exclusions-only persistence and exit semantics."
+    },
+    {
+      "id": 3737291965,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B uses more direct blocking language and clearly separates root symlinks from discovered children without changing the required file-symlink exception."
+    },
+    {
+      "id": 3737383919,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B's title covers both empty-filter failure modes, so the full impact is visible before the body."
+    },
+    {
+      "id": 3737383922,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B states early validation as the required gate, while both versions preserve the single-destination requirement."
+    },
+    {
+      "id": 3737449039,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B splits the causal explanation into direct statements and keeps every identity input and timestamp boundary."
+    },
+    {
+      "id": 3737449052,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B names the missing failure record directly and keeps the measured-versus-intentionally-skipped distinction."
+    },
+    {
+      "id": 3737449059,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B states the visibility requirement more directly while preserving both count roles."
+    },
+    {
+      "id": 3737449070,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B uses a more direct metric-key title, while both versions preserve the missing-spec, bounds, and unresolved-key requirements."
+    },
+    {
+      "id": 3737449081,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B explains why metric_id is needed for cross-source joins, but the mapping and identifier requirements are technically unchanged."
+    },
+    {
+      "id": 3737449090,
+      "readability_winner": "B",
+      "technical_winner": "B",
+      "reason": "B distinguishes file-level failure counts from converted output logs in the body, making the inconsistent denominator easier to see."
+    },
+    {
+      "id": 3737449098,
+      "readability_winner": "A",
+      "technical_winner": "tie",
+      "reason": "A uses plain save-the-report-before-raising wording, whereas B compresses the same requirement into a less readable label."
+    },
+    {
+      "id": 3737449101,
+      "readability_winner": "B",
+      "technical_winner": "tie",
+      "reason": "B makes the serialization destination and recursive coverage explicit, though both versions preserve the secret-filtering boundary and test constraint."
+    }
+  ],
+  "readability_counts": {
+    "A": 2,
+    "B": 20,
+    "tie": 0
+  },
+  "technical_counts": {
+    "A": 3,
+    "B": 7,
+    "tie": 12
+  },
+  "dimension_winners": {
+    "immediate_comprehension": "B",
+    "consequence_clarity": "B",
+    "actionability": "B",
+    "evidence_preservation": "A",
+    "jargon_load": "tie",
+    "sentence_clarity": "B",
+    "tone": "tie",
+    "scanability": "B"
+  },
+  "overall_winner": "B",
+  "material_fact_losses": [
+    "B, comment 3737053197, drops the explicit requirement that rejected rows enter the failure report.",
+    "B, comment 3737266656, omits that the resolved commit must also be recorded in provenance."
+  ],
+  "summary": "B is substantially easier to scan because it foregrounds concrete outcomes, names actors and checks directly, and states corrected behavior more explicitly. A preserves two material technical requirements more clearly—failure-ledger recording and resolved-commit provenance—so B wins readability overall while A wins evidence preservation."
+}
+
+
+Wall time: 227.93 seconds

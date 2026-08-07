@@ -36,6 +36,23 @@ The report row, inline body, reproduction target, and adversarial target use the
 ID reuse produces an inline body only when the finding is otherwise eligible
 for a new inline; ordinary prior-feedback carry-forwards do not create a new inline thread.
 
+Before rewriting, make a private fact lock from the final synthesized finding.
+Record only:
+
+- code identifiers, numbers, and quoted diagnostics;
+- technical verbs and actor-action-target relationships;
+- triggers and conditions;
+- quantifiers, scope words, and certainty such as `all`, `only`, `can`, and
+  `must`;
+- the concrete bad result;
+- valid behavior that the fix must preserve.
+
+Do not put the fact lock in the comment. Compare the draft with the fact lock.
+Every relationship and boundary must still match.
+Clarity does not permit a stronger, broader, or different claim.
+If shorter wording changes a fact, restore the fact and simplify a different
+part of the sentence.
+
 Write the body in this order:
 
 1. **Problem:** Name the code behavior and trigger.
