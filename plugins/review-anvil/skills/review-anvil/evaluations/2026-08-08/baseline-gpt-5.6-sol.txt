@@ -1,0 +1,75 @@
+Working...
+{
+  "immediate_comprehension": 4,
+  "consequence_clarity": 4,
+  "actionability": 4,
+  "evidence_preservation": 5,
+  "jargon_load": 3,
+  "sentence_clarity": 4,
+  "tone": 5,
+  "scanability": 4,
+  "overall_readability": 4,
+  "correctness_risk": "low",
+  "hardest_comments": [
+    {
+      "id": 3737042592,
+      "reason": "The phrases \"publisher base,\" \"immediate child of canonical data,\" and \"mismatched source\" require the reader to reconstruct the intended directory invariant."
+    },
+    {
+      "id": 3737044371,
+      "reason": "The impact is understandable, but \"atomic report replacement,\" \"fully clean runs,\" and \"last complete ledger\" compress several behaviors into an abstract proposed outcome."
+    },
+    {
+      "id": 3737053181,
+      "reason": "The Boolean contradiction is clear, but the comment does not identify a concrete safe behavior available within the current schema."
+    },
+    {
+      "id": 3737449059,
+      "reason": "The distinction among dataset size, effective population, score coverage, and provenance is technically important but cognitively dense on a first read."
+    },
+    {
+      "id": 3737449081,
+      "reason": "Terms such as \"cross-source join key,\" \"canonical global IDs,\" and \"stable namespaced IDs\" make the requested data-model behavior harder to visualize."
+    }
+  ],
+  "strongest_comments": [
+    {
+      "id": 3737044354,
+      "reason": "It names the destructive ordering, explains exactly how prior records can be lost, and states the required durability property without overprescribing code."
+    },
+    {
+      "id": 3737291965,
+      "reason": "It clearly distinguishes root symlinks from discovered child symlinks, preserves the relevant API behavior, and defines the test boundary."
+    },
+    {
+      "id": 3737449039,
+      "reason": "It directly connects retrieval time in `evaluation_id` to duplicate evaluations and clearly separates stable identity inputs from retrieval metadata."
+    }
+  ],
+  "recurring_failures": [
+    "Several comments state the remedy through abstract domain language rather than first naming the corrected observable behavior.",
+    "Dense clusters of related nouns—identity, provenance, coverage, accounting, routing, and semantics—sometimes force readers to infer how the concepts differ.",
+    "Some suggestions use tentative phrasing such as \"could\" or \"can\" where the required invariant should be explicit.",
+    "A few comments combine the correction and proposed test coverage in one compressed sentence, weakening the main next step.",
+    "The top-level report repeats status information across the summary, earlier-comments section, and things-to-try section, increasing scan time."
+  ],
+  "preserve": [
+    "Specific identifiers, functions, fields, flags, paths, and triggering inputs.",
+    "Concrete failure outcomes such as data loss, duplicate identity, silent conversion loss, and misleading success.",
+    "Clear distinctions between expected data errors and unexpected program or infrastructure failures.",
+    "Boundary-preserving guidance that states which existing behaviors should remain unchanged.",
+    "Calm, proportionate language and severity labels.",
+    "Focused test scenarios when they clarify the affected boundary."
+  ],
+  "recommended_contract": [
+    "Open with one direct sentence naming the trigger and incorrect observable behavior.",
+    "State the concrete user, data, or automation consequence immediately after the problem.",
+    "Express the correction as a required invariant before mentioning implementation options.",
+    "Keep identifiers and code-path facts, but explain specialized domain terms at their first use.",
+    "Use each sentence for one role: problem, consequence, expected behavior, or verification.",
+    "Include test guidance only when it identifies a boundary not already obvious from the expected behavior."
+  ]
+}
+
+
+Wall time: 33.37 seconds

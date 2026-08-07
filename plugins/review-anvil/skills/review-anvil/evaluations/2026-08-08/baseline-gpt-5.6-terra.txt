@@ -1,0 +1,75 @@
+Working...
+{
+  "immediate_comprehension": 4,
+  "consequence_clarity": 4,
+  "actionability": 4,
+  "evidence_preservation": 5,
+  "jargon_load": 3,
+  "sentence_clarity": 3,
+  "tone": 5,
+  "scanability": 4,
+  "overall_readability": 4,
+  "correctness_risk": "low",
+  "hardest_comments": [
+    {
+      "id": 3737181823,
+      "reason": "The schema-validation, raw-dictionary, flat-ID, and path-component distinctions require the reader to reconstruct several conditional branches before understanding the duplicate diagnostic."
+    },
+    {
+      "id": 3737291965,
+      "reason": "The explanation is accurate but requires familiarity with symlink resolution, walk roots, discovered children, and glob expansion to identify the boundary."
+    },
+    {
+      "id": 3737449101,
+      "reason": "The nested serialization path and version-specific configuration detail make the secret-exposure trigger harder to absorb on a first pass."
+    },
+    {
+      "id": 3737449059,
+      "reason": "The distinction between original and effective document counts, score coverage, uncertainty, and dataset provenance is conceptually dense."
+    },
+    {
+      "id": 3737053204,
+      "reason": "The comment combines HTTP-status handling, map reconstruction, overwrite behavior, and an exception for expected 401 responses in a compact space."
+    }
+  ],
+  "strongest_comments": [
+    {
+      "id": 3737044354,
+      "reason": "It names the destructive operation, explains why rollback cannot restore prior records, and gives a clear durability target."
+    },
+    {
+      "id": 3737449039,
+      "reason": "It directly connects retrieval time in the identifier to duplicate re-ingest results and separates stable identity inputs from metadata."
+    },
+    {
+      "id": 3737383919,
+      "reason": "It contrasts the bare-option and no-match cases with concrete outcomes, making both the risk and the expected validation behavior immediately clear."
+    }
+  ],
+  "recurring_failures": [
+    "Several comments lead with implementation-path detail before stating the user-visible or operational outcome.",
+    "Dense sentences often combine trigger, control-flow explanation, exception case, and remedy into one unit.",
+    "Domain labels such as `source-accounting`, `metric-semantics`, and `schema-deferral` are useful classifications but do not always orient a reader unfamiliar with the review taxonomy.",
+    "Some remedies introduce abstractions or implementation terms before establishing the corrected behavior, such as “atomic report replacement” or “narrow boundary.”",
+    "A few comments use pronouns or compressed references—“this condition,” “that step,” “the first path”—that require rereading nearby sentences."
+  ],
+  "preserve": [
+    "Concrete identifiers, paths, option names, field names, and values that make each claim auditable.",
+    "Explicit trigger-to-outcome chains, especially concrete examples such as paths, malformed inputs, and retry statuses.",
+    "Clear separation of expected failures from unexpected program or infrastructure errors.",
+    "Behavior-focused recommendations that leave implementation choice to the author.",
+    "Calm, proportionate severity language and acknowledgment of behavior that should remain unchanged.",
+    "Titles that pair a stable finding ID, severity, category, and concise issue summary."
+  ],
+  "recommended_contract": [
+    "State the concrete bad outcome in the first sentence after the title; follow with the code-path explanation only as needed.",
+    "Use one sentence for the trigger, one for the consequence, and one for the expected corrected behavior.",
+    "Keep exact identifiers, inputs, paths, counts, and branch conditions whenever they establish the claim.",
+    "Expand or replace review-taxonomy labels with a plain-language problem statement in the title or opening sentence.",
+    "Describe the required behavior before naming a possible mechanism such as a boundary, ledger, sanitizer, or atomic replacement.",
+    "When preserving exceptions or existing behavior, state them in a final sentence beginning with the affected case."
+  ]
+}
+
+
+Wall time: 46.65 seconds

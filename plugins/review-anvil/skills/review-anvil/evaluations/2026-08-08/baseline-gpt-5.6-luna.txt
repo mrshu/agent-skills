@@ -1,0 +1,75 @@
+Working...
+{
+  "immediate_comprehension": 4,
+  "consequence_clarity": 4,
+  "actionability": 4,
+  "evidence_preservation": 5,
+  "jargon_load": 3,
+  "sentence_clarity": 4,
+  "tone": 5,
+  "scanability": 4,
+  "overall_readability": 4,
+  "correctness_risk": "low",
+  "hardest_comments": [
+    {
+      "id": 3737181823,
+      "reason": "The interaction between schema validation, raw dictionaries, semantic checks, and identity-path warnings requires several domain-specific concepts to be held together."
+    },
+    {
+      "id": 3737044354,
+      "reason": "The preflight, rollback, file-creation, and route-transition sequence is accurate but makes the failure window difficult to visualize on a first read."
+    },
+    {
+      "id": 3737053197,
+      "reason": "It combines malformed uncertainty, count handling, denominator fallback, and failure-report behavior, creating several distinct validation claims in a compact paragraph."
+    },
+    {
+      "id": 3737449090,
+      "reason": "The distinction between task-level output logs, file-level failures, source-record grain, and coverage denominators assumes an accounting model that is not explained."
+    },
+    {
+      "id": 3737042592,
+      "reason": "The path-depth problem is concrete but the canonical-data invariant and proposed immediate-child guard require repository-specific context."
+    }
+  ],
+  "strongest_comments": [
+    {
+      "id": 3737449039,
+      "reason": "It identifies the unstable identity input, states the duplicate-ingestion consequence, and gives a bounded correction while preserving retrieval time for metadata."
+    },
+    {
+      "id": 3737291965,
+      "reason": "It clearly separates direct-root symlinks from discovered child symlinks and explicitly preserves file-symlink behavior."
+    },
+    {
+      "id": 3737266661,
+      "reason": "It states the exact exclusions-only failure mode and cleanly separates report persistence from the conditional nonzero exit status."
+    }
+  ],
+  "recurring_failures": [
+    "Several comments front-load multiple internal abstractions before stating the user-visible consequence.",
+    "Accounting comments use terms such as grain, denominator, ledger, and coverage without defining the unit being counted.",
+    "Some comments combine multiple validation branches or failure modes that would scan more easily as separate sentences.",
+    "Proposed fixes are generally clear, but the required behavior could be stated before implementation-oriented mechanisms.",
+    "Technical identifiers and path examples are preserved well, sometimes at the cost of first-read accessibility."
+  ],
+  "preserve": [
+    "The consistent problem-impact-action paragraph order.",
+    "Concrete identifiers, line references, triggers, and representative input or output examples.",
+    "Explicit boundaries around behavior that should remain unchanged.",
+    "Calm, respectful, code-focused tone.",
+    "Separation of required fixes from optional test coverage suggestions.",
+    "Precise distinction between data loss, reporting loss, identity instability, and exit-status behavior."
+  ],
+  "recommended_contract": [
+    "State the violated invariant or user-visible problem in the title and first sentence.",
+    "Give one concrete trigger and one observable bad outcome before introducing internal terminology.",
+    "Use one main claim per sentence; split separate failure modes into separate sentences.",
+    "Define accounting terms such as source, record, grain, and denominator at first use.",
+    "Put the required corrected behavior first in the action paragraph, followed by implementation options.",
+    "End by naming preserved behavior or boundary conditions only when they prevent a likely overcorrection."
+  ]
+}
+
+
+Wall time: 57.96 seconds
