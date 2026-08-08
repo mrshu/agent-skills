@@ -1,0 +1,26 @@
+{
+  "995000019001": {
+    "A": "polite",
+    "B": "baseline"
+  },
+  "995000019002": {
+    "A": "baseline",
+    "B": "polite"
+  },
+  "995000020303": {
+    "A": "polite",
+    "B": "baseline"
+  },
+  "995000020304": {
+    "A": "polite",
+    "B": "baseline"
+  },
+  "995000020405": {
+    "A": "baseline",
+    "B": "polite"
+  },
+  "995000020406": {
+    "A": "baseline",
+    "B": "polite"
+  }
+}

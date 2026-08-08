@@ -1,0 +1,52 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3725727488,
+      "ranking": ["B", "A", "C"],
+      "winner": "B",
+      "reason": "B states both requested changes directly and precisely, while A weakens the callback requirement and C splits it into a choppier explanation."
+    },
+    {
+      "id": 3725776266,
+      "ranking": ["A", "C", "B"],
+      "winner": "A",
+      "reason": "A clearly frames both clauses as documentation changes, avoiding C's less precise pronoun and B's implementation-like wording."
+    },
+    {
+      "id": 3725827214,
+      "ranking": ["B", "C", "A"],
+      "winner": "B",
+      "reason": "B makes the contrasting validation routes immediately actionable, with clearer control-flow language than the alternatives."
+    },
+    {
+      "id": 3725830949,
+      "ranking": ["A", "B", "C"],
+      "winner": "A",
+      "reason": "A separates the prerequisite from the explicit post-rebase test request, making the sequence and expected verification easiest to scan."
+    },
+    {
+      "id": 3725853144,
+      "ranking": ["B", "C", "A"],
+      "winner": "B",
+      "reason": "B directly identifies where vendored resolution applies and what fallback to retain, without A's abstract boundary language or C's awkward phrasing."
+    },
+    {
+      "id": 3725913011,
+      "ranking": ["B", "C", "A"],
+      "winner": "B",
+      "reason": "B states the requested batching behavior as a firm action, whereas A weakens it with capability language and C makes the relationship slightly less direct."
+    }
+  ],
+  "winner_counts": {
+    "A": 2,
+    "B": 4,
+    "C": 0
+  },
+  "overall_ranking": ["B", "A", "C"],
+  "recommended_version": "B",
+  "summary": "B most consistently turns the diagnosis into a direct, concrete change request with minimal interpretive effort. A is usually clear but sometimes uses weaker or more abstract language, while C is more often choppy, indirect, or awkwardly phrased."
+}
+
+
+Wall time: 31.08 seconds

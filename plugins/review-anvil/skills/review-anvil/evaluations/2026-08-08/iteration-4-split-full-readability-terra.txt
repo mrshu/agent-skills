@@ -1,0 +1,232 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "ranking": ["A", "B"],
+      "winner": "A",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 4},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 1, "actionability": 4, "tone": 4, "cognitive_ease": 4}
+      },
+      "reason": "A states the requested rejection and tests as future work, while B makes them sound already implemented."
+    },
+    {
+      "id": 3737044354,
+      "ranking": ["A", "B"],
+      "winner": "A",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 4},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 1, "actionability": 4, "tone": 4, "cognitive_ease": 4}
+      },
+      "reason": "A clearly asks for recoverable replacement behavior and coverage, whereas B incorrectly frames both as completed."
+    },
+    {
+      "id": 3737044361,
+      "ranking": ["B", "A"],
+      "winner": "B",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 1, "actionability": 4, "tone": 4, "cognitive_ease": 4},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 4}
+      },
+      "reason": "B preserves the direct problem heading and explicitly requests the identity and routing split."
+    },
+    {
+      "id": 3737044371,
+      "ranking": ["B", "A"],
+      "winner": "B",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 1, "actionability": 4, "tone": 4, "cognitive_ease": 4},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 5}
+      },
+      "reason": "B directly asks for an atomic replacement policy, while A describes a corrected path as though it exists."
+    },
+    {
+      "id": 3737053181,
+      "ranking": ["B", "A"],
+      "winner": "B",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 1, "actionability": 4, "tone": 4, "cognitive_ease": 4},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 5}
+      },
+      "reason": "B separates the misleading Boolean signal from the explicit request for neutral-measure representation."
+    },
+    {
+      "id": 3737053197,
+      "ranking": ["A", "B"],
+      "winner": "A",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 4},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 1, "actionability": 4, "tone": 4, "cognitive_ease": 4}
+      },
+      "reason": "A makes the separate validation rules and optional-cell boundary explicit as requested work."
+    },
+    {
+      "id": 3737053204,
+      "ranking": ["A", "B"],
+      "winner": "A",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 4},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 1, "actionability": 4, "tone": 4, "cognitive_ease": 4}
+      },
+      "reason": "A gives three direct, independently understandable changes without presenting the failure handling as fixed."
+    },
+    {
+      "id": 3737181823,
+      "ranking": ["B", "A"],
+      "winner": "B",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 1, "actionability": 4, "tone": 4, "cognitive_ease": 4},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 4}
+      },
+      "reason": "B directly requests deferral for the invalid developer type and preserves the valid-string boundary."
+    },
+    {
+      "id": 3737266652,
+      "ranking": ["A", "B"],
+      "winner": "A",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 5},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 1, "actionability": 4, "tone": 4, "cognitive_ease": 4}
+      },
+      "reason": "A clearly asks for a narrow expected-error boundary while retaining visibility for unexpected failures."
+    },
+    {
+      "id": 3737266656,
+      "ranking": ["B", "A"],
+      "winner": "B",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 1, "actionability": 4, "tone": 4, "cognitive_ease": 4},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 5}
+      },
+      "reason": "B explicitly asks to resolve supplied references once and immediately explains the reproducibility benefit."
+    },
+    {
+      "id": 3737266661,
+      "ranking": ["B", "A"],
+      "winner": "B",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 1, "actionability": 4, "tone": 4, "cognitive_ease": 4},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 5}
+      },
+      "reason": "B makes saving the report and retaining failure-only exit behavior clear future actions."
+    },
+    {
+      "id": 3737291965,
+      "ranking": ["A", "B"],
+      "winner": "A",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 4},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 1, "actionability": 4, "tone": 4, "cognitive_ease": 4}
+      },
+      "reason": "A directly requests the directory-symlink boundary and the two relevant test cases."
+    },
+    {
+      "id": 3737383919,
+      "ranking": ["A", "B"],
+      "winner": "A",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 4},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 1, "actionability": 4, "tone": 4, "cognitive_ease": 4}
+      },
+      "reason": "A names both required CLI safeguards as requests, whereas B makes the required behavior appear already corrected."
+    },
+    {
+      "id": 3737383922,
+      "ranking": ["A", "B"],
+      "winner": "A",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 5},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 1, "actionability": 4, "tone": 4, "cognitive_ease": 4}
+      },
+      "reason": "A directly requests early validation of the documented path shape and ties it to all affected destinations."
+    },
+    {
+      "id": 3737449039,
+      "ranking": ["A", "B"],
+      "winner": "A",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 4},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 1, "actionability": 4, "tone": 4, "cognitive_ease": 4}
+      },
+      "reason": "A turns every stable-identity component into an unambiguous requested change."
+    },
+    {
+      "id": 3737449052,
+      "ranking": ["B", "A"],
+      "winner": "B",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 1, "actionability": 4, "tone": 4, "cognitive_ease": 4},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 4}
+      },
+      "reason": "B explicitly requests failure-ledger treatment while preserving the exclusion distinction."
+    },
+    {
+      "id": 3737449059,
+      "ranking": ["B", "A"],
+      "winner": "B",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 1, "actionability": 4, "tone": 4, "cognitive_ease": 4},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 5}
+      },
+      "reason": "B breaks the count-preservation request into two immediately actionable statements."
+    },
+    {
+      "id": 3737449070,
+      "ranking": ["A", "B"],
+      "winner": "A",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 4},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 1, "actionability": 4, "tone": 4, "cognitive_ease": 4}
+      },
+      "reason": "A directly requests verified metric semantics and the unresolved-key reporting behavior."
+    },
+    {
+      "id": 3737449081,
+      "ranking": ["B", "A"],
+      "winner": "B",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 1, "actionability": 4, "tone": 4, "cognitive_ease": 4},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 4}
+      },
+      "reason": "B clearly requests the existing definition mapping as the source of global and namespaced metric IDs."
+    },
+    {
+      "id": 3737449090,
+      "ranking": ["A", "B"],
+      "winner": "A",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 5},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 1, "actionability": 4, "tone": 4, "cognitive_ease": 4}
+      },
+      "reason": "A gives two direct changes that restore one source unit and retain a separate output-log count."
+    },
+    {
+      "id": 3737449098,
+      "ranking": ["B", "A"],
+      "winner": "B",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 2, "actionability": 4, "tone": 4, "cognitive_ease": 4},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 5}
+      },
+      "reason": "B explicitly asks for the local file-result path, while A presents its desired effect as current behavior."
+    },
+    {
+      "id": 3737449101,
+      "ranking": ["A", "B"],
+      "winner": "A",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 4},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 1, "actionability": 4, "tone": 4, "cognitive_ease": 4}
+      },
+      "reason": "A directly requests recursive sanitization and targeted coverage without suggesting the secret-protection gap is already closed."
+    }
+  ],
+  "winner_counts": {"A": 12, "B": 10},
+  "overall_ranking": ["A", "B"],
+  "recommended_version": "A",
+  "summary": "A wins narrowly because it more consistently preserves the review-comment stance by stating requested changes as direct future actions. B often improves headline compression, but its repeated corrected-path and fix wording can make a pull-request author mistake the requested work for code already present."
+}
+
+
+Wall time: 109.19 seconds

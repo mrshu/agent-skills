@@ -1,0 +1,17 @@
+{
+  "per_comment": [
+    {
+      "id": 995000019002,
+      "verdict": "fact_loss",
+      "reason": "The source proposes that exact canonical IDs can win first; it does not state that a fix has been implemented. “In the fix” and “win first” falsely assert the remediation already exists."
+    },
+    {
+      "id": 995000020406,
+      "verdict": "fact_loss",
+      "reason": "The source says `accuracy` can remain the metric ID as a proposed remediation, not that a patch does so. “In the fix” and “remains” falsely claim implementation."
+    }
+  ],
+  "fact_safe_count": 0,
+  "fact_loss_count": 2,
+  "summary": "Both candidates convert proposed remediations into assertions about an existing fix. The sources do not establish that either change has already been implemented."
+}

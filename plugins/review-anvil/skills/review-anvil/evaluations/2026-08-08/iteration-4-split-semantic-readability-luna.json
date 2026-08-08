@@ -1,0 +1,76 @@
+{
+  "per_comment": [
+    {
+      "id": 3725747241,
+      "ranking": [
+        "B",
+        "A",
+        "C"
+      ],
+      "winner": "B",
+      "reason": "B states the exact field replacement in the heading while retaining a clear explanation and direct routing-specific requests."
+    },
+    {
+      "id": 3725871268,
+      "ranking": [
+        "B",
+        "A",
+        "C"
+      ],
+      "winner": "B",
+      "reason": "B expresses the parser requirement as a concrete capability and pairs it with explicit coverage for both relevant cases."
+    },
+    {
+      "id": 3726043677,
+      "ranking": [
+        "B",
+        "A",
+        "C"
+      ],
+      "winner": "B",
+      "reason": "B separates the rescaling gate, publication decision, and provenance requirement into the clearest actionable sequence."
+    },
+    {
+      "id": 3726043685,
+      "ranking": [
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "A",
+      "reason": "A presents the dependency conflict and resulting failure together, then gives the clearest required interim behavior."
+    },
+    {
+      "id": 3729389316,
+      "ranking": [
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "A",
+      "reason": "A cleanly separates the parsing failure, future publication risk, and requested table-level handling."
+    },
+    {
+      "id": 3729389321,
+      "ranking": [
+        "B",
+        "C",
+        "A"
+      ],
+      "winner": "B",
+      "reason": "B makes the missing package-data entry, installed-wheel consequence, and two concrete fixes easiest to scan."
+    }
+  ],
+  "winner_counts": {
+    "A": 2,
+    "B": 4,
+    "C": 0
+  },
+  "overall_ranking": [
+    "B",
+    "A",
+    "C"
+  ],
+  "recommended_version": "B",
+  "summary": "B wins most often because it makes the requested implementation behavior explicit without sacrificing the causal explanation. A remains strong when its integrated problem-and-consequence structure improves flow, while C is weakened by indirect phrasing or unnecessary repetition."
+}

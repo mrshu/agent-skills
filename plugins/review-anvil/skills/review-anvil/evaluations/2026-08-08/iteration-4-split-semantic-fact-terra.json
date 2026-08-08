@@ -1,0 +1,66 @@
+{
+  "per_comment": [
+    {
+      "id": 3725747241,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3725871268,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3726043677,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3726043685,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_safe"
+      },
+      "fact_losses": [
+        "B: Changes the requested remediation from requiring `--dump` in the current environment to merely using it, losing the enforcement requirement."
+      ]
+    },
+    {
+      "id": 3729389316,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3729389321,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 6,
+    "B": 5,
+    "C": 6
+  },
+  "summary": "Candidates A and C preserve all material technical facts across the six comments. Candidate B loses the required enforcement of `--dump` for the incompatible declared environment in comment 3726043685."
+}

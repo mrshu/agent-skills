@@ -1,0 +1,21 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 995000019002,
+      "verdict": "fact_safe",
+      "reason": "The candidate preserves the collision diagnostic and converts both proposed constraints into direct imperatives. “Let” and “Resolve” request exact-ID precedence and single-owner normalized resolution; they do not claim those behaviors are already implemented."
+    },
+    {
+      "id": 995000020406,
+      "verdict": "fact_safe",
+      "reason": "The candidate preserves the nine benchmark-specific IDs, the fragmented global join key, and both requested identity changes. “Keep” and “Use” are direct requests to the PR author, not claims about the current implementation."
+    }
+  ],
+  "fact_safe_count": 2,
+  "fact_loss_count": 0,
+  "summary": "Both candidates preserve the material diagnostics and requested remediations. Their imperative wording does not falsely present either remediation as already implemented."
+}
+
+
+Wall time: 17.16 seconds

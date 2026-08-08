@@ -1,0 +1,20 @@
+[
+  {
+    "id": 995000019002,
+    "source": "**RAV-RUN2-R1-F011 [medium] registry-identity** — Normalized organization collisions can rewrite an exact canonical ID to another canonical organization.\n\nExact canonical IDs can win first. Normalized spellings can resolve only when one organization owns them.",
+    "candidate": "**RAV-RUN2-R1-F011 [medium] registry-identity** — Normalized organization collisions can rewrite an exact canonical ID to another canonical organization\n\nPlease make exact canonical IDs win first. Resolve normalized spellings only when one organization owns them.",
+    "claimed_loss": "B: Presents exact canonical IDs winning first and normalized spellings resolving only for uniquely owning organizations as already implemented in the fix."
+  },
+  {
+    "id": 995000020405,
+    "source": "**RAV-RUN2-R1-F002 [medium] repository-integration** — The adapter remains under the retired `utils` layout. Installed packages include `every_eval_ever*`, so this adapter and its documented command are outside the active package.\n\nCurrent main can be integrated before moving the adapter and references under `every_eval_ever/adapters/open_medical_llm`. Tests can use the imported schema version.",
+    "candidate": "**RAV-RUN2-R1-F002 [medium] repository-integration** — The adapter remains under the retired `utils` layout\n\nInstalled packages include `every_eval_ever*`, so this adapter and its documented command are outside the active package.\n\nPlease integrate current main before moving the adapter and references under `every_eval_ever/adapters/open_medical_llm`. Use the imported schema version in tests.",
+    "claimed_loss": "B: Presents integrating current main before moving the adapter and references, and using the imported schema version in tests, as already implemented in the fix."
+  },
+  {
+    "id": 995000020406,
+    "source": "**RAV-RUN2-R1-F004 [medium] metric-identity** — Ordinary accuracy receives nine benchmark-specific metric IDs. This fragments the global accuracy join key.\n\n`accuracy` can remain the metric ID while task-specific evaluation names preserve benchmark identity.",
+    "candidate": "**RAV-RUN2-R1-F004 [medium] metric-identity** — Ordinary accuracy receives nine benchmark-specific metric IDs\n\nThis fragments the global accuracy join key.\n\nPlease keep `accuracy` as the metric ID while task-specific evaluation names preserve benchmark identity.",
+    "claimed_loss": "B: Presents keeping `accuracy` as the metric ID while preserving benchmark identity in task-specific evaluation names as already implemented in the fix."
+  }
+]

@@ -1,0 +1,234 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: “The fix rejects every publisher base...” presents the requested rejection change as already implemented."
+      ]
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: “The corrected replacement path retains recoverable old files...” presents the requested replacement-path change as already implemented."
+      ]
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "A: “A redirect change makes...” changes the source’s conditional possibility into a definite outcome, overstating diagnostic certainty.",
+        "B: “The fix keeps the raw dataset model path...” presents the requested identity remediation as already implemented."
+      ]
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: “The corrected path atomically replaces the report...” presents the requested report-replacement change as already implemented."
+      ]
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: “The fix adds a shared representation...” presents the requested neutral-measure representation as already implemented."
+      ]
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: “The corrected validation uses separate rules...” presents the requested validation change as already implemented."
+      ]
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: “The corrected path leaves the existing output unchanged...” presents the requested incomplete-sweep behavior as already implemented."
+      ]
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: “The corrected check defers...” presents the requested schema-deferral change as already implemented."
+      ]
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: “The corrected boundary catches...” presents the requested error-boundary change as already implemented."
+      ]
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: “The corrected path resolves every supplied reference once.” presents the requested snapshot-resolution change as already implemented."
+      ]
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: “The corrected path saves it for either collection...” presents the requested exclusions-report change as already implemented."
+      ]
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: “The corrected expansion rejects directory-target symlinks...” presents the requested symlink-handling change as already implemented."
+      ]
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: “The fix requires one or more values” and “The corrected no-match path stops...” present both requested CLI changes as already implemented."
+      ]
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: “The fix validates the documented data/wild shape early...” presents the requested output-path validation as already implemented."
+      ]
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: “The corrected stable ID uses...” presents the requested stable-identity change as already implemented."
+      ]
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: “The corrected path puts a file...” presents the requested failure-ledger change as already implemented."
+      ]
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: “The fix keeps both counts visible...” presents the requested score-coverage representation as already implemented."
+      ]
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: “The corrected path reports unresolved keys...” presents the requested unresolved-key handling as already implemented."
+      ]
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: “The fix uses the same metric-definition mapping...” presents the requested metric-ID change as already implemented."
+      ]
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: “The corrected totals keep results files...” presents the requested totals-grain change as already implemented."
+      ]
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: “A lighteval-local file-result path gives...” presents the requested file-result path as already implemented."
+      ]
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: “The fix applies one recursive sanitizer...” presents the requested credential-sanitization change as already implemented."
+      ]
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 13,
+    "B": 1
+  },
+  "summary": "Candidate A is fact-safe for 13 of 22 comments; its losses are primarily remediation phrasing that asserts an implemented fix, plus one overstatement of diagnostic certainty. Candidate B is fact-safe for 1 of 22 comments because nearly every other B candidate presents requested remediation as already implemented."
+}
+
+
+Wall time: 104.02 seconds

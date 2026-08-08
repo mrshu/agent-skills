@@ -1,0 +1,73 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 995000019001,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents use of the shared top-level parser and the offline entry-point test as already present in a fix rather than requested remediation."
+      ]
+    },
+    {
+      "id": 995000019002,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: Presents exact-canonical-ID precedence and uniquely owned normalized-spelling resolution as already present in a fix rather than requested remediation."
+      ]
+    },
+    {
+      "id": 995000020303,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents the required smoke-output path and quoted fixed-depth validator glob as already present in a fix rather than requested remediation."
+      ]
+    },
+    {
+      "id": 995000020304,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents invalid-score failure reporting, omission of incomplete token usage, and complete-value-only token means as already present in a fix rather than requested remediation."
+      ]
+    },
+    {
+      "id": 995000020405,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents integration of current main, relocation of the adapter and references, and use of the imported schema version in tests as already present in a fix rather than requested remediation."
+      ]
+    },
+    {
+      "id": 995000020406,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: Presents the shared `accuracy` metric ID and task-specific evaluation names as already present in a fix rather than requested remediation."
+      ]
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 4,
+    "B": 2
+  },
+  "summary": "All candidates preserve the substantive diagnosis and remediation details. The only fact losses are candidates that recast proposed remediation as code already present by describing it as being implemented \"in the fix.\""
+}
+
+
+Wall time: 34.15 seconds

@@ -1,0 +1,229 @@
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents the requested rejection, mismatched-source test, and `collection_override` test as an existing fix and coverage."
+      ]
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents retaining recoverable old files and the mid-write failure test as an existing corrected path."
+      ]
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: Presents using the raw dataset model path for identity and the reconciled repository for metadata and routing as an existing fix."
+      ]
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: Presents atomic report replacement after successful publication as an existing corrected path."
+      ]
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: Presents adding a shared representation for neutral measures as an existing fix."
+      ]
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents separate validation rules and preserving empty optional cells as an existing corrected validation path."
+      ]
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents preserving existing output on an incomplete sweep and returning nonzero as an existing corrected path."
+      ]
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: Presents deferring the flat-ID check for an invalid developer and retaining the schema-valid warning path as an existing corrected check."
+      ]
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents the narrow error boundary and visibility of unexpected errors as an existing corrected boundary."
+      ]
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: Presents resolving every supplied reference once as an existing corrected path."
+      ]
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: Presents saving the shared report for either collection as an existing corrected path."
+      ]
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents rejection of direct and glob-expanded directory-target symlinks and the requested test coverage as an existing corrected expansion."
+      ]
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents requiring `--models` values and stopping no-match runs before discovery or publication as existing fixes."
+      ]
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents early validation of the documented `data/wild` shape as an existing fix."
+      ]
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents the stable `evaluation_id` composition and keeping retrieval time only in `retrieved_timestamp` as an existing corrected implementation."
+      ]
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: Presents adding measured-but-unconvertible files to the failure ledger and preserving derived-row files as exclusions as an existing corrected path."
+      ]
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: Presents retaining both counts and identifying their score-coverage and dataset-provenance roles as an existing fix."
+      ]
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents using source or operator metric definitions and reporting unresolved keys as an existing corrected path."
+      ]
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: Presents supplying canonical and namespaced metric IDs through the metric-definition mapping as an existing fix."
+      ]
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents using results files as the source-record grain and separately reporting output-log count as existing corrected totals."
+      ]
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: Presents the lighteval-local file-result path and report-before-raise behavior as already present."
+      ]
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents the recursive sanitizer and provider-prefixed-key test coverage as an existing fix."
+      ]
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 12,
+    "B": 10
+  },
+  "summary": "Both candidates preserve the technical diagnosis, triggers, boundaries, identifiers, and severity for their fact-safe rows. Every fact-loss result recasts source-proposed remediation or test coverage as code or tests already present in a review-only context."
+}

@@ -1,0 +1,72 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 995000019001,
+      "ranking": ["A", "B"],
+      "winner": "A",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 5},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 4, "actionability": 5, "tone": 5, "cognitive_ease": 4}
+      },
+      "reason": "A separates the failing behavior and consequence, then gives unambiguous imperative instructions rather than describing the intended fix as if it were already present."
+    },
+    {
+      "id": 995000019002,
+      "ranking": ["B", "A"],
+      "winner": "B",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 4, "actionability": 5, "tone": 5, "cognitive_ease": 4},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 5}
+      },
+      "reason": "B makes both requested precedence rules explicit commands, while A's “In the fix” phrasing can initially read as a statement about current behavior."
+    },
+    {
+      "id": 995000020303,
+      "ranking": ["A", "B"],
+      "winner": "A",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 5},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 4, "actionability": 5, "tone": 5, "cognitive_ease": 4}
+      },
+      "reason": "A isolates the two independent failures and directly tells the author which output path and validator argument to use."
+    },
+    {
+      "id": 995000020304,
+      "ranking": ["A", "B"],
+      "winner": "A",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 5},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 4, "actionability": 5, "tone": 5, "cognitive_ease": 4}
+      },
+      "reason": "A gives each data-handling failure its own sentence and follows with direct, concrete changes for reporting and token aggregation."
+    },
+    {
+      "id": 995000020405,
+      "ranking": ["A", "B"],
+      "winner": "A",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 4},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 4, "actionability": 5, "tone": 5, "cognitive_ease": 4}
+      },
+      "reason": "A plainly instructs the integration order, destination path, and test adjustment instead of presenting those changes as completed work."
+    },
+    {
+      "id": 995000020406,
+      "ranking": ["B", "A"],
+      "winner": "B",
+      "scores": {
+        "A": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 4, "actionability": 5, "tone": 5, "cognitive_ease": 4},
+        "B": {"problem_clarity": 5, "consequence_clarity": 5, "requested_change_clarity": 5, "actionability": 5, "tone": 5, "cognitive_ease": 5}
+      },
+      "reason": "B gives the fragmentation consequence its own sentence and uses direct commands for the stable metric ID and benchmark-specific names."
+    }
+  ],
+  "winner_counts": {"A": 4, "B": 2},
+  "overall_ranking": ["A", "B"],
+  "recommended_version": "A",
+  "summary": "A is generally easier to act on because it separates independent failures and uses direct imperative requests. B is stronger where its commands improve the flow, but its recurring “In the fix” wording can make requested behavior sound already implemented."
+}
+
+
+Wall time: 42.65 seconds

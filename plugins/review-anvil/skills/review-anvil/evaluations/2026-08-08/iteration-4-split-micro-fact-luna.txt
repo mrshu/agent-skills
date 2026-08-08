@@ -1,0 +1,73 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 995000019001,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents the requested shared-parser change and offline entry-point test as already implemented in the fix."
+      ]
+    },
+    {
+      "id": 995000019002,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents exact canonical-ID precedence and unique-owner handling for normalized spellings as already implemented in the fix."
+      ]
+    },
+    {
+      "id": 995000020303,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: Presents the required smoke-output path and quoted fixed-depth validator glob as already implemented in the fix."
+      ]
+    },
+    {
+      "id": 995000020304,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents invalid-score failure reporting, omission of incomplete token usage, and complete-value-only token means as already implemented in the fix."
+      ]
+    },
+    {
+      "id": 995000020405,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: Presents current-main integration, adapter/reference relocation, and imported-schema test usage as already implemented in the fix."
+      ]
+    },
+    {
+      "id": 995000020406,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: Presents retaining accuracy as the metric ID and preserving benchmark identity in task-specific names as already implemented in the fix."
+      ]
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 3,
+    "B": 3
+  },
+  "summary": "Candidates using imperative requests preserve the review-only status and retain the material technical facts. Candidates that describe changes as being in the fix introduce fact loss by implying the requested remediation was already implemented."
+}
+
+
+Wall time: 34.59 seconds

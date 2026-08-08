@@ -1,0 +1,14 @@
+[
+  {
+    "id": 995000019002,
+    "source": "**RAV-RUN2-R1-F011 [medium] registry-identity** — Normalized organization collisions can rewrite an exact canonical ID to another canonical organization.\n\nExact canonical IDs can win first. Normalized spellings can resolve only when one organization owns them.",
+    "candidate": "**RAV-RUN2-R1-F011 [medium] registry-identity** — Normalized organization collisions can rewrite an exact canonical ID to another canonical organization.\n\nIn the fix, exact canonical IDs win first. Normalized spellings resolve only when one organization owns them.",
+    "claimed_judgment": "fact_safe"
+  },
+  {
+    "id": 995000020406,
+    "source": "**RAV-RUN2-R1-F004 [medium] metric-identity** — Ordinary accuracy receives nine benchmark-specific metric IDs. This fragments the global accuracy join key.\n\n`accuracy` can remain the metric ID while task-specific evaluation names preserve benchmark identity.",
+    "candidate": "**RAV-RUN2-R1-F004 [medium] metric-identity** — Ordinary accuracy receives nine benchmark-specific metric IDs. This fragments the global accuracy join key.\n\nIn the fix, `accuracy` remains the metric ID while task-specific evaluation names preserve benchmark identity.",
+    "claimed_judgment": "fact_safe"
+  }
+]

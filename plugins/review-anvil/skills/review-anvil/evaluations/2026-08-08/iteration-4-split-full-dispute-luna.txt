@@ -1,0 +1,16 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737044361,
+      "verdict": "fact_safe",
+      "reason": "The candidate preserves the conditional diagnostic claim that a later redirect change can create a second logical identity. Its remediation is expressed as direct requests, not as a claim that the fix is already implemented."
+    }
+  ],
+  "fact_safe_count": 1,
+  "fact_loss_count": 0,
+  "summary": "The candidate preserves all material facts and requested behavior."
+}
+
+
+Wall time: 16.08 seconds

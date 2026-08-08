@@ -93,9 +93,10 @@ findings outside your lens are welcome but secondary.
 TASK
 Review the target above. Do not edit files.
 Report only distinct issues you can prove from the code.
-Build each finding in this order: problem, impact, outcome. First name the code
-behavior and its trigger. Then state the concrete bad result. Finally state the
-corrected behavior without designing the whole patch.
+Build each finding in this order: problem, impact, requested change. First name
+the code behavior and its trigger. Then state the concrete bad result. Finally
+state the exact behavior to change without designing the whole patch. Phrase
+that behavior as a request, not as code already present.
 Each sentence explains one relationship between code concepts.
 Put proof in `evidence`; do not narrate the investigation or add a code dump
 unless it is needed.
@@ -184,11 +185,14 @@ For each issue, return a structured finding with these keys:
   fact. For runtime bugs, include reachability. Keep the trigger, affected
   value, and result. Do not restate `what` or `why`, list unrelated identifiers,
   or narrate the investigation.
-- suggested_fix: state the concrete behavior change and intended result in neutral prose.
-  This is the outcome, not a patch design. Follow an existing local pattern and
-  name the valid behavior that must remain. Mention a test only when it defines
-  an important boundary. Keep it to one or two short sentences. Include
-  replacement code only when it safely fixes the selected lines.
+- suggested_fix: state the concrete requested change and intended result.
+  For each source-backed action in a critical, high, or medium finding, write a
+  separate short request sentence. Begin each sentence with `Please` and a
+  direct action verb. Preserve suggestion grammar for low and nit guidance.
+  Never describe the requested change as code already present. Follow an
+  existing local pattern and name the valid behavior that must remain. Mention
+  a test only when the code, existing tests, or task establishes its boundary.
+  Include replacement code only when it safely fixes the selected lines.
 - suggested_change: (OPTIONAL) exact replacement text for the cited
   line/range, only when the fix is narrow, mechanical, and directly
   applicable as a GitHub suggested change. Omit for design concerns,

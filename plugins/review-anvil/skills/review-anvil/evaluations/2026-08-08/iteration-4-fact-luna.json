@@ -1,0 +1,69 @@
+{
+  "per_comment": [
+    {
+      "id": 995000019001,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents the proposed shared-parser change and offline entry-point test as already implemented in the fix."
+      ]
+    },
+    {
+      "id": 995000019002,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents exact-ID precedence and the normalized-ownership restriction as already implemented in the fix."
+      ]
+    },
+    {
+      "id": 995000020303,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents the required smoke-output path and quoted fixed-depth validator glob as already implemented in the fix."
+      ]
+    },
+    {
+      "id": 995000020304,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents failure-report inclusion and omission of incomplete token usage as already implemented in the fix."
+      ]
+    },
+    {
+      "id": 995000020405,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents repository integration, adapter relocation, and imported-schema test usage as already implemented in the fix."
+      ]
+    },
+    {
+      "id": 995000020406,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents retaining `accuracy` and using task-specific evaluation names as already implemented in the fix."
+      ]
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 6,
+    "B": 0
+  },
+  "summary": "Candidate A preserves the source facts while presenting remediation as requested changes. Candidate B changes review-only recommendations into claims about an implemented fix, causing fact loss in every comment."
+}

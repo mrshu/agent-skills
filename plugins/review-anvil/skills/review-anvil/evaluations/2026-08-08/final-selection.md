@@ -1,11 +1,11 @@
-# Final selection — structure-first, fact-locked comments
+# Final selection — fact-locked requested changes
 
 ## Decision
 
 Select the final production contract in `references/report-artifacts.md`.
 It combines:
 
-- problem → impact → corrected outcome order;
+- problem → impact → requested change order;
 - a private fact lock for identifiers, technical relationships, conditions,
   quantifiers, diagnostic certainty, concrete results, and valid behavior;
 - an exact-phrase coverage map before emission;
@@ -14,14 +14,14 @@ It combines:
 - structure edits before vocabulary edits;
 - a conditional title rewrite that preserves actor, ownership, scope, and
   diagnostic modality, or restores the synthesized finding verbatim;
-- neutral desired-state fix guidance instead of hedged `could` or commanding
-  `must`;
-- one-relationship sentences, concrete code actors, and only boundary-defining
-  tests.
+- separate source-backed `Please` requests for every critical/high/medium
+  action, with suggestion grammar retained for low/nit guidance;
+- one-relationship sentences, concrete code actors, and only source-backed
+  boundary-defining tests.
 
-The canonical renderer examples and adversarial guidance now use the same
-voice. This removes older `would`/`can` examples and “friendly next step”
-instructions that competed with the final contract.
+The canonical renderer examples and reviewer guidance now use the same voice.
+This removes older `would`/`can` examples, fictional `The fix` outcomes, and
+“friendly next step” instructions that competed with the final contract.
 
 ## Baseline diagnosis and research
 
@@ -35,9 +35,9 @@ identified delayed consequences, abstract noun chains, several code concepts
 in one sentence, and hedged fix guidance as rereading costs.
 
 The research-supported contract favors short active sentences, a concrete
-failure and rationale, necessary local terminology, a bounded corrected
-outcome, and respectful code-focused language. Readability is rejected when it
-drops a trigger, condition, identifier, scope word, or fix boundary.
+failure and rationale, necessary local terminology, a source-backed requested
+change, and respectful code-focused language. Readability is rejected when it
+drops a trigger, condition, identifier, scope word, or change boundary.
 
 ## Iteration history
 
@@ -82,7 +82,7 @@ The three flagged fact judgments were title modality or one omitted supporting
 boundary. They are recorded in `actor-facts-*-result.txt`; no loss is hidden
 behind the readability score.
 
-## Untouched final holdout
+## Pre-correction untouched holdout
 
 Three development holdouts exposed unsafe title rewrites, a fix-target shift,
 and an unsupported new fix relationship. Those findings produced conditional
@@ -100,25 +100,45 @@ source.
 | GPT-5.6 Terra | 15/18 | 18/18 | 5 |
 | Baseline | — | — | 0 |
 
-Sol is the best fact-safe generator on the final untouched set: every corrected
-fact judgment accepted every comment, and blind evaluators ranked it above the
-baseline in all 18 judgments. The production change is model-independent; this
-result is a deployment preference, not a hard-coded skill dependency.
+Sol was the best fact-safe generator under the then-current rubric. The original
+PR #190 review later verified that the run applied zero fixes. That evidence
+showed that declarative desired-state prose could falsely read as implemented
+code; iteration 4 below supersedes this holdout's wording conclusion while
+retaining its title and fact-lock evidence.
 
-One initial evaluator treated desired-state fix guidance as a diagnostic claim,
-contrary to the evaluation rubric. Three clean adjudicators received explicit
-diagnostic and fix-guidance fields and unanimously marked the rewrite fact-safe.
 Terra omitted the required shared top-level parser and its entry-point location
 in one comment; all three fact evaluators rejected that output.
 
+## Review-only requested-change correction
+
+Five clean generators reproduced the failure before the correction. The final
+contract gives each source-backed critical/high/medium action its own short
+`Please` sentence and retains suggestion grammar for low/nit guidance.
+
+On the full 22-comment regression corpus, three fact evaluators and three blind
+readability evaluators produced:
+
+- 66/66 adjudicated fact-safe judgments for the requested-change output versus
+  0/66 for the previous false-fix output;
+- 62/66 first-place readability judgments for the requested-change output;
+- requested-change clarity of 4.95/5 versus 1.52/5;
+- zero false-fix phrases versus 14 in the previous selected output.
+
+A post-freeze holdout then selected six RAV comments whose IDs, source review
+IDs, paths, root causes, and nearest behavioral analogues were absent from all
+earlier artifacts. Sol and Terra each received 18/18 fact-safe judgments; Luna
+received 15/18 after weakening a required `--dump` gate. Sol won 8/18 blind
+first-place readability judgments versus Terra's 0/18, so Sol remains the
+recommended generator when model choice is available.
+
 ## Limits
 
-- The final untouched set has six historical findings from the requested PRs,
-  not new inline comments from a later run. Re-run the frozen evaluation when
-  the next untouched inline review corpus exists.
-- LLM instruction following is not a proof. Prompt-only coverage reached
-  100% fact safety for Sol and Luna on the final holdout, but other samples
-  produced isolated title, omission, target, or unsupported-addition failures.
+- The semantic holdout has six historical findings from four prior source
+  reviews, not new inline comments from a later run. Re-run the frozen
+  evaluation when the next untouched inline review corpus exists.
+- LLM instruction following is not a proof. Prompt-only coverage reached 100%
+  fact safety for Sol and Terra on the semantic holdout, but Luna weakened one
+  required boundary.
 - A deterministic fact-coverage gate would provide a stronger guarantee, but
   it requires carrying structured fact-lock data through the artifact schema
   and adds runtime machinery. The prompt-only change remains the smaller
@@ -142,3 +162,8 @@ in one comment; all three fact evaluators rejected that output.
   development holdouts that drove the fallback and bidirectional-lock rules.
 - `final-fact-evaluator-prompt.md`
 - `final-readability-evaluator-prompt.md`
+- `iteration-4-baseline-assessment.md` and `iteration-4-assessment.md`
+- `iteration-4-split-{micro,full,semantic}-*.json`
+- `iteration-4-semantic-unseen-holdout-corpus.json`
+- `iteration-4-{fact,readability}-evaluator-prompt.md`
+- `iteration-4-untouched-{fact,readability}-evaluator-prompt.md`

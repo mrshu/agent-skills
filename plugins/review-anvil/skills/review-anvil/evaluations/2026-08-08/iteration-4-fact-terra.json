@@ -1,0 +1,69 @@
+{
+  "per_comment": [
+    {
+      "id": 995000019001,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents the requested shared-parser and offline-test remediation as an existing fix."
+      ]
+    },
+    {
+      "id": 995000019002,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: Presents the requested canonical-ID precedence and normalized-spelling resolution behavior as an existing fix."
+      ]
+    },
+    {
+      "id": 995000020303,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents the requested smoke-output path and quoted fixed-depth glob remediation as an existing fix."
+      ]
+    },
+    {
+      "id": 995000020304,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents the requested invalid-score reporting and incomplete-token omission behavior as an existing fix."
+      ]
+    },
+    {
+      "id": 995000020405,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents the requested current-main integration, adapter move, and imported-schema test change as an existing fix."
+      ]
+    },
+    {
+      "id": 995000020406,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: Presents the requested stable `accuracy` metric ID and task-specific evaluation-name remediation as an existing fix."
+      ]
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 4,
+    "B": 2
+  },
+  "summary": "All imperative rewrites preserve the requested remediation as an action to take. Every rewrite that states \"In the fix\" or \"The fix\" falsely presents review-only requested changes as already implemented."
+}

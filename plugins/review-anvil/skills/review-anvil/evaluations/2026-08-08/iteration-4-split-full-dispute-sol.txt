@@ -1,0 +1,16 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737044361,
+      "verdict": "fact_safe",
+      "reason": "The candidate preserves the conditional possibility that a redirect change can create a second logical identity. Its direct imperatives correctly present both remediation steps as requests rather than falsely claiming they are implemented."
+    }
+  ],
+  "fact_safe_count": 1,
+  "fact_loss_count": 0,
+  "summary": "The candidate preserves the source's diagnostic certainty, causal chain, and requested separation between evaluation identity and metadata or routing."
+}
+
+
+Wall time: 18.95 seconds

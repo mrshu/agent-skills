@@ -1,0 +1,26 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 995000019002,
+      "verdict": "fact_loss",
+      "reason": "The source proposes that exact canonical IDs can win first; the candidate asserts that this behavior exists in a fix. The source does not state that a fix has already been implemented."
+    },
+    {
+      "id": 995000020405,
+      "verdict": "fact_loss",
+      "reason": "The source says current main can be integrated before moving the adapter and that tests can use the imported schema version. The candidate changes both proposals into claims about an implemented fix."
+    },
+    {
+      "id": 995000020406,
+      "verdict": "fact_loss",
+      "reason": "The source proposes retaining `accuracy` as the metric ID and using task-specific evaluation names. The candidate falsely presents those proposed behaviors as already present in a fix."
+    }
+  ],
+  "fact_safe_count": 0,
+  "fact_loss_count": 3,
+  "summary": "All candidates preserve the technical remediation content but incorrectly convert proposed changes into declarative claims that a fix exists. The sources describe desired behavior, not implemented patches."
+}
+
+
+Wall time: 19.72 seconds

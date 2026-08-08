@@ -1,0 +1,36 @@
+Working...
+[
+  {
+    "id": 3725727488,
+    "pr": 226,
+    "body": "**RAV-RUN1-R1-F001 [medium] filesystem-traversal** — `os.walk` can skip an unreadable descendant and still report successful validation\n\n`os.walk` ignores scan errors when `onerror` is unset. If the tree also contains readable JSON files, the command validates that partial set and can return success.\n\nPlease add an error callback that stops the scan and names the inaccessible path. Add a test with a mocked scan error after one readable file without platform-specific permission behavior."
+  },
+  {
+    "id": 3725776266,
+    "pr": 227,
+    "body": "**RAV-RUN1-R1-F001 [medium] api-contract** — `output_dir` also supports report-identity paths below `data`\n\nThe CLI passes paths such as `data/lm_eval_samples`, and the tests require `adapter_reports/lm_eval_samples_failures.json`. Calling the argument only a collection directory narrows a supported contract.\n\nPlease describe `output_dir` as a path below the nearest `data` root. Use its relative components as the report name, while keeping `data/<collection>` as the usual adapter case."
+  },
+  {
+    "id": 3725827214,
+    "pr": 223,
+    "body": "**RAV-RUN1-R1-F001 [medium] schema-deferral** — Blank model IDs bypass the new identity-path check\n\nThe schema accepts blank strings, but this guard returns before `datastore_path_components` can reject them. Such a record can pass without any warning that its identity names no directory.\n\nPlease leave missing or non-string IDs with schema validation, and route blank strings through the helper's focused error path."
+  },
+  {
+    "id": 3725830949,
+    "pr": 230,
+    "body": "**RAV-RUN1-R1-F003 [medium] warning-visibility** — The new warning stays hidden in the default rich output without PR #221\n\nWarning severity leaves the report valid. The current rich renderer prints `PASS` and returns before its warning loop. PR #221 is already listed as a prerequisite.\n\nPlease add one default-rich CLI check for this warning after rebase to confirm the complete path."
+  },
+  {
+    "id": 3725853144,
+    "pr": 190,
+    "body": "**RAV-RUN2-R1-F001 [medium] model-identity** — Developer IDs use the registry, but `model_info.id` uses an adapter-private identity ladder. Canonical model aliases cannot affect this join key.\n\nPlease use vendored resolution only for model IDs emitted by the pinned snapshot, and keep the source-derived ID as a marked fallback."
+  },
+  {
+    "id": 3725913011,
+    "pr": 203,
+    "body": "**RAV-RUN2-R1-F003 [medium] memory-use** — Capped instance runs still materialize all selected columns for a complete row group before the cap is checked. The cap does not bound this allocation.\n\nPlease use bounded record batches that flush and hash incrementally."
+  }
+]
+
+
+Wall time: 103.17 seconds

@@ -1,0 +1,76 @@
+{
+  "per_comment": [
+    {
+      "id": 3725727488,
+      "ranking": [
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "A",
+      "reason": "A makes both requested changes explicit while preserving the rationale and test boundary in a calm, immediately actionable form."
+    },
+    {
+      "id": 3725776266,
+      "ranking": [
+        "B",
+        "A",
+        "C"
+      ],
+      "winner": "B",
+      "reason": "B states the documentation change directly and clearly connects the relative path components to the report name."
+    },
+    {
+      "id": 3725827214,
+      "ranking": [
+        "C",
+        "A",
+        "B"
+      ],
+      "winner": "C",
+      "reason": "C separates the two routing rules into concise imperative sentences that are easiest to scan and apply."
+    },
+    {
+      "id": 3725830949,
+      "ranking": [
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "A",
+      "reason": "A keeps the prerequisite, requested check, timing, and purpose in a clear sequence without adding an unnecessary rebase instruction."
+    },
+    {
+      "id": 3725853144,
+      "ranking": [
+        "B",
+        "C",
+        "A"
+      ],
+      "winner": "B",
+      "reason": "B gives the clearest direct instruction while preserving both the snapshot boundary and the fallback behavior."
+    },
+    {
+      "id": 3725913011,
+      "ranking": [
+        "B",
+        "A",
+        "C"
+      ],
+      "winner": "B",
+      "reason": "B is the most natural and direct formulation of the incremental batching request."
+    }
+  ],
+  "winner_counts": {
+    "A": 2,
+    "B": 3,
+    "C": 1
+  },
+  "overall_ranking": [
+    "B",
+    "A",
+    "C"
+  ],
+  "recommended_version": "B",
+  "summary": "Version B wins overall because it most consistently turns the requested changes into direct, actionable instructions without losing necessary technical context. Version A remains strong when preserving rationale and sequencing matters, while C is occasionally more scannable but less consistently precise or idiomatic."
+}

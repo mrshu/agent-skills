@@ -1,0 +1,66 @@
+{
+  "per_comment": [
+    {
+      "id": 3725747241,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3725871268,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3726043677,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3726043685,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_safe"
+      },
+      "fact_losses": [
+        "B: Changes the proposed remediation from requiring --dump in the current environment to merely using --dump, which does not preserve the requirement that prevents the broken default download path."
+      ]
+    },
+    {
+      "id": 3729389316,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3729389321,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 6,
+    "B": 5,
+    "C": 6
+  },
+  "summary": "Candidates A and C preserve all material source facts across the six comments. Candidate B loses the requirement boundary for --dump in comment 3726043685 by weakening the proposed remediation to merely using the option."
+}

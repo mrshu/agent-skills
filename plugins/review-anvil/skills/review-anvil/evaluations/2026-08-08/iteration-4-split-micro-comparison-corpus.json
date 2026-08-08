@@ -1,0 +1,38 @@
+[
+  {
+    "id": 995000019001,
+    "source": "**RAV-RUN2-R1-F003 [medium] cli** — The module entry point builds the old argument namespace. The changed handler reads missing fields and fails before conversion.\n\nThe module entry point can use the shared top-level parser and one offline entry-point test.",
+    "A": "**RAV-RUN2-R1-F003 [medium] cli** — The module entry point builds the old argument namespace.\n\nThe changed handler reads missing fields and fails before conversion.\n\nPlease use the shared top-level parser in the module entry point. Please add one offline entry-point test.",
+    "B": "**RAV-RUN2-R1-F003 [medium] cli** — The module entry point builds the old argument namespace. The changed handler reads missing fields and fails before conversion.\n\nIn the fix, the module entry point uses the shared top-level parser, with one offline entry-point test."
+  },
+  {
+    "id": 995000019002,
+    "source": "**RAV-RUN2-R1-F011 [medium] registry-identity** — Normalized organization collisions can rewrite an exact canonical ID to another canonical organization.\n\nExact canonical IDs can win first. Normalized spellings can resolve only when one organization owns them.",
+    "A": "**RAV-RUN2-R1-F011 [medium] registry-identity** — Normalized organization collisions can rewrite an exact canonical ID to another canonical organization.\n\nPlease make exact canonical IDs win first. Please resolve normalized spellings only when one organization owns them.",
+    "B": "**RAV-RUN2-R1-F011 [medium] registry-identity** — Normalized organization collisions can rewrite an exact canonical ID to another canonical organization.\n\nIn the fix, exact canonical IDs win first. Normalized spellings resolve only when one organization owns them."
+  },
+  {
+    "id": 995000020303,
+    "source": "**RAV-RUN2-R1-F002 [medium] documentation** — The smoke command passes a directory to a file-only validator. Its output root also cannot satisfy datastore path checks.\n\nSmoke output can use the required `data/<collection>` path. The validator can receive a quoted fixed-depth file glob.",
+    "A": "**RAV-RUN2-R1-F002 [medium] documentation** — The smoke command passes a directory to a file-only validator. Its output root also cannot satisfy datastore path checks.\n\nIn the fix, smoke output uses the required `data/<collection>` path. The validator receives a quoted fixed-depth file glob.",
+    "B": "**RAV-RUN2-R1-F002 [medium] documentation** — The smoke command passes a directory to a file-only validator. Its output root also cannot satisfy datastore path checks.\n\nPlease write smoke output to the required `data/<collection>` path. Please pass the validator a quoted fixed-depth file glob."
+  },
+  {
+    "id": 995000020304,
+    "source": "**RAV-RUN2-R1-F004 [medium] data-validation** — Missing scores become incorrect answers and stay in aggregate denominators. Missing token data becomes measured zero instead of being omitted.\n\nRows with invalid scores can enter the failure report. Incomplete token usage can be omitted, with token means based only on complete values.",
+    "A": "**RAV-RUN2-R1-F004 [medium] data-validation** — Missing scores become incorrect answers and stay in aggregate denominators. Missing token data becomes measured zero instead of being omitted.\n\nPlease include rows with invalid scores in the failure report. Please omit incomplete token usage. Please base token means only on complete values.",
+    "B": "**RAV-RUN2-R1-F004 [medium] data-validation** — Missing scores become incorrect answers and stay in aggregate denominators. Missing token data becomes measured zero instead of being omitted.\n\nIn the fix, rows with invalid scores enter the failure report. Incomplete token usage is omitted, with token means based only on complete values."
+  },
+  {
+    "id": 995000020405,
+    "source": "**RAV-RUN2-R1-F002 [medium] repository-integration** — The adapter remains under the retired `utils` layout. Installed packages include `every_eval_ever*`, so this adapter and its documented command are outside the active package.\n\nCurrent main can be integrated before moving the adapter and references under `every_eval_ever/adapters/open_medical_llm`. Tests can use the imported schema version.",
+    "A": "**RAV-RUN2-R1-F002 [medium] repository-integration** — The adapter remains under the retired `utils` layout. Installed packages include `every_eval_ever*`, so this adapter and its documented command are outside the active package.\n\nThe fix integrates current main before moving the adapter and references under `every_eval_ever/adapters/open_medical_llm`. Tests use the imported schema version.",
+    "B": "**RAV-RUN2-R1-F002 [medium] repository-integration** — The adapter remains under the retired `utils` layout. Installed packages include `every_eval_ever*`, so this adapter and its documented command are outside the active package.\n\nPlease integrate current main before moving the adapter and references. Please move the adapter and references under `every_eval_ever/adapters/open_medical_llm`. Please use the imported schema version in tests."
+  },
+  {
+    "id": 995000020406,
+    "source": "**RAV-RUN2-R1-F004 [medium] metric-identity** — Ordinary accuracy receives nine benchmark-specific metric IDs. This fragments the global accuracy join key.\n\n`accuracy` can remain the metric ID while task-specific evaluation names preserve benchmark identity.",
+    "A": "**RAV-RUN2-R1-F004 [medium] metric-identity** — Ordinary accuracy receives nine benchmark-specific metric IDs. This fragments the global accuracy join key.\n\nIn the fix, `accuracy` remains the metric ID while task-specific evaluation names preserve benchmark identity.",
+    "B": "**RAV-RUN2-R1-F004 [medium] metric-identity** — Ordinary accuracy receives nine benchmark-specific metric IDs. This fragments the global accuracy join key.\n\nPlease keep `accuracy` as the metric ID. Please make task-specific evaluation names preserve benchmark identity."
+  }
+]

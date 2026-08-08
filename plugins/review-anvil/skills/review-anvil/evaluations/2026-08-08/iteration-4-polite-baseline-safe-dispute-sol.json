@@ -1,0 +1,22 @@
+{
+  "per_comment": [
+    {
+      "id": 995000019002,
+      "verdict": "fact_loss",
+      "reason": "The source proposes that exact canonical IDs can win first and normalized spellings can resolve only under single ownership. “In the fix” falsely presents that requested behavior as already implemented."
+    },
+    {
+      "id": 995000020405,
+      "verdict": "fact_loss",
+      "reason": "The source requests integration of current main before relocating the adapter and permits tests to use the imported schema version. The candidate falsely states that the fix already performs both actions."
+    },
+    {
+      "id": 995000020406,
+      "verdict": "fact_loss",
+      "reason": "The source proposes retaining `accuracy` as the metric ID while preserving benchmark identity in evaluation names. “In the fix” falsely claims that this remediation is already implemented."
+    }
+  ],
+  "fact_safe_count": 0,
+  "fact_loss_count": 3,
+  "summary": "All three candidates convert proposed remediation into declarative claims about an existing fix. That change in implementation status is material fact loss."
+}

@@ -19,8 +19,10 @@ Use active voice or a direct imperative. Name the actor when it matters.
 
 ## Author-Facing Reports and Comments
 
-Use short active declarative sentences. Do not give a bare-verb command.
-State what the code does, what happens, and the evidence.
+Use short active declarative sentences for problems and evidence.
+For critical, high, and medium findings, use `Please` plus an action verb for
+each requested change. Preserve suggestion grammar for low and nit guidance.
+Do not give a context-free command.
 
 Apply these rules to generated prose only. Preserve quoted external output,
 code, JSON, commands, Markdown fences, and fixed machine-readable fields.

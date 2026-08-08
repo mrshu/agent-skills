@@ -1,0 +1,21 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 995000019002,
+      "verdict": "fact_loss",
+      "reason": "The source proposes that exact canonical IDs can win first and normalized spellings can resolve only for a unique owner. “In the fix” falsely claims that this remediation is already implemented."
+    },
+    {
+      "id": 995000020406,
+      "verdict": "fact_loss",
+      "reason": "The source proposes retaining `accuracy` as the metric ID while preserving benchmark identity in evaluation names. “In the fix” falsely claims that this remediation is already implemented."
+    }
+  ],
+  "fact_safe_count": 0,
+  "fact_loss_count": 2,
+  "summary": "Both candidates convert proposed remediations into unsupported claims about an existing fix."
+}
+
+
+Wall time: 14.32 seconds

@@ -1,0 +1,36 @@
+Working...
+[
+  {
+    "id": 3725747241,
+    "pr": 220,
+    "body": "**RAV-RUN1-R1-F001 [high] source-provenance** — The adapter puts the task slug in `source_data.dataset_name`\n\nThe source record already supplies the dataset name, but this line replaces it with a routing slug. Published records then identify task collections instead of datasets such as `CTI-Bench MCQ`.\n\nPlease keep the upstream name in `source_data`. Please use an explicit sayf-eval collection override for routing."
+  },
+  {
+    "id": 3725871268,
+    "pr": 224,
+    "body": "**RAV-RUN1-R1-F001 [medium] packaging-test** — Conditional self-references count as universal bundle edges\n\nThe prefix regex captures the project and extras but leaves a PEP 508 marker unexamined. A win32-only self-reference then satisfies this test on Linux even though installing `[all]` there omits that extra.\n\nPlease use a PEP 508 parser to distinguish markers while preserving valid unmarked version and URL forms. Please add focused marker and direct-reference cases to cover both sides."
+  },
+  {
+    "id": 3726043677,
+    "pr": 209,
+    "body": "**RAV-RUN2-R1-F003 [high] score-scaling** — The adapter divides a group by 100 when its median is out of range and 90 percent then fit. This decision ignores source scale evidence.\n\nPlease require an explicit recognized marker and compatible canonical definition before rescaling. Please keep other out-of-range cells out of publication and retain raw provenance in the failure report."
+  },
+  {
+    "id": 3726043685,
+    "pr": 209,
+    "body": "**RAV-RUN2-R1-F006 [medium] runtime-dependencies** — The default download path needs `huggingface_hub` 1.x, but the project requires a version below 1.0. The declared environment exits before download.\n\nPlease require `--dump` in the current environment until the declared client supports bucket access."
+  },
+  {
+    "id": 3729389316,
+    "pr": 160,
+    "body": "**RAV-RUN2-R1-F001 [medium] source-row-accounting** — The parser visits only rows that match the exact three-cell pattern. A changed cell or score can disappear before failure accounting, and `total_records` then counts only the rows that parsed.\n\nThe current page matches this shape. A future markup change can still publish incomplete output as successful.\n\nPlease return valid rows and structured failures together from each bounded table, including duplicate model-metric rows."
+  },
+  {
+    "id": 3729389321,
+    "pr": 160,
+    "body": "**RAV-RUN2-R1-F004 [medium] packaging** — The package-data list omits `every_eval_ever/adapters/lexam/registry_snapshot.json`. A built wheel then falls back to `unknown` registry revision and metric review status during LEXam conversion.\n\nPlease add an exact snapshot path or deliberate snapshot pattern to keep the runtime file in wheels. Please add a wheel-install test that covers the installed-package path."
+  }
+]
+
+
+Wall time: 81.77 seconds

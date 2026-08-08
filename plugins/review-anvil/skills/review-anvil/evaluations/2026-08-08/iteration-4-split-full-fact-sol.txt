@@ -1,0 +1,233 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: presents the proposed publisher-base rejection and tests as already implemented."
+      ]
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: presents the proposed recoverable-file replacement path and failure test as already implemented."
+      ]
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: presents the proposed stable identity inputs and reconciled-repository usage as the implemented fix."
+      ]
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: presents atomic report replacement and complete run accounting as current corrected behavior."
+      ]
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: presents the proposed shared representation for neutral measures as already added."
+      ]
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: presents the proposed separate validation rules and optional-cell handling as corrected validation already in place."
+      ]
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: presents the proposed incomplete-sweep behavior and retained 401 handling as already implemented."
+      ]
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: presents the proposed semantic-check deferral and retained warning boundary as corrected behavior already in place."
+      ]
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: presents the proposed row-level error boundary and its exception scope as already implemented."
+      ]
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: presents one-time resolution of every supplied reference as corrected behavior already in place."
+      ]
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: presents saving the shared report for either collection while retaining failure-only nonzero exits as corrected behavior already in place."
+      ]
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: presents directory-symlink rejection, unchanged file-symlink behavior, and the boundary tests as already implemented."
+      ]
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: presents required model values and early no-match termination as implemented fixes."
+      ]
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: presents early validation of the documented output shape as an implemented fix."
+      ]
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: presents the proposed stable evaluation ID inputs and retrieval-time placement as corrected behavior already in place."
+      ]
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: presents failure-ledger handling for unconvertible measured tasks and explicit exclusions for derived-only files as corrected behavior already in place."
+      ]
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: presents preservation and labeling of both document counts as an implemented fix."
+      ]
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: presents the proposed semantics-definition sources and post-preservation reporting of unresolved keys as already implemented."
+      ]
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: presents use of the metric-definition mapping to supply canonical and namespaced metric IDs as an implemented fix."
+      ]
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: presents consistent file-level source-record totals and separate output-log counts as corrected behavior already in place."
+      ]
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "fact_losses": [
+        "A: presents the proposed lighteval-local file-result path and unified report-before-raise behavior as already present."
+      ]
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: presents the proposed recursive sanitizer and provider-prefixed-key tests as already implemented."
+      ]
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 12,
+    "B": 10
+  },
+  "summary": "Candidate A preserves all material facts in 12 comments, while candidate B does so in 10. Every identified loss recasts source-backed remediation or requested tests as code or coverage already present in this review-only context."
+}
+
+
+Wall time: 121.95 seconds

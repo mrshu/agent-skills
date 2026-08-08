@@ -1,0 +1,66 @@
+{
+  "source_repo": "evaleval/every_eval_ever",
+  "selection": "Six comments whose IDs were absent from all existing 2026-08-08 evaluation artifacts when frozen after the requested-change contract.",
+  "inline_comments": [
+    {
+      "id": 3725727488,
+      "pr": 226,
+      "created_at": "2026-08-06T03:40:04Z",
+      "path": "every_eval_ever/validator/validate.py",
+      "line": 125,
+      "body": "**RAV-RUN1-R1-F001 [medium] filesystem-traversal** — `os.walk` can skip an unreadable descendant and still report successful validation\n\n`os.walk` ignores scan errors when `onerror` is unset. If the tree also contains readable JSON files, the command validates that partial set and can return success.\n\nAn error callback can stop the scan and name the inaccessible path. A mocked scan error after one readable file would cover this path without platform-specific permission behavior.",
+      "source_review_id": 4870760979,
+      "source_kind": "post-freeze untouched historical review-only inline comment"
+    },
+    {
+      "id": 3725776266,
+      "pr": 227,
+      "created_at": "2026-08-06T03:54:03Z",
+      "path": "every_eval_ever/helpers/io.py",
+      "line": 408,
+      "body": "**RAV-RUN1-R1-F001 [medium] api-contract** — `output_dir` also supports report-identity paths below `data`\n\nThe CLI passes paths such as `data/lm_eval_samples`, and the tests require `adapter_reports/lm_eval_samples_failures.json`. Calling the argument only a collection directory narrows a supported contract.\n\nThe wording can describe a path below the nearest `data` root. Its relative components form the report name, while `data/<collection>` remains the usual adapter case.",
+      "source_review_id": 4870817417,
+      "source_kind": "post-freeze untouched historical review-only inline comment"
+    },
+    {
+      "id": 3725827214,
+      "pr": 223,
+      "created_at": "2026-08-06T04:09:17Z",
+      "path": "every_eval_ever/validator/validation_core.py",
+      "line": 621,
+      "body": "**RAV-RUN1-R1-F001 [medium] schema-deferral** — Blank model IDs bypass the new identity-path check\n\nThe schema accepts blank strings, but this guard returns before `datastore_path_components` can reject them. Such a record can pass without any warning that its identity names no directory.\n\nMissing or non-string IDs can stay with schema validation, while blank strings can use the helper's focused error path.",
+      "source_review_id": 4870878941,
+      "source_kind": "post-freeze untouched historical review-only inline comment"
+    },
+    {
+      "id": 3725830949,
+      "pr": 230,
+      "created_at": "2026-08-06T04:10:25Z",
+      "path": "every_eval_ever/validator/validation_core.py",
+      "line": 791,
+      "body": "**RAV-RUN1-R1-F003 [medium] warning-visibility** — The new warning stays hidden in the default rich output without PR #221\n\nWarning severity leaves the report valid. The current rich renderer prints `PASS` and returns before its warning loop.\n\nPR #221 is already listed as a prerequisite. After rebase, one default-rich CLI check for this warning would confirm the complete path.",
+      "source_review_id": 4870883842,
+      "source_kind": "post-freeze untouched historical review-only inline comment"
+    },
+    {
+      "id": 3725853144,
+      "pr": 190,
+      "created_at": "2026-08-06T04:17:11Z",
+      "path": "every_eval_ever/converters/alpaca_eval/adapter.py",
+      "line": 662,
+      "body": "**RAV-RUN2-R1-F001 [medium] model-identity** — Developer IDs use the registry, but `model_info.id` uses an adapter-private identity ladder. Canonical model aliases cannot affect this join key.\n\nOnly model IDs emitted by the pinned snapshot need vendored resolution. The source-derived ID can remain a marked fallback.",
+      "source_review_id": 4870915628,
+      "source_kind": "post-freeze untouched historical review-only inline comment"
+    },
+    {
+      "id": 3725913011,
+      "pr": 203,
+      "created_at": "2026-08-06T04:33:46Z",
+      "path": "utils/wild/adapter.py",
+      "line": 142,
+      "body": "**RAV-RUN2-R1-F003 [medium] memory-use** — Capped instance runs still materialize all selected columns for a complete row group before the cap is checked. The cap does not bound this allocation.\n\nBounded record batches can flush and hash incrementally.",
+      "source_review_id": 4871030385,
+      "source_kind": "post-freeze untouched historical review-only inline comment"
+    }
+  ]
+}

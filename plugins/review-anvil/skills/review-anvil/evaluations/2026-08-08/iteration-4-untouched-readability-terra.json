@@ -1,0 +1,76 @@
+{
+  "per_comment": [
+    {
+      "id": 3725727488,
+      "ranking": [
+        "B",
+        "A",
+        "C"
+      ],
+      "winner": "B",
+      "reason": "B most directly states both the required error-handling behavior and the focused test scenario."
+    },
+    {
+      "id": 3725776266,
+      "ranking": [
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "A",
+      "reason": "A clearly frames the documentation change and then spells out the two parts of the supported contract."
+    },
+    {
+      "id": 3725827214,
+      "ranking": [
+        "C",
+        "B",
+        "A"
+      ],
+      "winner": "C",
+      "reason": "C separates the two validation paths into short, immediately scannable requested changes."
+    },
+    {
+      "id": 3725830949,
+      "ranking": [
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "A",
+      "reason": "A preserves the prerequisite as context while making the post-rebase CLI check the unambiguous requested action."
+    },
+    {
+      "id": 3725853144,
+      "ranking": [
+        "B",
+        "A",
+        "C"
+      ],
+      "winner": "B",
+      "reason": "B gives the boundary as two concrete actions with clear scope and minimal interpretive effort."
+    },
+    {
+      "id": 3725913011,
+      "ranking": [
+        "B",
+        "A",
+        "C"
+      ],
+      "winner": "B",
+      "reason": "B states the intended bounded-batch behavior directly and connects both incremental operations to it."
+    }
+  ],
+  "winner_counts": {
+    "A": 2,
+    "B": 3,
+    "C": 1
+  },
+  "overall_ranking": [
+    "B",
+    "A",
+    "C"
+  ],
+  "recommended_version": "B",
+  "summary": "B most consistently turns the identified problem into a direct, concrete requested change without losing needed technical context. A is nearly as clear but is occasionally less decisive, while C is readable but more often weakens or fragments the requested action."
+}

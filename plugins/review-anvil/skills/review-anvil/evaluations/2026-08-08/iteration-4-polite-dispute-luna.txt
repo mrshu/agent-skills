@@ -1,0 +1,26 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 995000019002,
+      "verdict": "fact_safe",
+      "reason": "The candidate preserves the collision risk and the condition that normalized spellings resolve only when uniquely owned. It correctly expresses the remediation as a request rather than claiming it is already implemented."
+    },
+    {
+      "id": 995000020405,
+      "verdict": "fact_safe",
+      "reason": "The candidate preserves the retired layout, inactive-package impact, and both requested remediation steps. The imperative wording does not falsely claim that integration or test changes already exist."
+    },
+    {
+      "id": 995000020406,
+      "verdict": "fact_safe",
+      "reason": "The candidate preserves the nine benchmark-specific IDs and the resulting fragmentation of the global accuracy join key. It correctly presents retaining `accuracy` and preserving benchmark identity in evaluation names as a request."
+    }
+  ],
+  "fact_safe_count": 3,
+  "fact_loss_count": 0,
+  "summary": "All candidates preserve the source's material facts and requested behavior. Each remediation is phrased as a request, avoiding the claimed implementation-status loss."
+}
+
+
+Wall time: 20.01 seconds

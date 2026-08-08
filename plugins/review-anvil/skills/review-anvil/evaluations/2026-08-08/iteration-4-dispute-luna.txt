@@ -1,0 +1,21 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 995000019002,
+      "verdict": "fact_safe",
+      "reason": "The candidate preserves the current collision behavior and the restriction that normalized spellings resolve only under unique ownership. Its imperative wording correctly presents exact-ID precedence and normalized resolution as requested remediation, not as already implemented."
+    },
+    {
+      "id": 995000020406,
+      "verdict": "fact_safe",
+      "reason": "The candidate preserves the fragmentation caused by benchmark-specific metric IDs and retains the requested `accuracy` metric ID with task-specific evaluation names. The imperative wording describes the requested change rather than falsely claiming it is implemented."
+    }
+  ],
+  "fact_safe_count": 2,
+  "fact_loss_count": 0,
+  "summary": "Both candidates preserve the source facts and requested remediation. Neither presents the proposed fix as already implemented."
+}
+
+
+Wall time: 21.36 seconds

@@ -1,0 +1,66 @@
+{
+  "source_repo": "evaleval/every_eval_ever",
+  "selection": "Six RAV comments whose IDs, source review IDs, paths, root causes, and nearest behavioral analogues were absent from every prior 2026-08-08 evaluation artifact when frozen.",
+  "inline_comments": [
+    {
+      "id": 3725747241,
+      "pr": 220,
+      "created_at": "2026-08-06T03:45:51Z",
+      "path": "every_eval_ever/converters/sayf_eval/adapter.py",
+      "line": 184,
+      "body": "**RAV-RUN1-R1-F001 [high] source-provenance** — The adapter puts the task slug in `source_data.dataset_name`\n\nThe source record already supplies the dataset name, but this line replaces it with a routing slug. Published records then identify task collections instead of datasets such as `CTI-Bench MCQ`.\n\nThe upstream name can stay in `source_data`; an explicit sayf-eval collection override can handle routing.",
+      "source_review_id": 4870784346,
+      "source_kind": "post-freeze semantically unseen RAV review-only inline comment"
+    },
+    {
+      "id": 3725871268,
+      "pr": 224,
+      "created_at": "2026-08-06T04:22:42Z",
+      "path": "tests/test_packaged_resources.py",
+      "line": 47,
+      "body": "**RAV-RUN1-R1-F001 [medium] packaging-test** — Conditional self-references count as universal bundle edges\n\nThe prefix regex captures the project and extras but leaves a PEP 508 marker unexamined. A win32-only self-reference then satisfies this test on Linux even though installing `[all]` there omits that extra.\n\nA PEP 508 parser can distinguish markers while preserving valid unmarked version and URL forms. Focused marker and direct-reference cases would cover both sides.",
+      "source_review_id": 4870951899,
+      "source_kind": "post-freeze semantically unseen RAV review-only inline comment"
+    },
+    {
+      "id": 3726043677,
+      "pr": 209,
+      "created_at": "2026-08-06T05:08:35Z",
+      "path": "every_eval_ever/adapters/paperswithcode/adapter.py",
+      "line": 471,
+      "body": "**RAV-RUN2-R1-F003 [high] score-scaling** — The adapter divides a group by 100 when its median is out of range and 90 percent then fit. This decision ignores source scale evidence.\n\nRescaling can require an explicit recognized marker and compatible canonical definition. Other out-of-range cells can stay out of publication and retain raw provenance in the failure report.",
+      "source_review_id": 4871239031,
+      "source_kind": "post-freeze semantically unseen RAV review-only inline comment"
+    },
+    {
+      "id": 3726043685,
+      "pr": 209,
+      "created_at": "2026-08-06T05:08:35Z",
+      "path": "every_eval_ever/adapters/paperswithcode/adapter.py",
+      "line": 1348,
+      "body": "**RAV-RUN2-R1-F006 [medium] runtime-dependencies** — The default download path needs `huggingface_hub` 1.x, but the project requires a version below 1.0. The declared environment exits before download.\n\n`--dump` can be required in the current environment until the declared client supports bucket access.",
+      "source_review_id": 4871239031,
+      "source_kind": "post-freeze semantically unseen RAV review-only inline comment"
+    },
+    {
+      "id": 3729389316,
+      "pr": 160,
+      "created_at": "2026-08-06T13:57:42Z",
+      "path": "every_eval_ever/adapters/lexam/adapter.py",
+      "line": 755,
+      "body": "**RAV-RUN2-R1-F001 [medium] source-row-accounting** — The parser visits only rows that match the exact three-cell pattern. A changed cell or score can disappear before failure accounting, and `total_records` then counts only the rows that parsed.\n\nThe current page matches this shape. A future markup change can still publish incomplete output as successful. Each bounded table can return valid rows and structured failures together, including duplicate model-metric rows.",
+      "source_review_id": 4875383440,
+      "source_kind": "post-freeze semantically unseen RAV review-only inline comment"
+    },
+    {
+      "id": 3729389321,
+      "pr": 160,
+      "created_at": "2026-08-06T13:57:42Z",
+      "path": "pyproject.toml",
+      "line": 61,
+      "body": "**RAV-RUN2-R1-F004 [medium] packaging** — The package-data list omits `every_eval_ever/adapters/lexam/registry_snapshot.json`. A built wheel then falls back to `unknown` registry revision and metric review status during LEXam conversion.\n\nAn exact snapshot path or deliberate snapshot pattern would keep the runtime file in wheels. A wheel-install test can cover the installed-package path.",
+      "source_review_id": 4875383440,
+      "source_kind": "post-freeze semantically unseen RAV review-only inline comment"
+    }
+  ]
+}

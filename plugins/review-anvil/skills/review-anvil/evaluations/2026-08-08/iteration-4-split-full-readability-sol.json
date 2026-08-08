@@ -1,0 +1,608 @@
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "ranking": [
+        "A",
+        "B"
+      ],
+      "winner": "A",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 1,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "A preserves the concrete example and states the required validation and tests as requests rather than completed work."
+    },
+    {
+      "id": 3737044354,
+      "ranking": [
+        "A",
+        "B"
+      ],
+      "winner": "A",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 1,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "A makes the required retention behavior and regression test unmistakable, while B describes both as already implemented."
+    },
+    {
+      "id": 3737044361,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 1,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "reason": "B clearly assigns separate requested roles to the raw model path and reconciled repository, whereas A presents that change as finished."
+    },
+    {
+      "id": 3737044371,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 1,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "reason": "B directly requests atomic report replacement and names every run state it must preserve, while A sounds like a post-fix description."
+    },
+    {
+      "id": 3737053181,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 1,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "reason": "B separates the misleading Boolean consequence from an explicit request for neutral metric representation, while A says that representation was added."
+    },
+    {
+      "id": 3737053197,
+      "ranking": [
+        "A",
+        "B"
+      ],
+      "winner": "A",
+      "scores": {
+        "A": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 1,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "A explicitly requests distinct validation rules and preservation of empty optional cells, while B incorrectly frames those rules as current behavior."
+    },
+    {
+      "id": 3737053204,
+      "ranking": [
+        "A",
+        "B"
+      ],
+      "winner": "A",
+      "scores": {
+        "A": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 1,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "A clearly requests the incomplete-sweep behavior, exit result, and 401 exception, whereas B presents all three as already corrected."
+    },
+    {
+      "id": 3737181823,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 1,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "reason": "B states the exact deferral condition and preserved warning cases as requests, while A describes the check as already corrected."
+    },
+    {
+      "id": 3737266652,
+      "ranking": [
+        "A",
+        "B"
+      ],
+      "winner": "A",
+      "scores": {
+        "A": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 1,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "A directly requests a narrow error boundary and identifies which errors must remain visible, while B makes that boundary sound implemented."
+    },
+    {
+      "id": 3737266656,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 1,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "reason": "B explicitly asks for one-time reference resolution and immediately states the reproducibility benefit, while A reports the path as corrected."
+    },
+    {
+      "id": 3737266661,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 1,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "reason": "B clearly requests saving the report for either collection while preserving failure-only nonzero exits, whereas A presents that behavior as complete."
+    },
+    {
+      "id": 3737291965,
+      "ranking": [
+        "A",
+        "B"
+      ],
+      "winner": "A",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 1,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "A explicitly requests the symlink boundary and all three test cases, while B describes the expansion and tests as already corrected."
+    },
+    {
+      "id": 3737383919,
+      "ranking": [
+        "A",
+        "B"
+      ],
+      "winner": "A",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 1,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "A turns the two distinct CLI failures into two precise requests, whereas B's stronger headline is undermined by completed-fix wording."
+    },
+    {
+      "id": 3737383922,
+      "ranking": [
+        "A",
+        "B"
+      ],
+      "winner": "A",
+      "scores": {
+        "A": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 1,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "A explicitly requests early validation of the documented path shape, while B's clearer headline is offset by language claiming the fix already exists."
+    },
+    {
+      "id": 3737449039,
+      "ranking": [
+        "A",
+        "B"
+      ],
+      "winner": "A",
+      "scores": {
+        "A": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 1,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "A clearly requests the stable-ID inputs and confines retrieval time to one field, while B presents that design as already implemented."
+    },
+    {
+      "id": 3737449052,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 1,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "reason": "B explicitly distinguishes failures from intentional exclusions and requests the corresponding accounting behavior, while A says the path is corrected."
+    },
+    {
+      "id": 3737449059,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 1,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "reason": "B divides the requested representation into three simple actions, while A describes the two-count design as an existing fix."
+    },
+    {
+      "id": 3737449070,
+      "ranking": [
+        "A",
+        "B"
+      ],
+      "winner": "A",
+      "scores": {
+        "A": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 1,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "A explicitly requests authoritative metric definitions and handling for unresolved keys, while B describes the proposed behavior as corrected."
+    },
+    {
+      "id": 3737449081,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 1,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "reason": "B directly requests reuse of the existing mapping and specifies both canonical and namespaced IDs, while A labels that change as the fix."
+    },
+    {
+      "id": 3737449090,
+      "ranking": [
+        "A",
+        "B"
+      ],
+      "winner": "A",
+      "scores": {
+        "A": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 1,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "A makes the two required counting grains explicit requests, while B's sharper headline is followed by wording that implies the totals are already corrected."
+    },
+    {
+      "id": 3737449098,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 2,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "reason": "B unmistakably requests the local file-result path, while A's declarative final sentence can be read as reporting existing behavior."
+    },
+    {
+      "id": 3737449101,
+      "ranking": [
+        "A",
+        "B"
+      ],
+      "winner": "A",
+      "scores": {
+        "A": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 1,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "A explicitly requests recursive sanitization and a concrete safe test strategy, while B presents both as completed work."
+    }
+  ],
+  "winner_counts": {
+    "A": 12,
+    "B": 10
+  },
+  "overall_ranking": [
+    "A",
+    "B"
+  ],
+  "recommended_version": "A",
+  "summary": "A wins 12 of 22 comparisons because its winning variants consistently express the required code and test changes as direct requests. Several losing variants have stronger problem-focused headlines, but wording such as “the fix” or “the corrected path” makes unfinished work sound complete and substantially reduces first-read actionability."
+}

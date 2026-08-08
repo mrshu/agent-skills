@@ -1,0 +1,69 @@
+{
+  "per_comment": [
+    {
+      "id": 3725727488,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3725776266,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_safe"
+      },
+      "fact_losses": [
+        "B: changes a wording-only correction into a request to use the relative components as the report name, implying an implementation change rather than documenting the existing supported contract"
+      ]
+    },
+    {
+      "id": 3725827214,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3725830949,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3725853144,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss"
+      },
+      "fact_losses": [
+        "B: changes the boundary from only snapshot-emitted model IDs needing vendored resolution to vendored resolution being allowed only for those IDs, and changes the source-derived ID from a fallback that can remain to one that must be kept",
+        "C: changes the boundary from only snapshot-emitted model IDs needing vendored resolution to vendored resolution being allowed only for those IDs, and changes the source-derived ID from a fallback that can remain to one that must be kept"
+      ]
+    },
+    {
+      "id": 3725913011,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 6,
+    "B": 4,
+    "C": 5
+  },
+  "summary": "Candidate A preserves all material facts across the six comments. Candidate B changes the requested API-contract wording and overconstrains the model-resolution boundary; candidate C only overconstrains the model-resolution boundary."
+}

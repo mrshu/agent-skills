@@ -1,0 +1,52 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3725747241,
+      "ranking": ["B", "C", "A"],
+      "winner": "B",
+      "reason": "B makes the replacement explicit in the heading, so the overwritten provenance and the requested separation of naming from routing are fastest to grasp."
+    },
+    {
+      "id": 3725871268,
+      "ranking": ["A", "B", "C"],
+      "winner": "A",
+      "reason": "A uses direct, parallel requests that clearly connect marker-aware parsing with the focused cases needed to verify both behaviors."
+    },
+    {
+      "id": 3726043677,
+      "ranking": ["A", "B", "C"],
+      "winner": "A",
+      "reason": "A states the rescaling precondition and the required handling of rejected cells directly without repetition or awkward phrasing."
+    },
+    {
+      "id": 3726043685,
+      "ranking": ["A", "B", "C"],
+      "winner": "A",
+      "reason": "A concisely presents the dependency conflict, its runtime consequence, and the concrete requirement to make `--dump` mandatory."
+    },
+    {
+      "id": 3729389316,
+      "ranking": ["A", "C", "B"],
+      "winner": "A",
+      "reason": "A preserves the full failure scenario and ends with a direct request to return valid rows and structured failures from every bounded table."
+    },
+    {
+      "id": 3729389321,
+      "ranking": ["B", "C", "A"],
+      "winner": "B",
+      "reason": "B separates the omission from its wheel-time consequence and names package data as the exact place where the snapshot path or pattern must be included."
+    }
+  ],
+  "winner_counts": {
+    "A": 4,
+    "B": 2,
+    "C": 0
+  },
+  "overall_ranking": ["A", "B", "C"],
+  "recommended_version": "A",
+  "summary": "A is the strongest overall because it usually presents the problem and consequence compactly, then uses direct requests with clear implementation targets. B occasionally improves comprehension by making the heading or change location more explicit, while C is generally comparable but loses ground through repetition or less direct wording."
+}
+
+
+Wall time: 48.74 seconds

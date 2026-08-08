@@ -45,7 +45,7 @@ Record only:
 - quantifiers, scope words, and certainty such as `all`, `only`, `can`, and
   `must`;
 - the concrete bad result;
-- valid behavior that the fix must preserve.
+- valid behavior that the requested change must preserve.
 
 Do not put the fact lock in the comment. Compare the draft with the fact lock.
 Every relationship and boundary must still match.
@@ -60,16 +60,22 @@ Do not emit until every fact-lock item has a supporting phrase.
 Privately map every draft relationship and boundary back to one fact-lock item.
 Delete any draft claim that has no source fact.
 If deletion would break the meaning, restore the source sentence.
-You may reorder clauses and split sentences to show problem, impact, and
-outcome.
+You may reorder clauses and split sentences to show problem, impact, and the
+requested change.
 You may remove filler and exact repetition.
 Do not replace technical verbs, quantifiers, or scope words.
 Preserve modals that express diagnostic certainty.
-Write fix guidance as a neutral desired state without `could` or `must`.
-Use `the fix` by default.
-Use `the corrected path` only when the source names an executable or control-flow path.
-Apply the actor-action-target check to outcome sentences as well as titles.
-If an outcome shifts the target of the fix, restore the synthesized fix sentence verbatim.
+Treat remediation as a requested change, not as observed code.
+For each source-backed action in a critical, high, or medium finding, write a
+separate short request sentence. Begin each sentence with `Please` and a direct
+action verb.
+Preserve suggestion grammar for low and nit guidance.
+Never write `the fix`, `in the fix`, or `the corrected path` unless the source
+explicitly discusses an existing patch under review.
+Apply the actor-action-target check to requested-change sentences as well as titles.
+If a requested change shifts the target, restore the source plan sentence verbatim.
+If no source-backed requested change exists, stop after the consequence.
+Do not invent why a requested test exists.
 Delete a source clause only when another retained clause states the same fact.
 If an exact phrase is hard to place, keep the whole source sentence.
 
@@ -77,14 +83,14 @@ Write the body in this order:
 
 1. **Problem:** Name the code behavior and trigger.
 2. **Impact:** State the concrete bad result.
-3. **Outcome:** State the corrected behavior. Add a test only when it explains
-   an important boundary.
+3. **Requested change:** State the exact action or decision. Include a test only
+   when the source requests it; do not invent what the test proves.
 
 Each sentence explains one relationship between code concepts. Name the
 function, field, command, or request that acts. Tie each necessary identifier
 to its role in the failure. Use one minimal example only when it makes a path,
 count, or state change easier to see. Do not show the Problem, Impact, or
-Outcome labels in the final comment.
+Requested change labels in the final comment.
 
 Before emitting the body, run this author check:
 
@@ -105,25 +111,22 @@ For an explicitly reintroduced author-resolved finding, put `<!-- review-anvil: 
 Use short everyday words. Prefer one clear sentence over a dense explanation.
 
 ```
-**RAV-RUN3-R2-F001 [medium] error-handling** — `save_user` reports success after the database write fails
+**RAV-RUN2-R1-F003 [medium] cli** — The module entry point builds the old argument namespace
 
-`save_user` catches the database error and returns `True`. `signup_flow` then
-reports success, but no user row exists.
+The changed handler reads missing fields and fails before conversion.
 
-The corrected path returns non-retryable write errors to `signup_flow`, which
-returns failure. An INSERT failure test covers this boundary.
+Please use the shared top-level parser in the module entry point. Please add one offline entry-point test.
 ```
 
 Keep only evidence that helps the author trust or fix the finding. Do not
 narrate the investigation, repeat the title, or list code terms without saying
 what they do here. Use a short code sketch or exact replacement only when it
-removes doubt. A concise finding can omit the Outcome sentence when the problem
-and impact already make the correction unambiguous.
+removes doubt.
 
 Voice rules:
 
 - Address the code, never the author: "the handler swallows the error", not "you swallow the error". No "should have", no "Obviously / Clearly / Simply / Just".
-- Keep the outcome calm and specific. Do not use commands, rhetorical questions, review jargon, or filler.
+- Keep the requested change calm and specific. Use a separate concise `Please` request for each source-backed action in critical, high, and medium findings. Do not use context-free commands, rhetorical questions, review jargon, or filler.
 - Do not add a stock opener or rotate through canned alternatives. Let the problem determine the sentence.
 - Calm and specific beats emphatic. The severity tag carries the urgency; the prose needs no alarm words, bold warnings, exclamation marks, or rhetorical/scolding questions.
 - When the PR's approach is sound and that fact changes the fix, say so in one honest clause. Do not add a compliment sandwich.

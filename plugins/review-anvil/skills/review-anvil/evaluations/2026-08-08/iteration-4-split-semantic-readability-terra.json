@@ -1,0 +1,76 @@
+{
+  "per_comment": [
+    {
+      "id": 3725747241,
+      "ranking": [
+        "B",
+        "C",
+        "A"
+      ],
+      "winner": "B",
+      "reason": "B names both the overwritten source value and its replacement directly in the heading, making the problem immediately clear."
+    },
+    {
+      "id": 3725871268,
+      "ranking": [
+        "B",
+        "C",
+        "A"
+      ],
+      "winner": "B",
+      "reason": "B uses the clearest phrasing for both parser behavior and the two requested follow-up cases without adding cognitive load."
+    },
+    {
+      "id": 3726043677,
+      "ranking": [
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "A",
+      "reason": "A states the two required safeguards directly and compactly, while B is more indirect and C redundantly repeats the consequence."
+    },
+    {
+      "id": 3726043685,
+      "ranking": [
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "A",
+      "reason": "A preserves the concise problem-and-consequence flow and makes enforcement of the required workaround explicit."
+    },
+    {
+      "id": 3729389316,
+      "ranking": [
+        "B",
+        "A",
+        "C"
+      ],
+      "winner": "B",
+      "reason": "B separates the parser limitation from its consequence and uses a direct request that is easy to scan into an implementation task."
+    },
+    {
+      "id": 3729389321,
+      "ranking": [
+        "B",
+        "C",
+        "A"
+      ],
+      "winner": "B",
+      "reason": "B gives the missing path, runtime consequence, packaging change, and verification request in the clearest scan-friendly structure."
+    }
+  ],
+  "winner_counts": {
+    "A": 2,
+    "B": 4,
+    "C": 0
+  },
+  "overall_ranking": [
+    "B",
+    "A",
+    "C"
+  ],
+  "recommended_version": "B",
+  "summary": "B most consistently improves first-read comprehension by separating the issue from its consequence and using direct implementation requests. A is often nearly as clear but occasionally has less explicit headings or action phrasing. C is generally readable but loses ground through redundancy or slightly less direct wording."
+}

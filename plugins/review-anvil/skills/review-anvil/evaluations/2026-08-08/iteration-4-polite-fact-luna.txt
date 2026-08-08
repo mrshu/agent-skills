@@ -1,0 +1,73 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 995000019001,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents the requested use of the shared top-level parser and addition of one offline entry-point test as already implemented in the fix."
+      ]
+    },
+    {
+      "id": 995000019002,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents exact canonical IDs winning first and normalized spellings resolving only for uniquely owning organizations as already implemented in the fix."
+      ]
+    },
+    {
+      "id": 995000020303,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents the required smoke-output path and quoted fixed-depth validator glob as already implemented in the fix."
+      ]
+    },
+    {
+      "id": 995000020304,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents entering invalid-score rows into the failure report, omitting incomplete token usage, and calculating token means only from complete values as already implemented in the fix."
+      ]
+    },
+    {
+      "id": 995000020405,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents integrating current main before moving the adapter and references, and using the imported schema version in tests, as already implemented in the fix."
+      ]
+    },
+    {
+      "id": 995000020406,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Presents keeping `accuracy` as the metric ID while preserving benchmark identity in task-specific evaluation names as already implemented in the fix."
+      ]
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 6,
+    "B": 0
+  },
+  "summary": "All A candidates preserve the source facts while restating proposed remediation as requests. Every B candidate incorrectly presents the requested remediation as already implemented, which is fact loss in this review-only context."
+}
+
+
+Wall time: 25.17 seconds

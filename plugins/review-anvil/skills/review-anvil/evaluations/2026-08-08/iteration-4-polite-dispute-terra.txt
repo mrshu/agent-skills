@@ -1,0 +1,26 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 995000019002,
+      "verdict": "fact_safe",
+      "reason": "The candidate preserves the collision diagnostic and recasts both proposed remediation statements as requests to the PR author. It does not claim that the precedence or uniqueness behavior is already implemented."
+    },
+    {
+      "id": 995000020405,
+      "verdict": "fact_safe",
+      "reason": "The candidate retains the retired-layout diagnosis, installed-package consequence, integration ordering, destination path, and test-schema requirement. Its imperative wording requests the changes rather than asserting they already exist."
+    },
+    {
+      "id": 995000020406,
+      "verdict": "fact_safe",
+      "reason": "The candidate preserves the nine benchmark-specific IDs, resulting fragmented global join key, and requested separation between the accuracy metric ID and task-specific evaluation names. It frames the remediation as a request."
+    }
+  ],
+  "fact_safe_count": 3,
+  "fact_loss_count": 0,
+  "summary": "All candidates preserve the source diagnostics and requested behavior. The evaluator's claimed implementation assertions are not present because the candidates use direct requests to the PR author."
+}
+
+
+Wall time: 20.89 seconds

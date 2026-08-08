@@ -1,0 +1,22 @@
+{
+  "per_comment": [
+    {
+      "id": 995000019002,
+      "verdict": "fact_loss",
+      "reason": "The source proposes that exact canonical IDs win first and normalized spellings resolve only under unique ownership. \"In the fix\" falsely presents that remediation as already implemented."
+    },
+    {
+      "id": 995000020405,
+      "verdict": "fact_loss",
+      "reason": "The source requests integrating current main, moving the adapter and references, and using the imported schema version in tests. \"The fix integrates\" and \"Tests use\" falsely claim those changes already exist."
+    },
+    {
+      "id": 995000020406,
+      "verdict": "fact_loss",
+      "reason": "The source proposes retaining `accuracy` as the metric ID and preserving benchmark identity in task-specific names. \"In the fix\" falsely claims that proposed behavior is already implemented."
+    }
+  ],
+  "fact_safe_count": 0,
+  "fact_loss_count": 3,
+  "summary": "All candidates preserve the proposed technical behavior but convert remediation requests into claims about an existing fix. The source does not state that any of these changes has already been implemented."
+}

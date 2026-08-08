@@ -1,0 +1,120 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {"A": "fact_loss", "B": "fact_safe"},
+      "fact_losses": ["A: Presents the proposed rejection and proposed mismatched-source/`collection_override` tests as an implemented fix that already covers the path."]
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {"A": "fact_safe", "B": "fact_loss"},
+      "fact_losses": ["B: Presents retaining recoverable old files and the mid-write failure test as properties of a corrected, implemented replacement path."]
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {"A": "fact_loss", "B": "fact_safe"},
+      "fact_losses": ["A: Presents keeping the raw dataset model path as the identity input as an implemented fix rather than proposed remediation."]
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {"A": "fact_safe", "B": "fact_loss"},
+      "fact_losses": ["B: Presents atomic report replacement after publication as a corrected, implemented path rather than proposed remediation."]
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {"A": "fact_loss", "B": "fact_safe"},
+      "fact_losses": ["A: Presents adding a shared representation for neutral measures as an implemented fix rather than the remaining requested change."]
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {"A": "fact_safe", "B": "fact_loss"},
+      "fact_losses": ["B: Presents separate validation rules and allowing empty optional cells as behavior of corrected validation rather than proposed remediation."]
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {"A": "fact_loss", "B": "fact_safe"},
+      "fact_losses": ["A: Presents preserving existing output on incomplete sweeps and returning nonzero as behavior of a corrected path rather than proposed remediation."]
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {"A": "fact_safe", "B": "fact_loss"},
+      "fact_losses": ["B: Presents deferring the check for invalid non-string developers as behavior of a corrected check rather than proposed remediation."]
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {"A": "fact_safe", "B": "fact_loss"},
+      "fact_losses": ["B: Presents the narrow boundary catching expected parsing and schema errors as implemented corrected behavior rather than requested remediation."]
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {"A": "fact_loss", "B": "fact_safe"},
+      "fact_losses": ["A: Presents resolving every supplied reference once as behavior of a corrected path rather than proposed remediation."]
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {"A": "fact_safe", "B": "fact_loss"},
+      "fact_losses": ["B: Presents saving the shared report for either collection as behavior of a corrected path rather than proposed remediation."]
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {"A": "fact_loss", "B": "fact_safe"},
+      "fact_losses": ["A: Presents rejection of directory-target symlinks and the proposed boundary tests as behavior already present in a corrected expansion."]
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {"A": "fact_loss", "B": "fact_safe"},
+      "fact_losses": ["A: Presents requiring one or more `--models` values and stopping no-match runs before discovery or publication as implemented corrected behavior."]
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {"A": "fact_safe", "B": "fact_loss"},
+      "fact_losses": ["B: Presents early validation of the documented `data/wild` shape as an implemented fix rather than proposed remediation."]
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {"A": "fact_loss", "B": "fact_safe"},
+      "fact_losses": ["A: Presents the proposed stable-ID composition and restricting retrieval time to `retrieved_timestamp` as corrected, implemented behavior."]
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {"A": "fact_loss", "B": "fact_safe"},
+      "fact_losses": ["A: Presents adding measured but unconvertible files to the failure ledger as behavior of a corrected path rather than proposed remediation."]
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {"A": "fact_safe", "B": "fact_loss"},
+      "fact_losses": ["B: Presents retaining both counts with effective score coverage and original dataset provenance as an implemented fix rather than proposed remediation."]
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {"A": "fact_loss", "B": "fact_safe"},
+      "fact_losses": ["A: Presents reporting unresolved keys after preserving valid metrics as behavior of a corrected path rather than proposed remediation."]
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {"A": "fact_safe", "B": "fact_loss"},
+      "fact_losses": ["B: Presents supplying canonical global and stable namespaced metric IDs as an implemented fix rather than proposed remediation."]
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {"A": "fact_loss", "B": "fact_safe"},
+      "fact_losses": ["A: Presents using results files as the source-record grain and separately reporting output-log count as corrected, implemented totals behavior."]
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {"A": "fact_safe", "B": "fact_loss"},
+      "fact_losses": ["B: Presents a lighteval-local file-result path giving both entry modes report-before-raise behavior as already implemented."]
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {"A": "fact_loss", "B": "fact_safe"},
+      "fact_losses": ["A: Presents applying a recursive sanitizer and the proposed provider-prefixed-key test as an implemented fix that already covers the path."]
+    }
+  ],
+  "fact_safe_counts": {"A": 10, "B": 12},
+  "summary": "Candidate A is fact-safe for 10 comments, while candidate B is fact-safe for 12. Every fact loss presents source-proposed remediation, and in some cases proposed test coverage, as already implemented despite the review-only context."
+}
+
+
+Wall time: 68.09 seconds

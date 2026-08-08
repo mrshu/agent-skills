@@ -1,0 +1,612 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 3,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "B states the requested validation change directly, while A describes it as an already-defined fix."
+    },
+    {
+      "id": 3737044354,
+      "ranking": [
+        "A",
+        "B"
+      ],
+      "winner": "A",
+      "scores": {
+        "A": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 3,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "A turns the recovery requirement into an explicit request, whereas B presents the desired behavior as corrected code."
+    },
+    {
+      "id": 3737044361,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 3,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "B makes the requested identity-input change unmistakable, despite A having a slightly more concrete headline."
+    },
+    {
+      "id": 3737044371,
+      "ranking": [
+        "A",
+        "B"
+      ],
+      "winner": "A",
+      "scores": {
+        "A": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 3,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "A combines the clear diagnosis with a direct atomic-replacement request, while B describes the replacement as already corrected."
+    },
+    {
+      "id": 3737053181,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 3,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "reason": "B separates the consumer consequence from the schema context and explicitly asks for the missing neutral representation."
+    },
+    {
+      "id": 3737053197,
+      "ranking": [
+        "A",
+        "B"
+      ],
+      "winner": "A",
+      "scores": {
+        "A": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 3,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "A gives the author a direct validation request and preserves the allowed-empty-cell boundary without presenting the change as completed."
+    },
+    {
+      "id": 3737053204,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 3,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "B directly requests the incomplete-sweep behavior while retaining the precise non-200 failure mechanism in the body."
+    },
+    {
+      "id": 3737181823,
+      "ranking": [
+        "A",
+        "B"
+      ],
+      "winner": "A",
+      "scores": {
+        "A": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 3,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "A clearly requests deferral for the invalid type while preserving the exact valid-string cases that should still warn."
+    },
+    {
+      "id": 3737266652,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 3,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "B explicitly asks for the narrow error boundary and distinguishes expected data errors from unexpected failures."
+    },
+    {
+      "id": 3737266656,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 3,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "B makes the one-time resolution request explicit and leaves the reproducibility consequence easy to connect to the stated branch behavior."
+    },
+    {
+      "id": 3737266661,
+      "ranking": [
+        "A",
+        "B"
+      ],
+      "winner": "A",
+      "scores": {
+        "A": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 3,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "A directly requests saving the report for either collection and preserves the separate failure-based exit rule."
+    },
+    {
+      "id": 3737291965,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 3,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "B states the symlink rejection request plainly and keeps the direct-directory, glob, and file-symlink boundaries actionable."
+    },
+    {
+      "id": 3737383919,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 3,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "B keeps the two requested changes distinct and imperative, while A compresses both defects into a denser headline and describes them as fixed."
+    },
+    {
+      "id": 3737383922,
+      "ranking": [
+        "A",
+        "B"
+      ],
+      "winner": "A",
+      "scores": {
+        "A": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 3,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "A gives an explicit early-validation request and retains the exact destination-shape constraint without claiming the correction is already present."
+    },
+    {
+      "id": 3737449039,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 3,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "B explicitly asks for the stable-ID inputs and cleanly separates them from the retrieval-time metadata."
+    },
+    {
+      "id": 3737449052,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 3,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "B makes the failure-ledger request explicit while preserving the exclusion exception and the directory-level automation consequence."
+    },
+    {
+      "id": 3737449059,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 3,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "B directly requests preserving both counts and names the effective count's role, while A presents that design as an existing fix."
+    },
+    {
+      "id": 3737449070,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 3,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "B gives a direct semantic-definition request and clearly preserves valid metrics while reporting unresolved keys."
+    },
+    {
+      "id": 3737449081,
+      "ranking": [
+        "A",
+        "B"
+      ],
+      "winner": "A",
+      "scores": {
+        "A": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 3,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "A explicitly asks for the mapping change and keeps the concrete `metric_id` omission visible in the headline."
+    },
+    {
+      "id": 3737449090,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 3,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "B directly requests a consistent source-record grain and separates it from the converted output-log count."
+    },
+    {
+      "id": 3737449098,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 3,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "B foregrounds the missing report as the author-visible defect and explicitly requests the local result path that fixes it."
+    },
+    {
+      "id": 3737449101,
+      "ranking": [
+        "B",
+        "A"
+      ],
+      "winner": "B",
+      "scores": {
+        "A": {
+          "problem_clarity": 5,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 3,
+          "actionability": 4,
+          "tone": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "problem_clarity": 4,
+          "consequence_clarity": 5,
+          "requested_change_clarity": 5,
+          "actionability": 5,
+          "tone": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "reason": "B states the recursive-sanitizer request directly and retains the serialization boundary and safe testing constraint."
+    }
+  ],
+  "winner_counts": {
+    "A": 8,
+    "B": 12
+  },
+  "overall_ranking": [
+    "B",
+    "A"
+  ],
+  "recommended_version": "B",
+  "summary": "B wins overall because it consistently presents the requested change as an explicit review request rather than describing a corrected path as if it already exists. A sometimes has a clearer consequence-first headline, but its declarative fix language weakens requested-change clarity and can blur current versus proposed behavior."
+}
+
+
+Wall time: 239.83 seconds

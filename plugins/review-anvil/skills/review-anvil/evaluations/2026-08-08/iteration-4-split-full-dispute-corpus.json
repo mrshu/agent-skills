@@ -1,0 +1,8 @@
+[
+  {
+    "id": 3737044361,
+    "source": "**RAV-RUN3-R1-F002 [high] evaluation-identity** — Alias metadata can change the identity of the same source file\n\n`evaluated_model_repo()` returns the current Hugging Face canonical repository. `make_log()` then includes that value in `evaluation_id`. A later redirect change can give the same source result a second logical identity.\n\nThe raw dataset model path can remain the evaluation identity input. The reconciled repository can still drive model metadata and routing.",
+    "candidate": "**RAV-RUN3-R1-F002 [high] evaluation-identity** — Alias metadata can change the identity of the same source file\n\n`evaluated_model_repo()` returns the current Hugging Face canonical repository. `make_log()` then includes that value in `evaluation_id`. A later redirect change can give the same source result a second logical identity.\n\nPlease use the raw dataset model path as the evaluation identity input. Please use the reconciled repository to drive model metadata and routing.",
+    "claimed_loss": "A: “A redirect change makes...” changes the source’s conditional possibility into a definite outcome, overstating diagnostic certainty.; B: “The fix keeps the raw dataset model path...” presents the requested identity remediation as already implemented."
+  }
+]

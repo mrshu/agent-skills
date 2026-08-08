@@ -1,0 +1,26 @@
+{
+  "995000019001": {
+    "A": "requested",
+    "B": "baseline"
+  },
+  "995000019002": {
+    "A": "baseline",
+    "B": "requested"
+  },
+  "995000020303": {
+    "A": "requested",
+    "B": "baseline"
+  },
+  "995000020304": {
+    "A": "requested",
+    "B": "baseline"
+  },
+  "995000020405": {
+    "A": "requested",
+    "B": "baseline"
+  },
+  "995000020406": {
+    "A": "baseline",
+    "B": "requested"
+  }
+}

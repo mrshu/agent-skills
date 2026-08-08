@@ -1,0 +1,32 @@
+[
+  {
+    "id": 995000019001,
+    "pr": 190,
+    "body": "**RAV-RUN2-R1-F003 [medium] cli** — The module entry point builds the old argument namespace.\n\nThe changed handler reads missing fields and fails before conversion.\n\nPlease use the shared top-level parser in the module entry point, and add one offline entry-point test."
+  },
+  {
+    "id": 995000019002,
+    "pr": 190,
+    "body": "**RAV-RUN2-R1-F011 [medium] registry-identity** — Normalized organization collisions can rewrite an exact canonical ID to another canonical organization.\n\nPlease let exact canonical IDs win first, and resolve normalized spellings only when one organization owns them."
+  },
+  {
+    "id": 995000020303,
+    "pr": 203,
+    "body": "**RAV-RUN2-R1-F002 [medium] documentation** — The smoke command passes a directory to a file-only validator.\n\nIts output root also cannot satisfy datastore path checks.\n\nPlease use the required `data/<collection>` path for smoke output, and pass a quoted fixed-depth file glob to the validator."
+  },
+  {
+    "id": 995000020304,
+    "pr": 203,
+    "body": "**RAV-RUN2-R1-F004 [medium] data-validation** — Missing scores become incorrect answers and stay in aggregate denominators.\n\nMissing token data becomes measured zero instead of being omitted.\n\nPlease put rows with invalid scores in the failure report. Omit incomplete token usage, and base token means only on complete values."
+  },
+  {
+    "id": 995000020405,
+    "pr": 204,
+    "body": "**RAV-RUN2-R1-F002 [medium] repository-integration** — The adapter remains under the retired `utils` layout.\n\nInstalled packages include `every_eval_ever*`, so this adapter and its documented command are outside the active package.\n\nPlease integrate current main before moving the adapter and references under `every_eval_ever/adapters/open_medical_llm`. Use the imported schema version in tests."
+  },
+  {
+    "id": 995000020406,
+    "pr": 204,
+    "body": "**RAV-RUN2-R1-F004 [medium] metric-identity** — Ordinary accuracy receives nine benchmark-specific metric IDs.\n\nThis fragments the global accuracy join key.\n\nPlease let `accuracy` remain the metric ID while task-specific evaluation names preserve benchmark identity."
+  }
+]
