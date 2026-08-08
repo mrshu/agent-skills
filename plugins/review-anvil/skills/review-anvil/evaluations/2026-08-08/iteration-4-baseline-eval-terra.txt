@@ -1,0 +1,283 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 3,
+      "cognitive_ease": 4,
+      "technical_safety": "fact_loss",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The concrete directory mismatch and extra nesting are clear, but “The fix rejects” falsely states that the unimplemented change is present."
+    },
+    {
+      "id": 3737044354,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 3,
+      "cognitive_ease": 4,
+      "technical_safety": "fact_loss",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "It precisely explains data loss after a later write failure, but “The corrected replacement path retains” incorrectly presents the requested behavior as current."
+    },
+    {
+      "id": 3737044361,
+      "problem_clarity": 5,
+      "consequence_clarity": 4,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 3,
+      "cognitive_ease": 4,
+      "technical_safety": "fact_loss",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The identity instability is well traced through `evaluated_model_repo()` and `make_log()`, but “The fix keeps” invents an implemented correction."
+    },
+    {
+      "id": 3737044371,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 3,
+      "cognitive_ease": 4,
+      "technical_safety": "fact_loss",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The exclusions-only trigger and stale-report consequence are concrete, but “The corrected path” falsely asserts that atomic replacement already occurs."
+    },
+    {
+      "id": 3737053181,
+      "problem_clarity": 5,
+      "consequence_clarity": 4,
+      "requested_change_clarity": 3,
+      "actionability": 3,
+      "tone": 3,
+      "cognitive_ease": 4,
+      "technical_safety": "fact_loss",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The contradictory neutral versus higher-is-better signal is clear, but “The fix adds” both presupposes an implementation and leaves the shared representation unspecified."
+    },
+    {
+      "id": 3737053197,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 3,
+      "cognitive_ease": 4,
+      "technical_safety": "fact_loss",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "It clearly identifies both silent malformed-cell handling and the 805 fallback, but “The corrected validation uses” presents the requested validation as already implemented."
+    },
+    {
+      "id": 3737053204,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 3,
+      "cognitive_ease": 4,
+      "technical_safety": "fact_loss",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The transient-response data-loss path is concrete, but “The corrected path leaves” falsely claims the incomplete-sweep behavior has changed."
+    },
+    {
+      "id": 3737181823,
+      "problem_clarity": 5,
+      "consequence_clarity": 4,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 3,
+      "cognitive_ease": 4,
+      "technical_safety": "fact_loss",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The duplicate schema and semantic warning path is well specified, but “the corrected check defers” incorrectly describes an unimplemented behavior as current."
+    },
+    {
+      "id": 3737266652,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 3,
+      "cognitive_ease": 4,
+      "technical_safety": "fact_loss",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "It clearly connects malformed parsing to loss of all valid rows and missing accounting, but “The corrected boundary catches” presupposes the boundary exists."
+    },
+    {
+      "id": 3737266656,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 3,
+      "cognitive_ease": 4,
+      "technical_safety": "fact_loss",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The moving-reference reproducibility failure across four requests is explicit, but “The corrected path resolves” falsely states that supplied references are now resolved."
+    },
+    {
+      "id": 3737266661,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 3,
+      "cognitive_ease": 4,
+      "technical_safety": "fact_loss",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The exclusions-only loss and preserved failure exit behavior are clear, but “The corrected path saves it” incorrectly represents the requested persistence as implemented."
+    },
+    {
+      "id": 3737291965,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 3,
+      "cognitive_ease": 4,
+      "technical_safety": "fact_loss",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "It precisely distinguishes explicit-root and discovered-child symlinks, but “The corrected expansion rejects” falsely asserts the requested rejection behavior."
+    },
+    {
+      "id": 3737383919,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 3,
+      "cognitive_ease": 4,
+      "technical_safety": "fact_loss",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "Both the bare-option full-run trigger and no-match success case are explicit, but “The fix requires” and “The corrected no-match path” claim unimplemented changes."
+    },
+    {
+      "id": 3737383922,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 3,
+      "cognitive_ease": 4,
+      "technical_safety": "fact_loss",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The requested-path versus actual-path mismatch is concrete, but “The fix validates” incorrectly says the early validation already exists."
+    },
+    {
+      "id": 3737449039,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 3,
+      "cognitive_ease": 4,
+      "technical_safety": "fact_loss",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The unstable retrieval-time identity and duplicate re-ingest result are clear, but “The corrected stable ID uses” falsely presents the proposed identity as current."
+    },
+    {
+      "id": 3737449052,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 3,
+      "cognitive_ease": 4,
+      "technical_safety": "fact_loss",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "It clearly identifies successful total conversion loss and preserves the exclusion distinction, but “The corrected path puts” asserts an unimplemented failure-ledger change."
+    },
+    {
+      "id": 3737449059,
+      "problem_clarity": 4,
+      "consequence_clarity": 4,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 3,
+      "cognitive_ease": 4,
+      "technical_safety": "fact_loss",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The count-provenance mismatch is understandable from the body, but “The fix keeps” falsely describes the desired two-count representation as present."
+    },
+    {
+      "id": 3737449070,
+      "problem_clarity": 5,
+      "consequence_clarity": 4,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 3,
+      "cognitive_ease": 4,
+      "technical_safety": "fact_loss",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The unverified direction assignment is clear, but the unmarked declarative “establish the semantics” and “The corrected path reports” imply correction rather than request it."
+    },
+    {
+      "id": 3737449081,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 3,
+      "cognitive_ease": 4,
+      "technical_safety": "fact_loss",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The missing `metric_id` and cross-source join consequence are concrete, but “The fix uses” falsely asserts that the mapping now supplies those IDs."
+    },
+    {
+      "id": 3737449090,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 3,
+      "cognitive_ease": 4,
+      "technical_safety": "fact_loss",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The incompatible file-level and task-level denominator units are explicit, but “The corrected totals keep” presents the requested accounting model as already applied."
+    },
+    {
+      "id": 3737449098,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 3,
+      "cognitive_ease": 4,
+      "technical_safety": "fact_loss",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The ordering difference between single-file and directory failure reporting is clear, but “A lighteval-local file-result path gives” falsely states the new path exists."
+    },
+    {
+      "id": 3737449101,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 3,
+      "cognitive_ease": 4,
+      "technical_safety": "fact_loss",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The nested-secret exposure and recursive-sanitizer scope are specific, but “The fix applies” falsely claims that sanitization has already been added."
+    }
+  ],
+  "means": {
+    "problem_clarity": 4.95,
+    "consequence_clarity": 4.77,
+    "requested_change_clarity": 3.0,
+    "actionability": 3.95,
+    "tone": 3.0,
+    "cognitive_ease": 4.0
+  },
+  "fact_safe_count": 0,
+  "fix_presupposition_count": 22,
+  "summary": "The selected comments explain the defects, triggers, and consequences clearly and retain the original code relationships. Every selected version converts proposed remediation into a declarative current state despite the review-only context, creating an unsupported technical claim and making each comment imply an existing fix."
+}
+
+
+Wall time: 100.15 seconds

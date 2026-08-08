@@ -1,0 +1,283 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 5,
+      "cognitive_ease": 5,
+      "technical_safety": "fact_safe",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The path mismatch, over-deep output, and proposed boundary tests remain clear, but the wording presents the follow-up rejection as already implemented."
+    },
+    {
+      "id": 3737044354,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 5,
+      "cognitive_ease": 5,
+      "technical_safety": "fact_safe",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The deletion timing, rollback boundary, and recoverability requirement are preserved, but “corrected replacement path” falsely suggests the repair exists."
+    },
+    {
+      "id": 3737044361,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 5,
+      "cognitive_ease": 5,
+      "technical_safety": "fact_safe",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The redirect-dependent identity change and separation of identity from metadata and routing remain intact, but “The fix” implies an unimplemented change is present."
+    },
+    {
+      "id": 3737044371,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 5,
+      "cognitive_ease": 5,
+      "technical_safety": "fact_safe",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The exclusions-only accounting failure and atomic replacement guidance are preserved, but “corrected path” states the desired implementation as current."
+    },
+    {
+      "id": 3737053181,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 5,
+      "cognitive_ease": 5,
+      "technical_safety": "fact_safe",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The neutral-metric Boolean ambiguity and need for shared neutral representation remain clear, but “The fix” presents that representation as already added."
+    },
+    {
+      "id": 3737053197,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 5,
+      "cognitive_ease": 5,
+      "technical_safety": "fact_safe",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "Malformed-cell loss, the invalid-805 denominator fallback, and the separate validation rules are all retained, but the “corrected validation” is falsely described as present."
+    },
+    {
+      "id": 3737053204,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 5,
+      "cognitive_ease": 5,
+      "technical_safety": "fact_safe",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The non-200 rename loss, incomplete-sweep behavior, and 401 boundary remain intact, but “corrected path” implies the preservation behavior already exists."
+    },
+    {
+      "id": 3737181823,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 5,
+      "cognitive_ease": 5,
+      "technical_safety": "fact_safe",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The duplicate schema and identity-path diagnostics and the flat-ID type boundary are preserved, but “corrected check” implies the deferral is already implemented."
+    },
+    {
+      "id": 3737266652,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 5,
+      "cognitive_ease": 5,
+      "technical_safety": "fact_safe",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The pre-result parsing failure and missing row-level boundary remain clear, but “The corrected boundary” presents the proposed error handling as existing."
+    },
+    {
+      "id": 3737266656,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 5,
+      "cognitive_ease": 5,
+      "technical_safety": "fact_safe",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The four-request moving-branch inconsistency, metadata limitation, and one-time resolution guidance remain intact, but “corrected path” implies the change was made."
+    },
+    {
+      "id": 3737266661,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 5,
+      "cognitive_ease": 5,
+      "technical_safety": "fact_safe",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The exclusions-only report loss and conditional nonzero exit requirement are preserved, but “corrected path” falsely describes the requested behavior as current."
+    },
+    {
+      "id": 3737291965,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 5,
+      "cognitive_ease": 5,
+      "technical_safety": "fact_safe",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The explicit-root symlink boundary, unchanged file-symlink behavior, and required tests remain intact, but “corrected expansion” implies the rejection already exists."
+    },
+    {
+      "id": 3737383919,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 5,
+      "cognitive_ease": 5,
+      "technical_safety": "fact_safe",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "Both empty-argument and no-match outcomes and their separate remedies remain clear, but “The fix” and “corrected no-match path” imply completed changes."
+    },
+    {
+      "id": 3737383922,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 5,
+      "cognitive_ease": 5,
+      "technical_safety": "fact_safe",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The parent-path redirection example and the early documented-shape validation guidance are preserved, but “The fix validates” implies it is already present."
+    },
+    {
+      "id": 3737449039,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 5,
+      "cognitive_ease": 5,
+      "technical_safety": "fact_safe",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The retrieval-time identity collision and all stable-ID inputs remain intact, but “corrected stable ID” falsely presents the proposed ID scheme as implemented."
+    },
+    {
+      "id": 3737449052,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 5,
+      "cognitive_ease": 5,
+      "technical_safety": "fact_safe",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The measured-task loss, successful zero-log directory result, and failure-versus-exclusion distinction are preserved, but “corrected path” implies the ledger behavior already exists."
+    },
+    {
+      "id": 3737449059,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 5,
+      "cognitive_ease": 5,
+      "technical_safety": "fact_safe",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The original-versus-effective count mismatch and provenance guidance remain clear, but “The fix keeps” presents the requested representation as already implemented."
+    },
+    {
+      "id": 3737449070,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 5,
+      "cognitive_ease": 5,
+      "technical_safety": "fact_safe",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The unknown-key direction error, preservation of valid metrics, and unresolved-key reporting guidance remain intact, but “corrected path” implies that handling exists."
+    },
+    {
+      "id": 3737449081,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 5,
+      "cognitive_ease": 5,
+      "technical_safety": "fact_safe",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The missing metric identifier and canonical-versus-namespaced mapping guidance are preserved, but “The fix uses” falsely states that the mapping is already wired in."
+    },
+    {
+      "id": 3737449090,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 5,
+      "cognitive_ease": 5,
+      "technical_safety": "fact_safe",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The inconsistent file-versus-output-log denominator and separate reporting grain remain clear, but “corrected totals” implies the requested accounting change exists."
+    },
+    {
+      "id": 3737449098,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 5,
+      "cognitive_ease": 5,
+      "technical_safety": "fact_safe",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The single-file report omission, directory contrast, and report-before-raise design remain intact, but the final paragraph states the proposed path as implemented."
+    },
+    {
+      "id": 3737449101,
+      "problem_clarity": 5,
+      "consequence_clarity": 5,
+      "requested_change_clarity": 3,
+      "actionability": 4,
+      "tone": 5,
+      "cognitive_ease": 5,
+      "technical_safety": "fact_safe",
+      "fix_presupposition": "implies_existing_fix",
+      "note": "The nested credential exposure, supported configuration boundary, recursive sanitizer, and safe test guidance are preserved, but “The fix applies” implies an existing repair."
+    }
+  ],
+  "means": {
+    "problem_clarity": 5.0,
+    "consequence_clarity": 5.0,
+    "requested_change_clarity": 3.0,
+    "actionability": 4.0,
+    "tone": 5.0,
+    "cognitive_ease": 5.0
+  },
+  "fact_safe_count": 22,
+  "fix_presupposition_count": 22,
+  "summary": "The selected comments preserve the original technical details and make the defects and consequences quick to understand. Every remediation paragraph presents a proposed correction, and often its tests, as already existing, which reduces request clarity and triggers fix presupposition for all 22 comments."
+}
+
+
+Wall time: 197.39 seconds
