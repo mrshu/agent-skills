@@ -1,0 +1,249 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "Both preserve the diagnosis, path shape, boundary, and test scope, but A states the required correction more directly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "Both preserve the deletion timing, rollback limitation, failure consequence, and route boundary, while A presents the desired replacement behavior more directly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "Both preserve the identity mechanism and metadata-routing boundary, but A makes the recommended corrected behavior easier to scan.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "Both retain the exclusions-only failure and stale-report consequences, while A states the report-replacement outcome more decisively.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "Both preserve the neutral-metric ambiguity and schema constraint, but A makes the required shared representation more immediately actionable.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "Both preserve the malformed-value, denominator, failure-report, and empty-cell boundaries, while A states the validation outcome more clearly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "Both preserve the transient-error, rename-loss, incomplete-sweep, and 401-handling facts, but A gives the desired failure behavior in a more direct form.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "Both preserve the raw-value path, duplicate-warning condition, type boundary, and valid-string warning cases, while A makes the deferral rule more actionable.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "Both preserve the pre-result parsing boundary, row-level failure consequence, and exception distinction, but A states the desired error handling more directly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "Both preserve the symbolic-revision, moving-branch, request-count, and metadata facts, while A presents the reproducibility fix more clearly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "Both preserve exclusions reporting and the conditional exit rule, but A identifies the corrected save behavior more immediately.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "Both preserve the root-symlink traversal mechanism, discovered-child boundary, and file-symlink exception, while A states the intended rejection behavior more directly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "Both preserve the empty-filter and no-match paths plus the publication boundary, but A gives the required CLI behavior in a more scannable form.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "Both preserve the parent-path derivation, misleading message, and documented-shape boundary, while A states the single-destination outcome more decisively.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "Both preserve the unstable identity cause and every required stable-ID input, but A makes the corrected separation of retrieval time more actionable.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "Both preserve total conversion loss, successful zero-log behavior, and the exclusions boundary, while A states the required accounting behavior more directly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "Both preserve the original-versus-effective count distinction and provenance boundary, but A presents the desired count visibility more plainly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "Both preserve the unresolved-metric direction and bounds problem plus partial-preservation behavior, while A states the required handling more directly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "Both preserve the omitted join key and the global-versus-namespaced ID distinction, but A makes the mapping's role more immediately actionable.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "Both preserve the mixed source-unit denominator problem and reporting boundary, while A states the corrected grain and separate count more clearly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "Both preserve the single-file and directory-entry behavior plus report-before-raise requirement, but A gives the desired parity more directly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "Both preserve the nested-secret exposure, supported configuration scope, recursive sanitizer boundary, and non-recording test requirement, while A states the protection outcome more decisively.",
+      "fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 22,
+    "B": 22
+  },
+  "readability_counts": {
+    "A": 22,
+    "B": 0,
+    "tie": 0
+  },
+  "dimension_winners": {
+    "immediate_comprehension": "A",
+    "consequence_clarity": "tie",
+    "actionability": "A",
+    "evidence_preservation": "tie",
+    "jargon_load": "tie",
+    "sentence_clarity": "A",
+    "tone": "tie",
+    "scanability": "A"
+  },
+  "overall_winner": "A",
+  "summary": "Every candidate preserves the material source facts, including the diagnostic details and the boundaries of the proposed fixes. A wins readability overall because its direct statements of the desired corrected behavior are easier to act on than B's modal recommendations."
+}
+
+
+Wall time: 121.37 seconds

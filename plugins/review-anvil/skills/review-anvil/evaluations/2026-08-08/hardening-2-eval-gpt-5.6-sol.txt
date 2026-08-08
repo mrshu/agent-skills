@@ -1,0 +1,249 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B more clearly distinguishes the observed guard defect from the proposed rejection rule.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B's modal wording makes the required replacement strategy read as guidance rather than an inaccurate description of current behavior.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B clearly presents the raw-path identity and reconciled-repository routing as the proposed boundary.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B more clearly signals that atomic report replacement is the recommended correction rather than existing behavior.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B keeps the neutral-value mismatch and its higher-is-better consequence together for faster comprehension.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "A separates the malformed-cell behavior from the denominator fallback, making the two validation defects easier to scan.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "A gives the transient-error consequence its own short paragraph and states the required preservation behavior directly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B more clearly marks deferral as the proposed fix while preserving the exact valid-string warning boundary.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "A leads with the user-visible loss of all valid rows and then supplies the two missing error-boundary details.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "A exposes the cross-request inconsistency in the heading and keeps the SHA, moving-branch, and metadata evidence immediately below it.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "A states the exclusions-only reporting failure in the heading and then cleanly separates its trigger, consequence, and required outcome.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "A preserves the direct-root versus discovered-child boundary and states the directory- and file-symlink outcomes plainly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B avoids repeating the bare-flag behavior while presenting both the full-run and no-match failure modes compactly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "A puts the requested-path versus actual-destination mismatch in the heading before explaining the parent-path derivation.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "A isolates the unstable identity input and its duplicate-evaluation consequence into two readily scannable statements.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "A leads with the silent per-file loss and then makes the successful zero-log directory outcome easy to identify.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "A summarizes the score-population problem in the heading while retaining the original-versus-effective count relationship below it.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "A makes the publication of unverified semantics immediately visible and separates that consequence from the evidence and remedy.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "A gives the missing identifier its own heading and uses a short follow-up sentence to clarify that common metrics are also affected.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "A names the mixed-unit defect in the heading before showing why files and task logs cannot share a denominator.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "A foregrounds the missing structured report and then concisely contrasts the single-file and directory paths.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "A separates the shallow-filter mechanism from the concrete nested-secret publication risk and states the recursive boundary directly.",
+      "fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 22,
+    "B": 22
+  },
+  "readability_counts": {
+    "A": 15,
+    "B": 7,
+    "tie": 0
+  },
+  "dimension_winners": {
+    "immediate_comprehension": "A",
+    "consequence_clarity": "A",
+    "actionability": "B",
+    "evidence_preservation": "tie",
+    "jargon_load": "tie",
+    "sentence_clarity": "A",
+    "tone": "B",
+    "scanability": "A"
+  },
+  "overall_winner": "A",
+  "summary": "Both candidates preserve all material diagnostic facts and valid-behavior boundaries. A wins overall because its consequence-first headings and paragraph structure improve first-read comprehension and scanability, while B more consistently marks proposed changes as recommendations."
+}
+
+
+Wall time: 85.45 seconds

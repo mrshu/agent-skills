@@ -1,0 +1,176 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B preserves all facts and its modal fix guidance avoids contradicting the stated current guard behavior.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A states the required retention outcome directly after the concrete data-loss consequence.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A expresses the stable identity and metadata-routing outcome more directly without losing the alias relationship.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A makes the complete-report outcome direct and easy to scan after the exclusions-only failure mode.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A separates the configuration defect from its consumer consequence, improving first-read comprehension.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A isolates the denominator corruption as a separate consequence and states the validation boundary directly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A separates the transient-response consequence and makes the incomplete-sweep outcome explicit.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A states the deferral boundary and retained warning behavior directly after the duplicate-diagnostic mechanism.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A foregrounds the operational consequence before explaining the missing row-level boundary.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A leads with the reproducibility failure and then supplies the SHA-resolution mechanism.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A foregrounds the missing report while retaining the exact failure condition and accounting boundary.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A presents the symlink safety boundary as a direct required outcome with the file-symlink exception intact.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A foregrounds the unexpectedly broad run and states both prevention checks as direct outcomes.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A leads with the user-visible destination mismatch before explaining the parent-path derivation.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A separates the unstable-ID cause from the duplicate-ingest consequence and states the stable-ID composition directly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A keeps the file-level failure condition prominent and makes the ledger and exclusion outcomes direct.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A leads with the score-population ambiguity and preserves both source-count roles in a scanable structure.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A gives the unverified-semantics consequence first while retaining the finite-key limitation and resolution path.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A separates the common-metric example from the missing cross-source join-key consequence.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A summarizes the mixed-unit defect before giving the exact counting mechanism and direct reporting outcome.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A foregrounds the lost structured report and states the parity outcome for both entry modes directly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A keeps the reachable nested-secret path concrete and presents the sanitizer and test boundary directly.",
+      "fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {"A": 22, "B": 22},
+  "readability_counts": {"A": 21, "B": 1, "tie": 0},
+  "dimension_winners": {
+    "immediate_comprehension": "A",
+    "consequence_clarity": "A",
+    "actionability": "A",
+    "evidence_preservation": "tie",
+    "jargon_load": "tie",
+    "sentence_clarity": "A",
+    "tone": "B",
+    "scanability": "A"
+  },
+  "overall_winner": "A",
+  "summary": "Both candidates preserve every material source fact across all 22 findings. A usually improves first-read comprehension by foregrounding the practical consequence, separating causal details, and expressing the required outcome directly; B is clearer only where its modal recommendation avoids sounding inconsistent with the reported current behavior."
+}
+
+
+Wall time: 95.46 seconds

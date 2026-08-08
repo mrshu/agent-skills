@@ -9,7 +9,7 @@ The source comment is the technical ground truth. Preserve every fact that affec
 - distinctions between valid and invalid behavior;
 - an important test boundary when the source uses it to constrain the fix.
 
-Improve presentation only. Do not invent facts, severity, code, tests, or implementation details. Do not weaken definite claims with `may`, `might`, `could`, or `consider`. Do not address the author. Do not add visible Problem, Impact, or Outcome headings.
+Improve presentation only. Edit structure before vocabulary and retain an exact supporting phrase for every material source fact. Preserve modals that express diagnostic certainty. Write fix guidance as a neutral desired state without `could` or `must`. Name `the fix` or `the corrected path` when a desired state could look like current behavior. Do not invent facts, severity, code, tests, or implementation details. Do not address the author. Do not add visible Problem, Impact, or Outcome headings.
 
 Return valid JSON only. The top-level value must be an array with one object per source inline comment in the original order. Each object must contain exactly:
 

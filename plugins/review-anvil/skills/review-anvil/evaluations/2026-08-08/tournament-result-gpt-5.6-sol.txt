@@ -1,0 +1,522 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_loss"
+      },
+      "ranking": [
+        "A",
+        "D",
+        "C",
+        "B"
+      ],
+      "winner": "A",
+      "reason": "A presents the mismatched-name trigger, concrete path, and bounded follow-up in sequence without forcing the reader to discount stronger requirements.",
+      "fact_losses": [
+        "B: changes the remedy from something that \"could\" reject these bases to a mandatory rejection and changes tests that \"would cover\" the path into certain coverage.",
+        "C: changes the proposed rejection and tests into mandatory requirements and adds the unestablished claim that the guard checks the directory name only against the selected collection.",
+        "D: changes the proposed rejection into an imperative and tests that \"would cover\" the path into tests that certainly cover it."
+      ]
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_loss"
+      },
+      "ranking": [
+        "A",
+        "C",
+        "D",
+        "B"
+      ],
+      "winner": "A",
+      "reason": "A makes the deletion order, rollback limit, possible data loss, and recovery strategy readable without overstating the failure as inevitable.",
+      "fact_losses": [
+        "B: changes a failure that \"can leave\" the target empty into one that definitely does, changes \"could retain\" into \"must keep,\" and describes rollback as restoring rather than covering created files.",
+        "C: changes the possible loss of prior records into a definite result, makes the proposed retention mandatory, and describes rollback as restoring rather than covering created files.",
+        "D: changes the possible loss into a definite result, turns the proposed retention into an imperative, and describes rollback as restoring rather than covering created files."
+      ]
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_loss"
+      },
+      "ranking": [
+        "A",
+        "D",
+        "C",
+        "B"
+      ],
+      "winner": "A",
+      "reason": "A clearly traces canonicalization into `evaluation_id` while retaining the source's conditional risk and flexible separation of identity from routing.",
+      "fact_losses": [
+        "B: changes metadata that \"can change\" identity and a redirect that \"can give\" a second identity into definite outcomes, then makes the raw-path remedy mandatory.",
+        "C: changes the possible identity change into a definite outcome and makes the raw dataset path mandatory as the identity input.",
+        "D: changes the possible identity change into a definite outcome and turns the optional raw-path approach into an imperative."
+      ]
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_loss"
+      },
+      "ranking": [
+        "A",
+        "D",
+        "C",
+        "B"
+      ],
+      "winner": "A",
+      "reason": "A gives the write condition, both durable-record consequences, and the atomic-replacement option without converting possible stale state into certainty.",
+      "fact_losses": [
+        "B: changes an atomic replacement that \"can record\" all run outcomes into a mandatory requirement.",
+        "C: changes an older report that \"can remain current\" into one that definitely remains current and makes atomic replacement mandatory.",
+        "D: changes the possible stale-report outcome into a definite one, makes replacement imperative, and drops the explicit requirement not to lose the last complete ledger."
+      ]
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_loss"
+      },
+      "ranking": [
+        "A",
+        "D",
+        "C",
+        "B"
+      ],
+      "winner": "A",
+      "reason": "A states the neutral-versus-Boolean mismatch and consumer interpretation risk compactly while preserving that the interpretation is possible rather than universal.",
+      "fact_losses": [
+        "B: changes a Boolean that consumers \"can interpret\" as higher-is-better into a metric definitively marked that way and adds a mandatory representation requirement.",
+        "C: changes consumers that \"can read\" the Boolean as higher-is-better into consumers that definitely do and turns the schema gap into a necessary change.",
+        "D: changes the possible consumer interpretation into a definite instruction that higher values are better and turns the shared-representation gap into a necessary change."
+      ]
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_loss"
+      },
+      "ranking": [
+        "A",
+        "D",
+        "C",
+        "B"
+      ],
+      "winner": "A",
+      "reason": "A keeps the three validation domains, the 805 fallback, failure-report consequence, and valid empty-cell boundary visible without imposing stronger requirements.",
+      "fact_losses": [
+        "B: changes validation rules that \"would\" retain bad rows and optional cells that \"can remain allowed\" into mandatory behavior.",
+        "C: changes the proposed separate rules and permitted empty optional cells into mandatory requirements.",
+        "D: turns the proposed separate validation into an imperative and changes optional cells that \"can remain allowed\" into cells that definitively remain valid."
+      ]
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_loss"
+      },
+      "ranking": [
+        "A",
+        "D",
+        "C",
+        "B"
+      ],
+      "winner": "A",
+      "reason": "A exposes the non-200 trigger, transient-loss risk, incomplete-sweep behavior, and 401 exception without presenting contingent removal as inevitable.",
+      "fact_losses": [
+        "B: changes a transient failure that \"can\" remove a rename into one that definitely removes it and makes incomplete-sweep handling mandatory.",
+        "C: makes the incomplete-sweep and 401 handling mandatory rather than preserving the source's optional \"can\" formulation.",
+        "D: presents rename removal after a transient response as definite and turns incomplete-sweep handling into an imperative."
+      ]
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_loss"
+      },
+      "ranking": [
+        "A",
+        "D",
+        "C",
+        "B"
+      ],
+      "winner": "A",
+      "reason": "A walks directly from failed model validation to the duplicate diagnostic and precisely states both the defer and retain boundaries.",
+      "fact_losses": [
+        "B: changes checks that \"can defer\" and warnings that \"can keep\" their path into mandatory behavior.",
+        "C: changes the optional identity-path deferral and retained warning path into mandatory requirements.",
+        "D: turns the optional deferral into an imperative and changes warnings that \"can keep\" their path into warnings that definitively retain it."
+      ]
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_loss"
+      },
+      "ranking": [
+        "A",
+        "C",
+        "D",
+        "B"
+      ],
+      "winner": "A",
+      "reason": "A connects the missing result object and error boundary to possible batch loss, then scopes the catch without claiming every malformed value always stops the run.",
+      "fact_losses": [
+        "B: changes one malformed value that \"can stop\" valid rows into one that always stops them and changes the proposed boundary into a mandatory one.",
+        "C: changes the possible batch stop into a definite result, makes the boundary mandatory, and adds an explicit valid-row continuation requirement not stated in the source.",
+        "D: changes the possible batch stop into a definite result and turns the optional narrow boundary into an imperative."
+      ]
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_loss"
+      },
+      "ranking": [
+        "A",
+        "D",
+        "C",
+        "B"
+      ],
+      "winner": "A",
+      "reason": "A concisely contrasts default and supplied revisions, names the four-request race, and preserves the proposed one-time resolution as an option.",
+      "fact_losses": [
+        "B: changes resolving supplied references once from something that \"would\" provide reproducibility into a mandatory requirement.",
+        "C: changes the proposed one-time resolution into a mandatory requirement and states that an advancing branch necessarily makes the requests use different content.",
+        "D: turns the proposed resolution into an imperative and adds the requirement to record the resolved commit as provenance rather than merely making file URLs reproducible."
+      ]
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_loss"
+      },
+      "ranking": [
+        "A",
+        "D",
+        "C",
+        "B"
+      ],
+      "winner": "A",
+      "reason": "A makes the exclusions-only trigger, lost reference-and-reason consequence, report capability, and exit-status boundary easy to scan without strengthening the remedy.",
+      "fact_losses": [
+        "B: changes a report that \"can be saved\" into one that must be saved under a newly prescribed failures-or-exclusions condition.",
+        "C: changes the optional report save and conditional nonzero-exit behavior into mandatory requirements.",
+        "D: turns the optional report save into an imperative and the conditional-exit relationship into a command."
+      ]
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_loss"
+      },
+      "ranking": [
+        "A",
+        "D",
+        "C",
+        "B"
+      ],
+      "winner": "A",
+      "reason": "A clearly separates root-symlink behavior from discovered-child behavior and retains both the directory rejection and file-symlink test boundaries.",
+      "fact_losses": [
+        "B: changes expansion that \"can reject\" directory-target symlinks and tests that \"would cover\" the boundary into mandatory rejection and certain coverage.",
+        "C: changes the proposed rejection and tests into mandatory requirements.",
+        "D: turns the proposed rejection into an imperative and changes tests that \"would cover\" the boundary into tests that certainly cover it."
+      ]
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_loss"
+      },
+      "ranking": [
+        "A",
+        "C",
+        "D",
+        "B"
+      ],
+      "winner": "A",
+      "reason": "A puts both distinct filter failures in the opening paragraph and gives each a separate bounded remedy without recasting suggestions as requirements.",
+      "fact_losses": [
+        "B: changes requiring values from something that \"would block\" the empty path and a no-match check that \"can stop\" execution into mandatory behavior.",
+        "C: changes both proposed CLI checks into mandatory requirements.",
+        "D: turns both proposed checks into imperatives rather than preserving their tentative status."
+      ]
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_loss"
+      },
+      "ranking": [
+        "A",
+        "D",
+        "C",
+        "B"
+      ],
+      "winner": "A",
+      "reason": "A traces the parent-directory derivation through the `/tmp` example and states the documented-shape remedy without increasing its certainty.",
+      "fact_losses": [
+        "B: changes early validation that \"would keep\" the operations aligned into a mandatory path-shape requirement.",
+        "C: changes the proposed early validation into a mandatory requirement.",
+        "D: turns the proposed early validation into an imperative."
+      ]
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_loss"
+      },
+      "ranking": [
+        "A",
+        "D",
+        "B",
+        "C"
+      ],
+      "winner": "A",
+      "reason": "A gives the unstable input, duplicate-ingest consequence, complete stable-ID inputs, and retrieval-time boundary in two compact paragraphs without mandating the proposed construction.",
+      "fact_losses": [
+        "B: changes a stable ID that \"can use\" the listed inputs and retrieval time that \"can remain\" in one field into mandatory requirements.",
+        "C: changes a stable ID that \"can use\" the listed inputs and retrieval time that \"can remain\" in one field into mandatory requirements.",
+        "D: turns the proposed stable-ID construction and retrieval-time placement into imperatives."
+      ]
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_loss"
+      },
+      "ranking": [
+        "A",
+        "D",
+        "C",
+        "B"
+      ],
+      "winner": "A",
+      "reason": "A preserves the file-level trigger, directory-level false success, automation consequence, and derived-row exception without converting the remedy into policy.",
+      "fact_losses": [
+        "B: changes files that \"can enter\" the ledger and derived-only files that \"can stay\" exclusions into mandatory classifications.",
+        "C: changes both proposed file classifications into mandatory requirements.",
+        "D: turns failure-ledger recording into an imperative and changes derived-only files that \"can stay\" exclusions into files that definitively remain exclusions."
+      ]
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_loss"
+      },
+      "ranking": [
+        "A",
+        "D",
+        "C",
+        "B"
+      ],
+      "winner": "A",
+      "reason": "A places the two count fields beside their different uses and states the provenance-versus-coverage distinction without making the proposed representation mandatory.",
+      "fact_losses": [
+        "B: changes counts that \"can remain visible\" with specified roles into a mandatory representation.",
+        "C: changes the optional dual-count representation into a mandatory requirement.",
+        "D: turns the proposed preservation and identification of both counts into imperatives."
+      ]
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_loss"
+      },
+      "ranking": [
+        "A",
+        "C",
+        "D",
+        "B"
+      ],
+      "winner": "A",
+      "reason": "A directly contrasts the unsupported directional assumption with the two valid semantic sources and preserves partial success for verified metrics.",
+      "fact_losses": [
+        "B: changes definitions that \"can establish\" semantics and unresolved keys that \"can be reported\" into mandatory behavior, adding a required prohibition on assigning a direction.",
+        "C: changes the two optional semantic-resolution outcomes into mandatory requirements.",
+        "D: turns the possible use of definitions and reporting of unresolved keys into imperatives."
+      ]
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_loss"
+      },
+      "ranking": [
+        "A",
+        "D",
+        "C",
+        "B"
+      ],
+      "winner": "A",
+      "reason": "A keeps both affected branches, the accuracy example, the missing join function, and both ID classes visible without overstating the mapping as required.",
+      "fact_losses": [
+        "B: changes a mapping that \"can supply\" the two classes of IDs into a mandatory requirement.",
+        "C: changes the optional use of the metric-definition mapping into a mandatory requirement.",
+        "D: turns the proposed use of the metric-definition mapping into an imperative."
+      ]
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_loss"
+      },
+      "ranking": [
+        "A",
+        "D",
+        "B",
+        "C"
+      ],
+      "winner": "A",
+      "reason": "A exposes the mixed grains with one successful-versus-failed-file comparison and cleanly separates source records from output-log counts.",
+      "fact_losses": [
+        "B: changes results files that \"can remain\" the source-record grain into a mandatory unit.",
+        "C: changes a successful file that \"can contribute\" several counts into one that always does and makes the proposed source-record unit mandatory.",
+        "D: turns the proposed source-record grain and separate output-log count into imperatives."
+      ]
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_loss"
+      },
+      "ranking": [
+        "A",
+        "D",
+        "C",
+        "B"
+      ],
+      "winner": "A",
+      "reason": "A contrasts the two entry modes, names the missing structured artifact, and states the shared report-before-raise path without imposing it as the only solution.",
+      "fact_losses": [
+        "B: changes a local file-result path that \"can give\" both modes the same behavior into a mandatory implementation.",
+        "C: changes the optional local file-result path into a mandatory implementation.",
+        "D: turns the proposed local file-result path into an imperative."
+      ]
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_loss"
+      },
+      "ranking": [
+        "A",
+        "D",
+        "B",
+        "C"
+      ],
+      "winner": "A",
+      "reason": "A follows the top-level-only filter through unrestricted nested `env_vars` to the named publication field and keeps the exposure correctly conditional.",
+      "fact_losses": [
+        "B: changes a nested secret that \"can reach\" `additional_details` into one that definitely reaches it and makes recursive sanitization mandatory.",
+        "C: changes a nested secret that \"can reach\" `additional_details` into one that definitely reaches it and makes both sanitization and tests mandatory.",
+        "D: changes possible publication into definite publication and turns recursive sanitization into an imperative."
+      ]
+    }
+  ],
+  "winner_counts": {
+    "A": 22,
+    "B": 0,
+    "C": 0,
+    "D": 0
+  },
+  "fact_safe_counts": {
+    "A": 22,
+    "B": 0,
+    "C": 0,
+    "D": 0
+  },
+  "overall_ranking": [
+    "A",
+    "D",
+    "C",
+    "B"
+  ],
+  "dimension_winners": {
+    "immediate_comprehension": "D",
+    "consequence_clarity": "C",
+    "actionability": "D",
+    "evidence_preservation": "A",
+    "jargon_load": "D",
+    "sentence_clarity": "D",
+    "tone": "A",
+    "scanability": "D"
+  },
+  "recommended_version": "A",
+  "summary": "A is the only version that consistently preserves the source's conditional consequences, tentative remedies, and test-coverage certainty, so it wins all 22 comments despite denser phrasing. D is generally the easiest rewrite to scan, with C often making consequences most explicit, but both repeatedly convert possible outcomes and proposed fixes into definite claims or mandatory requirements."
+}
+
+
+Wall time: 291.33 seconds

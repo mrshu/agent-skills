@@ -1,0 +1,297 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "readability_winner": "A",
+      "reason": "A preserves the proposed rejection rule as one possible follow-up, whereas B presents that specific implementation as mandatory.",
+      "fact_losses": [
+        "B: changes rejection of every immediate child of canonical `data` from a possible follow-up into a mandatory fix"
+      ]
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "readability_winner": "A",
+      "reason": "A retains the source's possibility claim, while B incorrectly implies that every later failure necessarily leaves the prior records absent.",
+      "fact_losses": [
+        "B: changes a later failure from something that can leave the target without prior records to something that always does",
+        "B: changes retaining recoverable old files from a proposed replacement strategy into a mandatory implementation"
+      ]
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "readability_winner": "A",
+      "reason": "B is more forceful but turns possible alias-induced identity changes and a proposed identity input into certainties and requirements.",
+      "fact_losses": [
+        "B: changes alias metadata and later redirects from being able to change identity to necessarily changing it",
+        "B: changes use of the raw dataset model path from a valid identity strategy into a mandatory one"
+      ]
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B preserves the accounting failure and atomic-replacement boundary while stating the report-writing condition and outcome more directly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B surfaces the neutral-metric mismatch in the heading and connects the Boolean to its likely consumer interpretation more cleanly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "readability_winner": "A",
+      "reason": "B preserves the malformed-value behavior but converts the source's proposed separate-rule approach into a mandatory implementation.",
+      "fact_losses": [
+        "B: changes separate validation rules that would preserve bad rows from a proposed fix into a mandatory implementation"
+      ]
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "readability_winner": "A",
+      "reason": "A keeps the transient-error consequence and incomplete-sweep response correctly conditional, while B states both as necessary outcomes.",
+      "fact_losses": [
+        "B: changes a transient 429 or server error from being able to remove a confirmed rename to necessarily removing one",
+        "B: changes preserving the existing output and returning nonzero from a possible incomplete-sweep response into a mandatory one"
+      ]
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "readability_winner": "A",
+      "reason": "B retains the duplicate-diagnostic trigger but makes the proposed deferral and preservation of the existing warning path mandatory.",
+      "fact_losses": [
+        "B: changes deferral for a present non-string developer from a possible fix into a mandatory one",
+        "B: changes retention of warnings for schema-valid blank, unknown, or unsafe strings from an allowed behavior into a requirement"
+      ]
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "readability_winner": "A",
+      "reason": "B is easier to scan but overstates a possible all-row failure as inevitable and mandates the proposed row-boundary design.",
+      "fact_losses": [
+        "B: changes one malformed source value from being able to stop every valid row to necessarily stopping every valid row",
+        "B: changes a narrow error boundary from a possible fix into a mandatory row-boundary implementation"
+      ]
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B gives the four-request reproducibility risk immediate visibility and preserves the moving-reference condition, metadata limitation, and resolution strategy.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "readability_winner": "A",
+      "reason": "B accurately describes the lost exclusions but converts the source's supported report-writing option into a mandatory implementation.",
+      "fact_losses": [
+        "B: changes saving the shared report for either collection from a supported fix into a mandatory one",
+        "B: changes keeping the nonzero exit conditional on failures from proposed preserved behavior into a requirement"
+      ]
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "readability_winner": "A",
+      "reason": "Both explain the root-symlink distinction clearly, but B presents the proposed rejection behavior as the required implementation.",
+      "fact_losses": [
+        "B: changes rejecting direct and glob-expanded directory-target symlinks from a possible expansion fix into a mandatory one"
+      ]
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "readability_winner": "A",
+      "reason": "B improves problem visibility but turns both suggested CLI checks into mandatory fixes rather than preserving them as proposed remedies.",
+      "fact_losses": [
+        "B: changes requiring one or more `--models` values from a proposed fix into a mandatory one",
+        "B: changes the pre-discovery no-match check from a possible safeguard into a mandatory one"
+      ]
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "readability_winner": "A",
+      "reason": "B preserves the path mismatch and example but overstates validation of the documented shape as the required solution.",
+      "fact_losses": [
+        "B: changes early validation of the documented `data/wild` shape from a possible fix into a mandatory one"
+      ]
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "readability_winner": "A",
+      "reason": "B states the duplicate-identity problem clearly but incorrectly makes one proposed stable-ID recipe the mandatory construction.",
+      "fact_losses": [
+        "B: changes the listed raw model identity, task key, source timestamp, and configuration digest from one valid stable-ID recipe into mandatory inputs",
+        "B: changes keeping retrieval time only in `retrieved_timestamp` from an available design into a mandatory one"
+      ]
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "readability_winner": "A",
+      "reason": "B preserves the total-conversion-loss scenario but makes the proposed failure-ledger treatment a requirement rather than a possible fix.",
+      "fact_losses": [
+        "B: changes entering files with measured but unconvertible tasks into the failure ledger from a possible treatment into a mandatory one"
+      ]
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "readability_winner": "A",
+      "reason": "B keeps both count roles intact but turns the source's proposed dual-count representation into a mandatory schema outcome.",
+      "fact_losses": [
+        "B: changes retaining both effective and original counts with specified roles from a possible representation into a mandatory one"
+      ]
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "readability_winner": "A",
+      "reason": "B clearly exposes the unverified semantics but mandates both proposed resolution sources and the treatment of unresolved keys.",
+      "fact_losses": [
+        "B: changes source metric specs or an operator-supplied definition from possible ways to establish semantics into mandatory ones",
+        "B: changes reporting unresolved keys after preserving valid metrics from a possible handling strategy into a mandatory one"
+      ]
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "readability_winner": "A",
+      "reason": "B preserves the missing join-key diagnosis but makes use of the existing metric-definition mapping mandatory rather than one valid implementation.",
+      "fact_losses": [
+        "B: changes the existing metric-definition mapping from a possible source of canonical and namespaced IDs into the mandatory source"
+      ]
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "readability_winner": "A",
+      "reason": "B explains the inconsistent units cleanly but changes the suggested file-level source grain into a mandatory reporting design.",
+      "fact_losses": [
+        "B: changes results files as the source-record grain with a separate output-log count from a possible design into a mandatory one"
+      ]
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "readability_winner": "A",
+      "reason": "B keeps the single-file failure sequence and directory comparison but mandates the proposed lighteval-local path.",
+      "fact_losses": [
+        "B: changes a lighteval-local file-result path from a possible way to unify report-before-raise behavior into a mandatory implementation"
+      ]
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "readability_winner": "A",
+      "reason": "B makes the credential risk more immediate but changes possible secret exposure into certainty and mandates one sanitizer design.",
+      "fact_losses": [
+        "B: changes a nested token or API key from being able to reach published `additional_details` to necessarily reaching it",
+        "B: changes a recursive sanitizer for mappings and lists from a possible protection into a mandatory implementation"
+      ]
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 22,
+    "B": 3
+  },
+  "readability_counts": {
+    "A": 19,
+    "B": 3,
+    "tie": 0
+  },
+  "dimension_winners": {
+    "immediate_comprehension": "B",
+    "consequence_clarity": "B",
+    "actionability": "B",
+    "evidence_preservation": "A",
+    "jargon_load": "tie",
+    "sentence_clarity": "B",
+    "tone": "A",
+    "scanability": "B"
+  },
+  "overall_winner": "A",
+  "summary": "B generally improves headings, sentence structure, and first-read actionability, but it repeatedly converts possible consequences and proposed remedies into certainties or mandatory implementations. A wins overall because it preserves the source's calibrated claims and implementation optionality in every comment."
+}
+
+
+Wall time: 224.79 seconds

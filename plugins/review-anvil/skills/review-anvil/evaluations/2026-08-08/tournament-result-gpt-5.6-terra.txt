@@ -1,0 +1,522 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_safe"
+      },
+      "ranking": [
+        "D",
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "D",
+      "reason": "It preserves the optional follow-up and test language while clearly separating the triggering path, consequence, and proposed boundary.",
+      "fact_losses": [
+        "A: changes the optional follow-up and prospective test coverage from “could” and “would” to directives.",
+        "B: changes the source's optional remediation and test certainty to mandatory requirements.",
+        "C: changes the optional remediation and prospective test coverage to mandatory requirements."
+      ]
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_safe"
+      },
+      "ranking": [
+        "D",
+        "B",
+        "C",
+        "A"
+      ],
+      "winner": "D",
+      "reason": "It retains the important possibility that failure can lose prior records without adding categorical claims.",
+      "fact_losses": [
+        "A: changes a later failure that “can leave” prior records missing into one that definitively “leaves” them missing.",
+        "B: changes the possible loss and optional remediation and test coverage into definite and mandatory statements.",
+        "C: changes the possible loss and optional remediation and test coverage into definite and mandatory statements."
+      ]
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_safe"
+      },
+      "ranking": [
+        "D",
+        "B",
+        "C",
+        "A"
+      ],
+      "winner": "D",
+      "reason": "It states the alias-driven identity risk with the source's conditional certainty and keeps the two repository roles distinct.",
+      "fact_losses": [
+        "A: changes alias metadata and redirect effects from possible to definite and turns the optional identity input into an instruction.",
+        "B: changes the optional identity-input recommendation into a mandatory requirement.",
+        "C: changes the optional identity-input recommendation into a mandatory requirement."
+      ]
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_safe"
+      },
+      "ranking": [
+        "D",
+        "B",
+        "C",
+        "A"
+      ],
+      "winner": "D",
+      "reason": "It keeps the stale-report outcome appropriately conditional and presents the atomic replacement outcome in one compact paragraph.",
+      "fact_losses": [
+        "A: changes an older report that “can remain current” into one that definitively remains current.",
+        "B: changes the conditional stale-report outcome and optional replacement approach into definite and mandatory claims.",
+        "C: changes the optional atomic replacement approach into a mandatory requirement."
+      ]
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_safe"
+      },
+      "ranking": [
+        "D",
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "D",
+      "reason": "It directly connects the Boolean to the possible consumer interpretation without overstating that interpretation as universal.",
+      "fact_losses": [
+        "A: changes consumers who “can read” the Boolean as higher-is-better into consumers that definitively receive that meaning.",
+        "B: changes consumers who “can read” the Boolean as higher-is-better into consumers that definitively read it that way.",
+        "C: changes the source's identified schema gap into a mandatory design requirement and adds an unqualified optimization-direction constraint."
+      ]
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_safe"
+      },
+      "ranking": [
+        "D",
+        "B",
+        "C",
+        "A"
+      ],
+      "winner": "D",
+      "reason": "It preserves both distinct coercions and the permissive treatment of empty optional cells with minimal reader effort.",
+      "fact_losses": [
+        "A: changes the proposed validation behavior and allowed-empty-cell boundary from optional to categorical.",
+        "B: calls 805 a “valid default,” which the source does not establish, and changes the proposed rules to mandatory requirements.",
+        "C: changes the proposed validation rules and allowed-empty-cell boundary into mandatory requirements."
+      ]
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_safe"
+      },
+      "ranking": [
+        "D",
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "D",
+      "reason": "It retains the full non-200 trigger, concrete overwrite consequence, and the deliberately unchanged 401 behavior.",
+      "fact_losses": [
+        "A: changes the optional incomplete-sweep handling and optional 401 preservation into categorical instructions.",
+        "B: changes expected 401 responses into failures in its framing and converts the optional handling into mandatory requirements.",
+        "C: changes the optional incomplete-sweep handling into a mandatory requirement."
+      ]
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_safe"
+      },
+      "ranking": [
+        "D",
+        "B",
+        "A",
+        "C"
+      ],
+      "winner": "D",
+      "reason": "It gives the exact schema-invalid input boundary and preserves the limited set of schema-valid strings that should still warn.",
+      "fact_losses": [
+        "A: changes the optional deferral and retained warning path into categorical instructions.",
+        "B: changes the optional deferral and retained warning path into mandatory requirements.",
+        "C: changes the optional deferral and retained warning path into mandatory requirements."
+      ]
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_safe"
+      },
+      "ranking": [
+        "D",
+        "B",
+        "C",
+        "A"
+      ],
+      "winner": "D",
+      "reason": "It preserves the possibility of a malformed value stopping conversion and the narrow boundary that keeps unexpected failures visible.",
+      "fact_losses": [
+        "A: changes one malformed value that “can stop” valid rows into one that definitively stops them and makes the optional boundary prescriptive.",
+        "B: changes the optional narrow boundary into mandatory behavior and adds a required valid-row continuation outcome not stated in the source.",
+        "C: changes the optional narrow boundary into mandatory behavior."
+      ]
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_safe"
+      },
+      "ranking": [
+        "D",
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "D",
+      "reason": "It concisely preserves the four-request inconsistency, symbolic provenance limitation, and optional reproducibility improvement.",
+      "fact_losses": [
+        "A: narrows every supplied reference to branches or tags and changes the optional resolution approach into an instruction.",
+        "B: changes the optional reference-resolution approach into a mandatory requirement.",
+        "C: changes the optional resolution approach into a mandatory requirement and omits reuse for all file URLs."
+      ]
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_safe"
+      },
+      "ranking": [
+        "D",
+        "B",
+        "C",
+        "A"
+      ],
+      "winner": "D",
+      "reason": "It identifies the exact save condition, successful exclusions-only outcome, and preserved exit-status boundary without overstating the remedy.",
+      "fact_losses": [
+        "A: changes the optional report-saving and exit-status treatment into directives.",
+        "B: changes the optional report-saving and exit-status treatment into mandatory requirements.",
+        "C: changes the optional report-saving and exit-status treatment into mandatory requirements."
+      ]
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_safe"
+      },
+      "ranking": [
+        "D",
+        "A",
+        "C",
+        "B"
+      ],
+      "winner": "D",
+      "reason": "It preserves the root-versus-discovered-child distinction and the explicit file-symlink compatibility boundary.",
+      "fact_losses": [
+        "A: changes the optional rejection and prospective test coverage into directives.",
+        "B: changes the optional rejection and prospective test coverage into mandatory requirements.",
+        "C: changes the optional rejection and prospective test coverage into mandatory requirements."
+      ]
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_safe"
+      },
+      "ranking": [
+        "D",
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "D",
+      "reason": "It makes both invalid-filter paths visible while retaining the source's appropriately tentative remedies.",
+      "fact_losses": [
+        "A: changes the proposed value requirement and no-match handling from optional to categorical instructions.",
+        "B: changes the proposed value requirement and no-match handling from optional to mandatory requirements.",
+        "C: changes the proposed value requirement and no-match handling from optional to mandatory requirements."
+      ]
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_safe"
+      },
+      "ranking": [
+        "D",
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "D",
+      "reason": "It clearly follows the requested path through the parent-derived destination and keeps the validation proposal conditional.",
+      "fact_losses": [
+        "A: changes early validation from an optional improvement into a directive.",
+        "B: changes early validation from an optional improvement into a mandatory requirement.",
+        "C: changes early validation from an optional improvement into a mandatory requirement."
+      ]
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_safe"
+      },
+      "ranking": [
+        "D",
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "D",
+      "reason": "It retains the causal identity explanation and names every stable-ID input without replacing the suggested design with an unsupported mandate.",
+      "fact_losses": [
+        "A: changes the optional stable-ID construction and retrieval-time placement into directives.",
+        "B: changes the optional stable-ID construction and retrieval-time placement into mandatory requirements.",
+        "C: changes the optional stable-ID construction and retrieval-time placement into mandatory requirements."
+      ]
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_safe"
+      },
+      "ranking": [
+        "D",
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "D",
+      "reason": "It preserves the all-tasks finite-score condition, the total-loss automation consequence, and the explicit-exclusion exception.",
+      "fact_losses": [
+        "A: changes the optional failure-ledger and exclusion treatment into categorical instructions.",
+        "B: broadens the trigger from files whose measured tasks all lack finite scores to any file with measured but unconvertible tasks, and makes the remedies mandatory.",
+        "C: drops the “all” quantifier from the finite-score trigger and makes the remedies mandatory."
+      ]
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_safe"
+      },
+      "ranking": [
+        "D",
+        "B",
+        "C",
+        "A"
+      ],
+      "winner": "D",
+      "reason": "It retains both source-count fields and explains their separate provenance and score-coverage meanings without forcing a design decision.",
+      "fact_losses": [
+        "A: changes the optional preservation and labeling of both counts into directives.",
+        "B: changes the optional preservation and labeling of both counts into mandatory requirements.",
+        "C: changes the optional preservation and labeling of both counts into mandatory requirements."
+      ]
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_safe"
+      },
+      "ranking": [
+        "D",
+        "B",
+        "C",
+        "A"
+      ],
+      "winner": "D",
+      "reason": "It keeps the unknown-spec trigger, unverified direction and bounds, and valid-metric preservation order in a compact causal flow.",
+      "fact_losses": [
+        "A: changes the optional source-specification or operator-definition solution and reporting outcome into directives.",
+        "B: changes the optional semantic-definition and unresolved-key reporting approach into mandatory requirements.",
+        "C: changes the optional semantic-definition and unresolved-key reporting approach into mandatory requirements and changes the source's “finite custom key” to a value."
+      ]
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_safe"
+      },
+      "ranking": [
+        "D",
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "D",
+      "reason": "It directly names the omitted identifier, explains why the source label is insufficient, and preserves the qualified mapping proposal.",
+      "fact_losses": [
+        "A: changes the optional use of the existing metric-definition mapping into a directive.",
+        "B: changes the optional use of the existing metric-definition mapping into a mandatory requirement.",
+        "C: changes the optional use of the existing metric-definition mapping into a mandatory requirement."
+      ]
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_safe"
+      },
+      "ranking": [
+        "D",
+        "A",
+        "C",
+        "B"
+      ],
+      "winner": "D",
+      "reason": "It makes the incompatible task-log and file-failure units explicit and preserves the source-record-grain proposal's conditional certainty.",
+      "fact_losses": [
+        "A: changes the optional source-record grain and separate output-log reporting into directives.",
+        "B: changes the optional source-record grain and separate output-log reporting into mandatory requirements.",
+        "C: changes the optional source-record grain and separate output-log reporting into mandatory requirements."
+      ]
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_safe"
+      },
+      "ranking": [
+        "D",
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "D",
+      "reason": "It preserves the ordering defect, the entry-mode inconsistency, and the narrowly scoped optional file-result solution.",
+      "fact_losses": [
+        "A: changes the optional lighteval-local file-result path into a directive.",
+        "B: changes the optional lighteval-local file-result path into a mandatory requirement.",
+        "C: changes the optional lighteval-local file-result path into a mandatory requirement."
+      ]
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss",
+        "D": "fact_safe"
+      },
+      "ranking": [
+        "D",
+        "B",
+        "C",
+        "A"
+      ],
+      "winner": "D",
+      "reason": "It preserves the reachable v0.13 configuration path, possible publication consequence, recursive-sanitizer scope, and non-secret test boundary.",
+      "fact_losses": [
+        "A: changes unrestricted `env_vars` and publication exposure from possible to definite, and converts the optional sanitizer and test coverage into directives.",
+        "B: changes the possible nested-secret exposure and optional sanitizer and test coverage into definite and mandatory claims.",
+        "C: changes the possible nested-secret exposure and optional sanitizer and test coverage into definite and mandatory claims."
+      ]
+    }
+  ],
+  "winner_counts": {
+    "A": 0,
+    "B": 0,
+    "C": 0,
+    "D": 21
+  },
+  "fact_safe_counts": {
+    "A": 0,
+    "B": 0,
+    "C": 0,
+    "D": 21
+  },
+  "overall_ranking": [
+    "D",
+    "A",
+    "B",
+    "C"
+  ],
+  "dimension_winners": {
+    "immediate_comprehension": "B",
+    "consequence_clarity": "B",
+    "actionability": "B",
+    "evidence_preservation": "D",
+    "jargon_load": "A",
+    "sentence_clarity": "B",
+    "tone": "D",
+    "scanability": "B"
+  },
+  "recommended_version": "D",
+  "summary": "D is the only fact-safe version across all comments because it preserves conditional outcomes and optional follow-up language. The alternatives are often easier to scan, especially B, but repeatedly convert possibilities and suggestions into categorical requirements or outcomes."
+}
+
+
+Wall time: 211.85 seconds

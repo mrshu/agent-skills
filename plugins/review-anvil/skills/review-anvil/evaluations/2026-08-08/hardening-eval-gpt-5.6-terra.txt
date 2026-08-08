@@ -1,0 +1,176 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B separates the path consequence from the condition and states the required validation outcome more directly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B keeps the deletion, rollback boundary, data-loss consequence, and recovery requirement while using more direct phrasing.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B makes the canonical-repository-to-identity chain easier to scan without losing either identity or metadata-routing boundary.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B states the write condition explicitly and presents the atomic replacement outcome in a more compact form.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B foregrounds the conflicting neutral metric and Boolean setting before explaining the consumer interpretation risk.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B gives the malformed-value failure a clearer heading and joins the validation requirements into one actionable outcome.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B makes the rebuilt-map effect and overwrite consequence easier to connect on a first read.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B combines the call-chain consequence cleanly and states the deferral and retained-warning boundaries directly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B leads with the operational failure and then clearly identifies the absent row-level boundary that causes it.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B puts the four-request reproducibility failure in the heading and preserves the symbolic-reference mechanism and remedy.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B exposes the lost exclusion references and reasons immediately while preserving the separate nonzero-exit condition.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B retains the root-versus-discovered symlink distinction and expresses the input-expansion boundary more directly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B starts with the dangerous bare-option behavior and makes both validation conditions explicit.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B foregrounds the requested-versus-actual destination mismatch and uses the example to make it concrete.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B states the duplicate-identity consequence first while retaining every stable-ID input and retrieval-time boundary.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B makes the silent total-conversion-loss outcome immediately visible and preserves the failure-versus-exclusion distinction.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B foregrounds the missing score-producing population and presents the two-count labeling requirement compactly.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B names the unverified semantics risk in the heading and retains the unknown-key reporting boundary.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B isolates the missing identifier problem before explaining why the source label cannot serve as the join key.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B clearly contrasts successful-file log counts with failed-file counts before stating the source-record remedy.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B leads with the unsaved-report consequence and preserves the single-file versus directory behavior contrast.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B makes the credential-exposure risk immediately visible while preserving the nested serialization path and test boundary.",
+      "fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {"A": 22, "B": 22},
+  "readability_counts": {"A": 0, "B": 22, "tie": 0},
+  "dimension_winners": {
+    "immediate_comprehension": "B",
+    "consequence_clarity": "B",
+    "actionability": "B",
+    "evidence_preservation": "tie",
+    "jargon_load": "tie",
+    "sentence_clarity": "B",
+    "tone": "B",
+    "scanability": "B"
+  },
+  "overall_winner": "B",
+  "summary": "Both candidates preserve all material technical facts across every finding. B consistently foregrounds the observable failure and expresses the required correction more directly, while retaining A's evidence and behavioral boundaries."
+}
+
+
+Wall time: 90.23 seconds

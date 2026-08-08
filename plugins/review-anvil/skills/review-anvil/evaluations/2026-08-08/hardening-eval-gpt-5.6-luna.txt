@@ -1,0 +1,291 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B preserves the source's tentative follow-up and test recommendation, while A turns them into mandatory or asserted outcomes.",
+      "fact_losses": [
+        "A: changes the proposed `could` and `would` outcomes to mandatory or asserted behavior with `must` and present tense."
+      ]
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B preserves the source's uncertainty about a later failure and its proposed remedy, while A states both as certain requirements.",
+      "fact_losses": [
+        "A: changes `can leave` to `leaves`, `could retain` to `must keep`, and `would cover` to `covers`."
+      ]
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B preserves that redirect changes can create a second identity and presents the remedy as a proposal rather than a requirement.",
+      "fact_losses": [
+        "A: changes the source's `can change`, `can give`, and `can remain` possibilities into certain or mandatory claims."
+      ]
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B preserves the source's proposed atomic replacement without asserting that it necessarily guarantees the stated result.",
+      "fact_losses": [
+        "A: changes the source's `can record` outcome into the asserted result that atomic replacement `preserves` the ledger."
+      ]
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "A keeps every technical fact while making the neutral-metric problem more immediate in the headline.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B preserves the source's proposed validation behavior and its explicit allowance for empty optional cells.",
+      "fact_losses": [
+        "A: changes `would keep` to `must keep` and changes the source's permissive `can remain allowed` boundary into an asserted continuation."
+      ]
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B preserves both the possible data loss and the tentative remediation without overstating either.",
+      "fact_losses": [
+        "A: changes `can therefore remove` to `therefore removes` and `can leave` to `must leave`, increasing the stated certainty and requirement."
+      ]
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B preserves the source's conditional deferral rule and the existing warning boundary for schema-valid strings.",
+      "fact_losses": [
+        "A: changes both source `can` recommendations to mandatory `must` requirements."
+      ]
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B preserves the source's possible all-row failure and recommends a narrow boundary without requiring a stronger behavior than the reference states.",
+      "fact_losses": [
+        "A: changes `can stop` to `stops` and `can catch` to a mandatory requirement to record errors."
+      ]
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B preserves the proposed reproducibility fix as a recommendation rather than asserting that it necessarily produces the result.",
+      "fact_losses": [
+        "A: changes the source's `would keep` and `would make` outcomes into asserted `preserves` and `makes` outcomes."
+      ]
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B preserves the source's suggested report behavior and the conditional nonzero exit without converting them into mandatory requirements.",
+      "fact_losses": [
+        "A: changes `can be saved` and `stays conditional` into mandatory `must` requirements."
+      ]
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B preserves the proposed symlink boundary and test coverage without asserting implementation requirements as established facts.",
+      "fact_losses": [
+        "A: changes `can reject` to `must reject` and `would cover` to `cover`."
+      ]
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B preserves the source's proposed validation and no-match handling while A overstates both as mandatory requirements.",
+      "fact_losses": [
+        "A: changes `would block` and `can stop` into `must` requirements."
+      ]
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B preserves the source's proposed path validation and its stated effect without changing the recommendation's certainty.",
+      "fact_losses": [
+        "A: changes `would keep` to the mandatory requirement that validation `must keep` all operations on the same destination."
+      ]
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B preserves the duplicate-identity diagnosis and presents the stable-ID design as a viable option rather than a mandatory prescription.",
+      "fact_losses": [
+        "A: changes `can use` and `can remain` to mandatory `must` requirements."
+      ]
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B preserves the source's exact conversion-loss scenario and frames ledger entry as a possible remedy rather than an asserted requirement.",
+      "fact_losses": [
+        "A: changes `can enter the failure ledger` to `must enter the failure ledger`."
+      ]
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B preserves both count meanings and the source's proposal to keep them visible without adding an unsupported mandate.",
+      "fact_losses": [
+        "A: changes `can remain visible` to the mandatory requirement that both counts `must remain visible`."
+      ]
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B preserves the unverified-direction diagnosis and the optional remediation sequence without overstating the required implementation.",
+      "fact_losses": [
+        "A: changes `can establish` and `can be reported` into mandatory `must` requirements."
+      ]
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B retains the accuracy example and the source's proposed mapping behavior without converting it into a mandatory requirement.",
+      "fact_losses": [
+        "A: changes `can supply` to `must also supply`, altering the recommendation's certainty."
+      ]
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B preserves the inconsistent source-unit diagnosis and presents the grain separation as a proposed remedy.",
+      "fact_losses": [
+        "A: changes `can remain` to the mandatory requirement that results files `must remain` the source-record grain."
+      ]
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B preserves the single-file failure sequence and the proposed local result path without overstating the remedy.",
+      "fact_losses": [
+        "A: changes `can give` to the mandatory requirement that the local path `must give` both modes identical behavior."
+      ]
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B preserves the conditional secret exposure and proposed sanitizer behavior without changing them into certain or mandatory claims.",
+      "fact_losses": [
+        "A: changes `can reach`, `can protect`, and `would cover` into certain or mandatory outcomes."
+      ]
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 1,
+    "B": 22
+  },
+  "readability_counts": {
+    "A": 1,
+    "B": 21,
+    "tie": 0
+  },
+  "dimension_winners": {
+    "immediate_comprehension": "B",
+    "consequence_clarity": "B",
+    "actionability": "B",
+    "evidence_preservation": "B",
+    "jargon_load": "tie",
+    "sentence_clarity": "B",
+    "tone": "B",
+    "scanability": "B"
+  },
+  "overall_winner": "B",
+  "summary": "B is the overall winner because it preserves every source fact, especially the distinction between observed behavior and proposed outcomes. A is fact-safe only for ID 3737053181; elsewhere it improves directness by changing conditional or tentative statements into mandatory or certain claims."
+}
+
+
+Wall time: 177.27 seconds

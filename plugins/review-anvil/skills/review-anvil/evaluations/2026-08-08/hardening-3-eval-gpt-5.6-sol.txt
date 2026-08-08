@@ -1,0 +1,249 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B states the required rejection and its test coverage more directly while preserving the mismatched-collection trigger and resulting extra path level.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B turns the recovery requirement and failure-test expectation into direct statements without changing the conditional risk to prior records.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B more directly distinguishes the stable identity input from the reconciled repository used for metadata and routing.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B states the atomic replacement outcome directly while retaining coverage of failures, exclusions, clean runs, and the last complete ledger.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B separates the schema assessment from the required neutral-measure representation, making the remaining action easier to scan.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B directly connects separate validation rules to retaining malformed rows in the failure report while preserving the optional-empty-cell boundary.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B states the incomplete-sweep behavior as a concrete outcome and preserves the exception for expected 401 responses.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B makes the deferral rule explicit while retaining the flat-ID condition and the warning behavior for schema-valid problematic strings.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B states the intended error boundary directly and preserves the distinction between expected row errors and unexpected program or infrastructure errors.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B presents one-time reference resolution as the concrete correction while preserving branch and tag support and reproducible URLs.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B directly specifies saving the shared report for either collection while keeping the nonzero exit conditional on failures.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B states the direct and glob-expanded directory-symlink rule and the unchanged file-symlink boundary more decisively.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B gives both CLI validation outcomes in direct parallel sentences, improving scanability without changing either failure path.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B directly states that early shape validation aligns lookup, replacement, and status output on one destination.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B clearly specifies every stable-ID component and confines retrieval time to the dedicated timestamp field.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B directly contrasts failure-ledger treatment for measured unconvertible tasks with explicit exclusions for intentionally skipped derived rows.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B states the required representation of both counts directly while preserving their distinct score-coverage and provenance roles.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B directly identifies how semantics are established and what happens to unresolved keys after valid metrics are preserved.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B directly connects the existing definition mapping to canonical global IDs and stable namespaced IDs.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B states the consistent source-record grain and separate output-log count as two concrete accounting requirements.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B removes nonessential sizing language and directly states the shared report-before-raise behavior for both entry modes.",
+      "fact_losses": []
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B directly specifies recursive sanitization and the provider-prefixed-key test boundary without changing the protected structures or secret-handling requirement.",
+      "fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 22,
+    "B": 22
+  },
+  "readability_counts": {
+    "A": 0,
+    "B": 22,
+    "tie": 0
+  },
+  "dimension_winners": {
+    "immediate_comprehension": "B",
+    "consequence_clarity": "tie",
+    "actionability": "B",
+    "evidence_preservation": "tie",
+    "jargon_load": "A",
+    "sentence_clarity": "B",
+    "tone": "A",
+    "scanability": "B"
+  },
+  "overall_winner": "B",
+  "summary": "Both candidates preserve all material diagnostic facts and valid-behavior boundaries in every comment. B wins overall because its direct statements make the required outcomes easier to identify and act on, although A avoids B's repetitive \"corrected path\" phrasing and has a more collaborative recommendation tone."
+}
+
+
+Wall time: 128.40 seconds

@@ -53,6 +53,18 @@ Clarity does not permit a stronger, broader, or different claim.
 If shorter wording changes a fact, restore the fact and simplify a different
 part of the sentence.
 
+Edit structure before vocabulary.
+Keep an exact supporting phrase for every fact-lock item.
+You may reorder clauses and split sentences to show problem, impact, and
+outcome.
+You may remove filler and exact repetition.
+Do not replace technical verbs, quantifiers, or scope words.
+Preserve modals that express diagnostic certainty.
+Write fix guidance as a neutral desired state without `could` or `must`.
+Name `the fix` or `the corrected path` when a desired state could look like current behavior.
+Delete a source clause only when another retained clause states the same fact.
+If an exact phrase is hard to place, keep the whole source sentence.
+
 Write the body in this order:
 
 1. **Problem:** Name the code behavior and trigger.

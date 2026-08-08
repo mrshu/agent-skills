@@ -1,0 +1,176 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A states the proposed validation boundary directly without the less specific “fix” framing."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A presents the required replacement invariant as actionable guidance rather than asserting an unspecified corrected implementation."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A names the stable identity input and the retained metadata role without the vague “corrected path” label."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A expresses the atomic-replacement outcome as a concrete recommendation and reads more naturally than B’s declarative recast."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A connects the existing adapter approach to the remaining schema gap more clearly than B’s generic corrected-path wording."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A leads with the specific validation rules and their failure-report outcome without introducing an abstract corrected path."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A makes the incomplete-sweep behavior a direct recommendation while preserving the expected-401 boundary in a more natural flow."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A foregrounds the exact deferral condition and keeps the valid-string warning boundary easy to scan."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A makes the narrow error boundary and the visibility of unexpected failures read as a balanced, actionable recommendation."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B compresses the resolution, compatibility, and reproducibility outcome into one direct sentence without obscuring any boundary."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A identifies the shared report before specifying when to save it, making the pronoun-free remedy easier to follow."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "A",
+      "reason": "A presents the direct and glob-expanded symlink boundary as a precise proposal rather than an asserted corrected state."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B states both guards in concise active language while retaining the distinct empty-filter and no-match outcomes."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B states the validation outcome directly and is shorter without losing the three affected operations."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B turns the stable-ID recipe into a direct implementation statement while keeping every required ID component and timestamp boundary."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B uses direct parallel statements for the failure-ledger and intentional-exclusion boundaries."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B directly states the two-count presentation and their respective meanings with less conditional phrasing."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B clearly states how metric semantics are established and how unresolved keys are handled in two compact sentences."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B directly maps the existing definition mapping to canonical and namespaced metric IDs without reducing specificity."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B concisely distinguishes results-file accounting from separately reported output-log count."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B states the local file-result solution and its shared report-before-raise outcome in a single clear sentence."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe"},
+      "readability_winner": "B",
+      "reason": "B directly states the recursive sanitizer and test boundary with no material loss."
+      ,"fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {"A": 22, "B": 22},
+  "readability_counts": {"A": 11, "B": 11, "tie": 0},
+  "dimension_winners": {
+    "immediate_comprehension": "A",
+    "consequence_clarity": "tie",
+    "actionability": "A",
+    "evidence_preservation": "tie",
+    "jargon_load": "A",
+    "sentence_clarity": "B",
+    "tone": "A",
+    "scanability": "B"
+  },
+  "overall_winner": "A",
+  "summary": "Both candidates preserve every material diagnostic fact and valid-behavior boundary. B is often more concise, but A more consistently frames the required behavior as concrete review guidance rather than relying on the generic “corrected path” formulation."
+}
+
+
+Wall time: 83.17 seconds

@@ -1,0 +1,251 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss"
+      },
+      "readability_winner": "A",
+      "reason": "B reverses the finding by claiming the guard already rejects the problematic bases and that the tests already cover the path.",
+      "fact_losses": [
+        "B: changes the proposed rejection and future test coverage into existing behavior."
+      ]
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B states the recoverability outcome more directly, making the safe replacement behavior easier to act on."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B presents the intended stable identity and continuing metadata and routing roles more directly."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B states the desired report contents directly while preserving the clean-run and ledger boundaries."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "tie",
+      "reason": "The candidates contain the same facts and differ only in punctuation and paragraph grouping without a meaningful clarity advantage."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B separates the malformed-cell failure from the invalid-denominator fallback, improving first-read scanability."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B isolates the transient-response consequence from the map-rebuild mechanism, making the failure path easier to follow."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B states the deferral rule as the intended behavior while retaining the schema-valid warning boundary."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B leads with the operational consequence and then supplies the parsing and row-boundary evidence."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B foregrounds the nondeterministic symbolic-revision result, which makes the reproducibility risk apparent immediately."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B states the exclusions-only failure outcome in the heading and clearly preserves the conditional nonzero exit."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B states the desired rejection boundary directly while retaining the direct-versus-discovered symlink distinction and file-symlink exception."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B foregrounds the dangerous bare-flag behavior and keeps the separate no-match outcome visible."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B gives the user-visible destination mismatch an immediate heading before explaining the path derivation."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B makes the retrieval-time defect prominent and states the stable-ID desired state directly."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B makes silent total conversion loss the first visible consequence while retaining the ledger and exclusion distinction."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B leads with the missing score-population provenance and then supplies the exact count relationship."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "A",
+      "reason": "A states the missing metric-spec, higher-is-better assumption, and absent bounds in one precise diagnostic heading, whereas B's heading is more generic."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B separates the universal omission from the accuracy example, making the cross-source identity defect easier to scan."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B gives the inconsistent-unit problem a compact heading before explaining the file-level and task-level counts."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B foregrounds the single-file reporting consequence and states the desired parity between entry modes directly."
+      ,"fact_losses": []
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe"
+      },
+      "readability_winner": "B",
+      "reason": "B separates the shallow filtering defect from the nested credential consequence, making the security risk easier to identify."
+      ,"fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 22,
+    "B": 21
+  },
+  "readability_counts": {
+    "A": 2,
+    "B": 19,
+    "tie": 1
+  },
+  "dimension_winners": {
+    "immediate_comprehension": "B",
+    "consequence_clarity": "B",
+    "actionability": "B",
+    "evidence_preservation": "A",
+    "jargon_load": "tie",
+    "sentence_clarity": "B",
+    "tone": "A",
+    "scanability": "B"
+  },
+  "overall_winner": "A",
+  "summary": "B is generally easier to scan and act on because it foregrounds consequences and states desired outcomes directly. A is the overall winner because B contains one material reversal of the publisher-validation finding, making B fact-unsafe for the full set."
+}
+
+
+Wall time: 181.26 seconds
