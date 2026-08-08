@@ -1,0 +1,70 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 990000019001,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_loss"
+      },
+      "fact_losses": [
+        "C: Changes the join-key fact by proposing that canonical model aliases affect the `model_info.id` join key, contrary to the source statement that they cannot; this also risks crossing the pinned-snapshot registry-resolution boundary."
+      ]
+    },
+    {
+      "id": 990000019002,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 990000020303,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 990000020304,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 990000020405,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 990000022306,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 6,
+    "B": 6,
+    "C": 5
+  },
+  "summary": "Candidates A and B preserve all material source facts for every comment. Candidate C is fact-safe except for the first comment, where its proposed fix reverses the source's join-key constraint and may broaden registry resolution beyond pinned-snapshot IDs."
+}
+
+
+Wall time: 119.74 seconds

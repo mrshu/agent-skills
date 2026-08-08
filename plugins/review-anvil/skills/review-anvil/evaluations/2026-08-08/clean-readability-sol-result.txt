@@ -1,0 +1,62 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 990000019001,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "C states the identity mismatch and then makes the corrected join-key behavior explicit, while the other versions leave the expected result implicit."
+    },
+    {
+      "id": 990000019002,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "C most clearly connects invalid values to both publication failures and the required exclusion of invalid rows, despite some repetition."
+    },
+    {
+      "id": 990000020303,
+      "ranking": ["C", "A", "B", "D"],
+      "winner": "C",
+      "reason": "C presents the excessive materialization trigger first and follows it with a direct, concrete description of the bounded behavior."
+    },
+    {
+      "id": 990000020304,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "C clearly identifies the missing overall links and explains the corrected pairing and cap behavior in one coherent progression."
+    },
+    {
+      "id": 990000020405,
+      "ranking": ["C", "A", "B", "D"],
+      "winner": "C",
+      "reason": "C immediately contrasts the incorrect path identity with the required config identity and clearly traces where that identity must be used."
+    },
+    {
+      "id": 990000022306,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "C clearly distinguishes blank IDs from missing or non-string IDs and states which validation path each category should take."
+    }
+  ],
+  "winner_counts": {
+    "A": 0,
+    "B": 0,
+    "C": 6,
+    "D": 0
+  },
+  "overall_ranking": ["C", "B", "A", "D"],
+  "dimension_winners": {
+    "immediate_comprehension": "C",
+    "consequence_clarity": "B",
+    "actionability": "C",
+    "jargon_load": "A",
+    "sentence_clarity": "C",
+    "tone": "A",
+    "scanability": "B"
+  },
+  "recommended_version": "C",
+  "summary": "C consistently makes the corrected outcome explicit, so readers do not have to interpret tentative language as the requested change. B often scans well because it separates consequences, while A and D are concise but usually leave the expected result implicit."
+}
+
+
+Wall time: 56.25 seconds

@@ -1,0 +1,20 @@
+Command: bash skills/review-anvil/scripts/test-report-language.sh
+Working directory: plugins/review-anvil
+
+Renderer-alignment failure:
+test-report-language: missing The corrected path returns non-retryable write errors to `signup_flow` in plugins/review-anvil/skills/review-anvil/references/report-artifacts.md
+
+Fact-coverage failure:
+test-report-language: missing Privately map every fact-lock item to its exact supporting phrase in the draft. in plugins/review-anvil/skills/review-anvil/references/report-artifacts.md
+
+Title-actor failure:
+test-report-language: missing The title names the actor that produces the concrete bad result. in plugins/review-anvil/skills/review-anvil/references/report-artifacts.md
+
+Title-fallback failure:
+test-report-language: missing Rewrite the title only when every fact-lock item in it still matches. in plugins/review-anvil/skills/review-anvil/references/report-artifacts.md
+
+Outcome-fallback failure:
+test-report-language: missing Use `the fix` by default. in plugins/review-anvil/skills/review-anvil/references/report-artifacts.md
+
+Bidirectional fact-lock failure:
+test-report-language: missing Privately map every draft relationship and boundary back to one fact-lock item. in plugins/review-anvil/skills/review-anvil/references/report-artifacts.md

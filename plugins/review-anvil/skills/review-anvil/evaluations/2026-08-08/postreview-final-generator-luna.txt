@@ -1,0 +1,36 @@
+Working...
+[
+  {
+    "id": 950000019001,
+    "pr": 190,
+    "body": "**RAVF001 [high] data semantics** — This adds a second mapping for the same CSVs. It uses different score units, metric IDs, versions, evaluation IDs, and source metadata."
+  },
+  {
+    "id": 950000019002,
+    "pr": 190,
+    "body": "**RAVF002 [medium] remote input** — The current V2 CSV contains `NullModel`, and this loop writes it as a normal model."
+  },
+  {
+    "id": 950000019003,
+    "pr": 190,
+    "body": "**RAVF003 [medium] error handling** — Handled fetch or write failures print an error and `Done!`; the module then exits with status 0."
+  },
+  {
+    "id": 950000022604,
+    "pr": 226,
+    "body": "**RAV-RUN1-R1-F001 [medium] filesystem traversal** — `os.walk` ignores scan errors when `onerror` is unset, so a readable file can still validate after an unreadable subtree is skipped.\n\nThe corrected path uses an `os.walk` error callback to stop partial scans and name the inaccessible path. A mocked scan error can test this without platform-specific permission behavior."
+  },
+  {
+    "id": 950000022705,
+    "pr": 227,
+    "body": "**RAV-RUN1-R1-F001 [medium] API contract** — The `output_dir` docstring calls it a collection directory, but supported callers also pass report-identity paths such as `data/lm_eval_samples`.\n\nThe corrected path describes `output_dir` as a path below the nearest `data` root. Its relative components form the report name; `data/<collection>` is the usual adapter case."
+  },
+  {
+    "id": 950000022706,
+    "pr": 227,
+    "body": "**RAV-RUN1-R1-F002 [medium] report placement** — The nearest ancestor named `data` controls placement. A nested `data` component can leave `adapter_reports` inside an outer datastore tree.\n\nThe docs state that the nearest `data` ancestor wins. A repeated-`data` example makes the placement limit concrete."
+  }
+]
+
+
+Wall time: 96.16 seconds

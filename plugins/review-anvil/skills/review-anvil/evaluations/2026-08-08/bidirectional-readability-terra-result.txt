@@ -1,0 +1,62 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 995000019001,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A states the failure and the specific corrective direction in a compact, direct two-part flow."
+    },
+    {
+      "id": 995000019002,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "B expresses the precedence rule in the most immediate and natural language."
+    },
+    {
+      "id": 995000020303,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "B separates the two required corrections into clear declarative sentences without weakening them."
+    },
+    {
+      "id": 995000020304,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "C gives each failure its own space and then states the corresponding outcomes as explicit actions."
+    },
+    {
+      "id": 995000020405,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "B keeps the integration path concrete while using firm, readable statements for the expected result."
+    },
+    {
+      "id": 995000020406,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "B most directly connects the fragmented join key to the stable metric-ID outcome."
+    }
+  ],
+  "winner_counts": {
+    "A": 1,
+    "B": 4,
+    "C": 1,
+    "D": 0
+  },
+  "overall_ranking": ["B", "A", "C", "D"],
+  "dimension_winners": {
+    "immediate_comprehension": "B",
+    "consequence_clarity": "B",
+    "actionability": "B",
+    "jargon_load": "B",
+    "sentence_clarity": "B",
+    "tone": "B",
+    "scanability": "B"
+  },
+  "recommended_version": "B",
+  "summary": "B most consistently presents the failure, consequence, and intended outcome as short declarative statements. A is nearly as readable but more often frames the correction as review-process narration, while C's extra paragraph breaks help some findings but fragment others. D weakens expected outcomes with optional modal language."
+}
+
+
+Wall time: 29.81 seconds

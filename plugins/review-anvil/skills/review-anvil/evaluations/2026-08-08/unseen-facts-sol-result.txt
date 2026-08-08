@@ -1,0 +1,81 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 900000019001,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 900000019002,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 900000020403,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 900000022604,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 900000022705,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 900000023506,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_loss"
+      },
+      "fact_losses": [
+        "C: the headline changes the qualified fact that supported logs normally publish the two fields as unknown into an unqualified claim that all supported logs do so"
+      ]
+    },
+    {
+      "id": 900000023507,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_loss"
+      },
+      "fact_losses": [
+        "C: the headline assigns the missing end-to-end publication assertion to the real CLI itself rather than to test coverage exercising the real CLI"
+      ]
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 7,
+    "B": 7,
+    "C": 5
+  },
+  "summary": "A and B preserve all material facts across the seven comments. C changes one deployment-metadata quantifier and misassigns a missing test assertion to the CLI rather than the test coverage."
+}
+
+
+Wall time: 77.33 seconds

@@ -1,0 +1,62 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 990000019001,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A states both the blocked alias resolution and the intended fallback behavior, making the expected outcome immediately clear."
+    },
+    {
+      "id": 990000019002,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A connects the invalid input, publication consequence, and exclusion of invalid rows in a direct first-read flow."
+    },
+    {
+      "id": 990000020303,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A most clearly pairs the premature full-row-group materialization with the expected incremental bounded-batch outcome."
+    },
+    {
+      "id": 990000020304,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A explicitly explains that both contributing result types need links and clearly states the cap behavior for pairs."
+    },
+    {
+      "id": 990000020405,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A clearly contrasts the incorrect path identity with the intended config identity and explains where each value belongs."
+    },
+    {
+      "id": 990000022306,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A makes the blank-string warning path and the separate handling of missing or non-string IDs explicit."
+    }
+  ],
+  "winner_counts": {
+    "A": 6,
+    "B": 0,
+    "C": 0,
+    "D": 0
+  },
+  "overall_ranking": ["A", "B", "C", "D"],
+  "dimension_winners": {
+    "immediate_comprehension": "A",
+    "consequence_clarity": "A",
+    "actionability": "A",
+    "jargon_load": "A",
+    "sentence_clarity": "A",
+    "tone": "A",
+    "scanability": "A"
+  },
+  "recommended_version": "A",
+  "summary": "A consistently states the failure, consequence, and corrected outcome in one readable progression. The other versions are otherwise equivalent to one another but generally stop at the desired behavior rather than clearly naming the correction."
+}
+
+
+Wall time: 41.03 seconds

@@ -1,0 +1,66 @@
+{
+  "source_repo": "evaleval/every_eval_ever",
+  "selection": "Six untouched high/medium findings from earlier review-anvil reports on the requested PR test bed. Selected only after the title fallback contract was frozen.",
+  "inline_comments": [
+    {
+      "id": 950000019001,
+      "pr": 190,
+      "created_at": "2026-07-29T19:13:00Z",
+      "path": "utils/alpaca_eval/adapter.py",
+      "line": 69,
+      "body": "**RAVF001 [high] data semantics** — This adds a second mapping for the same CSVs. It uses different score units, metric IDs, versions, evaluation IDs, and source metadata.",
+      "source_review_id": 4812046489,
+      "source_kind": "untouched historical finding from a requested PR"
+    },
+    {
+      "id": 950000019002,
+      "pr": 190,
+      "created_at": "2026-07-29T19:13:00Z",
+      "path": "utils/alpaca_eval/adapter.py",
+      "line": 284,
+      "body": "**RAVF002 [medium] remote input** — The current V2 CSV contains `NullModel`, and this loop writes it as a normal model.",
+      "source_review_id": 4812046489,
+      "source_kind": "untouched historical finding from a requested PR"
+    },
+    {
+      "id": 950000019003,
+      "pr": 190,
+      "created_at": "2026-07-29T19:13:00Z",
+      "path": "utils/alpaca_eval/adapter.py",
+      "line": 315,
+      "body": "**RAVF003 [medium] error handling** — Handled fetch or write failures print an error and `Done!`, then the module exits with status 0.",
+      "source_review_id": 4812046489,
+      "source_kind": "untouched historical finding from a requested PR"
+    },
+    {
+      "id": 950000022604,
+      "pr": 226,
+      "created_at": "2026-08-06T03:40:04Z",
+      "path": "every_eval_ever/validator/validate.py",
+      "line": 125,
+      "body": "**RAV-RUN1-R1-F001 [medium] filesystem traversal** — `os.walk` ignores scan errors when `onerror` is unset. A readable file can still validate after an unreadable subtree is skipped.\n\nAn `os.walk` error callback can stop partial scans and name the inaccessible path. A mocked scan error can test this without platform-specific permission behavior.",
+      "source_review_id": 4870760979,
+      "source_kind": "untouched historical finding from a requested PR"
+    },
+    {
+      "id": 950000022705,
+      "pr": 227,
+      "created_at": "2026-08-06T03:54:03Z",
+      "path": "every_eval_ever/helpers/io.py",
+      "line": 408,
+      "body": "**RAV-RUN1-R1-F001 [medium] API contract** — The docstring calls `output_dir` a collection directory, but supported callers also pass report-identity paths such as `data/lm_eval_samples`.\n\nThe parameter can be described as a path below the nearest `data` root. Its relative components form the report name; `data/<collection>` is the usual adapter case.",
+      "source_review_id": 4870817417,
+      "source_kind": "untouched historical finding from a requested PR"
+    },
+    {
+      "id": 950000022706,
+      "pr": 227,
+      "created_at": "2026-08-06T03:54:03Z",
+      "path": "every_eval_ever/helpers/io.py",
+      "line": 413,
+      "body": "**RAV-RUN1-R1-F002 [medium] report placement** — The nearest ancestor named `data` controls placement. A nested `data` component can leave `adapter_reports` inside an outer datastore tree.\n\nThe docs can state that the nearest `data` ancestor wins. A repeated-`data` example makes the placement limit concrete.",
+      "source_review_id": 4870817417,
+      "source_kind": "untouched historical finding from a requested PR"
+    }
+  ]
+}

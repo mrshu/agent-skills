@@ -1,0 +1,68 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 900000019001,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "A exposes the missing exception in the heading, then gives the trigger and expected help-text clarification in a clean sequence."
+    },
+    {
+      "id": 900000019002,
+      "ranking": ["D", "B", "A", "C"],
+      "winner": "D",
+      "reason": "D connects the premature status line directly to its misleading totals and states the replacement outcome without repetition."
+    },
+    {
+      "id": 900000020403,
+      "ranking": ["D", "B", "A", "C"],
+      "winner": "D",
+      "reason": "D presents both limit-handling failures together and follows them with a concise, concrete corrected behavior."
+    },
+    {
+      "id": 900000022604,
+      "ranking": ["D", "B", "A", "C"],
+      "winner": "D",
+      "reason": "D makes the documentation gap and its consequence immediately visible, then clearly identifies the recursive-directory wording that is needed."
+    },
+    {
+      "id": 900000022705,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D states the conditional validation gap in one readable sentence and makes the expected documentation change explicit."
+    },
+    {
+      "id": 900000023506,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D puts the metadata problem and missing override in the heading, then gives the intended override pattern in a compact follow-up."
+    },
+    {
+      "id": 900000023507,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "A clearly identifies the real-CLI coverage gap and explains both why the existing fixture is insufficient and what focused assertion should result."
+    }
+  ],
+  "winner_counts": {
+    "A": 2,
+    "B": 0,
+    "C": 0,
+    "D": 5
+  },
+  "overall_ranking": ["D", "A", "C", "B"],
+  "dimension_winners": {
+    "immediate_comprehension": "D",
+    "consequence_clarity": "D",
+    "actionability": "D",
+    "jargon_load": "A",
+    "sentence_clarity": "D",
+    "tone": "D",
+    "scanability": "D"
+  },
+  "recommended_version": "D",
+  "summary": "D is the strongest overall wording because it most consistently surfaces the failure, consequence, and corrected outcome on the first read. A is a close alternative when a slightly fuller explanation improves context, while B and C more often rely on repetition or less direct framing."
+}
+
+
+Wall time: 73.14 seconds

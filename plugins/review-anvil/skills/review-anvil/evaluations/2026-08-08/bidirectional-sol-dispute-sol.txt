@@ -1,0 +1,9 @@
+Working...
+{
+  "fact_status": "fact_safe",
+  "fact_losses": [],
+  "reason": "The diagnostic claims about missing scores, aggregate denominators, and missing token data are preserved exactly. The second paragraph only recasts proposed fix guidance from possibility grammar to direct recommendation grammar while preserving the same failure-report and token-mean boundaries."
+}
+
+
+Wall time: 13.35 seconds

@@ -1,0 +1,97 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 995000019001,
+      "ranking": [
+        "C",
+        "A",
+        "B",
+        "D"
+      ],
+      "winner": "C",
+      "reason": "C makes both the failure and the parser location explicit, then states the expected correction and test without modal language."
+    },
+    {
+      "id": 995000019002,
+      "ranking": [
+        "C",
+        "A",
+        "B",
+        "D"
+      ],
+      "winner": "C",
+      "reason": "C presents the precedence rule directly and makes the unique-owner condition easy to scan."
+    },
+    {
+      "id": 995000020303,
+      "ranking": [
+        "C",
+        "A",
+        "D",
+        "B"
+      ],
+      "winner": "C",
+      "reason": "C separates the two corrected outcomes into direct, concrete sentences that are immediately actionable."
+    },
+    {
+      "id": 995000020304,
+      "ranking": [
+        "C",
+        "A",
+        "B",
+        "D"
+      ],
+      "winner": "C",
+      "reason": "C clearly connects each invalid-data case to its intended reporting or aggregation behavior using direct statements."
+    },
+    {
+      "id": 995000020405,
+      "ranking": [
+        "A",
+        "C",
+        "D",
+        "B"
+      ],
+      "winner": "A",
+      "reason": "A states the migration sequence and test expectation plainly, while avoiding the weaker modal phrasing in B and D."
+    },
+    {
+      "id": 995000020406,
+      "ranking": [
+        "C",
+        "A",
+        "D",
+        "B"
+      ],
+      "winner": "C",
+      "reason": "C states the stable metric identity and the preserved task-specific distinction as a crisp, easy-to-follow outcome."
+    }
+  ],
+  "winner_counts": {
+    "A": 1,
+    "B": 0,
+    "C": 5,
+    "D": 0
+  },
+  "overall_ranking": [
+    "C",
+    "A",
+    "D",
+    "B"
+  ],
+  "dimension_winners": {
+    "immediate_comprehension": "C",
+    "consequence_clarity": "C",
+    "actionability": "A",
+    "jargon_load": "C",
+    "sentence_clarity": "C",
+    "tone": "C",
+    "scanability": "A"
+  },
+  "recommended_version": "C",
+  "summary": "C ranks first because it most consistently uses direct statements to expose the failure and clarify the expected result. A is a close second because its explicit fix language and line breaks improve actionability and scanning, while B is weakened by modal phrasing and D occasionally uses less natural wording."
+}
+
+
+Wall time: 73.89 seconds

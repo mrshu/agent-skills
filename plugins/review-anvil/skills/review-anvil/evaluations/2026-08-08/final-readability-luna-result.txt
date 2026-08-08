@@ -1,0 +1,194 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D states the failure, concrete path consequence, and corrected guard in the clearest sequence."
+    },
+    {
+      "id": 3737044354,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D combines the trigger and data-loss consequence cleanly, then gives a definite recovery outcome."
+    },
+    {
+      "id": 3737044361,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D uses short causal sentences and clearly separates the stable identity input from metadata and routing."
+    },
+    {
+      "id": 3737044371,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D makes the conditional write failure immediately visible and states the corrected reporting behavior directly."
+    },
+    {
+      "id": 3737053181,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D gives the misleading Boolean and its interpretation in a compact pair of sentences before stating the remaining design need."
+    },
+    {
+      "id": 3737053197,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D presents both malformed-input consequences together and gives an unambiguous validation boundary."
+    },
+    {
+      "id": 3737053204,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D clearly links incomplete sweeps to unchanged output and a nonzero result without hedging the expected behavior."
+    },
+    {
+      "id": 3737181823,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D makes the deferral rule and the preserved warning cases precise while maintaining a calm, direct flow."
+    },
+    {
+      "id": 3737266652,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D puts the malformed-record consequence beside its trigger and states the narrow error boundary decisively."
+    },
+    {
+      "id": 3737266656,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D clearly connects symbolic revisions to unreproducible requests and states the one-time resolution outcome."
+    },
+    {
+      "id": 3737266661,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D makes the missing exclusions and successful exit easy to find, then states the reporting behavior without modal language."
+    },
+    {
+      "id": 3737291965,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D explains the root-symlink traversal boundary in a readable progression and gives a concrete, bounded correction."
+    },
+    {
+      "id": 3737383919,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D keeps both CLI failure modes visible in the opening paragraph and states both early-stop rules plainly."
+    },
+    {
+      "id": 3737383922,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D directly contrasts the requested path with the actual target and gives a concise destination-consistency outcome."
+    },
+    {
+      "id": 3737449039,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D presents the identity instability and duplicate-ingest consequence together, followed by a concrete stable-ID result."
+    },
+    {
+      "id": 3737449052,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D makes the silent zero-output success easy to understand and clearly distinguishes failures from intentional exclusions."
+    },
+    {
+      "id": 3737449059,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D explains the count mismatch in one readable paragraph and uses the final colon to make the intended roles scannable."
+    },
+    {
+      "id": 3737449070,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D states the unsupported assumption, why it is unsafe, and how unresolved keys should be handled without hedging."
+    },
+    {
+      "id": 3737449081,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D makes the missing join key and its consequence immediately clear before naming the source of canonical IDs."
+    },
+    {
+      "id": 3737449090,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D clearly identifies the inconsistent source unit and gives the separate reporting grain in one easy-to-scan correction."
+    },
+    {
+      "id": 3737449098,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D keeps the single-file timing problem and missing report consequence together, then states the shared behavior directly."
+    },
+    {
+      "id": 3737449101,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D clearly exposes the nested-secret path and names the recursive protection without adding review-process narration."
+    },
+    {
+      "id": 800000019001,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D uses the clearest subject for the normalization failure and gives the aliasing boundary in direct terms."
+    },
+    {
+      "id": 800000019002,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D makes the live-mode omission and refresh dependency immediate, then states the corrected lookup route."
+    },
+    {
+      "id": 800000019703,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D states the evidence gap and the ownership fallback in two calm, straightforward sentences."
+    },
+    {
+      "id": 800000020304,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D puts deletion risk and partial-input consequences together, then clearly defines recoverable staging and preservation."
+    },
+    {
+      "id": 800000020305,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D makes the symbolic-revision failure and the restricted fallback easy to scan as two complementary rules."
+    },
+    {
+      "id": 800000020406,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D clearly separates the serialization failure consequence from the validation and worker-accounting correction."
+    }
+  ],
+  "winner_counts": {
+    "A": 0,
+    "B": 0,
+    "C": 0,
+    "D": 28
+  },
+  "overall_ranking": ["D", "A", "C", "B"],
+  "dimension_winners": {
+    "immediate_comprehension": "D",
+    "consequence_clarity": "D",
+    "actionability": "D",
+    "jargon_load": "D",
+    "sentence_clarity": "D",
+    "tone": "D",
+    "scanability": "C"
+  },
+  "recommended_version": "D",
+  "summary": "D is the most readable overall because it consistently uses definite language, exposes the consequence early, and states the corrected outcome without prescribing unnecessary implementation detail. A is generally clearer than C when its more direct wording outweighs C's additional paragraph breaks, while B is weakened by repeated modal phrasing."
+}
+
+
+Wall time: 132.12 seconds

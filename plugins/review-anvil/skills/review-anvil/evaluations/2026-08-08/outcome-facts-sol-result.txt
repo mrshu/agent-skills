@@ -1,0 +1,72 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 980000019001,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 980000019002,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 980000020303,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 980000020304,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_safe"
+      },
+      "fact_losses": [
+        "B: omits that the earlier comment remains open"
+      ]
+    },
+    {
+      "id": 980000020405,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_safe"
+      },
+      "fact_losses": [
+        "B: omits that the earlier feedback remains partly open"
+      ]
+    },
+    {
+      "id": 980000022306,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 6,
+    "B": 4,
+    "C": 6
+  },
+  "summary": "Candidates A and C preserve all material technical facts. Candidate B preserves the technical diagnosis and fix boundaries except where it drops the prior-feedback status from comments 980000020304 and 980000020405."
+}
+
+
+Wall time: 43.92 seconds

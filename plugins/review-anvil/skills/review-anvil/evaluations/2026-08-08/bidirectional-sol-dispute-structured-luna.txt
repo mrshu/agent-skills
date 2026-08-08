@@ -1,0 +1,9 @@
+Working...
+{
+  "fact_status": "fact_safe",
+  "fact_losses": [],
+  "reason": "The diagnostic is unchanged, preserving the trigger, effects, quantifiers, and concrete result. The fix guidance changes possibility grammar to direct desired-state wording without changing the proposed behavior or its boundaries."
+}
+
+
+Wall time: 11.55 seconds

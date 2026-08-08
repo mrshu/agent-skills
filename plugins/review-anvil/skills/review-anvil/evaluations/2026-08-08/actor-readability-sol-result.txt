@@ -1,0 +1,194 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "ranking": ["B", "D", "C", "A"],
+      "winner": "B",
+      "reason": "B exposes the mismatched-directory trigger, extra path level, and required rejection rule with the clearest progression."
+    },
+    {
+      "id": 3737044354,
+      "ranking": ["C", "D", "B", "A"],
+      "winner": "C",
+      "reason": "C and D are equally clear, with the destructive ordering, data-loss consequence, and recoverable replacement outcome presented in a direct sequence."
+    },
+    {
+      "id": 3737044361,
+      "ranking": ["C", "D", "B", "A"],
+      "winner": "C",
+      "reason": "C connects repository canonicalization to the changing evaluation identity in one compact causal explanation."
+    },
+    {
+      "id": 3737044371,
+      "ranking": ["C", "D", "A", "B"],
+      "winner": "C",
+      "reason": "C and D are textually identical and make the missing exclusions ledger and atomic replacement outcome immediately scannable."
+    },
+    {
+      "id": 3737053181,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B leads with the misleading higher-is-better signal and plainly identifies a shared neutral representation as the expected result."
+    },
+    {
+      "id": 3737053197,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D separates malformed optional cells from the denominator fallback before stating the distinct validation rules."
+    },
+    {
+      "id": 3737053204,
+      "ranking": ["C", "D", "A", "B"],
+      "winner": "C",
+      "reason": "C and D are textually identical and cleanly separate the non-200 trigger, lost rename, and safe incomplete-sweep behavior."
+    },
+    {
+      "id": 3737181823,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D presents the schema error, duplicate warning, and precise deferral condition as distinct, easy-to-follow ideas."
+    },
+    {
+      "id": 3737266652,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B puts the full-run failure and missing row record in the heading, then clearly limits the proposed error boundary."
+    },
+    {
+      "id": 3737266656,
+      "ranking": ["C", "D", "A", "B"],
+      "winner": "C",
+      "reason": "C separates the skipped SHA resolution from its cross-request consequence and ends with a concise reproducibility outcome."
+    },
+    {
+      "id": 3737266661,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D clearly distinguishes when the report must be saved from when the command should return a nonzero status."
+    },
+    {
+      "id": 3737291965,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D walks through the `Path.is_dir()` and `os.walk()` behavior one step at a time before defining the symlink boundary."
+    },
+    {
+      "id": 3737383919,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D gives each CLI failure mode its own sentence and states the parser and no-match outcomes directly."
+    },
+    {
+      "id": 3737383922,
+      "ranking": ["C", "D", "B", "A"],
+      "winner": "C",
+      "reason": "C leads with the concrete requested and actual paths, making the silent redirection consequence instantly visible."
+    },
+    {
+      "id": 3737449039,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D isolates the unstable identity input, duplicate-ingest consequence, and stable-ID composition into three clear steps."
+    },
+    {
+      "id": 3737449052,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B immediately states the misleading successful directory outcome, then distinguishes failures from intentional exclusions."
+    },
+    {
+      "id": 3737449059,
+      "ranking": ["C", "D", "B", "A"],
+      "winner": "C",
+      "reason": "C and D are textually identical and clearly contrast dataset provenance with the smaller population that produced the score."
+    },
+    {
+      "id": 3737449070,
+      "ranking": ["C", "D", "B", "A"],
+      "winner": "C",
+      "reason": "C and D are textually identical and move cleanly from the unsupported assumption to verified metric definitions and unresolved-key reporting."
+    },
+    {
+      "id": 3737449081,
+      "ranking": ["C", "D", "A", "B"],
+      "winner": "C",
+      "reason": "C and D are textually identical and make the missing `metric_id`, lost join capability, and mapping-based outcome easy to scan."
+    },
+    {
+      "id": 3737449090,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B names the mixed file-level and task-level units in the heading and clearly separates their corrected totals."
+    },
+    {
+      "id": 3737449098,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D states the single-file trigger and missing-report consequence immediately, then contrasts the working directory behavior."
+    },
+    {
+      "id": 3737449101,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B surfaces the nested-secret publication risk in the heading and gives the recursive sanitization boundary plainly."
+    },
+    {
+      "id": 800000019001,
+      "ranking": ["C", "D", "A", "B"],
+      "winner": "C",
+      "reason": "C states the alias bypass and split join keys once, then gives the bounded aliasing and provenance outcome without repetition."
+    },
+    {
+      "id": 800000019002,
+      "ranking": ["C", "D", "A", "B"],
+      "winner": "C",
+      "reason": "C gives the skipped live lookup, delayed canonical discovery, and unchanged offline behavior in two concise sentences."
+    },
+    {
+      "id": 800000019703,
+      "ranking": ["C", "D", "A", "B"],
+      "winner": "C",
+      "reason": "C and D are textually identical and express both the unsupported ownership inference and the conservative `other` outcome without extra narration."
+    },
+    {
+      "id": 800000020304,
+      "ranking": ["C", "D", "A", "B"],
+      "winner": "C",
+      "reason": "C and D are textually identical and separate premature deletion, its two concrete risks, and the recoverable staged outcome."
+    },
+    {
+      "id": 800000020305,
+      "ranking": ["C", "D", "A", "B"],
+      "winner": "C",
+      "reason": "C and D are textually identical and concisely pair the symbolic-revision trigger with the one-SHA fallback rule."
+    },
+    {
+      "id": 800000020406,
+      "ranking": ["C", "D", "A", "B"],
+      "winner": "C",
+      "reason": "C and D are textually identical and cleanly separate the late serialization failure, batch-wide consequence, and earlier finite-number validation."
+    }
+  ],
+  "winner_counts": {
+    "A": 0,
+    "B": 6,
+    "C": 15,
+    "D": 7
+  },
+  "overall_ranking": ["C", "D", "B", "A"],
+  "dimension_winners": {
+    "immediate_comprehension": "B",
+    "consequence_clarity": "B",
+    "actionability": "C",
+    "jargon_load": "D",
+    "sentence_clarity": "D",
+    "tone": "C",
+    "scanability": "D"
+  },
+  "recommended_version": "C",
+  "summary": "C most consistently combines direct mechanisms, visible consequences, and declarative corrected outcomes without review-process narration. D is strongest when sentence splitting materially improves flow, while B has effective consequence-first headings but often repeats the finding or refers to the fix process."
+}
+
+
+Wall time: 175.80 seconds

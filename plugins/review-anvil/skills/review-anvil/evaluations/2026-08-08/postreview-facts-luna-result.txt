@@ -1,0 +1,70 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 950000019001,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 950000019002,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 950000019003,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 950000022604,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 950000022705,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_loss"
+      },
+      "fact_losses": [
+        "C: changes the recommended fix from correcting the docstring to correcting the path itself"
+      ]
+    },
+    {
+      "id": 950000022706,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 6,
+    "B": 6,
+    "C": 5
+  },
+  "summary": "Candidates A and B preserve all material source facts. Candidate C changes the fix boundary in comment 950000022705 by referring to a corrected path rather than a corrected docstring."
+}
+
+
+Wall time: 36.30 seconds

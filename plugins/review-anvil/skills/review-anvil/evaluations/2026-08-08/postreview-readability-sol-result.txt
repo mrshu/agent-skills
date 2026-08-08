@@ -1,0 +1,97 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 950000019001,
+      "ranking": [
+        "D",
+        "A",
+        "C",
+        "B"
+      ],
+      "winner": "D",
+      "reason": "D separates the duplicate-mapping problem from the list of semantic differences, making both easy to scan."
+    },
+    {
+      "id": 950000019002,
+      "ranking": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "winner": "A",
+      "reason": "All four versions state the trigger and incorrect treatment of `NullModel` equally clearly."
+    },
+    {
+      "id": 950000019003,
+      "ranking": [
+        "C",
+        "A",
+        "D",
+        "B"
+      ],
+      "winner": "C",
+      "reason": "C uses the semicolon to distinguish the misleading output from the successful exit status without interrupting the flow."
+    },
+    {
+      "id": 950000022604,
+      "ranking": [
+        "C",
+        "A",
+        "D",
+        "B"
+      ],
+      "winner": "C",
+      "reason": "C puts the skipped-subtree trigger and false-validation consequence in one direct causal sentence, then states the corrected behavior."
+    },
+    {
+      "id": 950000022705,
+      "ranking": [
+        "B",
+        "D",
+        "A",
+        "C"
+      ],
+      "winner": "B",
+      "reason": "B clearly contrasts the inaccurate docstring with supported inputs and gives a precise replacement description."
+    },
+    {
+      "id": 950000022706,
+      "ranking": [
+        "D",
+        "C",
+        "A",
+        "B"
+      ],
+      "winner": "D",
+      "reason": "D gives the placement rule, its concrete nested-path consequence, and the required documentation outcome in distinct scan-friendly paragraphs."
+    }
+  ],
+  "winner_counts": {
+    "A": 1,
+    "B": 1,
+    "C": 2,
+    "D": 2
+  },
+  "overall_ranking": [
+    "D",
+    "C",
+    "A",
+    "B"
+  ],
+  "dimension_winners": {
+    "immediate_comprehension": "C",
+    "consequence_clarity": "D",
+    "actionability": "C",
+    "jargon_load": "A",
+    "sentence_clarity": "C",
+    "tone": "A",
+    "scanability": "D"
+  },
+  "recommended_version": "D",
+  "summary": "D is the most consistently scannable because it separates the problem, consequence, and expected outcome without making the comments feel abrupt. C is close behind and is strongest when a compact causal sentence makes the trigger and failure immediately clear."
+}
+
+
+Wall time: 33.89 seconds

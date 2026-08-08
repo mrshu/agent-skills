@@ -1,0 +1,32 @@
+[
+  {
+    "id": 990000019001,
+    "pr": 190,
+    "body": "**RAV-RUN2-R1-F001 [medium] model-identity** — Developer IDs use the registry, but `model_info.id` uses an adapter-private identity ladder. Canonical model aliases cannot affect the join key.\n\nOnly model IDs emitted by this pinned snapshot can receive vendored registry resolution. The source ID can remain a marked fallback."
+  },
+  {
+    "id": 990000019002,
+    "pr": 190,
+    "body": "**RAV-RUN2-R1-F005 [medium] input-validation** — Populated invalid `win_rate` values bypass row-level failure handling. They can omit the headline metric or abort strict JSON publication.\n\nPopulated numeric cells can validate as finite values within their metric rules before result construction. Invalid rows can enter `SourceConversionResult`."
+  },
+  {
+    "id": 990000020303,
+    "pr": 203,
+    "body": "**RAV-RUN2-R1-F003 [medium] memory-use** — Capped instance runs still materialize all selected columns for a complete row group before the cap is checked.\n\nBounded record batches can flush and hash incrementally."
+  },
+  {
+    "id": 990000020304,
+    "pr": 203,
+    "body": "**RAV-RUN2-R1-F006 [medium] instance-linkage** — Multi-subtask rows contribute to overall and leaf results, but instances link only to leaves. This conflicts with the one-record-per-contributing-result guidance.\n\nOverall-leaf pairs can emit as one unit. The cap can stop before a pair that does not fit."
+  },
+  {
+    "id": 990000020405,
+    "pr": 204,
+    "body": "**RAV-RUN2-R1-F001 [high] model-identity** — When registry resolution is unavailable or disabled, a path/config mismatch makes `model_info.id` use the path identity instead of the evaluated config identity.\n\nExisting lm-eval parsing rules can select one valid config identity. That value can drive model metadata, evaluation ID, and routing, while the dataset path and mismatches stay in provenance."
+  },
+  {
+    "id": 990000022306,
+    "pr": 223,
+    "body": "**RAV-RUN1-R1-F001 [medium] schema-deferral** — Blank model IDs return before the publisher helper runs. The schema accepts blank strings, so these records can pass without a warning even though their identity names no datastore directory.\n\nMissing or non-string IDs can stay with schema validation, while blank strings can reach the publisher helper and produce its focused warning."
+  }
+]

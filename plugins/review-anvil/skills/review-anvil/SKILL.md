@@ -493,8 +493,8 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 
    ```json
    [
-     {"path": "src/auth.ts", "line": 50, "side": "RIGHT", "severity": "high", "body": "**RAV-RUN3-R2-F001 [high] auth** — Refresh creates a session before CSRF validation\n\nThe handler rotates the session before it checks the state token. A stale tab can create a new session with an invalid token.\n\nA state check before rotation would block that path. A missing-state-token test would cover this path."},
-     {"path": "src/db.ts", "start_line": 100, "line": 110, "side": "RIGHT", "start_side": "RIGHT", "severity": "medium", "body": "**RAV-RUN3-R2-F002 [medium] db** — Retry accounting records success before the write succeeds\n\nThe retry block increments `attempts_succeeded` before `insert_event` returns. A timeout records success even when no row was written.\n\nThe counter update belongs after a successful insert; timeout attempts then remain eligible for retry. A timeout test can cover this path.", "suggestion": "result = insert_event(payload)\nattempts_succeeded += 1\nreturn result"}
+     {"path": "src/auth.ts", "line": 50, "side": "RIGHT", "severity": "high", "body": "**RAV-RUN3-R2-F001 [high] auth** — Refresh creates a session before CSRF validation\n\nThe handler rotates the session before it checks the state token. A stale tab can create a new session with an invalid token.\n\nThe corrected path checks the state token before it rotates the session. Invalid tokens then cannot create sessions. A missing-state-token test covers this boundary."},
+     {"path": "src/db.ts", "start_line": 100, "line": 110, "side": "RIGHT", "start_side": "RIGHT", "severity": "medium", "body": "**RAV-RUN3-R2-F002 [medium] db** — Retry accounting records success before the write succeeds\n\nThe retry block increments `attempts_succeeded` before `insert_event` returns. A timeout records success even when no row was written.\n\nThe corrected path increments `attempts_succeeded` only after `insert_event` returns. Timeout attempts then remain eligible for retry. A timeout test covers this boundary.", "suggestion": "result = insert_event(payload)\nattempts_succeeded += 1\nreturn result"}
    ]
    ```
 
@@ -504,7 +504,7 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 
    For an explicitly reintroduced `author-resolved` finding, place `<!-- review-anvil: prior_feedback=reintroduced -->` immediately after its visible final-report finding row or bullet. Its matching inline item must carry helper-only `"prior_feedback": "reintroduced"`; the posting helper uses it before author-resolved suppression, strips the JSON field before the GitHub REST request, and preserves the hidden marker in the posted inline body so later history retains the disposition.
 
-   Each eligible new `body` puts the same complete finding ID as its report row, reproduction target, and adversarial target inside that bold label, then follows the **inline-comment voice** in `references/report-artifacts.md` — read it before composing bodies. Keep it short and plain: say what the code does, what happens because of it, and, when useful, a friendly next step. A reader must be able to act without reopening the diff. Include a safe exact `"suggestion"` or a short code sketch only when it removes doubt. By default, inline comments are for `critical`/`high`/`medium` anchored findings; `low`/`nit` findings remain in the top-level summary unless the user or environment lowers `REVIEW_ANVIL_INLINE_MIN_SEVERITY`. Ordinary prior-feedback carry-forwards do not produce new inline payloads. The same voice applies to the report's Things to try, Set aside, and Outside this change prose.
+   Each eligible new `body` puts the same complete finding ID as its report row, reproduction target, and adversarial target inside that bold label, then follows the **inline-comment voice** in `references/report-artifacts.md` — read it before composing bodies. Keep it short and plain: say what the code does, what happens because of it, and, when useful, a neutral desired state. A reader must be able to act without reopening the diff. Include a safe exact `"suggestion"` or a short code sketch only when it removes doubt. By default, inline comments are for `critical`/`high`/`medium` anchored findings; `low`/`nit` findings remain in the top-level summary unless the user or environment lowers `REVIEW_ANVIL_INLINE_MIN_SEVERITY`. Ordinary prior-feedback carry-forwards stay in the markdown history only; only explicitly reintroduced author-resolved findings regain an inline item, with the hidden marker preserved in its posted body.
 
 3. Write a sibling `<report_path>.approval.json` so the PR-posting helper can choose the GitHub review event (review-only PR runs; for other runs write `{"event": "COMMENT"}` or omit the file — the helper defaults to COMMENT):
 
@@ -589,9 +589,9 @@ explanation in plain language.>
 ## What I noticed
 <Show every confirmed issue once. Critical/high issues go first, then medium,
 then low/nit. Start with the facts: what the code does and what happens because
-of it. Inline comments carry supporting evidence and a friendly next step when
-useful. Otherwise, add the smallest supporting fact to what you noticed. If
-none: "No confirmed problems found.">
+of it. Inline comments carry supporting evidence and, when useful, a neutral
+desired state. Otherwise, add the smallest supporting fact to what you noticed.
+If none: "No confirmed problems found.">
 
 ID legend: `RUN` is the observed PR review run, `R` is the immutable origin round, `F` is a finding, and `P` is a plan.
 

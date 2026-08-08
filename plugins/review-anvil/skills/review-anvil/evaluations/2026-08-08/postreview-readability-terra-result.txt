@@ -1,0 +1,57 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 950000019001,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "The separated statement makes the duplicate mapping and its differing semantics easiest to absorb at a glance."
+    },
+    {
+      "id": 950000019002,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All four versions present the trigger and incorrect result equally clearly."
+    },
+    {
+      "id": 950000019003,
+      "ranking": ["C", "A", "D", "B"],
+      "winner": "C",
+      "reason": "Its direct sequence makes the error output, misleading completion message, and successful exit status immediately clear."
+    },
+    {
+      "id": 950000022604,
+      "ranking": ["D", "A", "B", "C"],
+      "winner": "D",
+      "reason": "It keeps the failure and consequence together, then states the expected behavior in a clean second paragraph."
+    },
+    {
+      "id": 950000022705,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "It explicitly names the inaccurate docstring and the corrected parameter meaning without the distracting phrase “corrected path.”"
+    },
+    {
+      "id": 950000022706,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "It presents the placement rule and its nested-directory consequence together before clearly stating the documentation outcome."
+    }
+  ],
+  "winner_counts": {"A": 2, "B": 2, "C": 1, "D": 1},
+  "overall_ranking": ["A", "B", "C", "D"],
+  "dimension_winners": {
+    "immediate_comprehension": "B",
+    "consequence_clarity": "A",
+    "actionability": "A",
+    "jargon_load": "B",
+    "sentence_clarity": "C",
+    "tone": "D",
+    "scanability": "B"
+  },
+  "recommended_version": "A",
+  "summary": "A and B are strongest overall: both generally place the failure, consequence, and expected result in a natural reading order. B is more consistently scannable, while A more often keeps closely related cause-and-effect information together."
+}
+
+
+Wall time: 33.54 seconds

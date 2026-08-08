@@ -1,0 +1,66 @@
+{
+  "source_repo": "evaleval/every_eval_ever",
+  "selection": "Six untouched medium findings from earlier review-anvil reports on the requested PR test bed. Selected after the bidirectional fact-lock contract was frozen; report-only annotations are excluded from the technical source.",
+  "inline_comments": [
+    {
+      "id": 995000019001,
+      "pr": 190,
+      "created_at": "2026-08-06T04:17:11Z",
+      "path": "every_eval_ever/cli.py",
+      "line": 383,
+      "body": "**RAV-RUN2-R1-F003 [medium] cli** — The module entry point builds the old argument namespace. The changed handler reads missing fields and fails before conversion.\n\nThe module entry point can use the shared top-level parser and one offline entry-point test.",
+      "source_review_id": 4870915628,
+      "source_kind": "untouched historical high/medium finding with report-only status removed"
+    },
+    {
+      "id": 995000019002,
+      "pr": 190,
+      "created_at": "2026-08-06T04:17:11Z",
+      "path": "every_eval_ever/tools/refresh_eval_card_registry.py",
+      "line": 151,
+      "body": "**RAV-RUN2-R1-F011 [medium] registry-identity** — Normalized organization collisions can rewrite an exact canonical ID to another canonical organization.\n\nExact canonical IDs can win first. Normalized spellings can resolve only when one organization owns them.",
+      "source_review_id": 4870915628,
+      "source_kind": "untouched historical high/medium finding with report-only status removed"
+    },
+    {
+      "id": 995000020303,
+      "pr": 203,
+      "created_at": "2026-08-06T04:33:46Z",
+      "path": "utils/wild/README.md",
+      "line": 32,
+      "body": "**RAV-RUN2-R1-F002 [medium] documentation** — The smoke command passes a directory to a file-only validator. Its output root also cannot satisfy datastore path checks.\n\nSmoke output can use the required `data/<collection>` path. The validator can receive a quoted fixed-depth file glob.",
+      "source_review_id": 4871030385,
+      "source_kind": "untouched historical high/medium finding with report-only status removed"
+    },
+    {
+      "id": 995000020304,
+      "pr": 203,
+      "created_at": "2026-08-06T04:33:46Z",
+      "path": "utils/wild/adapter.py",
+      "line": 157,
+      "body": "**RAV-RUN2-R1-F004 [medium] data-validation** — Missing scores become incorrect answers and stay in aggregate denominators. Missing token data becomes measured zero instead of being omitted.\n\nRows with invalid scores can enter the failure report. Incomplete token usage can be omitted, with token means based only on complete values.",
+      "source_review_id": 4871030385,
+      "source_kind": "untouched historical high/medium finding with report-only status removed"
+    },
+    {
+      "id": 995000020405,
+      "pr": 204,
+      "created_at": "2026-08-06T04:50:32Z",
+      "path": "utils/open_medical_llm/adapter.py",
+      "line": 12,
+      "body": "**RAV-RUN2-R1-F002 [medium] repository-integration** — The adapter remains under the retired `utils` layout. Installed packages include `every_eval_ever*`, so this adapter and its documented command are outside the active package.\n\nCurrent main can be integrated before moving the adapter and references under `every_eval_ever/adapters/open_medical_llm`. Tests can use the imported schema version.",
+      "source_review_id": 4871126847,
+      "source_kind": "untouched historical high/medium finding with report-only status removed"
+    },
+    {
+      "id": 995000020406,
+      "pr": 204,
+      "created_at": "2026-08-06T04:50:32Z",
+      "path": "utils/open_medical_llm/adapter.py",
+      "line": 274,
+      "body": "**RAV-RUN2-R1-F004 [medium] metric-identity** — Ordinary accuracy receives nine benchmark-specific metric IDs. This fragments the global accuracy join key.\n\n`accuracy` can remain the metric ID while task-specific evaluation names preserve benchmark identity.",
+      "source_review_id": 4871126847,
+      "source_kind": "untouched historical high/medium finding with report-only status removed"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+Working...
+{
+  "fact_status": "fact_safe",
+  "fact_losses": [],
+  "reason": "The candidate diagnostic preserves the source diagnostic exactly. The fix guidance changes possibility grammar into direct desired-state language while preserving the same behavior and boundaries for invalid scores and incomplete token usage."
+}
+
+
+Wall time: 12.42 seconds

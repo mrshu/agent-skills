@@ -1,0 +1,44 @@
+[
+  {
+    "id": 995000019001,
+    "A": "**RAV-RUN2-R1-F003 [medium] cli** — The module entry point builds the old argument namespace. The changed handler reads missing fields and fails before conversion.\n\nThe module entry point can use the shared top-level parser and one offline entry-point test.",
+    "B": "**RAV-RUN2-R1-F003 [medium] cli** — The module entry point builds the old argument namespace. The changed handler reads missing fields and fails before conversion.\n\nThe fix uses the shared top-level parser in the module entry point and includes one offline entry-point test.",
+    "C": "**RAV-RUN2-R1-F003 [medium] cli** — The module entry point builds the old argument namespace. The changed handler reads missing fields and fails before conversion.\n\nThe fix uses the shared top-level parser at the module entry point and includes one offline entry-point test.",
+    "D": "**RAV-RUN2-R1-F003 [medium] cli** — The module entry point builds the old argument namespace.\n\nThe changed handler reads missing fields and fails before conversion.\n\nThe fix uses the shared top-level parser and includes one offline entry-point test."
+  },
+  {
+    "id": 995000019002,
+    "A": "**RAV-RUN2-R1-F011 [medium] registry-identity** — Normalized organization collisions can rewrite an exact canonical ID to another canonical organization.\n\nExact canonical IDs can win first. Normalized spellings can resolve only when one organization owns them.",
+    "B": "**RAV-RUN2-R1-F011 [medium] registry-identity** — Normalized organization collisions can rewrite an exact canonical ID to another canonical organization.\n\nExact canonical IDs win first. Normalized spellings resolve only when one organization owns them.",
+    "C": "**RAV-RUN2-R1-F011 [medium] registry-identity** — Normalized organization collisions can rewrite an exact canonical ID to another canonical organization.\n\nThe fix gives exact canonical IDs first precedence. Normalized spellings can resolve only when one organization owns them.",
+    "D": "**RAV-RUN2-R1-F011 [medium] registry-identity** — Normalized organization collisions can rewrite an exact canonical ID to another canonical organization.\n\nThe fix gives exact canonical IDs precedence. Normalized spellings resolve only when one organization owns them."
+  },
+  {
+    "id": 995000020303,
+    "A": "**RAV-RUN2-R1-F002 [medium] documentation** — The smoke command passes a directory to a file-only validator. Its output root also cannot satisfy datastore path checks.\n\nSmoke output can use the required `data/<collection>` path. The validator can receive a quoted fixed-depth file glob.",
+    "B": "**RAV-RUN2-R1-F002 [medium] documentation** — The smoke command passes a directory to a file-only validator. Its output root also cannot satisfy datastore path checks.\n\nSmoke output uses the required `data/<collection>` path. The validator receives a quoted fixed-depth file glob.",
+    "C": "**RAV-RUN2-R1-F002 [medium] documentation** — The smoke command passes a directory to a file-only validator. Its output root also cannot satisfy datastore path checks.\n\nThe fix uses the required `data/<collection>` path for smoke output and gives the validator a quoted fixed-depth file glob.",
+    "D": "**RAV-RUN2-R1-F002 [medium] documentation** — The smoke command passes a directory to a file-only validator.\n\nIts output root also cannot satisfy datastore path checks.\n\nThe fix uses the required `data/<collection>` path for smoke output and passes a quoted fixed-depth file glob to the validator."
+  },
+  {
+    "id": 995000020304,
+    "A": "**RAV-RUN2-R1-F004 [medium] data-validation** — Missing scores become incorrect answers and stay in aggregate denominators. Missing token data becomes measured zero instead of being omitted.\n\nRows with invalid scores can enter the failure report. Incomplete token usage can be omitted, with token means based only on complete values.",
+    "B": "**RAV-RUN2-R1-F004 [medium] data-validation** — Missing scores become incorrect answers and stay in aggregate denominators. Missing token data becomes measured zero instead of being omitted.\n\nRows with invalid scores enter the failure report. Incomplete token usage is omitted, with token means based only on complete values.",
+    "C": "**RAV-RUN2-R1-F004 [medium] data-validation** — Missing scores become incorrect answers and stay in aggregate denominators. Missing token data becomes measured zero instead of being omitted.\n\nRows with invalid scores can enter the failure report. Incomplete token usage can be omitted, with token means based only on complete values.",
+    "D": "**RAV-RUN2-R1-F004 [medium] data-validation** — Missing scores become incorrect answers and stay in aggregate denominators.\n\nMissing token data becomes measured zero instead of being omitted.\n\nThe fix includes rows with invalid scores in the failure report. It omits incomplete token usage and bases token means only on complete values."
+  },
+  {
+    "id": 995000020405,
+    "A": "**RAV-RUN2-R1-F002 [medium] repository-integration** — The adapter remains under the retired `utils` layout. Installed packages include `every_eval_ever*`, so this adapter and its documented command are outside the active package.\n\nCurrent main can be integrated before moving the adapter and references under `every_eval_ever/adapters/open_medical_llm`. Tests can use the imported schema version.",
+    "B": "**RAV-RUN2-R1-F002 [medium] repository-integration** — The adapter remains under the retired `utils` layout. Installed packages include `every_eval_ever*`, so this adapter and its documented command are outside the active package.\n\nThe fix integrates current main before moving the adapter and references under `every_eval_ever/adapters/open_medical_llm`. Tests use the imported schema version.",
+    "C": "**RAV-RUN2-R1-F002 [medium] repository-integration** — The adapter remains under the retired `utils` layout. Installed packages include `every_eval_ever*`, so this adapter and its documented command are outside the active package.\n\nThe fix integrates current main before moving the adapter and references under `every_eval_ever/adapters/open_medical_llm`. Tests can use the imported schema version.",
+    "D": "**RAV-RUN2-R1-F002 [medium] repository-integration** — The adapter remains under the retired `utils` layout.\n\nInstalled packages include `every_eval_ever*`, so this adapter and its documented command are outside the active package.\n\nThe fix integrates current main before moving the adapter and references under `every_eval_ever/adapters/open_medical_llm`. Tests use the imported schema version."
+  },
+  {
+    "id": 995000020406,
+    "A": "**RAV-RUN2-R1-F004 [medium] metric-identity** — Ordinary accuracy receives nine benchmark-specific metric IDs. This fragments the global accuracy join key.\n\n`accuracy` can remain the metric ID while task-specific evaluation names preserve benchmark identity.",
+    "B": "**RAV-RUN2-R1-F004 [medium] metric-identity** — Ordinary accuracy receives nine benchmark-specific metric IDs. This fragments the global accuracy join key.\n\n`accuracy` remains the metric ID while task-specific evaluation names preserve benchmark identity.",
+    "C": "**RAV-RUN2-R1-F004 [medium] metric-identity** — Ordinary accuracy receives nine benchmark-specific metric IDs. This fragments the global accuracy join key.\n\nThe fix keeps `accuracy` as the metric ID while task-specific evaluation names preserve benchmark identity.",
+    "D": "**RAV-RUN2-R1-F004 [medium] metric-identity** — Ordinary accuracy receives nine benchmark-specific metric IDs.\n\nThis fragments the global accuracy join key.\n\nThe fix keeps `accuracy` as the metric ID while task-specific evaluation names preserve benchmark identity."
+  }
+]

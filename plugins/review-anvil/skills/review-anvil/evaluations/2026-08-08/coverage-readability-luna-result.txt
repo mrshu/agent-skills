@@ -1,0 +1,194 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "ranking": ["C", "D", "A", "B"],
+      "winner": "C",
+      "reason": "C presents the failure, concrete path consequence, and corrected outcome in a direct sequence without hedging."
+    },
+    {
+      "id": 3737044354,
+      "ranking": ["A", "C", "D", "B"],
+      "winner": "A",
+      "reason": "A makes the destructive timing and the required replacement behavior immediately clear in declarative language."
+    },
+    {
+      "id": 3737044361,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D states the identity problem plainly and labels the corrected behavior with the simplest actionable wording."
+    },
+    {
+      "id": 3737044371,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D gives the failure, stale-report consequence, and atomic replacement outcome a clean, easy-to-scan progression."
+    },
+    {
+      "id": 3737053181,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D is the only version that states the intended neutral-metric correction directly rather than leaving it as an abstract gap."
+    },
+    {
+      "id": 3737053197,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D clearly separates the malformed-input consequence from the validation behavior while keeping the expected result direct."
+    },
+    {
+      "id": 3737053204,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D makes both the data-loss consequence and the incomplete-sweep behavior immediately actionable."
+    },
+    {
+      "id": 3737181823,
+      "ranking": ["C", "A", "D", "B"],
+      "winner": "C",
+      "reason": "C uses a concrete subject for the deferred check and keeps the schema-error explanation separated from the corrective rule."
+    },
+    {
+      "id": 3737266652,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D states the malformed-row impact and the narrow error boundary as a clear fix without obscuring the failure trigger."
+    },
+    {
+      "id": 3737266656,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "A puts the repeated symbolic-resolution failure in the heading, making the reproducibility risk visible before the details."
+    },
+    {
+      "id": 3737266661,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "A identifies both the missing exclusions and their cause immediately, then states the corrected report behavior without hedging."
+    },
+    {
+      "id": 3737291965,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D presents the symlink trigger, traversal mechanism, and precise rejection boundary in a calm and readable order."
+    },
+    {
+      "id": 3737383919,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "A makes both the bare-option failure and the no-match behavior visible in the opening paragraph before giving the remedy."
+    },
+    {
+      "id": 3737383922,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "A combines the arbitrary-path trigger with the wrong destination in the heading and follows with a concise corrective outcome."
+    },
+    {
+      "id": 3737449039,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "A immediately states the unstable identity and duplicate-ingest consequence, then gives a concrete stable-ID direction."
+    },
+    {
+      "id": 3737449052,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "A makes total conversion loss and its successful exit status explicit at once, followed by an unambiguous accounting outcome."
+    },
+    {
+      "id": 3737449059,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "A exposes the count mismatch and its score-coverage consequence immediately while keeping the desired representation easy to find."
+    },
+    {
+      "id": 3737449070,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "A states the unsupported assumption and its missing semantic evidence together, then gives a clear resolution path."
+    },
+    {
+      "id": 3737449081,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "A makes the absent join key and its cross-source consequence immediately visible before describing the shared mapping solution."
+    },
+    {
+      "id": 3737449090,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "A presents the inconsistent record units and denominator consequence in one compact explanation with a clear reporting outcome."
+    },
+    {
+      "id": 3737449098,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "A identifies the single-file reporting gap and contrasts it with directory behavior before stating the unifying result path."
+    },
+    {
+      "id": 3737449101,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "A clearly identifies the nested-secret exposure and places the recursive sanitization outcome where it is easy to scan."
+    },
+    {
+      "id": 800000019001,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D states the aliasing consequence immediately and gives the exact correction without the more abstract wording in A."
+    },
+    {
+      "id": 800000019002,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D directly connects the present-null lookup gap to the cached-lookup correction while preserving the offline boundary."
+    },
+    {
+      "id": 800000019703,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D makes the ownership classification outcome explicit while retaining the concise explanation of why the citation is insufficient."
+    },
+    {
+      "id": 800000020304,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "A makes destructive replacement and the partial-input consequence immediately visible, then states the recoverable staging result."
+    },
+    {
+      "id": 800000020305,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "A puts the metadata-failure trigger and symbolic-revision risk in the heading, followed by a concise resolution rule."
+    },
+    {
+      "id": 800000020406,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "A surfaces the non-finite-score failure and batch-blocking consequence immediately before describing the validation boundary."
+    }
+  ],
+  "winner_counts": {
+    "A": 16,
+    "B": 0,
+    "C": 2,
+    "D": 10
+  },
+  "overall_ranking": ["A", "D", "C", "B"],
+  "dimension_winners": {
+    "immediate_comprehension": "A",
+    "consequence_clarity": "A",
+    "actionability": "D",
+    "jargon_load": "D",
+    "sentence_clarity": "C",
+    "tone": "C",
+    "scanability": "C"
+  },
+  "recommended_version": "A",
+  "summary": "A ranks first overall because it most often puts the trigger and concrete consequence in the opening line while keeping the expected result visible. D is the strongest alternative when explicit fix wording improves actionability, while B consistently loses readability through modal phrasing."
+}
+
+
+Wall time: 177.99 seconds

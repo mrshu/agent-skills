@@ -55,13 +55,21 @@ part of the sentence.
 
 Edit structure before vocabulary.
 Keep an exact supporting phrase for every fact-lock item.
+Privately map every fact-lock item to its exact supporting phrase in the draft.
+Do not emit until every fact-lock item has a supporting phrase.
+Privately map every draft relationship and boundary back to one fact-lock item.
+Delete any draft claim that has no source fact.
+If deletion would break the meaning, restore the source sentence.
 You may reorder clauses and split sentences to show problem, impact, and
 outcome.
 You may remove filler and exact repetition.
 Do not replace technical verbs, quantifiers, or scope words.
 Preserve modals that express diagnostic certainty.
 Write fix guidance as a neutral desired state without `could` or `must`.
-Name `the fix` or `the corrected path` when a desired state could look like current behavior.
+Use `the fix` by default.
+Use `the corrected path` only when the source names an executable or control-flow path.
+Apply the actor-action-target check to outcome sentences as well as titles.
+If an outcome shifts the target of the fix, restore the synthesized fix sentence verbatim.
 Delete a source clause only when another retained clause states the same fact.
 If an exact phrase is hard to place, keep the whole source sentence.
 
@@ -82,6 +90,12 @@ Before emitting the body, run this author check:
 
 - The title and first sentence answer: what breaks, and when?
 - Replace an abstract label with the code actor and a direct verb.
+- The title names the actor that produces the concrete bad result.
+- Do not attribute an aggregate run's result to one file or record inside it.
+- Rewrite the title only when every fact-lock item in it still matches.
+- Preserve title qualifiers and ownership, including diagnostic modals and scope words.
+- If the title changes the actor, action, target, condition, scope, or certainty,
+  restore the synthesized finding sentence verbatim.
 - When a path, count, or state change is hard to picture, give one minimal example instead of making the reader simulate it.
 - Remove a test sentence unless it defines the failure boundary.
 - Remove any sentence that repeats the title without adding a trigger, result,
@@ -96,8 +110,8 @@ Use short everyday words. Prefer one clear sentence over a dense explanation.
 `save_user` catches the database error and returns `True`. `signup_flow` then
 reports success, but no user row exists.
 
-Non-retryable write errors must reach `signup_flow` so it returns failure. An
-INSERT failure test covers this boundary.
+The corrected path returns non-retryable write errors to `signup_flow`, which
+returns failure. An INSERT failure test covers this boundary.
 ```
 
 Keep only evidence that helps the author trust or fix the finding. Do not

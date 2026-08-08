@@ -1,0 +1,66 @@
+{
+  "source_repo": "evaleval/every_eval_ever",
+  "selection": "Six untouched high/medium findings from earlier review-anvil reports on the requested PR test bed. Selected only after title and outcome fallback rules were frozen.",
+  "inline_comments": [
+    {
+      "id": 980000019001,
+      "pr": 190,
+      "created_at": "2026-08-06T04:17:11Z",
+      "path": "every_eval_ever/converters/alpaca_eval/adapter.py",
+      "line": 838,
+      "body": "**RAV-RUN2-R1-F002 [medium] reproducibility** — Explicit branch or tag refs are not resolved before use in stable IDs and provenance URLs. Two network runs can fetch different input under the same identity. (inline)\n\nNetwork-mode refs can resolve once to a commit SHA. Offline replay can keep the stored immutable ref without network access.",
+      "source_review_id": 4870915628,
+      "source_kind": "untouched historical high/medium finding from requested PR"
+    },
+    {
+      "id": 980000019002,
+      "pr": 190,
+      "created_at": "2026-08-06T04:17:11Z",
+      "path": "every_eval_ever/converters/alpaca_eval/adapter.py",
+      "line": 643,
+      "body": "**RAV-RUN2-R1-F007 [medium] generation-provenance** — `GenerationArgs.prompt_template` contains an upstream path instead of prompt content. Offline records cannot reconstruct the generation prompt. (inline)\n\nNew snapshots can store pinned prompt content. Legacy snapshots can leave the typed value unset and mark missing content.",
+      "source_review_id": 4870915628,
+      "source_kind": "untouched historical high/medium finding from requested PR"
+    },
+    {
+      "id": 980000020303,
+      "pr": 203,
+      "created_at": "2026-08-06T04:33:46Z",
+      "path": "utils/wild/adapter.py",
+      "line": 528,
+      "body": "**RAV-RUN2-R1-F001 [high] instance-publication** — Instance mode passes a sidecar basename where the schema requires a canonical datastore path. Construction fails after aggregate and sidecar files are written. (inline)\n\nComplete output can stage before publication. Existing logical output can be rejected until replacement is atomic. Sidecar validation and hashing must stay streaming for WILD's size.",
+      "source_review_id": 4871030385,
+      "source_kind": "untouched historical high/medium finding from requested PR"
+    },
+    {
+      "id": 980000020304,
+      "pr": 203,
+      "created_at": "2026-08-06T04:33:46Z",
+      "path": "utils/wild/adapter.py",
+      "line": 383,
+      "body": "**RAV-RUN2-R1-F007 [medium] instance-output** — When no assistant response exists, the adapter substitutes an extracted answer into `output.raw`. Scorer data is then labeled as complete model output. (earlier comment remains open)\n\nMissing assistant output can remain empty. Attribution can name the actual answer or scorer source.",
+      "source_review_id": 4871030385,
+      "source_kind": "untouched historical high/medium finding from requested PR"
+    },
+    {
+      "id": 980000020405,
+      "pr": 204,
+      "created_at": "2026-08-06T04:50:32Z",
+      "path": "utils/open_medical_llm/adapter.py",
+      "line": 434,
+      "body": "**RAV-RUN2-R1-F005 [medium] error-handling** — A selected file with no usable score exits as a successful skip. A later publication failure can also bypass the failure report after earlier output exists. (earlier feedback remains partly open)\n\nFetch, conversion, and empty-result failures can be recorded by selected source path. Valid records can publish once as a batch; publication failure can roll back and exit nonzero.",
+      "source_review_id": 4871126847,
+      "source_kind": "untouched historical high/medium finding from requested PR"
+    },
+    {
+      "id": 980000022306,
+      "pr": 223,
+      "created_at": "2026-08-06T04:09:17Z",
+      "path": "every_eval_ever/validator/validation_core.py",
+      "line": 1,
+      "body": "**RAV-RUN1-R1-F003 [medium] path-check-ownership** — The check defers only wrong path depth. A five-component path with a nonportable developer or model component can receive both the path error and an identity-drift warning for the same malformed component. (inline)\n\nIdentity comparison can stop whenever `check_path_structure` already reports a path error.",
+      "source_review_id": 4870878941,
+      "source_kind": "untouched historical high/medium finding from requested PR"
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "source_repo": "evaleval/every_eval_ever",
+  "selection": "Six untouched high/medium findings from earlier review-anvil reports on the requested PR test bed. Selected after title/outcome fallback rules were frozen; report-only inline/prior-status annotations are excluded from the technical source.",
+  "inline_comments": [
+    {
+      "id": 990000019001,
+      "pr": 190,
+      "created_at": "2026-08-06T04:17:11Z",
+      "path": "every_eval_ever/converters/alpaca_eval/adapter.py",
+      "line": 602,
+      "body": "**RAV-RUN2-R1-F001 [medium] model-identity** — Developer IDs use the registry, but `model_info.id` uses an adapter-private identity ladder. Canonical model aliases cannot affect the join key.\n\nOnly model IDs emitted by this pinned snapshot can receive vendored registry resolution. The source ID can remain a marked fallback.",
+      "source_review_id": 4870915628,
+      "source_kind": "untouched historical high/medium finding with report-only status removed"
+    },
+    {
+      "id": 990000019002,
+      "pr": 190,
+      "created_at": "2026-08-06T04:17:11Z",
+      "path": "every_eval_ever/converters/alpaca_eval/adapter.py",
+      "line": 302,
+      "body": "**RAV-RUN2-R1-F005 [medium] input-validation** — Populated invalid `win_rate` values bypass row-level failure handling. They can omit the headline metric or abort strict JSON publication.\n\nPopulated numeric cells can validate as finite values within their metric rules before result construction. Invalid rows can enter `SourceConversionResult`.",
+      "source_review_id": 4870915628,
+      "source_kind": "untouched historical high/medium finding with report-only status removed"
+    },
+    {
+      "id": 990000020303,
+      "pr": 203,
+      "created_at": "2026-08-06T04:33:46Z",
+      "path": "utils/wild/adapter.py",
+      "line": 142,
+      "body": "**RAV-RUN2-R1-F003 [medium] memory-use** — Capped instance runs still materialize all selected columns for a complete row group before the cap is checked.\n\nBounded record batches can flush and hash incrementally.",
+      "source_review_id": 4871030385,
+      "source_kind": "untouched historical high/medium finding with report-only status removed"
+    },
+    {
+      "id": 990000020304,
+      "pr": 203,
+      "created_at": "2026-08-06T04:33:46Z",
+      "path": "utils/wild/adapter.py",
+      "line": 367,
+      "body": "**RAV-RUN2-R1-F006 [medium] instance-linkage** — Multi-subtask rows contribute to overall and leaf results, but instances link only to leaves. This conflicts with the one-record-per-contributing-result guidance.\n\nOverall-leaf pairs can emit as one unit. The cap can stop before a pair that does not fit.",
+      "source_review_id": 4871030385,
+      "source_kind": "untouched historical high/medium finding with report-only status removed"
+    },
+    {
+      "id": 990000020405,
+      "pr": 204,
+      "created_at": "2026-08-06T04:50:32Z",
+      "path": "utils/open_medical_llm/adapter.py",
+      "line": 429,
+      "body": "**RAV-RUN2-R1-F001 [high] model-identity** — When registry resolution is unavailable or disabled, a path/config mismatch makes `model_info.id` use the path identity instead of the evaluated config identity.\n\nExisting lm-eval parsing rules can select one valid config identity. That value can drive model metadata, evaluation ID, and routing, while the dataset path and mismatches stay in provenance.",
+      "source_review_id": 4871126847,
+      "source_kind": "untouched historical high/medium finding with report-only status removed"
+    },
+    {
+      "id": 990000022306,
+      "pr": 223,
+      "created_at": "2026-08-06T04:09:17Z",
+      "path": "every_eval_ever/validator/validation_core.py",
+      "line": 1,
+      "body": "**RAV-RUN1-R1-F001 [medium] schema-deferral** — Blank model IDs return before the publisher helper runs. The schema accepts blank strings, so these records can pass without a warning even though their identity names no datastore directory.\n\nMissing or non-string IDs can stay with schema validation, while blank strings can reach the publisher helper and produce its focused warning.",
+      "source_review_id": 4870878941,
+      "source_kind": "untouched historical high/medium finding with report-only status removed"
+    }
+  ]
+}

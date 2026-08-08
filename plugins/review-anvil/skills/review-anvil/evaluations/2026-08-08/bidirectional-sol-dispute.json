@@ -1,0 +1,7 @@
+{
+  "id": 995000020304,
+  "source_diagnostic": "**RAV-RUN2-R1-F004 [medium] data-validation** — Missing scores become incorrect answers and stay in aggregate denominators. Missing token data becomes measured zero instead of being omitted.",
+  "source_fix_guidance": "Rows with invalid scores can enter the failure report. Incomplete token usage can be omitted, with token means based only on complete values.",
+  "candidate_diagnostic": "**RAV-RUN2-R1-F004 [medium] data-validation** — Missing scores become incorrect answers and stay in aggregate denominators. Missing token data becomes measured zero instead of being omitted.",
+  "candidate_fix_guidance": "Rows with invalid scores enter the failure report. Incomplete token usage is omitted, with token means based only on complete values."
+}

@@ -1,0 +1,36 @@
+Working...
+[
+  {
+    "id": 980000019001,
+    "pr": 190,
+    "body": "**RAV-RUN2-R1-F002 [medium] reproducibility** — Explicit branch or tag refs are not resolved before use in stable IDs and provenance URLs.\n\nTwo network runs can fetch different input under the same identity. (inline)\n\nNetwork-mode refs can resolve once to a commit SHA. Offline replay can keep the stored immutable ref without network access."
+  },
+  {
+    "id": 980000019002,
+    "pr": 190,
+    "body": "**RAV-RUN2-R1-F007 [medium] generation-provenance** — `GenerationArgs.prompt_template` contains an upstream path instead of prompt content.\n\nOffline records cannot reconstruct the generation prompt. (inline)\n\nNew snapshots can store pinned prompt content. Legacy snapshots can leave the typed value unset and mark missing content."
+  },
+  {
+    "id": 980000020303,
+    "pr": 203,
+    "body": "**RAV-RUN2-R1-F001 [high] instance-publication** — Instance mode passes a sidecar basename where the schema requires a canonical datastore path.\n\nConstruction fails after aggregate and sidecar files are written. (inline)\n\nComplete output can stage before publication. Existing logical output can be rejected until replacement is atomic. Sidecar validation and hashing stay streaming for WILD's size."
+  },
+  {
+    "id": 980000020304,
+    "pr": 203,
+    "body": "**RAV-RUN2-R1-F007 [medium] instance-output** — When no assistant response exists, the adapter substitutes an extracted answer into `output.raw`.\n\nScorer data is then labeled as complete model output. (earlier comment remains open)\n\nMissing assistant output can remain empty. Attribution can name the actual answer or scorer source."
+  },
+  {
+    "id": 980000020405,
+    "pr": 204,
+    "body": "**RAV-RUN2-R1-F005 [medium] error-handling** — A selected file with no usable score exits as a successful skip.\n\nA later publication failure can also bypass the failure report after earlier output exists. (earlier feedback remains partly open)\n\nFetch, conversion, and empty-result failures can be recorded by selected source path. Valid records can publish once as a batch; publication failure can roll back and exit nonzero."
+  },
+  {
+    "id": 980000022306,
+    "pr": 223,
+    "body": "**RAV-RUN1-R1-F003 [medium] path-check-ownership** — The check defers only wrong path depth.\n\nA five-component path with a nonportable developer or model component can receive both the path error and an identity-drift warning for the same malformed component. (inline)\n\nIdentity comparison can stop whenever `check_path_structure` already reports a path error."
+  }
+]
+
+
+Wall time: 116.87 seconds

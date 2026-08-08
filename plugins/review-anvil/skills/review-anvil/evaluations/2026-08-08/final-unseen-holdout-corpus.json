@@ -1,0 +1,76 @@
+{
+  "source_repo": "evaleval/every_eval_ever",
+  "selection": "Seven low findings from latest 2026-08-07 reports. They were never included in generation or evaluator input before the final contract was frozen.",
+  "inline_comments": [
+    {
+      "id": 900000019001,
+      "pr": 190,
+      "created_at": "2026-08-07",
+      "path": "PR-190-summary",
+      "line": 1,
+      "body": "**RAV-RUN3-R1-F003 [low] CLI help** — `--input-json` says it is offline, but `--registry-live` remains an explicit network exception. The help text can name that exception.",
+      "source_review_id": 4884452884,
+      "source_kind": "unseen non-blocking final-report finding"
+    },
+    {
+      "id": 900000019002,
+      "pr": 190,
+      "created_at": "2026-08-07",
+      "path": "PR-190-summary",
+      "line": 1,
+      "body": "**RAV-RUN3-R1-F004 [low] registry reporting** — The CLI prints registry status before live lookups. A final status line would show the actual query and error totals.\n\nOne final status line before publication checks can replace the initial zero-count line.",
+      "source_review_id": 4884452884,
+      "source_kind": "unseen non-blocking final-report finding"
+    },
+    {
+      "id": 900000020403,
+      "pr": 204,
+      "created_at": "2026-08-07",
+      "path": "every_eval_ever/adapters/open_medical_llm/adapter.py",
+      "line": 568,
+      "body": "**RAV-RUN3-R1-F005 [low] CLI** — `--limit 0` processes all models. Negative limits use Python negative slicing.\n\nNegative limits can be rejected, and slicing can run whenever the value is not `None`.",
+      "source_review_id": 4884442134,
+      "source_kind": "unseen non-blocking final-report finding"
+    },
+    {
+      "id": 900000022604,
+      "pr": 226,
+      "created_at": "2026-08-07",
+      "path": "PR-226-summary",
+      "line": 1,
+      "body": "**RAV-RUN1-R1-F002 [low] CLI help** — The top-level `every_eval_ever validate` help still says directory arguments are unsupported. The existing help text can describe recursive directory expansion.",
+      "source_review_id": 4884776714,
+      "source_kind": "unseen non-blocking final-report finding"
+    },
+    {
+      "id": 900000022705,
+      "pr": 227,
+      "created_at": "2026-08-07",
+      "path": "PR-227-summary",
+      "line": 1,
+      "body": "**RAV-RUN1-R1-F003 [low] documentation** — Still present. Parent depth is unchecked only when the collection leaf also passes validation.",
+      "source_review_id": 4884439849,
+      "source_kind": "unseen non-blocking final-report finding"
+    },
+    {
+      "id": 900000023506,
+      "pr": 235,
+      "created_at": "2026-08-07",
+      "path": "PR-235-summary",
+      "line": 1,
+      "body": "**RAV-RUN1-R1-F003 [low] deployment metadata** — Supported logs normally publish `deployment_type` and `model_availability` as `unknown`, with no CLI override for known facts.\n\nValidated CLI overrides could follow the existing platform and engine override pattern.",
+      "source_review_id": 4884964333,
+      "source_kind": "unseen non-blocking final-report finding"
+    },
+    {
+      "id": 900000023507,
+      "pr": 235,
+      "created_at": "2026-08-07",
+      "path": "PR-235-summary",
+      "line": 1,
+      "body": "**RAV-RUN1-R1-F010 [low] test coverage** — The thorough synthetic fixture is useful. An end-to-end publication assertion would also prove strict output parsing through the real CLI.\n\nThe existing fixture can drive one CLI publication test that strictly parses and validates each emitted file.",
+      "source_review_id": 4884964333,
+      "source_kind": "unseen non-blocking final-report finding"
+    }
+  ]
+}

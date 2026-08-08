@@ -1,0 +1,194 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A immediately states the guard failure, illustrates it with a concrete path, and gives a direct corrected outcome."
+    },
+    {
+      "id": 3737044354,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A cleanly separates the destructive ordering, its loss scenario, and the replacement-path expectation."
+    },
+    {
+      "id": 3737044361,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A uses short sequential sentences that make the identity change and the intended stable input easy to follow."
+    },
+    {
+      "id": 3737044371,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A clearly connects the missing report to the stale-record consequence before naming the desired atomic outcome."
+    },
+    {
+      "id": 3737053181,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A presents the misleading Boolean, its reader-facing consequence, and the needed neutral representation in one coherent flow."
+    },
+    {
+      "id": 3737053197,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "B isolates the malformed-cell failure and denominator consequence before giving a specific, readable validation outcome."
+    },
+    {
+      "id": 3737053204,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "B gives the response-handling failure, the concrete overwrite risk, and the incomplete-sweep behavior in distinct scanable steps."
+    },
+    {
+      "id": 3737181823,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "B makes the duplicate-warning outcome easy to find and names the corrected check more concretely than A."
+    },
+    {
+      "id": 3737266652,
+      "ranking": ["C", "A", "B", "D"],
+      "winner": "C",
+      "reason": "C leads with the user-visible loss of valid rows, then explains the missing boundary and its narrow expected behavior."
+    },
+    {
+      "id": 3737266656,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "B cleanly separates the bypass from the moving-branch consequence and states the reproducible-fetch result plainly."
+    },
+    {
+      "id": 3737266661,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "B places the lost exclusion information in its own sentence, making the consequence faster to scan."
+    },
+    {
+      "id": 3737291965,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "B gives a concrete root-symlink behavior, explains the exception to the existing safeguard, and names the boundary clearly."
+    },
+    {
+      "id": 3737383919,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A makes both surprising command-line outcomes explicit and follows with concise, concrete expectations for each."
+    },
+    {
+      "id": 3737383922,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "B clearly contrasts the requested path with the actual target and gives a compact destination-consistency outcome."
+    },
+    {
+      "id": 3737449039,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "C leads with the repeated-identity consequence, then explains its cause and the stable-ID result in a natural order."
+    },
+    {
+      "id": 3737449052,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "C foregrounds the silent successful-loss scenario and then clearly distinguishes failures from intentional exclusions."
+    },
+    {
+      "id": 3737449059,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "C starts with the central coverage mismatch and retains a concise explanation of both counts and their intended labels."
+    },
+    {
+      "id": 3737449070,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "B states the missing identifier and missing join key without repetition, then gives the mapping-based outcome directly."
+    },
+    {
+      "id": 3737449081,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "B explains the incompatible counting units in a compact progression and ends with an immediately understandable reporting outcome."
+    },
+    {
+      "id": 3737449090,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "C begins with the absent report that matters to the author, then explains why the single-file route differs."
+    },
+    {
+      "id": 3737449098,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "C leads with the credential-exposure risk and follows with a clear explanation and scoped sanitizer outcome."
+    },
+    {
+      "id": 3737449101,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A states the cross-source identity consequence alongside the bypass and gives a direct aliasing expectation."
+    },
+    {
+      "id": 800000019001,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A immediately connects the skipped lookup to delayed canonical discovery and clearly states the live-mode behavior."
+    },
+    {
+      "id": 800000019002,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A is already concise, leading with the insufficient evidence and then stating the understandable ownership-unknown outcome."
+    },
+    {
+      "id": 800000019703,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A presents the deletion behavior, irreversible consequences, and recoverable staging expectation in a crisp sequence."
+    },
+    {
+      "id": 800000020304,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "B states the two-pass condition plainly and gives the one-time resolution and fallback constraints without extra framing."
+    },
+    {
+      "id": 800000020305,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "C puts the cross-request instability first, then explains the trigger and gives the reproducible-reference outcome."
+    },
+    {
+      "id": 800000020406,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "C leads with the all-records failure, then clearly traces it to late serialization and names the validation location."
+    }
+  ],
+  "winner_counts": {
+    "A": 10,
+    "B": 10,
+    "C": 8,
+    "D": 0
+  },
+  "overall_ranking": ["B", "A", "C", "D"],
+  "dimension_winners": {
+    "immediate_comprehension": "C",
+    "consequence_clarity": "B",
+    "actionability": "B",
+    "jargon_load": "B",
+    "sentence_clarity": "B",
+    "tone": "B",
+    "scanability": "B"
+  },
+  "recommended_version": "B",
+  "summary": "B is the most consistently scanable version: it separates the failure, consequence, and expected outcome with minimal review-process framing. A is similarly clear and often more explicit about the correction, while C most often improves immediate impact by leading with the consequence. D consistently weakens actionability through conditional wording."
+}
+
+
+Wall time: 130.49 seconds

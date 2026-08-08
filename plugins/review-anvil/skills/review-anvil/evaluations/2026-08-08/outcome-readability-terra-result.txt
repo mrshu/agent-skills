@@ -1,0 +1,62 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 980000019001,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A states the unresolved-ref problem, reproducibility consequence, and network versus offline outcome without distracting inline-review narration."
+    },
+    {
+      "id": 980000019002,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A connects the stored path directly to the unreconstructable offline prompt and gives the intended snapshot behavior in a clean flow."
+    },
+    {
+      "id": 980000020303,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A makes the invalid path, post-write failure, and publication requirements easiest to scan without parenthetical review metadata."
+    },
+    {
+      "id": 980000020304,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A plainly explains the substitution and mislabeling consequence, then gives the desired empty-output and attribution outcome without process commentary."
+    },
+    {
+      "id": 980000020405,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A keeps both failure paths and the batch-publication outcome together while avoiding the distracting earlier-feedback note."
+    },
+    {
+      "id": 980000022306,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A clearly links malformed path components to duplicate diagnostics and states the stopping condition without an inline marker."
+    }
+  ],
+  "winner_counts": {
+    "A": 6,
+    "B": 0,
+    "C": 0,
+    "D": 0
+  },
+  "overall_ranking": ["A", "B", "C", "D"],
+  "dimension_winners": {
+    "immediate_comprehension": "A",
+    "consequence_clarity": "A",
+    "actionability": "A",
+    "jargon_load": "A",
+    "sentence_clarity": "A",
+    "tone": "A",
+    "scanability": "A"
+  },
+  "recommended_version": "A",
+  "summary": "A is consistently easiest to understand on the first read because each finding keeps the failure, consequence, and expected outcome in one coherent review comment. The other versions add inline or earlier-feedback narration that interrupts scanning without improving comprehension."
+}
+
+
+Wall time: 27.58 seconds

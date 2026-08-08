@@ -1,0 +1,68 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 900000019001,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D names the omitted `--registry-live` exception in the heading, making the problem immediately scannable before stating the expected help-text change."
+    },
+    {
+      "id": 900000019002,
+      "ranking": ["C", "B", "D", "A"],
+      "winner": "C",
+      "reason": "C connects the premature status line directly to its inaccurate totals and then states the corrected reporting point without repetition."
+    },
+    {
+      "id": 900000020403,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B separates the negative-slicing problem from the `0` behavior and explicitly explains how the corrected handling covers both cases."
+    },
+    {
+      "id": 900000022604,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B exposes the contradiction between supported directory arguments and the current help text immediately, then states what the help should describe."
+    },
+    {
+      "id": 900000022705,
+      "ranking": ["C", "D", "B", "A"],
+      "winner": "C",
+      "reason": "C is the only version that pairs the validation-boundary problem with a clear corrected documentation outcome."
+    },
+    {
+      "id": 900000023506,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B presents the misleading `unknown` values first, identifies the missing override in a separate sentence, and gives a concrete correction pattern."
+    },
+    {
+      "id": 900000023507,
+      "ranking": ["C", "B", "D", "A"],
+      "winner": "C",
+      "reason": "C states the exact end-to-end coverage gap and the fixture-based assertion needed to close it in two direct sentences."
+    }
+  ],
+  "winner_counts": {
+    "A": 0,
+    "B": 3,
+    "C": 3,
+    "D": 1
+  },
+  "overall_ranking": ["C", "B", "D", "A"],
+  "dimension_winners": {
+    "immediate_comprehension": "C",
+    "consequence_clarity": "B",
+    "actionability": "B",
+    "jargon_load": "C",
+    "sentence_clarity": "B",
+    "tone": "C",
+    "scanability": "B"
+  },
+  "recommended_version": "C",
+  "summary": "C ranks first overall because it usually joins the failure, consequence, and corrected outcome without redundant restatement. B is strongest when a descriptive heading and short explanatory sentences improve scanning, while D often has a strong heading but a weaker outcome and A consistently buries the issue behind generic headings."
+}
+
+
+Wall time: 69.48 seconds

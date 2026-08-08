@@ -1,0 +1,41 @@
+Working...
+[
+  {
+    "id": 900000019001,
+    "pr": 190,
+    "body": "**RAV-RUN3-R1-F003 [low] CLI help** — CLI help omits the `--registry-live` network exception\n\n`--input-json` says it is offline, but `--registry-live` remains an explicit network exception. The help text can name that exception."
+  },
+  {
+    "id": 900000019002,
+    "pr": 190,
+    "body": "**RAV-RUN3-R1-F004 [low] registry reporting** — The CLI prints an initial zero-count registry status before live lookups\n\nThe CLI prints registry status before live lookups. A final status line would show the actual query and error totals.\n\nOne final status line before publication checks can replace the initial zero-count line."
+  },
+  {
+    "id": 900000020403,
+    "pr": 204,
+    "body": "**RAV-RUN3-R1-F005 [low] CLI** — `--limit 0` processes all models\n\n`--limit 0` processes all models. Negative limits use Python negative slicing.\n\nNegative limits can be rejected, and slicing can run whenever the value is not `None`."
+  },
+  {
+    "id": 900000022604,
+    "pr": 226,
+    "body": "**RAV-RUN1-R1-F002 [low] CLI help** — The top-level `every_eval_ever validate` help says directory arguments are unsupported\n\nThe top-level `every_eval_ever validate` help still says directory arguments are unsupported. The existing help text can describe recursive directory expansion."
+  },
+  {
+    "id": 900000022705,
+    "pr": 227,
+    "body": "**RAV-RUN1-R1-F003 [low] documentation** — Parent depth is unchecked when the collection leaf also passes validation\n\nStill present. Parent depth is unchecked only when the collection leaf also passes validation."
+  },
+  {
+    "id": 900000023506,
+    "pr": 235,
+    "body": "**RAV-RUN1-R1-F003 [low] deployment metadata** — Supported logs publish `deployment_type` and `model_availability` as `unknown`\n\nSupported logs normally publish `deployment_type` and `model_availability` as `unknown`, with no CLI override for known facts.\n\nThe fix uses validated CLI overrides following the existing platform and engine override pattern."
+  },
+  {
+    "id": 900000023507,
+    "pr": 235,
+    "body": "**RAV-RUN1-R1-F010 [low] test coverage** — The real CLI lacks an end-to-end publication assertion for strict output parsing\n\nThe thorough synthetic fixture is useful. An end-to-end publication assertion would also prove strict output parsing through the real CLI.\n\nThe existing fixture can drive one CLI publication test that strictly parses and validates each emitted file."
+  }
+]
+
+
+Wall time: 148.14 seconds

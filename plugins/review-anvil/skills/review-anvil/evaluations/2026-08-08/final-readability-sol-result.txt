@@ -1,0 +1,194 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D states the guard failure immediately, then gives a concrete path example and the required rejection behavior."
+    },
+    {
+      "id": 3737044354,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B separates the premature deletion, irreversible consequence, and safe replacement outcome into an easy progression."
+    },
+    {
+      "id": 3737044361,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D connects the changing canonical repository directly to duplicate logical identity and then states which identity input must remain stable."
+    },
+    {
+      "id": 3737044371,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D makes the missing exclusions report visible in the heading and clearly describes the complete ledger expected after publication."
+    },
+    {
+      "id": 3737053181,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D isolates the misleading Boolean interpretation before stating that neutral measures need a distinct shared representation."
+    },
+    {
+      "id": 3737053197,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D presents the two silent coercions separately and finishes with concise validation rules and the allowed empty-cell exception."
+    },
+    {
+      "id": 3737053204,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D cleanly separates the dropped ID, the transient-error consequence, and the required all-or-nothing refresh behavior."
+    },
+    {
+      "id": 3737181823,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D gives the duplicate-warning symptom first and then states the exact invalid developer values for which semantic checking should defer."
+    },
+    {
+      "id": 3737266652,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D leads with the batch-wide consequence, follows with its missing error boundary, and clearly limits the expected catch behavior."
+    },
+    {
+      "id": 3737266656,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D names the unpinned symbolic revision and four-request trigger immediately, then explains the reproducible resolution outcome."
+    },
+    {
+      "id": 3737266661,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D foregrounds the lost exclusion references and clearly distinguishes report persistence from failure-based exit status."
+    },
+    {
+      "id": 3737291965,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B explains the root-symlink exception in a linear sequence and states the rejected and preserved symlink cases explicitly."
+    },
+    {
+      "id": 3737383919,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D puts the dangerous full-run behavior in the heading and then gives distinct outcomes for empty and unmatched model filters."
+    },
+    {
+      "id": 3737383922,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D immediately contrasts the requested path with the actual derived destination and gives a clear validation outcome."
+    },
+    {
+      "id": 3737449039,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D states the unstable identity consequence first and clearly separates stable ID inputs from retrieval-only metadata."
+    },
+    {
+      "id": 3737449052,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D makes the missing failure record immediately visible and clearly distinguishes unconvertible measured tasks from intentional exclusions."
+    },
+    {
+      "id": 3737449059,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D translates the count mismatch into its user-visible meaning and clearly assigns score coverage and provenance roles to the two counts."
+    },
+    {
+      "id": 3737449070,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D leads with the unsupported higher-is-better publication and then states how known and unresolved metrics should be handled."
+    },
+    {
+      "id": 3737449081,
+      "ranking": ["B", "D", "C", "A"],
+      "winner": "B",
+      "reason": "B gives the omitted identifier, cross-source consequence, and mapping-based correction as three distinct, readily scanned ideas."
+    },
+    {
+      "id": 3737449090,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D describes the inconsistent units in plain terms before stating the separate file-level and output-log totals."
+    },
+    {
+      "id": 3737449098,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D puts the missing single-file report in the heading and clearly identifies the desired parity with directory input."
+    },
+    {
+      "id": 3737449101,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D immediately exposes the credential-leak consequence and follows with a concise recursive-sanitization outcome."
+    },
+    {
+      "id": 800000019001,
+      "ranking": ["C", "B", "D", "A"],
+      "winner": "C",
+      "reason": "C combines the unnormalized field and duplicate join-key consequence in one direct sentence, then states the bounded aliasing behavior."
+    },
+    {
+      "id": 800000019002,
+      "ranking": ["C", "D", "B", "A"],
+      "winner": "C",
+      "reason": "C states the skipped-entry trigger and delayed discovery consequence together without repetition, followed by the live and offline outcomes."
+    },
+    {
+      "id": 800000019703,
+      "ranking": ["C", "A", "B", "D"],
+      "winner": "C",
+      "reason": "C uses two short declarative sentences to distinguish unsupported ownership inference from the appropriate fallback relationship."
+    },
+    {
+      "id": 800000020304,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D leads with deletion before successful publication and then makes both data-loss modes and the recoverable staging outcome easy to locate."
+    },
+    {
+      "id": 800000020305,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D identifies metadata failure as the trigger in the heading and clearly separates normal symbolic resolution from the restricted fallback."
+    },
+    {
+      "id": 800000020406,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D foregrounds the batch-blocking consequence and then identifies the validation boundary that restores per-source accounting."
+    }
+  ],
+  "winner_counts": {
+    "A": 0,
+    "B": 3,
+    "C": 3,
+    "D": 22
+  },
+  "overall_ranking": ["D", "B", "C", "A"],
+  "dimension_winners": {
+    "immediate_comprehension": "D",
+    "consequence_clarity": "D",
+    "actionability": "B",
+    "jargon_load": "C",
+    "sentence_clarity": "B",
+    "tone": "C",
+    "scanability": "D"
+  },
+  "recommended_version": "D",
+  "summary": "D most consistently puts the concrete failure or consequence in the heading, making the findings fastest to scan. B is strongest when paragraph separation improves one-idea-at-a-time flow, while C occasionally wins by avoiding repetition and using direct declarative outcomes."
+}
+
+
+Wall time: 104.27 seconds

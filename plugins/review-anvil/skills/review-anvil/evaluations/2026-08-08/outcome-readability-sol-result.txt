@@ -1,0 +1,62 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 980000019001,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "C presents the mutable-ref failure and its reproducibility consequence together, then states the network and offline outcomes directly without annotation noise."
+    },
+    {
+      "id": 980000019002,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "C immediately connects the misplaced path to failed prompt reconstruction and clearly distinguishes the expected handling of new and legacy snapshots."
+    },
+    {
+      "id": 980000020303,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "C keeps the schema mismatch and post-write failure easy to scan, then consolidates the publication, replacement, and streaming requirements into one direct outcome."
+    },
+    {
+      "id": 980000020304,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "C plainly links the fallback substitution to mislabeled scorer data and states the corrected empty-output and attribution behavior without review-process narration."
+    },
+    {
+      "id": 980000020405,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "C groups both silent-failure paths coherently and gives a direct, compact account of recording failures, batching publication, rollback, and nonzero exit behavior."
+    },
+    {
+      "id": 980000022306,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "C makes the duplicate-diagnostic trigger and consequence immediately visible, then states the stopping condition for identity comparison in one clear sentence."
+    }
+  ],
+  "winner_counts": {
+    "A": 0,
+    "B": 0,
+    "C": 6,
+    "D": 0
+  },
+  "overall_ranking": ["C", "B", "A", "D"],
+  "dimension_winners": {
+    "immediate_comprehension": "C",
+    "consequence_clarity": "C",
+    "actionability": "C",
+    "jargon_load": "C",
+    "sentence_clarity": "C",
+    "tone": "C",
+    "scanability": "C"
+  },
+  "recommended_version": "C",
+  "summary": "C consistently pairs each failure with its consequence before giving a direct corrected outcome, and it removes distracting inline and prior-review annotations. B is generally the next most scannable because it isolates consequences, while A and D are identical and denser."
+}
+
+
+Wall time: 40.26 seconds

@@ -1,0 +1,5 @@
+Working...
+{"fact_status":"fact_loss","fact_losses":["Diagnostic certainty changed: rows with invalid scores can enter the failure report became rows with invalid scores enter the failure report."],"reason":"The source states a possibility, while the candidate asserts that the behavior always occurs. The token-usage sentence is proposed fix guidance, so changing its grammar does not lose a diagnostic fact."}
+
+
+Wall time: 28.17 seconds

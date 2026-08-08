@@ -1,0 +1,5 @@
+Working...
+{"fact_status":"fact_safe","fact_losses":[],"reason":"The diagnostic text is identical, preserving all current-behavior facts. The fix guidance keeps the same desired handling for invalid-score rows and incomplete token usage; changing possibility grammar to a direct desired state does not alter that boundary."}
+
+
+Wall time: 12.24 seconds

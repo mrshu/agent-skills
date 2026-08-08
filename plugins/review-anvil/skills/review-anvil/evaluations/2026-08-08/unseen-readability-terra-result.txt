@@ -1,0 +1,63 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 900000019001,
+      "ranking": ["C", "B", "D", "A"],
+      "winner": "C",
+      "reason": "It names the omitted exception in the heading, then immediately connects it to the misleading offline claim and expected clarification."
+    },
+    {
+      "id": 900000019002,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "It separates the premature zero-count report, its inaccurate consequence, and the intended final report into an easy first-read sequence."
+    },
+    {
+      "id": 900000020403,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "It exposes both limit failures as distinct sentences and clearly states how zero and negative values should be handled."
+    },
+    {
+      "id": 900000022604,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "The heading states the contradiction directly, and the following sentence gives the missing behavior without detouring."
+    },
+    {
+      "id": 900000022705,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "It puts the validation boundary in the heading, making the actual gap visible before the brief status note."
+    },
+    {
+      "id": 900000023506,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "It leads with the visible incorrect metadata, isolates the missing override, and gives a concrete direction for the corrected outcome."
+    },
+    {
+      "id": 900000023507,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "It identifies the missing real-CLI assertion in the heading and concisely connects the existing fixture to the needed verification."
+    }
+  ],
+  "winner_counts": {"A": 0, "B": 4, "C": 3, "D": 0},
+  "overall_ranking": ["B", "C", "A", "D"],
+  "dimension_winners": {
+    "immediate_comprehension": "B",
+    "consequence_clarity": "B",
+    "actionability": "A",
+    "jargon_load": "C",
+    "sentence_clarity": "B",
+    "tone": "A",
+    "scanability": "B"
+  },
+  "recommended_version": "B",
+  "summary": "Version B most consistently presents the problem, consequence, and intended correction as separately scannable ideas. Version C is often the most direct when its heading names the specific failure, while A is generally clear but more compressed and D too often omits the explicit problem framing."
+}
+
+
+Wall time: 45.66 seconds

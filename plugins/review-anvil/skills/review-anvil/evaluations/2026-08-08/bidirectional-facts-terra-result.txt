@@ -1,0 +1,40 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 995000019001,
+      "fact_status": {"A": "fact_safe", "B": "fact_loss", "C": "fact_safe"},
+      "fact_losses": ["B: the fix must use the shared top-level parser at the module entry point; B omits that location boundary"]
+    },
+    {
+      "id": 995000019002,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 995000020303,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 995000020304,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 995000020405,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 995000020406,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {"A": 6, "B": 5, "C": 6},
+  "summary": "All candidates preserve the diagnosis and valid-behavior boundaries except candidate B for ID 995000019001. That candidate drops the required module-entry-point location for adopting the shared parser."
+}
+
+
+Wall time: 42.99 seconds

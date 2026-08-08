@@ -1,0 +1,40 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 950000019001,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 950000019002,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 950000019003,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 950000022604,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 950000022705,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 950000022706,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {"A": 6, "B": 6, "C": 6},
+  "summary": "All candidates preserve the IDs, severities, diagnoses, conditions, concrete effects, and fix boundaries. Differences are limited to formatting, sentence structure, or safe recommendation phrasing."
+}
+
+
+Wall time: 32.00 seconds

@@ -1,0 +1,73 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 995000019001,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": [
+        "A: Omits that the shared top-level parser must be used at the module entry point, leaving the fix location and boundary ambiguous."
+      ]
+    },
+    {
+      "id": 995000019002,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 995000020303,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 995000020304,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_safe"
+      },
+      "fact_losses": [
+        "B: Changes the recommendation that invalid-score rows can enter the failure report to an unconditional statement that they enter it.",
+        "B: Changes the recommendation that incomplete token usage can be omitted to an unconditional statement that it is omitted."
+      ]
+    },
+    {
+      "id": 995000020405,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 995000020406,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 5,
+    "B": 5,
+    "C": 6
+  },
+  "summary": "Candidates A and B each lose one material fact: A omits the required module-entry-point boundary, while B makes two conditional recommendations unconditional. All other candidates preserve the technical facts, including changes in recommendation grammar that do not alter the intended behavior or boundary."
+}
+
+
+Wall time: 49.24 seconds

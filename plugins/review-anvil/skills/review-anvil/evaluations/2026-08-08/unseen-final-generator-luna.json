@@ -1,0 +1,37 @@
+[
+  {
+    "id": 900000019001,
+    "pr": 190,
+    "body": "**RAV-RUN3-R1-F003 [low] CLI help** — CLI help says `--input-json` is offline, but `--registry-live` remains an explicit network exception that the help text does not name.\n\nThe corrected help text names that exception while retaining the offline description for `--input-json`."
+  },
+  {
+    "id": 900000019002,
+    "pr": 190,
+    "body": "**RAV-RUN3-R1-F004 [low] registry reporting** — The CLI prints registry status before live lookups, so the initial zero-count line does not show the actual query and error totals.\n\nOne final status line before publication checks replaces the initial zero-count line and shows the actual query and error totals."
+  },
+  {
+    "id": 900000020403,
+    "pr": 204,
+    "body": "**RAV-RUN3-R1-F005 [low] CLI** — CLI `--limit` handling makes `--limit 0` process all models and applies Python negative slicing to negative limits.\n\nThe corrected path rejects negative limits and runs slicing whenever the value is not `None`."
+  },
+  {
+    "id": 900000022604,
+    "pr": 226,
+    "body": "**RAV-RUN1-R1-F002 [low] CLI help** — Top-level `every_eval_ever validate` help still says directory arguments are unsupported, so it omits recursive directory expansion.\n\nThe corrected help text describes recursive directory expansion for directory arguments."
+  },
+  {
+    "id": 900000022705,
+    "pr": 227,
+    "body": "**RAV-RUN1-R1-F003 [low] documentation** — The documentation issue is still present: parent depth is unchecked only when the collection leaf also passes validation.\n\nThe corrected documentation states this validation boundary explicitly."
+  },
+  {
+    "id": 900000023506,
+    "pr": 235,
+    "body": "**RAV-RUN1-R1-F003 [low] deployment metadata** — Supported logs normally publish `deployment_type` and `model_availability` as `unknown`, with no CLI override for known facts.\n\nValidated CLI overrides follow the existing platform and engine override pattern."
+  },
+  {
+    "id": 900000023507,
+    "pr": 235,
+    "body": "**RAV-RUN1-R1-F010 [low] test coverage** — Test coverage lacks an end-to-end publication assertion through the real CLI for strict output parsing.\n\nThe existing thorough synthetic fixture drives one CLI publication test that strictly parses and validates each emitted file."
+  }
+]

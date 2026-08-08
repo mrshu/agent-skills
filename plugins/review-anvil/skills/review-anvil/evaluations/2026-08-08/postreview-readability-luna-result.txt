@@ -1,0 +1,97 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 950000019001,
+      "ranking": [
+        "A",
+        "C",
+        "B",
+        "D"
+      ],
+      "winner": "A",
+      "reason": "A separates the problem from its concrete metadata consequence, making both points easiest to scan on the first read."
+    },
+    {
+      "id": 950000019002,
+      "ranking": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "winner": "A",
+      "reason": "All four versions are textually identical, so first-read comprehension is equal."
+    },
+    {
+      "id": 950000019003,
+      "ranking": [
+        "D",
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "D",
+      "reason": "D uses the semicolon to connect the handled failure with the incorrect successful exit most directly, while C has an awkward sentence opening."
+    },
+    {
+      "id": 950000022604,
+      "ranking": [
+        "A",
+        "D",
+        "B",
+        "C"
+      ],
+      "winner": "A",
+      "reason": "A gives the failure, consequence, correction, and verification each their own easy-to-scan unit without introducing abstract wording."
+    },
+    {
+      "id": 950000022705,
+      "ranking": [
+        "A",
+        "C",
+        "B",
+        "D"
+      ],
+      "winner": "A",
+      "reason": "A states the documentation correction directly and keeps the parameter meaning and naming rule clear in a compact second paragraph."
+    },
+    {
+      "id": 950000022706,
+      "ranking": [
+        "A",
+        "D",
+        "C",
+        "B"
+      ],
+      "winner": "A",
+      "reason": "A cleanly separates the placement rule, its concrete nested-directory consequence, and the documentation remedy."
+    }
+  ],
+  "winner_counts": {
+    "A": 5,
+    "B": 0,
+    "C": 0,
+    "D": 1
+  },
+  "overall_ranking": [
+    "A",
+    "D",
+    "C",
+    "B"
+  ],
+  "dimension_winners": {
+    "immediate_comprehension": "A",
+    "consequence_clarity": "A",
+    "actionability": "A",
+    "jargon_load": "A",
+    "sentence_clarity": "A",
+    "tone": "A",
+    "scanability": "A"
+  },
+  "recommended_version": "A",
+  "summary": "A is the strongest overall because it consistently presents the problem, consequence, and expected outcome in distinct, readable units. D is competitive when punctuation improves the causal flow, while B and C more often rely on denser structure or weaker phrasing."
+}
+
+
+Wall time: 48.24 seconds

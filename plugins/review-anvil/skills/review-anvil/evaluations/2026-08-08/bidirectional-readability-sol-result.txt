@@ -1,0 +1,62 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 995000019001,
+      "ranking": ["C", "B", "D", "A"],
+      "winner": "C",
+      "reason": "C states the failure first and then identifies both the parser and its required entry-point location in a direct correction."
+    },
+    {
+      "id": 995000019002,
+      "ranking": ["B", "D", "A", "C"],
+      "winner": "B",
+      "reason": "B presents the collision consequence and the two resolution rules directly, without hedging or fix-process narration."
+    },
+    {
+      "id": 995000020303,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D separates the two command failures and then clearly pairs each one with its corrected outcome."
+    },
+    {
+      "id": 995000020304,
+      "ranking": ["D", "B", "A", "C"],
+      "winner": "D",
+      "reason": "D isolates the score and token-data failures before stating their distinct handling rules in short, definitive sentences."
+    },
+    {
+      "id": 995000020405,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D makes the obsolete layout and packaging consequence separately scannable, then gives a concrete destination and test outcome."
+    },
+    {
+      "id": 995000020406,
+      "ranking": ["B", "D", "C", "A"],
+      "winner": "B",
+      "reason": "B quickly connects the fragmented join key to a concise corrected identity rule without unnecessary process wording."
+    }
+  ],
+  "winner_counts": {
+    "A": 0,
+    "B": 2,
+    "C": 1,
+    "D": 3
+  },
+  "overall_ranking": ["D", "B", "C", "A"],
+  "dimension_winners": {
+    "immediate_comprehension": "D",
+    "consequence_clarity": "D",
+    "actionability": "C",
+    "jargon_load": "B",
+    "sentence_clarity": "D",
+    "tone": "B",
+    "scanability": "D"
+  },
+  "recommended_version": "D",
+  "summary": "D is the strongest overall because its paragraph breaks consistently expose each failure, consequence, and correction for rapid scanning. B is close behind when its direct outcome language avoids fix-process narration, while C occasionally wins through greater location precision."
+}
+
+
+Wall time: 48.34 seconds

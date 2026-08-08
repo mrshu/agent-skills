@@ -1,0 +1,51 @@
+[
+  {
+    "id": 900000019001,
+    "A": "**RAV-RUN3-R1-F003 [low] CLI help** — CLI help omits the `--registry-live` network exception\n\n`--input-json` says it is offline, but `--registry-live` remains an explicit network exception. The help text can name that exception.",
+    "B": "**RAV-RUN3-R1-F003 [low] CLI help** — `--input-json` says it is offline, but `--registry-live` remains an explicit network exception. The help text can name that exception.",
+    "C": "**RAV-RUN3-R1-F003 [low] CLI help** — `--input-json` help omits an explicit network exception\n\n`--input-json` says it is offline, but `--registry-live` remains an explicit network exception. The corrected help text names that exception.",
+    "D": "**RAV-RUN3-R1-F003 [low] CLI help** — CLI help says `--input-json` is offline, but `--registry-live` remains an explicit network exception that the help text does not name.\n\nThe corrected help text names that exception while retaining the offline description for `--input-json`."
+  },
+  {
+    "id": 900000019002,
+    "A": "**RAV-RUN3-R1-F004 [low] registry reporting** — The CLI prints an initial zero-count registry status before live lookups\n\nThe CLI prints registry status before live lookups. A final status line would show the actual query and error totals.\n\nOne final status line before publication checks can replace the initial zero-count line.",
+    "B": "**RAV-RUN3-R1-F004 [low] registry reporting** — The CLI prints registry status before live lookups. A final status line would show the actual query and error totals.\n\nOne final status line before publication checks can replace the initial zero-count line.",
+    "C": "**RAV-RUN3-R1-F004 [low] registry reporting** — The CLI reports zero registry counts before live lookups produce the actual totals\n\nThe CLI prints registry status before live lookups. The initial zero-count line therefore does not show the actual query and error totals.\n\nThe corrected path replaces it with one final status line before publication checks that shows the actual query and error totals.",
+    "D": "**RAV-RUN3-R1-F004 [low] registry reporting** — The CLI prints registry status before live lookups, so the initial zero-count line does not show the actual query and error totals.\n\nOne final status line before publication checks replaces the initial zero-count line and shows the actual query and error totals."
+  },
+  {
+    "id": 900000020403,
+    "A": "**RAV-RUN3-R1-F005 [low] CLI** — `--limit 0` processes all models\n\n`--limit 0` processes all models. Negative limits use Python negative slicing.\n\nNegative limits can be rejected, and slicing can run whenever the value is not `None`.",
+    "B": "**RAV-RUN3-R1-F005 [low] CLI** — `--limit 0` processes all models. Negative limits use Python negative slicing.\n\nNegative limits can be rejected, and slicing can run whenever the value is not `None`.",
+    "C": "**RAV-RUN3-R1-F005 [low] CLI** — Negative `--limit` values use Python negative slicing\n\n`--limit 0` processes all models. Negative limits use Python negative slicing.\n\nThe corrected path rejects negative limits, and slicing runs whenever the value is not `None`, including `0`.",
+    "D": "**RAV-RUN3-R1-F005 [low] CLI** — CLI `--limit` handling makes `--limit 0` process all models and applies Python negative slicing to negative limits.\n\nThe corrected path rejects negative limits and runs slicing whenever the value is not `None`."
+  },
+  {
+    "id": 900000022604,
+    "A": "**RAV-RUN1-R1-F002 [low] CLI help** — The top-level `every_eval_ever validate` help says directory arguments are unsupported\n\nThe top-level `every_eval_ever validate` help still says directory arguments are unsupported. The existing help text can describe recursive directory expansion.",
+    "B": "**RAV-RUN1-R1-F002 [low] CLI help** — The top-level `every_eval_ever validate` help still says directory arguments are unsupported. The existing help text can describe recursive directory expansion.",
+    "C": "**RAV-RUN1-R1-F002 [low] CLI help** — The top-level `every_eval_ever validate` help says supported directory arguments are unsupported\n\nThe top-level `every_eval_ever validate` help still says directory arguments are unsupported. The corrected help text describes recursive directory expansion.",
+    "D": "**RAV-RUN1-R1-F002 [low] CLI help** — Top-level `every_eval_ever validate` help still says directory arguments are unsupported, so it omits recursive directory expansion.\n\nThe corrected help text describes recursive directory expansion for directory arguments."
+  },
+  {
+    "id": 900000022705,
+    "A": "**RAV-RUN1-R1-F003 [low] documentation** — Parent depth is unchecked when the collection leaf also passes validation\n\nStill present. Parent depth is unchecked only when the collection leaf also passes validation.",
+    "B": "**RAV-RUN1-R1-F003 [low] documentation** — Still present. Parent depth is unchecked only when the collection leaf also passes validation.",
+    "C": "**RAV-RUN1-R1-F003 [low] documentation** — The validation path leaves parent depth unchecked\n\nStill present. Parent depth is unchecked only when the collection leaf also passes validation.",
+    "D": "**RAV-RUN1-R1-F003 [low] documentation** — The documentation issue is still present: parent depth is unchecked only when the collection leaf also passes validation.\n\nThe corrected documentation states this validation boundary explicitly."
+  },
+  {
+    "id": 900000023506,
+    "A": "**RAV-RUN1-R1-F003 [low] deployment metadata** — Supported logs publish `deployment_type` and `model_availability` as `unknown`\n\nSupported logs normally publish `deployment_type` and `model_availability` as `unknown`, with no CLI override for known facts.\n\nThe fix uses validated CLI overrides following the existing platform and engine override pattern.",
+    "B": "**RAV-RUN1-R1-F003 [low] deployment metadata** — Supported logs normally publish `deployment_type` and `model_availability` as `unknown`, with no CLI override for known facts.\n\nValidated CLI overrides could follow the existing platform and engine override pattern.",
+    "C": "**RAV-RUN1-R1-F003 [low] deployment metadata** — Supported logs normally publish `deployment_type` and `model_availability` as `unknown`\n\nThere is no CLI override for known facts. In the corrected path, validated CLI overrides follow the existing platform and engine override pattern.",
+    "D": "**RAV-RUN1-R1-F003 [low] deployment metadata** — Supported logs normally publish `deployment_type` and `model_availability` as `unknown`, with no CLI override for known facts.\n\nValidated CLI overrides follow the existing platform and engine override pattern."
+  },
+  {
+    "id": 900000023507,
+    "A": "**RAV-RUN1-R1-F010 [low] test coverage** — The real CLI lacks an end-to-end publication assertion for strict output parsing\n\nThe thorough synthetic fixture is useful. An end-to-end publication assertion would also prove strict output parsing through the real CLI.\n\nThe existing fixture can drive one CLI publication test that strictly parses and validates each emitted file.",
+    "B": "**RAV-RUN1-R1-F010 [low] test coverage** — The thorough synthetic fixture is useful. An end-to-end publication assertion would also prove strict output parsing through the real CLI.\n\nThe existing fixture can drive one CLI publication test that strictly parses and validates each emitted file.",
+    "C": "**RAV-RUN1-R1-F010 [low] test coverage** — The test suite does not prove strict output parsing through the real CLI\n\nThe thorough synthetic fixture is useful. An end-to-end publication assertion would also prove strict output parsing through the real CLI.\n\nThe fix uses the existing fixture to drive one CLI publication test that strictly parses and validates each emitted file.",
+    "D": "**RAV-RUN1-R1-F010 [low] test coverage** — Test coverage lacks an end-to-end publication assertion through the real CLI for strict output parsing.\n\nThe existing thorough synthetic fixture drives one CLI publication test that strictly parses and validates each emitted file."
+  }
+]

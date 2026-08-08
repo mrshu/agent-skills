@@ -1,0 +1,189 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "It states the guard failure, concrete mismatched-path example, consequence, and required outcome in a direct sequence."
+    },
+    {
+      "id": 3737044354,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "The identical leading versions clearly separate premature deletion, rollback limits, and the required safe replacement behavior."
+    },
+    {
+      "id": 3737044361,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "Shorter causal sentences make the changing alias, changed identity, and stable-identity outcome easiest to follow."
+    },
+    {
+      "id": 3737044371,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "It plainly connects exclusions-only runs to a stale or missing report before stating the atomic replacement outcome."
+    },
+    {
+      "id": 3737053181,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "Separating the misleading Boolean from its consumer consequence makes the semantic conflict immediately scannable."
+    },
+    {
+      "id": 3737053197,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "Its three short paragraphs cleanly distinguish malformed cells, the denominator fallback, and the validation result."
+    },
+    {
+      "id": 3737053204,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "The response-handling failure, overwrite consequence, and incomplete-sweep behavior each receive a clear sentence."
+    },
+    {
+      "id": 3737181823,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "It gives the duplicate-warning symptom first and explains the raw-value trigger without overloading the opening sentence."
+    },
+    {
+      "id": 3737266652,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "The headline leads with the operational failure, then the body explains the missing row-level boundary and expected handling."
+    },
+    {
+      "id": 3737266656,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "It separates the unpinned symbolic revision from the moving-branch consequence and gives a concise reproducible outcome."
+    },
+    {
+      "id": 3737266661,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "The reporting condition and the lost exclusion records are isolated into immediately understandable statements."
+    },
+    {
+      "id": 3737291965,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "It introduces the explicit-symlink failure directly and explains the root-versus-discovered-child distinction in a readable flow."
+    },
+    {
+      "id": 3737383919,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "The headline makes the dangerous bare-option behavior visible before the body distinguishes it from the no-match case."
+    },
+    {
+      "id": 3737383922,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "It cleanly moves from the discarded path component to the surprising destination and then to the validation outcome."
+    },
+    {
+      "id": 3737449039,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "The first line exposes the repeated-conversion identity failure immediately, while the body provides the precise cause and result."
+    },
+    {
+      "id": 3737449052,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "It separates the empty conversion result from the automation consequence and states the failure-ledger distinction clearly."
+    },
+    {
+      "id": 3737449059,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "The two counts and their differing roles are introduced before the reader is asked to understand the preservation outcome."
+    },
+    {
+      "id": 3737449070,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "The unknown-metric assumption and unsupported direction are split into short statements before the resolution is described."
+    },
+    {
+      "id": 3737449081,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "It first identifies the omitted join key, then explains why the remaining label is insufficient and what supplies the IDs."
+    },
+    {
+      "id": 3737449090,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "The mixed-unit total is introduced separately from its denominator consequence, making the accounting error quick to grasp."
+    },
+    {
+      "id": 3737449098,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "The branch-ordering failure, missing report consequence, and aligned entry-mode outcome are presented in a calm sequence."
+    },
+    {
+      "id": 3737449101,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "It isolates the shallow filtering failure from the reachable nested-secret consequence before naming the recursive protection."
+    },
+    {
+      "id": 800000019001,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "The bypassed identifier is named first, followed by the cross-source consequence and a narrowly scoped normalization outcome."
+    },
+    {
+      "id": 800000019002,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "Two compact opening sentences make the present-null behavior and delayed discovery consequence especially easy to scan."
+    },
+    {
+      "id": 800000019703,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "It clearly states the insufficient evidence before directly naming the conservative relationship classification."
+    },
+    {
+      "id": 800000020304,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "The separate consequence paragraph makes both partial-input deletion and unrecoverable later failures easy to locate."
+    },
+    {
+      "id": 800000020305,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "It gives the metadata-failure trigger and symbolic-revision risk in one direct statement, then states the bounded fallback."
+    },
+    {
+      "id": 800000020406,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "The serialization failure and its batch-wide consequence are separated, making the earlier validation point immediately clear."
+    }
+  ],
+  "winner_counts": {"A": 2, "B": 22, "C": 4, "D": 0},
+  "overall_ranking": ["B", "C", "A", "D"],
+  "dimension_winners": {
+    "immediate_comprehension": "C",
+    "consequence_clarity": "B",
+    "actionability": "B",
+    "jargon_load": "B",
+    "sentence_clarity": "B",
+    "tone": "B",
+    "scanability": "B"
+  },
+  "recommended_version": "B",
+  "summary": "B most consistently separates failure, consequence, and corrected outcome into short, readable units. C often has the strongest problem-first headline, but its repeated or fragment-like headings reduce its overall scanability. A is generally clear but more often combines ideas that B makes easier to absorb."
+}
+
+
+Wall time: 72.24 seconds

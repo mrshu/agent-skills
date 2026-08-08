@@ -1,0 +1,66 @@
+{
+  "source_repo": "evaleval/every_eval_ever",
+  "selection": "Six high/medium findings in the latest 2026-08-07 reports that were not in the 22-comment tuning corpus. Combined with their matching Things to try guidance after the contract was frozen.",
+  "inline_comments": [
+    {
+      "id": 800000019001,
+      "pr": 190,
+      "created_at": "2026-08-07",
+      "path": "every_eval_ever/converters/alpaca_eval/adapter.py",
+      "line": 662,
+      "body": "**RAV-RUN2-R1-F001 [medium] model identity** — `model_info.id` still bypasses shared model aliases, so the same model can keep separate join keys across sources.\n\nExact aliases for model IDs emitted by supported converters can stay small. Source IDs and identity evidence can remain in provenance.",
+      "source_review_id": 4884452884,
+      "source_kind": "unposted final-report finding"
+    },
+    {
+      "id": 800000019002,
+      "pr": 190,
+      "created_at": "2026-08-07",
+      "path": "every_eval_ever/helpers/eval_card_registry.py",
+      "line": 249,
+      "body": "**RAV-RUN2-R1-F009 [medium] registry resolution** — Live mode still skips present-null snapshot entries, so it cannot discover a new canonical until refresh.\n\nPresent-null entries can use the existing cached live lookup while offline behavior stays unchanged.",
+      "source_review_id": 4884452884,
+      "source_kind": "unposted final-report finding"
+    },
+    {
+      "id": 800000019703,
+      "pr": 197,
+      "created_at": "2026-08-07",
+      "path": "every_eval_ever/adapters/benchpress/adapter.py",
+      "line": 299,
+      "body": "**RAV-RUN2-R1-F003 [medium] evaluator relationship** — A one-provider citation does not prove that the document owner matches the scored model provider.\n\nOwnership-unknown documents can use `other` until the source exposes comparable publisher evidence.",
+      "source_review_id": 4884743173,
+      "source_kind": "unposted final-report finding"
+    },
+    {
+      "id": 800000020304,
+      "pr": 203,
+      "created_at": "2026-08-07",
+      "path": "every_eval_ever/adapters/wild/adapter.py",
+      "line": 660,
+      "body": "**RAV-RUN2-R1-F010 [high] publication** — Replacement deletes every prior file for selected model directories before new publication. Partial inputs can remove absent benchmarks, and later failures cannot restore deleted files.\n\nNew output can be staged and checked while prior adapter-owned files remain recoverable. Replacement can use logical evaluation identity and preserve unrelated tasks.",
+      "source_review_id": 4884885250,
+      "source_kind": "unposted final-report finding"
+    },
+    {
+      "id": 800000020305,
+      "pr": 203,
+      "created_at": "2026-08-07",
+      "path": "every_eval_ever/adapters/wild/adapter.py",
+      "line": 516,
+      "body": "**RAV-RUN2-R1-F008 [medium] revision pinning** — After metadata failure, an explicit symbolic revision can reach both remote passes when an evaluation timestamp is also supplied.\n\nSymbolic refs can resolve once to `info.sha`. A metadata-failure fallback can accept only a full SHA with an explicit timestamp.",
+      "source_review_id": 4884885250,
+      "source_kind": "unposted final-report finding"
+    },
+    {
+      "id": 800000020406,
+      "pr": 204,
+      "created_at": "2026-08-07",
+      "path": "every_eval_ever/adapters/open_medical_llm/adapter.py",
+      "line": 301,
+      "body": "**RAV-RUN3-R1-F003 [medium] record isolation** — Non-finite scores pass conversion but fail strict batch serialization after worker accounting. One malformed record can block all valid records.\n\nThe existing `require_finite_number` helper can validate accuracy and uncertainty inside `make_result`. The worker boundary will then account for the selected source file.",
+      "source_review_id": 4884442134,
+      "source_kind": "unposted final-report finding"
+    }
+  ]
+}

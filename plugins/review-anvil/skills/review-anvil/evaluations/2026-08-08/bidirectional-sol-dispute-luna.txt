@@ -1,0 +1,11 @@
+Working...
+{
+  "fact_status": "fact_loss",
+  "fact_losses": [
+    "The diagnostic claim that rows with invalid scores can enter the failure report was changed to the categorical claim that they enter it."
+  ],
+  "reason": "The candidate strengthens a diagnostic possibility into a certainty, changing the source fact about when invalid-score rows enter the failure report. The stronger grammar for the proposed token-omission behavior does not change the intended fix boundary."
+}
+
+
+Wall time: 14.41 seconds

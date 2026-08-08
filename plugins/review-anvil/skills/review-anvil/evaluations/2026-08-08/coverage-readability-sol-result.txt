@@ -1,0 +1,194 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D states the guard failure directly, then separates the concrete extra-directory consequence from the corrected outcome."
+    },
+    {
+      "id": 3737044354,
+      "ranking": ["C", "D", "B", "A"],
+      "winner": "C",
+      "reason": "C presents the destructive ordering, rollback limitation, and required retention behavior in a compact three-step flow."
+    },
+    {
+      "id": 3737044361,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D keeps the alias-to-identity causal chain in one sentence and states the stable identity input plainly."
+    },
+    {
+      "id": 3737044371,
+      "ranking": ["C", "B", "D", "A"],
+      "winner": "C",
+      "reason": "C clearly connects the failures-only condition to stale reporting and then gives an explicit corrected reporting outcome."
+    },
+    {
+      "id": 3737053181,
+      "ranking": ["C", "D", "B", "A"],
+      "winner": "C",
+      "reason": "C makes the misleading Boolean consequence immediate and uniquely states the expected neutral-metric representation."
+    },
+    {
+      "id": 3737053197,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D isolates the two validation failures and describes the desired handling without the vague location word “here.”"
+    },
+    {
+      "id": 3737053204,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D separates the triggering response, the lost-rename consequence, and the safe incomplete-sweep behavior for quick scanning."
+    },
+    {
+      "id": 3737181823,
+      "ranking": ["C", "D", "B", "A"],
+      "winner": "C",
+      "reason": "C cleanly explains why one invalid field produces duplicate diagnostics and identifies exactly when semantic checking should defer."
+    },
+    {
+      "id": 3737266652,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D leads with the user-visible batch-loss consequence before explaining the missing row boundary and its intended scope."
+    },
+    {
+      "id": 3737266656,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D foregrounds the cross-request inconsistency and then explains both its cause and the reproducible resolution."
+    },
+    {
+      "id": 3737266661,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D puts the lost exclusion evidence in the heading and keeps report persistence separate from exit-status behavior."
+    },
+    {
+      "id": 3737291965,
+      "ranking": ["C", "D", "B", "A"],
+      "winner": "C",
+      "reason": "C provides a precise trigger-to-traversal explanation and a concise corrected boundary for directory and file symlinks."
+    },
+    {
+      "id": 3737383919,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D makes the dangerous full-run behavior visible in the heading and clearly distinguishes it from the no-match case."
+    },
+    {
+      "id": 3737383922,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D immediately names the destination mismatch, supports it with a concrete path example, and states the validation outcome."
+    },
+    {
+      "id": 3737449039,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D leads with the unstable-identity symptom and follows with the duplicate-ingest consequence and stable-ID ingredients."
+    },
+    {
+      "id": 3737449052,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D immediately exposes the false-success condition and cleanly distinguishes failures from intentional exclusions."
+    },
+    {
+      "id": 3737449059,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D translates the count-field mismatch into its practical meaning before explaining how both counts should remain visible."
+    },
+    {
+      "id": 3737449070,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D states the unsupported higher-is-better assumption in the heading and then gives a clear resolution for known and unresolved metrics."
+    },
+    {
+      "id": 3737449081,
+      "ranking": ["D", "B", "C", "A"],
+      "winner": "D",
+      "reason": "D foregrounds the missing join identifier and clearly contrasts source labels with cross-source metric identity."
+    },
+    {
+      "id": 3737449090,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D immediately identifies the mixed counting units and then states the consistent source grain and separate output count."
+    },
+    {
+      "id": 3737449098,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D leads with the missing single-file report, explains the branch asymmetry, and gives a concise parity outcome."
+    },
+    {
+      "id": 3737449101,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D puts the credential-exposure consequence first and then explains the shallow filtering cause and recursive sanitization boundary."
+    },
+    {
+      "id": 800000019001,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D immediately names the alias bypass and follows with its cross-source join-key consequence and bounded correction."
+    },
+    {
+      "id": 800000019002,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D combines the live-mode trigger and stale-canonical consequence in the heading while keeping the offline behavior explicit."
+    },
+    {
+      "id": 800000019703,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "B states the unsupported ownership inference once and gives the conservative classification outcome without repetition."
+    },
+    {
+      "id": 800000020304,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "B moves directly from broad deletion to benchmark loss and irrecoverability, then describes staged replacement in a compact sequence."
+    },
+    {
+      "id": 800000020305,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D makes the metadata-failure trigger prominent and clearly separates normal symbolic resolution from the restricted fallback."
+    },
+    {
+      "id": 800000020406,
+      "ranking": ["D", "C", "B", "A"],
+      "winner": "D",
+      "reason": "D leads with the all-records impact, then explains the late serialization failure and the earlier validation outcome."
+    }
+  ],
+  "winner_counts": {
+    "A": 0,
+    "B": 2,
+    "C": 5,
+    "D": 21
+  },
+  "overall_ranking": ["D", "C", "B", "A"],
+  "dimension_winners": {
+    "immediate_comprehension": "D",
+    "consequence_clarity": "D",
+    "actionability": "C",
+    "jargon_load": "B",
+    "sentence_clarity": "C",
+    "tone": "B",
+    "scanability": "D"
+  },
+  "recommended_version": "D",
+  "summary": "D is the strongest overall because its headings usually expose the concrete failure or consequence before the implementation detail. C is often best when an explicit corrected outcome improves actionability, while B wins the few cases where D merely repeats the same claim."
+}
+
+
+Wall time: 72.38 seconds

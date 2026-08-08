@@ -1,0 +1,62 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 980000019001,
+      "ranking": ["D", "A", "B", "C"],
+      "winner": "D",
+      "reason": "D makes the identity risk and the required resolution step explicit without separating the inline marker from the finding."
+    },
+    {
+      "id": 980000019002,
+      "ranking": ["D", "A", "B", "C"],
+      "winner": "D",
+      "reason": "D clearly connects the incorrect stored value to the offline consequence and states the corrected snapshot behavior directly."
+    },
+    {
+      "id": 980000020303,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D presents the failure, partial-write consequence, and complete corrective outcome in one coherent progression."
+    },
+    {
+      "id": 980000020304,
+      "ranking": ["D", "A", "B", "C"],
+      "winner": "D",
+      "reason": "D removes distracting review narration and states both the safe missing-output behavior and attribution requirement plainly."
+    },
+    {
+      "id": 980000020405,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D gives the failure conditions and the desired recording, batching, rollback, and exit behavior in an immediately actionable form."
+    },
+    {
+      "id": 980000022306,
+      "ranking": ["D", "A", "B", "C"],
+      "winner": "D",
+      "reason": "D cleanly identifies the duplicate-diagnostic trigger and states the ownership boundary as a direct correction."
+    }
+  ],
+  "winner_counts": {
+    "A": 0,
+    "B": 0,
+    "C": 0,
+    "D": 6
+  },
+  "overall_ranking": ["D", "A", "B", "C"],
+  "dimension_winners": {
+    "immediate_comprehension": "D",
+    "consequence_clarity": "D",
+    "actionability": "D",
+    "jargon_load": "D",
+    "sentence_clarity": "A",
+    "tone": "D",
+    "scanability": "C"
+  },
+  "recommended_version": "D",
+  "summary": "D consistently makes the failure, consequence, and expected result easiest to identify on a first read. A and B are readable but less direct, while C improves separation of ideas but introduces awkward standalone review markers."
+}
+
+
+Wall time: 36.75 seconds

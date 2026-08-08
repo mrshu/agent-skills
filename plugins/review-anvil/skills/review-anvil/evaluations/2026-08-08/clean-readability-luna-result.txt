@@ -1,0 +1,97 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 990000019001,
+      "ranking": [
+        "D",
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "D",
+      "reason": "D makes the desired correction explicit while preserving a clear statement of the failure, whereas C breaks the explanation into choppy fragments."
+    },
+    {
+      "id": 990000019002,
+      "ranking": [
+        "D",
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "D",
+      "reason": "D most clearly connects the visible failure and consequence to the expected corrected outcome, despite some repetition."
+    },
+    {
+      "id": 990000020303,
+      "ranking": [
+        "D",
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "D",
+      "reason": "D states the problem in a compact form and immediately identifies the intended incremental behavior without adding distracting detail."
+    },
+    {
+      "id": 990000020304,
+      "ranking": [
+        "D",
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "D",
+      "reason": "D directly connects the linkage problem to the corrected relationship and cap behavior, making the expected result easiest to scan."
+    },
+    {
+      "id": 990000020405,
+      "ranking": [
+        "D",
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "D",
+      "reason": "D gives the clearest first-read path from the mismatch to the identity that should be used and where the remaining details belong."
+    },
+    {
+      "id": 990000022306,
+      "ranking": [
+        "D",
+        "A",
+        "B",
+        "C"
+      ],
+      "winner": "D",
+      "reason": "D cleanly states the early-return problem and the distinct handling expected for blank versus missing or non-string IDs."
+    }
+  ],
+  "winner_counts": {
+    "A": 0,
+    "B": 0,
+    "C": 0,
+    "D": 6
+  },
+  "overall_ranking": [
+    "D",
+    "A",
+    "B",
+    "C"
+  ],
+  "dimension_winners": {
+    "immediate_comprehension": "A",
+    "consequence_clarity": "D",
+    "actionability": "D",
+    "jargon_load": "A",
+    "sentence_clarity": "A",
+    "tone": "A",
+    "scanability": "A"
+  },
+  "recommended_version": "D",
+  "summary": "D is consistently strongest because it makes the corrected outcome explicit while retaining the original problem and consequence. A and B are identical and generally cleaner than C, whose extra paragraph breaks make several explanations feel fragmented."
+}
+
+
+Wall time: 74.17 seconds

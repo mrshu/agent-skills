@@ -1,0 +1,40 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 980000019001,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 980000019002,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 980000020303,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 980000020304,
+      "fact_status": {"A": "fact_loss", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": ["A: the source states that an earlier comment remains open; candidate A omits this unresolved-feedback status."]
+    },
+    {
+      "id": 980000020405,
+      "fact_status": {"A": "fact_loss", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": ["A: the source states that earlier feedback remains partly open; candidate A omits this partial unresolved-feedback status."]
+    },
+    {
+      "id": 980000022306,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {"A": 4, "B": 6, "C": 6},
+  "summary": "Candidates B and C preserve all material facts in every comment. Candidate A loses the unresolved-feedback status for IDs 980000020304 and 980000020405; its other wording changes preserve the diagnosis and fix boundaries."
+}
+
+
+Wall time: 41.42 seconds

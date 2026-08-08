@@ -1,0 +1,194 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D presents the trigger, incorrect destination, and corrected validation rule in a direct sequence without modal language."
+    },
+    {
+      "id": 3737044354,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "A clearly connects premature deletion to the rollback gap and states the required retention behavior without hedging."
+    },
+    {
+      "id": 3737044361,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D makes the identity-changing mechanism explicit in the opening sentence and keeps the correction concise."
+    },
+    {
+      "id": 3737044371,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D quickly identifies the missing report condition and gives the corrected replacement behavior in a clean, readable flow."
+    },
+    {
+      "id": 3737053181,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D states both the misleading signal and the needed three-way distinction directly, making the consequence easy to scan."
+    },
+    {
+      "id": 3737053197,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "A separates the two validation failures into digestible sentences while still giving a concrete corrective rule."
+    },
+    {
+      "id": 3737053204,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "A gives the failure, transient-trigger consequence, and safe refresh outcome one idea at a time."
+    },
+    {
+      "id": 3737181823,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D names the duplicate warning consequence immediately and explains the trigger without repeating the headline."
+    },
+    {
+      "id": 3737266652,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D cleanly separates the missing error boundary, its blast radius, and the narrow correction."
+    },
+    {
+      "id": 3737266656,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D states the reproducibility outcome directly and gives the required resolution behavior without unnecessary repetition."
+    },
+    {
+      "id": 3737266661,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D makes the lost exclusions and the preserved exit-status distinction immediately visible."
+    },
+    {
+      "id": 3737291965,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "A explains the root-symlink boundary and the intended direct-versus-discovered behavior with strong scanability."
+    },
+    {
+      "id": 3737383919,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D presents both CLI failure modes and their two targeted safeguards without duplicating the headline."
+    },
+    {
+      "id": 3737383922,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "D opens with the concrete path mismatch, then explains why it occurs and how validation restores one destination."
+    },
+    {
+      "id": 3737449039,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D combines the changing identity and duplicate-ingest consequence clearly, followed by a specific stable-ID outcome."
+    },
+    {
+      "id": 3737449052,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D makes total conversion loss and its automation consequence easy to find before stating the accounting distinction."
+    },
+    {
+      "id": 3737449059,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D cleanly separates the count mismatch from the provenance explanation and states how both counts should remain visible."
+    },
+    {
+      "id": 3737449070,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D uses short, well-ordered paragraphs to expose the unsupported assumption and the source of valid semantics."
+    },
+    {
+      "id": 3737449081,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D isolates the missing join key and its consequence, then gives the mapping-based correction plainly."
+    },
+    {
+      "id": 3737449090,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D makes the mixed counting grain immediately apparent and gives the corrected reporting split in one pass."
+    },
+    {
+      "id": 3737449098,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D separates the entry-point detail from the missing-report consequence, producing the clearest first-read progression."
+    },
+    {
+      "id": 3737449101,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D directly connects shallow filtering to nested secret exposure and states the recursive protection without hedging."
+    },
+    {
+      "id": 800000019001,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D states the bypass and cross-source consequence together, then gives a compact aliasing outcome."
+    },
+    {
+      "id": 800000019002,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D makes the skipped present-null case and delayed discovery immediately clear before naming the unchanged offline behavior."
+    },
+    {
+      "id": 800000019703,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D is concise while clearly distinguishing insufficient evidence from the fallback relationship."
+    },
+    {
+      "id": 800000020304,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D cleanly presents destructive replacement, partial-input loss, and recoverable staging in three scan-friendly steps."
+    },
+    {
+      "id": 800000020305,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D keeps the metadata-failure trigger, symbolic-reference risk, and restricted fallback easy to follow."
+    },
+    {
+      "id": 800000020406,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D clearly separates the serialization failure from its batch-wide consequence and gives the validation boundary directly."
+    }
+  ],
+  "winner_counts": {
+    "A": 5,
+    "B": 0,
+    "C": 0,
+    "D": 23
+  },
+  "overall_ranking": ["D", "A", "C", "B"],
+  "dimension_winners": {
+    "immediate_comprehension": "D",
+    "consequence_clarity": "D",
+    "actionability": "D",
+    "jargon_load": "A",
+    "sentence_clarity": "A",
+    "tone": "D",
+    "scanability": "D"
+  },
+  "recommended_version": "D",
+  "summary": "D is usually strongest because it states the failure and consequence immediately, avoids hedged recommendations, and gives a concrete corrected outcome. A is a close alternative when its shorter sentences improve scanability, while C often repeats the headline and B weakens actionability with modal language."
+}
+
+
+Wall time: 99.10 seconds

@@ -1,0 +1,194 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "It leads with the acceptance failure, then gives the concrete path and corrected outcome in an easy-to-scan sequence."
+    },
+    {
+      "id": 3737044354,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "The title states the data-loss consequence immediately, while the body clearly connects deletion order to the failed rollback."
+    },
+    {
+      "id": 3737044361,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "It names the visible identity consequence first and separates the redirect mechanism from the intended identity boundary."
+    },
+    {
+      "id": 3737044371,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "The heading makes the missing durable record immediately clear, and the corrective behavior is split into readable sentences."
+    },
+    {
+      "id": 3737053181,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "It foregrounds the misleading higher-is-better signal and then explains the neutral-metric gap one idea at a time."
+    },
+    {
+      "id": 3737053197,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "The title summarizes both validation failures, and the body cleanly separates malformed-cell handling from denominator fallback."
+    },
+    {
+      "id": 3737053204,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "It starts with the concrete loss of a confirmed rename and makes the transient-response trigger easy to locate."
+    },
+    {
+      "id": 3737181823,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "The heading clearly states the duplicate-warning outcome, and the explanation proceeds from failed validation to the invalid semantic check."
+    },
+    {
+      "id": 3737266652,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "It leads with the operational consequence—valid rows stopped without a record—before explaining the missing boundary."
+    },
+    {
+      "id": 3737266656,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "The first line states the reproducibility failure directly, and the following sentences distinguish default and supplied revision handling."
+    },
+    {
+      "id": 3737266661,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "It makes the exclusions-only loss visible in the title and explains the report condition before the intended behavior."
+    },
+    {
+      "id": 3737291965,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "The title names exactly what is scanned, while the body plainly distinguishes a root symlink from discovered child symlinks."
+    },
+    {
+      "id": 3737383919,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "It puts both surprising CLI outcomes in the heading and gives each a separate, straightforward explanation."
+    },
+    {
+      "id": 3737383922,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "The title immediately connects the parent-path argument to the wrong destination, then illustrates it with a concrete path."
+    },
+    {
+      "id": 3737449039,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "It states the repeated-ID consequence first and then concisely ties retrieval time to duplicate evaluations."
+    },
+    {
+      "id": 3737449052,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "The heading presents the automation-visible failure directly, and the body clearly distinguishes failures from intentional exclusions."
+    },
+    {
+      "id": 3737449059,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "It frames the problem as lost score-population information and then explains the two counts without making the reader infer the consequence."
+    },
+    {
+      "id": 3737449070,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "It directly identifies the unsupported semantic assignment and follows with a short explanation of why a finite value is insufficient."
+    },
+    {
+      "id": 3737449081,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "The title translates the omitted field into its practical missing join key, making the impact immediately understandable."
+    },
+    {
+      "id": 3737449090,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "It plainly identifies the mixed units in the total before explaining why that makes the denominator inconsistent."
+    },
+    {
+      "id": 3737449098,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "Its title directly states the user-visible missing report, while the body clearly explains the differing single-file and directory paths."
+    },
+    {
+      "id": 3737449101,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "It leads with the security consequence in concrete terms and keeps the nested-value trigger and sanitizer outcome distinct."
+    },
+    {
+      "id": 800000019001,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "The title expresses the cross-source join-key consequence directly, followed by a compact explanation of the alias gap."
+    },
+    {
+      "id": 800000019002,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "It immediately states that live mode cannot discover a canonical value, then gives the narrow behavior change clearly."
+    },
+    {
+      "id": 800000019703,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "It turns the evidence limitation into a clear relationship conclusion and states the safe outcome in the next sentence."
+    },
+    {
+      "id": 800000020304,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "The title leads with irreversible replacement risk, and the body separates partial-input loss from later-failure recovery."
+    },
+    {
+      "id": 800000020305,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "It foregrounds the double-remote-pass consequence and presents the symbolic-reference and fallback rules in a compact flow."
+    },
+    {
+      "id": 800000020406,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "It starts with the visible batch-blocking effect and then clearly locates validation before worker accounting."
+    }
+  ],
+  "winner_counts": {
+    "A": 0,
+    "B": 27,
+    "C": 1,
+    "D": 0
+  },
+  "overall_ranking": ["B", "C", "A", "D"],
+  "dimension_winners": {
+    "immediate_comprehension": "B",
+    "consequence_clarity": "B",
+    "actionability": "B",
+    "jargon_load": "C",
+    "sentence_clarity": "B",
+    "tone": "C",
+    "scanability": "B"
+  },
+  "recommended_version": "B",
+  "summary": "Version B most consistently puts the practical failure in the heading, then separates trigger, consequence, and expected behavior into short units. Version C is comparably calm and slightly less review-process-oriented, but its headings more often describe implementation mechanics rather than the reader-visible problem. Version D is consistently weakened by tentative wording."
+}
+
+
+Wall time: 79.99 seconds
