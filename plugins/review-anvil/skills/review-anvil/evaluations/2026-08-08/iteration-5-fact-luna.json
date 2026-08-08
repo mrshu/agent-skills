@@ -1,0 +1,222 @@
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_loss"
+      },
+      "fact_losses": [
+        "C: Narrows the source's later failure to a later write failure, omitting failures during validation or route transition."
+      ]
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": [
+        "A: Omits the remaining requested action to add a shared representation for neutral measures."
+      ]
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss"
+      },
+      "fact_losses": [
+        "B: Broadens the specifically cited transient 429/server-error class to any transient non-200 response, despite expected 401 handling being an exception.",
+        "C: Broadens the confirmed-rename consequence from transient 429/server errors to every non-200 response."
+      ]
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_safe"
+      },
+      "fact_losses": [
+        "A: Omits that an exclusions-only run succeeds while losing each excluded source reference and reason.",
+        "B: Omits that an exclusions-only run succeeds while losing each excluded source reference and reason."
+      ]
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": [
+        "A: Attributes the successful zero-log conversion outcome to the files, whereas the source places zero converted logs and successful exit at the directory-run level."
+      ]
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_loss"
+      },
+      "fact_losses": [
+        "C: Changes the converter's stated assumption of higher-is-better into an asserted published higher-is-better direction; the source only says no verified scale or bounds are published."
+      ]
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 19,
+    "B": 20,
+    "C": 19
+  },
+  "summary": "Most candidates preserve the source findings and requested actions. The losses narrow failure scope, broaden the affected error class, omit successful-run behavior or a requested remediation, misattribute a directory-level result to files, or turn an assumption into a published direction."
+}

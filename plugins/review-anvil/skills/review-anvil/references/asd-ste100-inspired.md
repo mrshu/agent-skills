@@ -20,8 +20,14 @@ Use active voice or a direct imperative. Name the actor when it matters.
 ## Author-Facing Reports and Comments
 
 Use short active declarative sentences for problems and evidence.
-For critical, high, and medium findings, use `Please` plus an action verb for
-each requested change. Preserve suggestion grammar for low and nit guidance.
+For critical, high, and medium findings, group requested work by cohesive
+implementation obligation, not by grammar. Do not split values governed by one
+rule. Keep a constraint or exception with the action it limits.
+Use `Please` plus an action verb for one obligation. For two or more
+independently implementable obligations, use `**Requested actions**` and one
+direct-action bullet per obligation. Preserve suggestion grammar for low and
+nit guidance.
+Prefer a direct verb with a concrete target, condition, or destination.
 Do not give a context-free command.
 
 Apply these rules to generated prose only. Preserve quoted external output,

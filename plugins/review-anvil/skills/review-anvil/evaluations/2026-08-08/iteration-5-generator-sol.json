@@ -1,0 +1,112 @@
+[
+  {
+    "id": 3737042592,
+    "pr": 227,
+    "body": "**RAV-RUN2-R1-F001 [medium] publisher-validation** — Publication writes one level too deep when the publisher base names a different collection\n\nThe new guard accepts a collection directory when its name differs from the selected collection. For `base_output_dir=data/foo` and a selected collection of `bar`, publication writes `data/foo/bar/<developer>/<model>`, which is still one level too deep.\n\n**Requested actions**\n\n- Reject every publisher base that is an immediate child of canonical `data`.\n- Add tests for mismatched source and `collection_override` cases."
+  },
+  {
+    "id": 3737044354,
+    "pr": 204,
+    "body": "**RAV-RUN3-R1-F001 [high] publication** — A failed replacement can leave the target without its prior records\n\nLines 601–602 remove the old files before `save_evaluation_logs()` validates and writes the new batch. Its rollback covers only files created by that call, so a later failure can leave the target without the old files.\n\n**Requested actions**\n\n- Retain recoverable old files until every new write and route transition succeeds.\n- Add a mid-write failure test across several routes."
+  },
+  {
+    "id": 3737044361,
+    "pr": 204,
+    "body": "**RAV-RUN3-R1-F002 [high] evaluation-identity** — A redirect change can give the same source file a second logical identity\n\n`evaluated_model_repo()` returns the current Hugging Face canonical repository. `make_log()` then includes that value in `evaluation_id`.\n\n**Requested actions**\n\n- Use the raw dataset model path as the evaluation identity input.\n- Keep the reconciled repository for model metadata and routing."
+  },
+  {
+    "id": 3737044371,
+    "pr": 204,
+    "body": "**RAV-RUN3-R1-F004 [medium] source-accounting** — Exclusions-only runs leave no durable accounting report\n\n`failure_report()` includes exclusions, but this condition writes the report only when failures exist. The five documented baseline exclusions therefore have no durable record. An older failure report can remain current.\n\n**Requested actions**\n\n- Atomically replace the report after successful publication to record failures, exclusions, and fully clean runs.\n- Preserve the last complete ledger."
+  },
+  {
+    "id": 3737053181,
+    "pr": 190,
+    "body": "**RAV-RUN3-R1-F001 [medium] metric-semantics** — Consumers can read neutral `avg_length` as higher-is-better\n\nThe adapter describes `avg_length` as neutral but sets `lower_is_better=False`. The adapter approach is consistent with the current schema.\n\nPlease add a shared representation for neutral measures."
+  },
+  {
+    "id": 3737053197,
+    "pr": 190,
+    "body": "**RAV-RUN3-R1-F002 [medium] input-validation** — Populated malformed uncertainty and count cells become absent values\n\nThe later denominator fallback also turns invalid or zero `n_total` into 805.\n\n**Requested actions**\n\n- Apply separate rules to uncertainty, counts, and positive denominators so bad rows remain in the failure report.\n- Keep empty optional cells allowed."
+  },
+  {
+    "id": 3737053204,
+    "pr": 190,
+    "body": "**RAV-RUN3-R1-F005 [medium] registry-refresh** — A transient 429 or server error can remove a confirmed rename when the rebuilt map is overwritten\n\nEvery non-200 response drops the current ID from the rebuilt map.\n\n**Requested actions**\n\n- Leave the existing output unchanged when a sweep is incomplete.\n- Return a nonzero result for an incomplete sweep.\n- Keep the current handling for expected 401 responses."
+  },
+  {
+    "id": 3737181823,
+    "pr": 223,
+    "body": "**RAV-RUN2-R1-F001 [medium] schema-deferral** — A schema-invalid developer also produces an identity-path warning\n\nSemantic checks still receive the raw dictionary after model validation fails. With a flat string ID and a non-string developer, this path passes the raw value to `datastore_path_components()`. The result includes both the schema error and a warning about the same field.\n\n**Requested actions**\n\n- Defer the flat-ID check when the developer is present but is neither a string nor `None`.\n- Keep the current warning path for schema-valid blank, unknown, or unsafe strings."
+  },
+  {
+    "id": 3737266652,
+    "pr": 197,
+    "body": "**RAV-RUN2-R1-F001 [high] failure-accounting** — One malformed source value can stop every valid row without a source-row failure record\n\nScore parsing happens before `SourceConversionResult` exists. Later row construction has no row-level error boundary.\n\n**Requested actions**\n\n- Catch expected parsing and schema errors at a narrow row-level boundary.\n- Leave unexpected program or infrastructure errors visible."
+  },
+  {
+    "id": 3737266656,
+    "pr": 197,
+    "body": "**RAV-RUN2-R1-F002 [medium] snapshot-provenance** — A supplied moving branch can resolve differently across four requests\n\nThe default fetch resolves one SHA, but a supplied symbolic revision bypasses that step. Metadata then records only the symbol.\n\n**Requested actions**\n\n- Resolve every supplied reference once so all file URLs are reproducible.\n- Keep branch and tag support."
+  },
+  {
+    "id": 3737266661,
+    "pr": 197,
+    "body": "**RAV-RUN2-R1-F004 [medium] exclusion-accounting** — An exclusions-only run loses every excluded source reference and reason\n\nThe report is saved only when `result.failures` is nonempty, even though the shared report already supports exclusions.\n\n**Requested actions**\n\n- Save the shared report for either collection.\n- Keep the nonzero exit conditional on failures."
+  },
+  {
+    "id": 3737291965,
+    "pr": 226,
+    "body": "**RAV-RUN2-R1-F001 [medium] filesystem-traversal** — An explicit directory symlink is followed into its target\n\n`Path.is_dir()` follows the symlink, and `os.walk()` then scans that path as its root. `followlinks=False` blocks directory symlinks discovered below the root, but it does not block a symlink supplied as the root. The current test covers only the discovered-child case.\n\n**Requested actions**\n\n- Reject directory-target symlinks for direct and glob-expanded matches.\n- Keep file-symlink behavior unchanged.\n- Add tests for both directory-symlink inputs and an accepted file symlink."
+  },
+  {
+    "id": 3737383919,
+    "pr": 203,
+    "body": "**RAV-RUN3-R1-F001 [medium] cli** — A bare `--models` starts the full source run\n\nA bare `--models` parses as an empty list and disables filtering. A nonempty filter with no matches instead exits successfully with zero logs.\n\n**Requested actions**\n\n- Require one or more values for `--models`.\n- Stop a no-match run before existing-output discovery or publication."
+  },
+  {
+    "id": 3737383922,
+    "pr": 203,
+    "body": "**RAV-RUN3-R1-F002 [medium] output-path** — An arbitrary output path targets a different destination than status messages name\n\nThe code passes only `args.output_dir.parent` to lookup and publication, then derives `wild` below it. For example, `/tmp/intended` targets `/tmp/wild` while messages name `/tmp/intended`.\n\nPlease validate the documented `data/wild` shape before lookup, replacement, publication, or status output so lookup, replacement, publication, and status output use one destination."
+  },
+  {
+    "id": 3737449039,
+    "pr": 235,
+    "body": "**RAV-RUN1-R1-F001 [high] evaluation-identity** — Re-ingesting the same source file can create duplicate evaluations\n\n`evaluation_id` includes the current retrieval time, so the same source file gets a different logical identity on every conversion.\n\n**Requested actions**\n\n- Build a stable ID from the raw model identity, task key, source timestamp, and a deterministic digest of non-secret run configuration.\n- Keep retrieval time only in `retrieved_timestamp`."
+  },
+  {
+    "id": 3737449052,
+    "pr": 235,
+    "body": "**RAV-RUN1-R1-F002 [high] source-accounting** — A directory can exit successfully after total conversion loss\n\nAn input file whose measured tasks all lack finite scores returns an empty list. The file records no failure. A directory made from those files reports zero converted logs and exits successfully. Automation cannot distinguish the total conversion loss.\n\n**Requested actions**\n\n- Record a file with measured but unconvertible tasks in the failure ledger.\n- Keep files containing only intentionally skipped derived rows as explicit exclusions."
+  },
+  {
+    "id": 3737449059,
+    "pr": 235,
+    "body": "**RAV-RUN1-R1-F004 [medium] score-coverage** — Records do not clearly identify the smaller population that produced a capped or deduplicated score\n\nCapped or deduplicated runs put `original_num_docs` in `samples_number`, while uncertainty uses `effective_num_docs`. The dataset size remains valid source context.\n\n**Requested actions**\n\n- Keep `effective_num_docs` visible and identify it as score coverage.\n- Keep `original_num_docs` visible as dataset provenance."
+  },
+  {
+    "id": 3737449070,
+    "pr": 235,
+    "body": "**RAV-RUN1-R1-F005 [medium] metric-semantics** — Unmapped finite result keys publish unverified metric semantics\n\nWhen a result key has no matching metric spec, the converter assumes higher-is-better. The converter publishes no verified scale or bounds. A finite custom key does not prove that direction.\n\n**Requested actions**\n\n- Use source metric specs or an operator-supplied definition to establish the semantics.\n- Report unresolved keys after preserving the valid metrics."
+  },
+  {
+    "id": 3737449081,
+    "pr": 235,
+    "body": "**RAV-RUN1-R1-F006 [medium] metric-identity** — Published metrics omit cross-source join keys\n\nBoth `MetricConfig` branches omit `metric_id`, including common metrics such as accuracy. `metric_name` keeps the source label but does not provide the cross-source join key.\n\n**Requested actions**\n\n- Use the metric-definition mapping for direction and bounds to supply canonical global IDs.\n- Supply stable namespaced IDs for defined lighteval-specific metrics from the same mapping."
+  },
+  {
+    "id": 3737449090,
+    "pr": 235,
+    "body": "**RAV-RUN1-R1-F007 [medium] coverage-totals** — The coverage denominator has no consistent source unit\n\n`total_records` adds task-level output logs to file-level failures. One successful file can contribute several counts, while one failed file contributes one.\n\n**Requested actions**\n\n- Keep results files as the source-record grain.\n- Report the converted output-log count separately."
+  },
+  {
+    "id": 3737449098,
+    "pr": 235,
+    "body": "**RAV-RUN1-R1-F008 [medium] failure-reporting** — Single-file parse or conversion errors exit without a structured failure report\n\nThe single-file branch calls `transform_from_file` before it creates a `SourceConversionResult`. Directory input reports the same failure class correctly.\n\n**Requested actions**\n\n- Give the single-file entry mode the same report-before-raise behavior through a lighteval-local file-result path.\n- Keep parse and conversion errors nonzero after the report is saved."
+  },
+  {
+    "id": 3737449101,
+    "pr": 235,
+    "body": "**RAV-RUN1-R1-F009 [medium] credential-filtering** — A nested token or API key can reach published `additional_details`\n\nSecret filtering checks only top-level model-config keys before nested values are serialized. Supported v0.13 configurations can carry unrestricted `env_vars`.\n\n**Requested actions**\n\n- Recursively sanitize mappings and lists before serialization.\n- Add tests with provider-prefixed key names that cover the reachable path without recording secret values."
+  }
+]

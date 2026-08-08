@@ -1,0 +1,120 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {"A": "fact_safe", "B": "fact_loss", "C": "fact_safe"},
+      "fact_losses": ["B: weakens the requested test boundary from mismatched source and `collection_override` values for this path to ambiguous mismatched paths."]
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {"A": "fact_loss", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": ["A: limits failure-report retention to malformed rows, omitting invalid or zero `n_total` rows that must also remain in the failure report."]
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {"A": 21, "B": 21, "C": 22},
+  "summary": "Candidate C preserves every material fact and requested obligation across all comments. Candidate A loses the zero-or-invalid-denominator failure-report requirement once, while candidate B weakens one exact test boundary."
+}
+
+
+Wall time: 240.45 seconds

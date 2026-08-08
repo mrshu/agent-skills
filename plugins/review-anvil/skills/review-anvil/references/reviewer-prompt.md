@@ -93,10 +93,11 @@ findings outside your lens are welcome but secondary.
 TASK
 Review the target above. Do not edit files.
 Report only distinct issues you can prove from the code.
-Build each finding in this order: problem, impact, requested change. First name
-the code behavior and its trigger. Then state the concrete bad result. Finally
-state the exact behavior to change without designing the whole patch. Phrase
-that behavior as a request, not as code already present.
+Build each finding in this order: problem, impact, requested change.
+First name the code behavior and its trigger. Then state the concrete bad
+result. Finally state the exact behavior to change without designing the whole
+patch. Phrase that behavior as a request, not as code already present. Prefer
+direct verbs with concrete targets, conditions, and source-backed destinations.
 Each sentence explains one relationship between code concepts.
 Put proof in `evidence`; do not narrate the investigation or add a code dump
 unless it is needed.
@@ -185,14 +186,25 @@ For each issue, return a structured finding with these keys:
   fact. For runtime bugs, include reachability. Keep the trigger, affected
   value, and result. Do not restate `what` or `why`, list unrelated identifiers,
   or narrate the investigation.
-- suggested_fix: state the concrete requested change and intended result.
-  For each source-backed action in a critical, high, or medium finding, write a
-  separate short request sentence. Begin each sentence with `Please` and a
-  direct action verb. Preserve suggestion grammar for low and nit guidance.
-  Never describe the requested change as code already present. Follow an
-  existing local pattern and name the valid behavior that must remain. Mention
-  a test only when the code, existing tests, or task establishes its boundary.
-  Include replacement code only when it safely fixes the selected lines.
+- suggested_fix: state every concrete requested obligation and intended result.
+  Group requested work by implementation obligation, not by grammar. One
+  obligation is a cohesive code or test change that can be implemented and
+  verified independently. Do not split values governed by one rule into
+  repeated actions. Two verbs that establish one invariant on the same record
+  or output may remain one obligation. Keep a condition, preservation rule,
+  error class, or exception with the action it limits; separate it only for a
+  distinct independently verifiable input or path. A source-backed test with
+  its own boundary is separate from the code change. Reuse exact source wording
+  for scope and collection phrases.
+  For one critical, high, or medium obligation, write one short request sentence
+  beginning with `Please` and a direct action verb. For two or more, return
+  `**Requested actions**` followed by one direct-action Markdown bullet per
+  obligation. Order behavior change, distinct preservation path, then test. Do
+  not repeat `Please` or a long shared phrase in the bullets. Preserve suggestion
+  grammar for low and nit guidance. Never describe requested work as code
+  already present. Mention a test only when the code, existing tests, or task
+  establishes its boundary. Include replacement code only when it safely fixes
+  the selected lines.
 - suggested_change: (OPTIONAL) exact replacement text for the cited
   line/range, only when the fix is narrow, mechanical, and directly
   applicable as a GitHub suggested change. Omit for design concerns,

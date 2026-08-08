@@ -1,0 +1,120 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {"A": 22, "B": 22, "C": 22},
+  "summary": "All candidates preserve the source findings, requested actions, constraints, exceptions, and stated test boundaries. No candidate presents requested remediation as implemented or changes material scope, modality, or outcome."
+}
+
+
+Wall time: 92.79 seconds

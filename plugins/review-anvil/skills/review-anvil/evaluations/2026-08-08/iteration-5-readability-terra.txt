@@ -1,0 +1,212 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "The two requested changes are separated into immediately scannable actions. A compresses the test request into the preceding sentence."
+    },
+    {
+      "id": 3737044354,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A makes retention and the multi-route failure test independently visible. B keeps both clear but makes them less scannable as a combined closing sentence."
+    },
+    {
+      "id": 3737044361,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B exposes the identity input and the preserved metadata-and-routing behavior as two distinct actions. A expresses the preservation constraint more incidentally."
+    },
+    {
+      "id": 3737044371,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A cleanly separates atomic replacement requirements from preserving the last complete ledger. B packs the destination, conditions, and preservation constraint into one denser sentence."
+    },
+    {
+      "id": 3737053181,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "tie",
+      "reason": "The versions are identical."
+    },
+    {
+      "id": 3737053197,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B retains all three validation categories while avoiding three nearly identical bullets. Its final exception for empty optional cells is also easier to absorb."
+    },
+    {
+      "id": 3737053204,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A makes unchanged output, nonzero exit status, and the 401 exception independently checkable. B merges the first two changes and makes the exception less prominent."
+    },
+    {
+      "id": 3737181823,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A separates the deferral condition from the strings that must retain warnings. B is accurate but nests that preservation constraint in the same closing sentence."
+    },
+    {
+      "id": 3737266652,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A makes parsing errors, schema errors, and the exception for unexpected failures individually visible. B is concise but combines the two expected error classes."
+    },
+    {
+      "id": 3737266656,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A presents resolution and branch/tag preservation as discrete requirements. B's causal phrasing makes the preservation constraint slightly harder to scan."
+    },
+    {
+      "id": 3737266661,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A explicitly names failures and exclusions, then separately preserves the exit-status condition. B's phrase “either collection” is less precise than the two report collections."
+    },
+    {
+      "id": 3737291965,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A lists all three behavior boundaries and all three tests explicitly. B preserves the substance but groups several independently checkable cases into summary phrases."
+    },
+    {
+      "id": 3737383919,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A directly requests both CLI behaviors. B's “A no-match check can stop” reads as a less definite request and requires resolving “the first path.”"
+    },
+    {
+      "id": 3737383922,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "tie",
+      "reason": "The versions are identical."
+    },
+    {
+      "id": 3737449039,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A isolates the stable-ID composition from the restriction on retrieval time. B remains clear but embeds the latter preservation constraint in prose."
+    },
+    {
+      "id": 3737449052,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B states the failure-ledger change and exclusion exception naturally without losing either condition. The two bullets in A add little separation for this closely related pair."
+    },
+    {
+      "id": 3737449059,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A keeps score coverage and dataset provenance visibly separate. B states both correctly but requires parsing them from a compound sentence."
+    },
+    {
+      "id": 3737449070,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A makes the source/operator semantic definition and the unresolved-key handling distinct actions. B is precise but combines them into one dense closing sentence."
+    },
+    {
+      "id": 3737449081,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A distinguishes canonical global IDs from namespaced lighteval-specific IDs. B keeps both requirements but makes the two destinations less immediately separable."
+    },
+    {
+      "id": 3737449090,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A gives the source-record grain and separately reportable output-log count equal visual weight. B is clear but collapses both into one sentence."
+    },
+    {
+      "id": 3737449098,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "tie",
+      "reason": "The versions are identical."
+    },
+    {
+      "id": 3737449101,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A keeps the recursive-sanitizer requirement and the provider-key test as discrete actions. B is readable but makes the test request secondary to the implementation sentence."
+    }
+  ],
+  "winner_counts": {"A": 15, "B": 4, "tie": 3},
+  "mean_scores": {
+    "A": {"defect_clarity": 5.00, "action_recall": 4.91, "scanability": 4.82, "naturalness": 4.91, "cognitive_ease": 4.82},
+    "B": {"defect_clarity": 5.00, "action_recall": 4.59, "scanability": 4.32, "naturalness": 4.82, "cognitive_ease": 4.32}
+  },
+  "summary": "Both versions explain the defects consistently well. A more often wins because bullets preserve distinct implementation, exception, and test obligations as independently scannable work; B wins where grouping closely related requirements reduces repetitive structure without obscuring them."
+}
+
+
+Wall time: 149.24 seconds

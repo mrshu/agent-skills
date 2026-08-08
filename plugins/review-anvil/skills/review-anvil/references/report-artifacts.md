@@ -66,10 +66,38 @@ You may remove filler and exact repetition.
 Do not replace technical verbs, quantifiers, or scope words.
 Preserve modals that express diagnostic certainty.
 Treat remediation as a requested change, not as observed code.
-For each source-backed action in a critical, high, or medium finding, write a
-separate short request sentence. Begin each sentence with `Please` and a direct
-action verb.
-Preserve suggestion grammar for low and nit guidance.
+Prefer a direct verb with a concrete target, condition, or destination.
+Prefer `Keep X as Y`, `Record X in Y`, or `Leave X visible` over abstract state
+phrases such as `X can stay Y`. For example: `Keep files with only intentionally skipped derived rows as explicit exclusions.`
+Do not force an actor or destination that the source does not establish.
+Group requested work by implementation obligation, not by grammar.
+One obligation is a cohesive code or test change that can be implemented and
+verified independently.
+Do not split a list of values governed by one rule into repeated actions.
+Two verbs that establish one invariant on the same record or output may remain
+one obligation.
+A condition, preservation rule, error class, or exception stays with the action
+it limits. Make it separate only when it governs a distinct input or code path
+that can be verified independently.
+A source-backed test with its own boundary is separate from the code change.
+Reuse exact source wording for scope and collection phrases; do not replace
+them with inferred member names.
+For each source-backed action in a critical, high, or medium finding, make its
+requested status explicit. For exactly one obligation, write one short request
+sentence beginning with `Please` and a direct action verb.
+For two or more independently implementable obligations, use this form:
+
+```md
+**Requested actions**
+
+- <Direct verb, target, and necessary condition or destination.>
+- <Direct verb and distinct preserved path or exact test boundary.>
+```
+
+Order the bullets as behavior change, distinct preservation path, then test.
+Do not repeat `Please` in the bullets; the heading establishes request mode.
+Avoid repeating a long shared phrase across bullets.
+Keep suggestion grammar for low and nit guidance.
 Never write `the fix`, `in the fix`, or `the corrected path` unless the source
 explicitly discusses an existing patch under review.
 Apply the actor-action-target check to requested-change sentences as well as titles.
@@ -88,9 +116,11 @@ Write the body in this order:
 
 Each sentence explains one relationship between code concepts. Name the
 function, field, command, or request that acts. Tie each necessary identifier
-to its role in the failure. Use one minimal example only when it makes a path,
-count, or state change easier to see. Do not show the Problem, Impact, or
-Requested change labels in the final comment.
+to its role in the failure. Use a pronoun only when its antecedent is the
+immediately preceding subject and cannot be confused with another identifier.
+Use one minimal example only when it makes a path, count, or state change easier
+to see. Do not show the Problem, Impact, or Requested change labels in the final
+comment.
 
 Before emitting the body, run this author check:
 
@@ -115,7 +145,10 @@ Use short everyday words. Prefer one clear sentence over a dense explanation.
 
 The changed handler reads missing fields and fails before conversion.
 
-Please use the shared top-level parser in the module entry point. Please add one offline entry-point test.
+**Requested actions**
+
+- Use the shared top-level parser in the module entry point.
+- Add one offline entry-point test.
 ```
 
 Keep only evidence that helps the author trust or fix the finding. Do not
@@ -126,7 +159,7 @@ removes doubt.
 Voice rules:
 
 - Address the code, never the author: "the handler swallows the error", not "you swallow the error". No "should have", no "Obviously / Clearly / Simply / Just".
-- Keep the requested change calm and specific. Use a separate concise `Please` request for each source-backed action in critical, high, and medium findings. Do not use context-free commands, rhetorical questions, review jargon, or filler.
+- Keep requested work calm and specific. Use one concise `Please` sentence for one critical/high/medium obligation and `**Requested actions**` bullets for two or more. Do not use context-free commands, rhetorical questions, review jargon, or filler.
 - Do not add a stock opener or rotate through canned alternatives. Let the problem determine the sentence.
 - Calm and specific beats emphatic. The severity tag carries the urgency; the prose needs no alarm words, bold warnings, exclamation marks, or rhetorical/scolding questions.
 - When the PR's approach is sound and that fact changes the fix, say so in one honest clause. Do not add a compliment sandwich.

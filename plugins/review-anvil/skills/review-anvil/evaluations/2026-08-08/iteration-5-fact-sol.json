@@ -1,0 +1,228 @@
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": [
+        "A: the title makes a publisher-base name mismatch alone sufficient, omitting the necessary scope that the accepted base is itself a collection directory under canonical `data`."
+      ]
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe",
+        "C": "fact_loss"
+      },
+      "fact_losses": [
+        "A: omits the `--replace-existing` identifier that selects the affected replacement path.",
+        "C: narrows the source's later-failure trigger to a later write failure, excluding validation or route-transition failures."
+      ]
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_safe"
+      },
+      "fact_losses": [
+        "B: replaces the source-file scope with a source-result scope and never preserves that the same source file can acquire a second logical identity."
+      ]
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss"
+      },
+      "fact_losses": [
+        "A: changes the overwrite target from the existing output file to the rebuilt map itself.",
+        "B: broadens the risky response class from transient 429 or server errors to any transient non-200 response.",
+        "C: changes the universal fact that every non-200 response drops the current ID into a claim only about 429 or server errors, while also attributing confirmed-rename removal to every non-200 response."
+      ]
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_loss"
+      },
+      "fact_losses": [
+        "C: weakens the deterministic `/tmp/intended` to `/tmp/wild` destination error to a possibility in the title."
+      ]
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_loss"
+      },
+      "fact_losses": [
+        "C: broadens the title's trigger from files whose measured tasks all lack finite scores to any files with no finite measured scores, which can include the intentionally skipped derived-only exception."
+      ]
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_safe"
+      },
+      "fact_losses": [
+        "A: makes the finite custom key the actor that publishes the direction; the source attributes the assumption and publication to the converter.",
+        "B: makes unmapped result keys the actors that publish metric semantics; the source attributes those operations to the converter."
+      ]
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_loss"
+      },
+      "fact_losses": [
+        "C: assigns both canonical global IDs and stable namespaced IDs to defined lighteval-specific metrics, instead of reserving stable namespaced IDs for those metrics while supplying canonical global IDs where available."
+      ]
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 18,
+    "B": 19,
+    "C": 17
+  },
+  "summary": "Candidate B preserves the most findings and requested obligations, with 19 fact-safe rewrites; A has 18 and C has 17. The losses primarily change trigger scope, error classes, diagnostic certainty, operation ownership, or the target of an identifier-mapping obligation."
+}

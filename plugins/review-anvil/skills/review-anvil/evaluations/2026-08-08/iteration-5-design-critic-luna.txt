@@ -1,0 +1,383 @@
+Working...
+## 1. Remaining cognitive-load failures
+
+The frozen corpus measured 22 comments at 54.3 words and 3.8 sentences on average; nine contained a sentence longer than 20 words. The main problem is not length alone. It is compressed relationships and unclear actors.
+
+### Overloaded titles
+
+`--replace-existing deletes prior records before replacement preflight`
+
+This states the mechanism but not the author-visible failure: a later failure can remove the prior records. The body repeats the deletion fact instead of advancing directly to its consequence.
+
+`Score parsing happens before SourceConversionResult exists, and later row construction has no row-level error boundary`
+
+This joins two mechanisms:
+
+1. parse timing relative to `SourceConversionResult`;
+2. missing row-level error handling.
+
+The abstract state phrase `SourceConversionResult exists` also makes the reader reconstruct what that state controls.
+
+### Nested conditions and omitted actors
+
+`An input file whose measured tasks all lack finite scores returns an empty list without a failure.`
+
+The subject contains a nested condition, and the actual actor—the converter—is omitted. The reader must infer that the file does not literally “return” the list.
+
+`A directory made from those files then reports zero converted logs and exits successfully, so automation cannot distinguish total conversion loss.`
+
+This contains three relationships in one sentence:
+
+- the directory reports zero logs;
+- the directory exits successfully;
+- automation cannot distinguish total loss.
+
+The phrase `those files` also requires the reader to resolve the prior sentence before understanding the scope.
+
+### Abstract state and noun-stack language
+
+These phrases are technically accurate but costly on first read:
+
+- `replacement preflight`
+- `route transition`
+- `source-row failure record`
+- `failure ledger`
+- `intentionally skipped derived rows`
+- `explicit exclusions`
+- `measured but unconvertible tasks`
+
+The issue is not that these terms are forbidden. The issue is that several appear before an actor performs an action on a concrete destination.
+
+### Indirect requested actions
+
+`A file with measured but unconvertible tasks can enter the failure ledger.`
+
+`Files containing only intentionally skipped derived rows can stay explicit exclusions.`
+
+Both use `can` to express desired behavior. Neither clearly says who should change what. The second also makes the valid exception look like an afterthought rather than a boundary on the requested change.
+
+`A mid-write failure test across several routes would cover this path.`
+
+This is test guidance rather than an explicit request. It is easy to miss when scanning for requested work, especially beside the retention request.
+
+### Action grouping
+
+The current form works well for one requested action, but it does not expose two independent actions reliably. In comment 1, retaining old files and adding a failure test are separate deliverables. In comment 3, adding failures to the ledger and preserving intentional exclusions are separate behavioral rules.
+
+The existing evidence supports splitting those actions: prior readability evaluations repeatedly preferred variants that separated failure, consequence, and outcome “one idea at a time.” That evidence does not yet prove that a `**Change requested**` list is better than the current form.
+
+---
+
+## 2. Critique of the adaptive heading/list proposal
+
+### What it fixes
+
+For two or more actions, the list makes action boundaries visible:
+
+```md
+**Change requested**
+
+- Please keep ...
+- Please add ...
+```
+
+That should improve requested-action recall because the evaluator or author can count independently checkable changes without parsing conjunctions or adjacent prose. It also preserves the review-only speech act if every bullet retains `Please`.
+
+The proposal is particularly appropriate when the actions have different verification paths:
+
+- state-preservation behavior plus a failure test;
+- failure-ledger behavior plus an intentional-exclusion boundary.
+
+### What it risks
+
+1. **Heading noise for one action.**  
+   A heading before one sentence adds vertical space and makes a short inline comment resemble a form. It should not replace the current single-sentence path.
+
+2. **Flattened dependencies.**  
+   Bullets can imply that every action is independent. They should not split a condition from the behavior it constrains. For example, “unexpected program or infrastructure errors remain visible” belongs in the same request sentence as the narrow error boundary; it is not a separate implementation task.
+
+3. **Exception loss.**  
+   A generator may create one bullet for “put files in the failure ledger” and omit the boundary for intentionally skipped derived rows. The list improves action recall only if valid-behavior exceptions remain attached to the relevant bullet or appear as their own explicitly requested boundary.
+
+4. **Markdown is visual, not semantic.**  
+   `**Change requested**` is bold text, not a GitHub heading with navigation or accessibility semantics. It improves scanning visually but cannot be treated as a structural field by GitHub.
+
+5. **Repeated imperative boilerplate.**  
+   `Please` on every bullet is slightly repetitive. That cost is acceptable here because removing it risks returning to the previously observed false-current-state language such as `The fix` or `The corrected path`.
+
+6. **Over-segmentation.**  
+   A generator may turn every verb into a bullet, producing lists for mechanism, consequence, request, exception, and test. The list must contain requested outcomes only. Diagnostic evidence stays in prose.
+
+### Decision
+
+Adopt the proposal only as an adaptive rendering rule:
+
+- zero requested actions: end after the consequence;
+- one requested action: one natural `Please` sentence;
+- two or more independently checkable requested actions: `**Change requested**` followed by one `Please` bullet per action;
+- keep conditions and valid-behavior exceptions with the action they constrain;
+- never use the list to replace the diagnostic mechanism or consequence paragraphs.
+
+This is a testable hypothesis, not an accepted improvement yet.
+
+---
+
+## 3. Recommended operational language contract
+
+### Finding identity and title
+
+- Preserve the complete RAV ID, severity, and area label.
+- Make the title state the primary author-visible failure or consequence.
+- Include the key trigger or actor when it fits without turning the title into a multi-clause diagnosis.
+- Move secondary mechanisms into the body.
+- Do not drop quantifiers, scope, diagnostic modals, or identifiers merely to shorten the title.
+
+### Diagnostic body
+
+- Sentence 1: concrete actor, action, target, and trigger.
+- Sentence 2: concrete consequence.
+- Split additional relationships when they introduce another actor, condition, state transition, or result.
+- Prefer `converter returns`, `rollback covers`, `directory reports`, and `automation cannot distinguish` over abstract state language or omitted actors.
+- Keep exact code identifiers when they locate or constrain the finding.
+- Preserve uncertainty: `can`, `may`, and equivalent diagnostic modals must not become definite claims.
+
+### Requested work
+
+- Remediation describes requested work, never an unimplemented fix.
+- For critical, high, and medium findings, use `Please` plus a direct action verb.
+- For one action, use one natural request sentence.
+- For two or more independently checkable actions, add:
+
+  ```md
+  **Change requested**
+
+  - Please ...
+  - Please ...
+  ```
+
+- A bullet may contain a necessary condition or exception, but must not combine unrelated deliverables.
+- Preserve low and nit suggestion grammar.
+- Do not invent a test purpose. Preserve only the test boundary stated by the source.
+- If there is no source-backed requested change, stop after the consequence.
+
+### Fact lock
+
+Every rewrite must preserve:
+
+- trigger and failing path;
+- actor-action-target relationships;
+- identifiers and technical verbs;
+- quantifiers such as `all`, `every`, and `only`;
+- diagnostic certainty;
+- concrete consequence and scope;
+- valid-behavior exceptions;
+- requested-action boundaries;
+- test boundaries.
+
+---
+
+## 4. Rewrites
+
+### 1. Publication
+
+```md
+**[high] publication** — `--replace-existing` can leave the target without prior records after a later failure
+
+Lines 601–602 remove the old files before `save_evaluation_logs()` validates and writes the new batch. The rollback in that call covers only files it creates, so a later failure can leave the target without its prior records.
+
+**Change requested**
+
+- Please keep the old files recoverable until every new write and route transition succeeds.
+- Please add a mid-write failure test across several routes to cover this path.
+```
+
+Preserved facts:
+
+- `--replace-existing`;
+- lines 601–602;
+- deletion before `save_evaluation_logs()` validation and writing;
+- rollback scope limited to files created by that call;
+- later-failure data-loss condition;
+- every-write and route-transition boundary;
+- multi-route mid-write test.
+
+### 2. Failure accounting
+
+```md
+**[high] failure-accounting** — One malformed source value can stop every valid row without a source-row failure record
+
+Score parsing happens before `SourceConversionResult` exists. Later row construction has no row-level error boundary, so one malformed source value can stop every valid row without a source-row failure record.
+
+Please add a narrow boundary for expected parsing and schema errors without hiding unexpected program or infrastructure errors.
+```
+
+Preserved facts:
+
+- parsing occurs before `SourceConversionResult` exists;
+- later row construction lacks a row-level boundary;
+- one malformed value can stop every valid row;
+- no source-row failure record is produced;
+- expected parsing/schema errors are the intended catch set;
+- unexpected program/infrastructure errors remain visible.
+
+### 3. Source accounting
+
+```md
+**[high] source-accounting** — An input file whose measured tasks all lack finite scores can make a directory run exit successfully with zero converted logs
+
+If an input file's measured tasks all lack finite scores, the converter returns an empty list without a failure. A directory made from those files then reports zero converted logs and exits successfully, so automation cannot distinguish total conversion loss.
+
+**Change requested**
+
+- Please put a file with measured but unconvertible tasks in the failure ledger.
+- Please keep files that contain only intentionally skipped derived rows as explicit exclusions in the exclusions list.
+```
+
+Preserved facts:
+
+- the `all measured tasks lack finite scores` condition;
+- empty-list result without a failure;
+- directory scope;
+- zero converted logs;
+- successful exit;
+- automation’s inability to distinguish total conversion loss;
+- measured-but-unconvertible files entering the failure ledger;
+- files containing only intentionally skipped derived rows remaining explicit exclusions.
+
+---
+
+## 5. Blind evaluation design
+
+### Corpus
+
+Use three layers:
+
+1. the frozen 22-comment corpus;
+2. the three representative comments above as a targeted microtest;
+3. a semantically unseen holdout whose IDs, paths, root causes, and requested-action structures did not appear in the training or prior evaluation artifacts.
+
+Partition findings by action count:
+
+- zero requested actions;
+- one requested action;
+- two actions;
+- three or more actions;
+- action plus exception;
+- action plus test boundary.
+
+The intervention should be expected to help primarily on the two-or-more-action subset, not only on the three supplied examples.
+
+### Candidate generation
+
+Generate both versions from the same source material:
+
+- **A:** current title → mechanism/consequence paragraphs → `Please` requests;
+- **B:** proposed actor-action-destination language with adaptive `Change requested` lists.
+
+Use fresh sessionless generators, randomized candidate labels, and identical source facts. Produce multiple independent generations per candidate and model so the result is not determined by one wording sample.
+
+### Task 1: blind correct-defect restatement
+
+Show a candidate comment without its source. Ask the reader to fill:
+
+- triggering input or condition;
+- failing actor and action;
+- affected target;
+- concrete consequence;
+- scope or quantifier;
+- allowed valid behavior, if any.
+
+Score against a pre-registered atomic gold ledger. A restatement is fully correct only when it captures the trigger, mechanism, and consequence without adding a false actor or scope.
+
+Primary metrics:
+
+- exact full-restatement rate;
+- weighted material-fact recall;
+- false-fact rate;
+- time to correct restatement;
+- separate scores for title-only comprehension and full-comment comprehension.
+
+The title-only pass tests whether consequence-focused titles actually improve scanning without falsely implying a different failure.
+
+### Task 2: requested-action recall
+
+Show a candidate without its source. Ask the reader to list every change the author is being asked to make, including tests and valid-behavior boundaries.
+
+Score:
+
+\[
+\text{action recall}
+=
+\frac{\text{source-backed requested actions correctly identified}}
+{\text{total source-backed requested actions}}
+\]
+
+Also measure:
+
+- action precision: whether the reader lists unsupported work;
+- destination accuracy: ledger, exclusions list, recoverable files, or error boundary;
+- condition/exception recall;
+- test-boundary recall;
+- request-mode accuracy: request versus already-implemented code.
+
+This directly tests whether the bullets make the second action in comments 1 and 3 easier to recover.
+
+### Task 3: source-grounded fact audit
+
+Give an independent evaluator the source ledger and candidate. Require a per-atom judgment:
+
+- preserved;
+- weakened or changed;
+- omitted;
+- unsupported addition.
+
+Do not combine this with readability preference. A shorter candidate that drops `all`, `only`, `every`, `unexpected`, or `across several routes` fails the audit.
+
+### Pairing and analysis
+
+- Randomize A/B order per finding.
+- Counterbalance reader exposure so no participant consistently sees one candidate first.
+- Keep source-grounded auditors separate from blind restatement readers.
+- Report paired differences by action-count stratum, not only one aggregate score.
+- Use bootstrap confidence intervals or a paired permutation test over findings and generation replicates.
+
+### Acceptance gates
+
+The candidate beats the current contract only if all of these hold:
+
+1. zero adjudicated material-fact losses on the frozen corpus and holdout;
+2. no increase in false-current-state interpretations;
+3. no regression in defect-restatement recall on zero- and one-action findings;
+4. higher requested-action recall on the two-or-more-action subset;
+5. preserved exception and test-boundary recall;
+6. improved or equal first-read time and restatement accuracy, not merely higher subjective preference.
+
+A candidate that is more readable but loses a valid exclusion boundary is rejected.
+
+---
+
+## 6. Failure modes that reject the iteration
+
+Reject the intervention if any of the following occurs:
+
+- `all`, `only`, `every`, or equivalent scope conditions disappear;
+- a possible consequence becomes a definite current behavior;
+- `Please` requests become `The fix`, `The corrected path`, or another implementation presupposition;
+- the title’s consequence replaces the mechanism instead of moving the mechanism into the body;
+- the title assigns a directory-level result to one file or row;
+- `SourceConversionResult`, `save_evaluation_logs()`, line references, flags, or other necessary identifiers are removed;
+- the requested test boundary `across several routes` is omitted or its purpose is invented;
+- unexpected program or infrastructure errors are accidentally included in the catch boundary;
+- intentionally skipped derived rows are treated as failures;
+- the list contains diagnostic facts rather than requested actions;
+- two unrelated actions are merged into one bullet;
+- one action receives a noisy heading and list;
+- an exception is placed outside the bullet it constrains and is consequently missed by blind readers;
+- readability improves only because identifiers, consequences, or valid-behavior boundaries were deleted;
+- action recall does not improve for multi-action findings;
+- the candidate wins preference judgments but loses correct-defect restatement or source-grounded fact recall.
+
+No iteration should be selected from the three examples alone. The adaptive form is plausible, but the required evidence is improved action recall with zero technical-fact regression on unseen findings.
+
+
+Wall time: 269.65 seconds

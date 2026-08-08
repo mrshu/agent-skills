@@ -1,0 +1,220 @@
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_loss"
+      },
+      "fact_losses": [
+        "B: omits that the new guard accepts a collection directory when its name differs from the selected collection.",
+        "C: omits that the name check is false for `base_output_dir=data/foo` with selected collection `bar`."
+      ]
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe",
+        "C": "fact_loss"
+      },
+      "fact_losses": [
+        "A: changes the trigger from overwriting the output file to overwriting the rebuilt map.",
+        "C: replaces the fact that every non-200 response drops the current ID with a broader claim that every non-200 can remove a confirmed rename, while limiting ID dropping to transient 429 or server errors."
+      ]
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_safe"
+      },
+      "fact_losses": [
+        "A: omits that an exclusions-only run succeeds.",
+        "B: omits that an exclusions-only run succeeds."
+      ]
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe",
+        "C": "fact_loss"
+      },
+      "fact_losses": [
+        "A: weakens the requested test boundary by not requiring provider-prefixed-key tests to cover the reachable nested configuration path.",
+        "C: weakens the requested test boundary by not requiring provider-prefixed-key tests to cover the reachable nested configuration path."
+      ]
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 19,
+    "B": 20,
+    "C": 18
+  },
+  "summary": "B preserves the most source facts, with losses only in the publisher-validation mechanism and exclusions-only success state. C adds the registry-refresh error-class broadening and weakens the credential-filtering test boundary."
+}
