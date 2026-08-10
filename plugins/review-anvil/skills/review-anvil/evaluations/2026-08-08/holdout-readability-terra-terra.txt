@@ -1,0 +1,555 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3725747243,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B makes the required change explicit with “Please use,” while A's “can keep” reads as a possible approach rather than a clear request."
+    },
+    {
+      "id": 3725747244,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B directly requests a task-level error boundary and states both preservation and accounting outcomes. A leaves the same work framed as optional."
+    },
+    {
+      "id": 3725747245,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "A leads with the concrete instruction to conditionally emit `llm_scoring`, then cleanly separates the preservation constraint. B buries that request in a conditional sentence."
+    },
+    {
+      "id": 3725776269,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B plainly asks for the documented rule and names the exact repeated-`data` example. A's “would make” wording weakens the requested documentation work."
+    },
+    {
+      "id": 3725827216,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B turns the ownership condition into an unambiguous instruction: stop identity comparison whenever the path check owns an error."
+    },
+    {
+      "id": 3725830951,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "A explicitly requests the guide section and lists its three independently checkable contents. B presents the section as merely something it can do."
+    },
+    {
+      "id": 3725853148,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "A directly asks to resolve network refs once and separately preserves offline replay behavior. B makes both changes sound discretionary."
+    },
+    {
+      "id": 3725853152,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "The heading and two bullets make the parser change and offline test immediately scannable as separate required actions."
+    },
+    {
+      "id": 3725853155,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B clearly requests both finite-value validation before construction and recording invalid rows. A's two modal sentences make those actions less definite."
+    },
+    {
+      "id": 3725853159,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B explicitly requests storing pinned prompt content while retaining the precise legacy exception in a separate sentence."
+    },
+    {
+      "id": 3725853163,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B names the exact live-mode behavior to change and leaves the offline preservation constraint visible in its own sentence."
+    },
+    {
+      "id": 3725853168,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "A directly requests exact-ID precedence and the single-owner restriction. B states the same rules as possible behavior rather than requested work."
+    },
+    {
+      "id": 3725913004,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 3,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        }
+      },
+      "winner": "A",
+      "reason": "A gives a direct two-part request and a clear streaming constraint. B compresses several publication rules into a dense, tentative sentence."
+    },
+    {
+      "id": 3725913007,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "A exposes the output-path change and quoted-glob change as two separate checkable actions. B merges them into a softer compound suggestion."
+    },
+    {
+      "id": 3725913013,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "A separates score-failure handling from token-usage omission in bullets, making both requirements easy to retain after one read."
+    },
+    {
+      "id": 3725913015,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B directly requests retaining `accuracy` as the metric ID and clearly preserves `evaluation_name` as the task discriminator."
+    },
+    {
+      "id": 3725913021,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B gives the exact option and its required minimum, whereas A's “can require” leaves the corrective action ambiguous."
+    },
+    {
+      "id": 3725972277,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 3
+        }
+      },
+      "winner": "A",
+      "reason": "A explicitly asks for integration before the move and names the destination package path. B frames the ordering requirement as optional."
+    },
+    {
+      "id": 3725972282,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B makes deriving the assertion from the imported schema version an explicit requested repair rather than an available option."
+    },
+    {
+      "id": 3725972285,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B directly states the metric-ID change and preserves task identity through `evaluation_name` in the same concise instruction."
+    },
+    {
+      "id": 3725972287,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "A directly requests rejection before either UUID generation or publication, preserving the important ordering constraint. B makes that safeguard tentative."
+    },
+    {
+      "id": 3726043665,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 3,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        }
+      },
+      "winner": "A",
+      "reason": "A directly requests the batch publisher and clearly enumerates the targets that must fail by default. B packs the same safeguards into tentative clauses."
+    },
+    {
+      "id": 3726043671,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 3
+        }
+      },
+      "winner": "A",
+      "reason": "A gives three definite accounting requirements: source unit, once-only counting, and retained references. B's modal phrasing weakens each requirement."
+    },
+    {
+      "id": 3726043679,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B explicitly requests both limiting tolerance to classification and adding the strict publication check, preserving the distinction between the two phases."
+    },
+    {
+      "id": 3726043682,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B directly requests the proof condition for setting `metric_unit` and keeps the unset-plus-details exception plainly visible."
+    }
+  ],
+  "winner_counts": {
+    "A": 11,
+    "B": 14,
+    "tie": 0
+  },
+  "mean_scores": {
+    "A": {
+      "defect_clarity": 5,
+      "action_recall": 4.32,
+      "scanability": 4.12,
+      "naturalness": 4.44,
+      "cognitive_ease": 4.32
+    },
+    "B": {
+      "defect_clarity": 5,
+      "action_recall": 4.48,
+      "scanability": 4.44,
+      "naturalness": 4.48,
+      "cognitive_ease": 4.4
+    }
+  },
+  "summary": "Both versions consistently explain the defects clearly. B more often wins because it converts modal suggestions into explicit requested work, while A wins where it uses direct imperatives or bullets to keep multiple independent constraints separately scannable."
+}
+
+
+Wall time: 158.91 seconds

@@ -1,0 +1,13 @@
+{
+  "fact_safe_counts": {
+    "claude": {"sol": 25, "luna": 25, "terra": 25},
+    "sol": {"sol": 25, "luna": 25, "terra": 25},
+    "luna": {"sol": 25, "luna": 25, "terra": 25},
+    "terra": {"sol": 25, "luna": 25, "terra": 25}
+  },
+  "total_fact_safe_judgments": 300,
+  "total_fact_loss_judgments": 0,
+  "adjudications": [],
+  "gate": "passed",
+  "gate_reason": "Every one-shot holdout generator output received 25/25 fact-safe judgments from Claude Opus and all three GPT judges."
+}

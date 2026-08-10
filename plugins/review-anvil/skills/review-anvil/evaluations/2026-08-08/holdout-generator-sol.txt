@@ -1,0 +1,131 @@
+Working...
+[
+  {
+    "id": 3725747243,
+    "pr": 220,
+    "body": "**RAV-RUN1-R1-F003 [high] record-identity** — `evaluation_id` changes every time the same record is converted\n\nThe current clock supplies this ID segment. An unchanged source run therefore becomes a new logical evaluation on each conversion.\n\nPlease use a stable source-run timestamp or deterministic token to keep the required ID shape while `retrieved_timestamp` records retrieval time."
+  },
+  {
+    "id": 3725747244,
+    "pr": 220,
+    "body": "**RAV-RUN1-R1-F005 [high] partial-conversion** — One invalid task discards valid sibling task logs\n\nThis loop builds logs locally, but any later exception exits the whole file conversion. The directory path then records one file failure and loses logs that were already valid.\n\nPlease add a task-level error boundary that preserves valid logs and accounts for each rejected task."
+  },
+  {
+    "id": 3725747245,
+    "pr": 220,
+    "body": "**RAV-RUN1-R1-F007 [medium] judge-metadata** — `input_prompt` receives a scoring description instead of the judge prompt\n\n`LlmScoring.input_prompt` represents the actual prompt template. The fallback also invents prompt text when the record has none.\n\nPlease emit `llm_scoring` only when the real template is available. The sound aggregate conversion can remain intact."
+  },
+  {
+    "id": 3725776269,
+    "pr": 227,
+    "body": "**RAV-RUN1-R1-F002 [medium] report-placement** — A nested `data` component can keep the report inside an outer datastore tree\n\nThe helper selects the nearest ancestor named `data`. For `data/outer/data/collection`, it writes below `data/outer/adapter_reports`, which conflicts with the stated outside-tree guarantee.\n\nPlease add a note that the nearest `data` ancestor wins, including the repeated-`data` example `data/outer/data/collection`."
+  },
+  {
+    "id": 3725827216,
+    "pr": 223,
+    "body": "**RAV-RUN1-R1-F003 [medium] path-check-ownership** — Other malformed paths can receive both a path error and an identity warning\n\nThis guard checks only path depth. A five-component path with a nonportable developer or model component continues into the identity comparison, so both checks report the same bad path.\n\nPlease stop identity comparison whenever `check_path_structure` already owns a path error."
+  },
+  {
+    "id": 3725830951,
+    "pr": 230,
+    "body": "**RAV-RUN1-R1-F004 [medium] contributor-guidance** — The new registered warning is missing from the required datastore gate guide\n\nThe repository instructions require contributor guidance with validator changes and name `.claude/skills/eee-dataset-conversion/reference/datastore-gate.md` as the rule location. This PR adds the check but does not update that guide.\n\nPlease add a short section stating the alias trigger, warning-only result, and single-record evidence limit."
+  },
+  {
+    "id": 3725853148,
+    "pr": 190,
+    "body": "**RAV-RUN2-R1-F002 [medium] reproducibility** — Branch and tag refs are used in stable IDs and provenance URLs without commit resolution. Two network runs can fetch different input under the same identity.\n\nPlease resolve network-mode refs once to a commit SHA. Offline replay can keep the stored immutable ref without network access."
+  },
+  {
+    "id": 3725853152,
+    "pr": 190,
+    "body": "**RAV-RUN2-R1-F003 [medium] cli** — The module entry point builds the old argument namespace. This handler now reads missing fields and fails before conversion.\n\n**Requested actions**\n\n- Use the shared parser in the module entry point.\n- Add one offline entry-point test covering its defaults."
+  },
+  {
+    "id": 3725853155,
+    "pr": 190,
+    "body": "**RAV-RUN2-R1-F005 [medium] input-validation** — Populated invalid `win_rate` values bypass row-level failure handling. They can omit the headline metric or abort strict JSON publication.\n\n**Requested actions**\n\n- Validate numeric fields as finite values under their metric rules before result construction.\n- Add invalid rows to `SourceConversionResult`."
+  },
+  {
+    "id": 3725853159,
+    "pr": 190,
+    "body": "**RAV-RUN2-R1-F007 [medium] generation-provenance** — `GenerationArgs.prompt_template` contains an upstream path instead of prompt content. Offline records cannot reconstruct the generation prompt.\n\n**Requested actions**\n\n- Store pinned prompt content in new snapshots.\n- Mark the missing prompt content in legacy snapshots.\n\nLegacy snapshots can leave `GenerationArgs.prompt_template` unset."
+  },
+  {
+    "id": 3725853163,
+    "pr": 190,
+    "body": "**RAV-RUN2-R1-F009 [medium] registry-resolution** — Live mode skips keys whose vendored value is null. A known gap cannot discover a new registry entry until the snapshot refreshes.\n\nPlease query present-null entries in live mode. Offline behavior remains unchanged."
+  },
+  {
+    "id": 3725853168,
+    "pr": 190,
+    "body": "**RAV-RUN2-R1-F011 [medium] registry-identity** — Normalized organization collisions can rewrite an exact canonical ID to another canonical organization.\n\nPlease resolve exact canonical IDs first and resolve normalized spellings only when one organization owns them."
+  },
+  {
+    "id": 3725913004,
+    "pr": 203,
+    "body": "**RAV-RUN2-R1-F001 [high] instance-publication** — Instance mode passes a sidecar basename where the schema requires a canonical datastore path. Construction fails after aggregate and sidecar files are written.\n\n**Requested actions**\n\n- Stage complete output before publication.\n- Reject existing logical output until replacement is atomic.\n\nSidecar validation remains streaming."
+  },
+  {
+    "id": 3725913007,
+    "pr": 203,
+    "body": "**RAV-RUN2-R1-F002 [medium] documentation** — This smoke command passes a directory to a file-only validator. Its output root also cannot satisfy datastore path checks.\n\n**Requested actions**\n\n- Write smoke output to the required `data/<collection>` path.\n- Pass a quoted fixed-depth file glob to validation."
+  },
+  {
+    "id": 3725913013,
+    "pr": 203,
+    "body": "**RAV-RUN2-R1-F004 [medium] data-validation** — Missing scores become incorrect answers and stay in aggregate denominators. Missing token data becomes measured zero instead of being omitted.\n\n**Requested actions**\n\n- Add invalid scores to the failure report.\n- Omit incomplete token usage and calculate token means using only complete values."
+  },
+  {
+    "id": 3725913015,
+    "pr": 203,
+    "body": "**RAV-RUN2-R1-F005 [medium] metric-identity** — Each task receives a different metric ID even though every result is canonical accuracy. Cross-source joins by metric ID become fragmented.\n\nPlease keep `accuracy` as the metric ID while using `evaluation_name` to distinguish tasks."
+  },
+  {
+    "id": 3725913021,
+    "pr": 203,
+    "body": "**RAV-RUN2-R1-F011 [medium] cli** — A bare `--parquet` flag yields an empty list. The adapter treats that as no local input and silently starts the full remote 15-shard conversion.\n\nPlease require at least one path for the option."
+  },
+  {
+    "id": 3725972277,
+    "pr": 204,
+    "body": "**RAV-RUN2-R1-F002 [medium] repository-integration** — This adapter remains under the retired `utils` layout. Installed packages include `every_eval_ever*`, so the adapter and its documented command are outside the active package.\n\n**Requested actions**\n\n- Integrate current main before moving the adapter and references.\n- Move the adapter and references under `every_eval_ever/adapters/open_medical_llm`."
+  },
+  {
+    "id": 3725972282,
+    "pr": 204,
+    "body": "**RAV-RUN2-R1-F003 [medium] schema-compatibility** — This assertion requires schema `0.2.2`, while current main emits `0.3.0`. The test fails after integration.\n\nPlease derive the expected value from the imported schema version."
+  },
+  {
+    "id": 3725972285,
+    "pr": 204,
+    "body": "**RAV-RUN2-R1-F004 [medium] metric-identity** — Ordinary accuracy receives nine benchmark-specific metric IDs. This fragments the global accuracy join key.\n\nPlease keep `accuracy` as the metric ID while using task-specific evaluation names to preserve benchmark identity."
+  },
+  {
+    "id": 3725972287,
+    "pr": 204,
+    "body": "**RAV-RUN2-R1-F006 [medium] publication** — Repeat runs add a fresh UUID file for each stable evaluation ID. A populated target can hold duplicate logical records.\n\nPlease reject existing output JSON in the collection target before UUID generation or batch publication."
+  },
+  {
+    "id": 3726043665,
+    "pr": 209,
+    "body": "**RAV-RUN2-R1-F001 [critical] publication-safety** — The adapter recursively deletes the selected output tree before publication. Empty batches and later write failures can destroy prior or unrelated data.\n\n**Requested actions**\n\n- Use the batch publisher for new or empty targets.\n- Fail by default for symlinks, roots, and populated targets until replacement has an explicit ownership manifest."
+  },
+  {
+    "id": 3726043671,
+    "pr": 209,
+    "body": "**RAV-RUN2-R1-F002 [high] conversion-accounting** — Malformed metrics, missing dataset references, and resultless rows are silently omitted. The command can exit successfully with incomplete output.\n\n**Requested actions**\n\n- Treat metric cells as the source unit.\n- Count each attempted or rejected cell once while retaining row references for malformed objects and missing datasets."
+  },
+  {
+    "id": 3726043679,
+    "pr": 209,
+    "body": "**RAV-RUN2-R1-F004 [medium] score-bounds** — Scale tolerance accepts small boundary overruns but emits them unchanged. Current semantic validation rejects those scores.\n\n**Requested actions**\n\n- Restrict tolerance to scale classification.\n- Add a strict pre-publication check that rejects unproven overruns."
+  },
+  {
+    "id": 3726043682,
+    "pr": 209,
+    "body": "**RAV-RUN2-R1-F005 [medium] metric-metadata** — `metric_unit` stays tied to the PwC source scale after score conversion. It can conflict with the emitted score and canonical bounds.\n\nPlease set a unit only when the canonical contract or an explicit conversion proves it. Otherwise it can stay unset while `pwc_scale` remains in details."
+  }
+]
+
+
+Wall time: 291.80 seconds

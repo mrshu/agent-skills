@@ -1,0 +1,26 @@
+{
+  "frozen_before_holdout_open": true,
+  "date_utc": "2026-08-08",
+  "sealed_holdout_file": "iteration-6-unseen-holdout-corpus.json",
+  "sealed_holdout_file_sha256": "f5b7658bab03f12d1d402da0415fbd3066c1b3550dc8904ae5235bf62ab480a6",
+  "comparison_baseline": {
+    "kind": "unmodified historical review comments",
+    "development_reference_branch": "experiment/review-anvil-readability-5",
+    "development_reference_commit": "227bffa"
+  },
+  "candidate": {
+    "branch": "experiment/review-anvil-readability-8",
+    "contract_commit": "c2ee13331da19e02cb68c63c05033ad6d8ced4fc",
+    "evidence_commit": "ba6613a8645229b4b25ae22d9361d3bc71a1e866",
+    "prompt": "iteration-8-rewrite-prompt.md"
+  },
+  "generation_protocol": {
+    "models": ["gpt-5.6-sol", "gpt-5.6-luna", "gpt-5.6-terra"],
+    "runs_per_model": 1,
+    "retry_on_valid_output": false,
+    "selection_after_generation": false
+  },
+  "judges": ["claude-opus", "gpt-5.6-sol", "gpt-5.6-luna", "gpt-5.6-terra"],
+  "fact_gate": "Every selected output must be unanimously fact-safe.",
+  "readability_gate": "The candidate must have no cross-judge baseline regression and a clear majority of decisive wins."
+}

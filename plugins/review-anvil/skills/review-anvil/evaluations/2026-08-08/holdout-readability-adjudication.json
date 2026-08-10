@@ -1,0 +1,57 @@
+{
+  "raw_winner_counts": {
+    "sol_candidate": {
+      "claude": {"baseline": 0, "candidate": 24, "tie": 1},
+      "sol": {"baseline": 0, "candidate": 25, "tie": 0},
+      "luna": {"baseline": 3, "candidate": 22, "tie": 0},
+      "terra": {"baseline": 0, "candidate": 25, "tie": 0}
+    },
+    "luna_candidate": {
+      "claude": {"baseline": 0, "candidate": 25, "tie": 0},
+      "sol": {"baseline": 0, "candidate": 25, "tie": 0},
+      "luna": {"baseline": 1, "candidate": 24, "tie": 0},
+      "terra": {"baseline": 0, "candidate": 25, "tie": 0}
+    },
+    "terra_candidate": {
+      "claude": {"baseline": 0, "candidate": 25, "tie": 0},
+      "sol": {"baseline": 0, "candidate": 25, "tie": 0},
+      "luna": {"baseline": 0, "candidate": 25, "tie": 0},
+      "terra": {"baseline": 0, "candidate": 25, "tie": 0}
+    }
+  },
+  "label_errors": [
+    {
+      "judge": "luna",
+      "candidate": "sol",
+      "id": 3725972282,
+      "reason": "The rationale says the winner explicitly requests deriving the expected value, but that explicit request is the Sol candidate, not the baseline."
+    },
+    {
+      "judge": "luna",
+      "candidate": "sol",
+      "id": 3726043671,
+      "reason": "The rationale prefers separately visible source-unit and accounting requirements, which are the Sol bullets, not the baseline prose."
+    },
+    {
+      "judge": "luna",
+      "candidate": "sol",
+      "id": 3726043679,
+      "reason": "The rationale prefers separate tolerance and pre-publication actions, which are the Sol bullets, not the baseline prose."
+    },
+    {
+      "judge": "luna",
+      "candidate": "luna",
+      "id": 3725853148,
+      "reason": "The rationale says the winner explicitly requests one-time commit resolution, but that explicit request is the Luna candidate, not the baseline."
+    }
+  ],
+  "adjudicated_totals": {
+    "sol_candidate": {"baseline": 0, "candidate": 99, "tie": 1},
+    "luna_candidate": {"baseline": 0, "candidate": 100, "tie": 0},
+    "terra_candidate": {"baseline": 0, "candidate": 100, "tie": 0},
+    "all_comparisons": {"baseline": 0, "candidate": 299, "tie": 1}
+  },
+  "preselected_representative": "luna",
+  "gate": "passed",
+  "gate_reason": "After correcting four winner labels that contradict their own rationales, no judge preferred a baseline comment. The development-selected Luna output won all 100 holdout judgments."
+}
