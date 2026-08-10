@@ -193,11 +193,12 @@ For each issue, return a structured finding with these keys:
   independently. Do not split values governed by one rule into repeated
   actions. Two verbs that establish one invariant on the same record or output
   may remain one obligation.
-  Classify each unit by the source behavior, not by its modal grammar. A
-  proposed new check, validation, write, report, or test remains author work
-  when the source says it `can`, `could`, or `would` produce the result.
-  Treat a unit as no-change only when the source leaves current behavior
-  allowed, preserved, unchanged, or outside the requested error boundary.
+  Classify each unit by source behavior, not modal grammar. Separate the
+  required action from any modal implementation boundary. When a new
+  mechanism is needed to resolve the described failure, request the smallest
+  actor-action-target change and retain its permitted behavior as modal prose.
+  Do not infer mandatory work from a standalone permission or allowed
+  follow-up.
   Do not count a preservation constraint, permission, carve-out, exception, or
   already-correct behavior as a separate obligation. Keep it with the action
   it limits, or use short modal prose immediately after that action when one
@@ -205,6 +206,8 @@ For each issue, return a structured finding with these keys:
   requires independently implementable work there. A required source-backed
   test is a separate obligation when it has its own exact boundary. Reuse exact
   source wording for scope and collection phrases.
+  Preserve `can`, `could`, or `may` on a boundary or permission instead of
+  folding it into the imperative that names the author obligation.
   Privately map every requested source unit to either an obligation or a
   no-change constraint. Do not return the finding until every obligation
   appears as an explicit request.

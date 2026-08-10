@@ -508,6 +508,8 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 
    Classify a source proposal by behavior, not grammar. A source proposal for a new check or change remains author work even when it uses `can` or another modal. Before finalizing the body, map every requested source unit to either an explicit request or a no-change constraint; do not emit until every author-work unit is explicit.
 
+   Keep a modal implementation boundary as modal prose after its explicit author obligation. Request the smallest new mechanism needed to resolve the failure, but do not convert the mechanism's permitted behavior or a standalone allowed follow-up into mandatory work.
+
 3. Write a sibling `<report_path>.approval.json` so the PR-posting helper can choose the GitHub review event (review-only PR runs; for other runs write `{"event": "COMMENT"}` or omit the file — the helper defaults to COMMENT):
 
    ```json

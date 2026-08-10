@@ -72,11 +72,12 @@ behavior that may remain unchanged.
 Do not force an actor or destination that the source does not establish.
 Group requested work by implementation obligation, not by grammar.
 An obligation is work the author must perform in code or tests.
-Classify by the source behavior, not by modal grammar. A proposed new check,
-validation, write, report, or test is author work even when the source says it
-`can`, `could`, or `would` produce the result. A unit is no-change only when
-the source leaves current behavior allowed, preserved, unchanged, or outside
-the requested error boundary.
+Classify by the source behavior, not by modal grammar. A modal source sentence
+can contain both author work and a boundary on that work. Extract the smallest
+new actor-action-target obligation separately from the modal boundary.
+If a new mechanism is needed to resolve the described failure, request the
+mechanism and keep its permitted behavior as modal prose. Do not infer
+mandatory work from a standalone permission or allowed follow-up.
 One obligation is a cohesive change that can be implemented and verified
 independently.
 Do not split a list of values governed by one rule into repeated actions.
@@ -87,6 +88,8 @@ already-correct behavior is not a separate obligation.
 Keep a no-change constraint out of `**Requested actions**`.
 Keep it with the action it limits. State it as short modal prose immediately
 after the action it limits when combining them would make the request dense.
+Keep the source modality on a boundary or permission. Do not fold `can`,
+`could`, or `may` into the imperative that names the author obligation.
 Make a distinct path separate only when the source requires the author to
 change that path independently.
 A required source-backed test is author work and is separate when it has its
@@ -189,7 +192,16 @@ The command checks existing output before it knows whether any models matched.
 **Requested actions**
 
 - Require one or more values for `--models`.
-- Add a no-match check before existing-output discovery or publication.
+- Add a no-match check.
+
+It can stop before existing-output discovery or publication.
+```
+
+A standalone permission remains prose:
+
+```md
+Please use source metric specs or an operator-supplied definition to establish the semantics.
+Unresolved keys can be reported after the valid metrics are preserved.
 ```
 
 Keep only evidence that helps the author trust or fix the finding. Do not
