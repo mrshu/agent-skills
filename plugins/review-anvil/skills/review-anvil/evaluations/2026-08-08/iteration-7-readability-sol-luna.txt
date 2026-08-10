@@ -1,0 +1,492 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "The Requested actions heading and bullets make the two independently checkable changes easier to find and recall. B is slightly more natural prose, but its actions are less visually distinct."
+    },
+    {
+      "id": 3737044354,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "The bullets clearly separate retaining old files from adding the failure test. B reads more naturally, but the two requested actions are easier to overlook in paragraph form."
+    },
+    {
+      "id": 3737044361,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "A and B are identical, so neither version has a human-comprehension advantage."
+    },
+    {
+      "id": 3737044371,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "A and B are identical, so neither version has a human-comprehension advantage."
+    },
+    {
+      "id": 3737053181,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "A and B are identical, so neither version has a human-comprehension advantage."
+    },
+    {
+      "id": 3737053197,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "A and B are identical, so neither version has a human-comprehension advantage."
+    },
+    {
+      "id": 3737053204,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "A and B are identical, so neither version has a human-comprehension advantage."
+    },
+    {
+      "id": 3737181823,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "A and B are identical, so neither version has a human-comprehension advantage."
+    },
+    {
+      "id": 3737266652,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "A and B are identical, so neither version has a human-comprehension advantage."
+    },
+    {
+      "id": 3737266656,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "A and B are identical, so neither version has a human-comprehension advantage."
+    },
+    {
+      "id": 3737266661,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "A and B are identical, so neither version has a human-comprehension advantage."
+    },
+    {
+      "id": 3737291965,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "The bullets distinguish the rejection rule from the boundary tests and make the unchanged file-symlink behavior visible. B is smoother prose but less scannable for two separate actions."
+    },
+    {
+      "id": 3737383919,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "A gives the validation requirement and the no-match processing stop separate, immediately visible actions. B is natural but makes the second requested change less prominent."
+    },
+    {
+      "id": 3737383922,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "A and B are identical, so neither version has a human-comprehension advantage."
+    },
+    {
+      "id": 3737449039,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "A and B are identical, so neither version has a human-comprehension advantage."
+    },
+    {
+      "id": 3737449052,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "A and B are identical, so neither version has a human-comprehension advantage."
+    },
+    {
+      "id": 3737449059,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "A and B are identical, so neither version has a human-comprehension advantage."
+    },
+    {
+      "id": 3737449070,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B turns the semantics requirement and unresolved-key handling into two visible actions. A is more conversational, but its second action is softened as an optional-sounding sentence."
+    },
+    {
+      "id": 3737449081,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "A and B are identical, so neither version has a human-comprehension advantage."
+    },
+    {
+      "id": 3737449090,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "A and B are identical, so neither version has a human-comprehension advantage."
+    },
+    {
+      "id": 3737449098,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "A and B are identical, so neither version has a human-comprehension advantage."
+    },
+    {
+      "id": 3737449101,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B separates recursive sanitization from the provider-prefixed-key tests, making both actions easy to retrieve. A is smoother but visually compresses the requested work."
+    }
+  ],
+  "winner_counts": {
+    "A": 4,
+    "B": 2,
+    "tie": 16
+  },
+  "mean_scores": {
+    "A": {
+      "defect_clarity": 4.95,
+      "action_recall": 4.86,
+      "scanability": 4.18,
+      "naturalness": 4.77,
+      "cognitive_ease": 4
+    },
+    "B": {
+      "defect_clarity": 4.95,
+      "action_recall": 4.77,
+      "scanability": 4.09,
+      "naturalness": 4.86,
+      "cognitive_ease": 4
+    }
+  },
+  "summary": "Most pairs are identical, producing 16 ties. A wins when bullets make multiple requested actions easier to scan, while B wins when its more direct prose preserves a clearer action distinction without the heading structure."
+}
+
+
+Wall time: 137.97 seconds

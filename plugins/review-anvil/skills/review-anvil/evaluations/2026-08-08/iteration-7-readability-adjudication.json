@@ -1,0 +1,33 @@
+{
+  "candidate": "sol",
+  "raw_winner_counts": {
+    "claude": {"baseline": 0, "sol": 6, "tie": 16},
+    "sol": {"baseline": 0, "sol": 6, "tie": 16},
+    "luna": {"baseline": 2, "sol": 4, "tie": 16},
+    "terra": {"baseline": 0, "sol": 6, "tie": 16}
+  },
+  "label_errors": [
+    {
+      "judge": "luna",
+      "id": 3737044354,
+      "raw_winner": "baseline",
+      "adjudicated_winner": "sol",
+      "reason": "The rationale prefers the version with separate action bullets, but those bullets are in candidate B (Sol), not candidate A (baseline)."
+    },
+    {
+      "judge": "luna",
+      "id": 3737383919,
+      "raw_winner": "baseline",
+      "adjudicated_winner": "sol",
+      "reason": "The rationale prefers the version with two visible actions, but those actions are in candidate B (Sol), not candidate A (baseline)."
+    }
+  ],
+  "adjudicated_winner_counts": {
+    "claude": {"baseline": 0, "sol": 6, "tie": 16},
+    "sol": {"baseline": 0, "sol": 6, "tie": 16},
+    "luna": {"baseline": 0, "sol": 6, "tie": 16},
+    "terra": {"baseline": 0, "sol": 6, "tie": 16},
+    "total": {"baseline": 0, "sol": 24, "tie": 64}
+  },
+  "selection_effect": "The readability result is a unanimous cross-judge improvement after correcting two internally inconsistent labels. The candidate remains disqualified by the fact gate."
+}

@@ -1,0 +1,126 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {"A": "fact_loss", "B": "fact_loss", "C": "fact_loss"},
+      "fact_losses": [
+        "A: changes the source's capability statement that a no-match check can stop before discovery or publication into a certain requested stop.",
+        "B: changes the source's capability statement that a no-match check can stop before discovery or publication into a certain requested stop.",
+        "C: changes the source's capability statement that a no-match check can stop before discovery or publication into a certain requested stop."
+      ]
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {"A": "fact_loss", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": [
+        "A: drops the test boundary that provider-prefixed key names must cover the reachable nested serialization path."
+      ]
+    }
+  ],
+  "fact_safe_counts": {"A": 20, "B": 21, "C": 21},
+  "summary": "Most candidates preserve the source findings, requested actions, constraints, and test boundaries. All variants for 3737383919 strengthen a proposed no-match-check capability into certain required behavior, and A for 3737449101 omits the reachable-path test boundary."
+}
+
+
+Wall time: 131.34 seconds

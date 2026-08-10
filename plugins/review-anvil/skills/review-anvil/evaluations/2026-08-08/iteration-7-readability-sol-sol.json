@@ -1,0 +1,488 @@
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "A",
+      "reason": "A separates the rejection rule from the two required test variants, making both independently checkable actions easier to retain. B is natural prose, but its test request is less prominent and less directive."
+    },
+    {
+      "id": 3737044354,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B exposes the preservation constraint and failure-test request as separate actions. A communicates both, but the conditional wording “would cover” makes the test easier to overlook."
+    },
+    {
+      "id": 3737044361,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "tie",
+      "reason": "The versions are identical. They clearly distinguish the stable identity input from the metadata and routing value that may remain reconciled."
+    },
+    {
+      "id": 3737044371,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "The versions are identical. The failure condition and stale-report consequence are clear, though the final sentence compresses several required run states and the preservation constraint into one dense clause."
+    },
+    {
+      "id": 3737053181,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "The versions are identical. The misleading Boolean interpretation is concise, but “a shared representation” leaves the requested code shape and affected location relatively abstract."
+    },
+    {
+      "id": 3737053197,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "The versions are identical. They identify the malformed-value and denominator behaviors and preserve the empty-cell exception, although the requested “separate rules” remain somewhat abstract."
+    },
+    {
+      "id": 3737053204,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "tie",
+      "reason": "The versions are identical. The transient-error condition, destructive consequence, required output preservation, nonzero result, and 401 exception are all immediately visible."
+    },
+    {
+      "id": 3737181823,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "The versions are identical. The exact invalid-type condition and the valid-string exceptions are precise, though the repeated type qualifications require careful reading."
+    },
+    {
+      "id": 3737266652,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "The versions are identical. The lost-row consequence and expected-versus-unexpected error boundary are clear, but “add a narrow boundary” does not name the precise code location."
+    },
+    {
+      "id": 3737266656,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "tie",
+      "reason": "The versions are identical. The moving-reference condition, inconsistent-request consequence, and resolve-once requirement form a concise and complete progression."
+    },
+    {
+      "id": 3737266661,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "tie",
+      "reason": "The versions are identical. The comment plainly requests saving the report for either collection while preserving the existing failure-only exit condition."
+    },
+    {
+      "id": 3737291965,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "A separates the direct and glob-expanded rejection behavior from the three boundary tests, while keeping the file-symlink preservation constraint visible. B packs these distinctions into two long sentences and weakens the test request with “would cover.”"
+    },
+    {
+      "id": 3737383919,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B makes the parser constraint and early no-match termination two explicit actions. A's “can stop” is less directive and makes the second requested change easier to miss."
+    },
+    {
+      "id": 3737383922,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "tie",
+      "reason": "The versions are identical. The concrete path example makes the destination mismatch immediate, and the requested early validation names both the required shape and the systems that must agree."
+    },
+    {
+      "id": 3737449039,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "The versions are identical. The unstable-identity consequence and retrieval-time exception are explicit, although the four-part stable-ID recipe makes the final sentence moderately dense."
+    },
+    {
+      "id": 3737449052,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "tie",
+      "reason": "The versions are identical. The all-unconvertible condition, false-success outcome, failure-ledger request, and derived-row exception are clearly separated."
+    },
+    {
+      "id": 3737449059,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "tie",
+      "reason": "The versions are identical. The comment clearly contrasts the two populations and assigns an explicit semantic role to each count."
+    },
+    {
+      "id": 3737449070,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B makes semantic resolution and unresolved-key reporting separate, imperative actions. A communicates the same intent, but “can be reported” makes the reporting requirement sound optional."
+    },
+    {
+      "id": 3737449081,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "The versions are identical. The missing join-key consequence and mapping reuse are clear, though the distinction between canonical global IDs and namespaced IDs creates a dense final clause."
+    },
+    {
+      "id": 3737449090,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "tie",
+      "reason": "The versions are identical. The inconsistent counting units are illustrated concretely, and the requested source-file grain is cleanly separated from the output-log count."
+    },
+    {
+      "id": 3737449098,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "The versions are identical. The divergent single-file behavior is clear, but “a small lighteval-local file-result path” is an abstract noun stack that requires interpretation."
+    },
+    {
+      "id": 3737449101,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B separates the recursive-sanitizer change from the provider-prefixed-key tests and states both imperatively. A reads naturally, but its “would cover” phrasing makes the test action less visible."
+    }
+  ],
+  "winner_counts": {
+    "A": 2,
+    "B": 4,
+    "tie": 16
+  },
+  "mean_scores": {
+    "A": {
+      "defect_clarity": 4.91,
+      "action_recall": 4.55,
+      "scanability": 4.55,
+      "naturalness": 4.55,
+      "cognitive_ease": 4.55
+    },
+    "B": {
+      "defect_clarity": 4.91,
+      "action_recall": 4.64,
+      "scanability": 4.64,
+      "naturalness": 4.45,
+      "cognitive_ease": 4.59
+    }
+  },
+  "summary": "Most pairs are identical and already communicate the condition, consequence, and requested work effectively. Where versions differ, bullets help when they expose genuinely independent implementation and test actions; prose remains competitive when it keeps those actions imperative rather than describing tests as something that merely “would cover” the path."
+}

@@ -1,0 +1,212 @@
+```json
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_loss"
+      },
+      "fact_losses": [
+        "C: drops the requested action \"leave the existing output unchanged\" and recasts it as existing behavior needing no change, even though the source states the current code overwrites the file and drops the ID on any non-200 response"
+      ]
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 22,
+    "B": 22,
+    "C": 21
+  },
+  "summary": "Across the 22 comments, nearly every candidate preserved the ID, severity, area, mechanism, quantifiers (\"every\", \"only\"), diagnostic modality, scope grain, and the exact source-backed test boundaries; restructuring prose requests into \"Requested actions\" bullets and dropping trailing \"to cover this path\" phrasing kept the specific test conditions intact and so was not counted as loss. The single fact loss is candidate C on 3737053204, which demoted the explicit request to leave the existing output unchanged into a claim that no change is requested to that behavior, contradicting the source's statement that the file is currently overwritten and the confirmed rename removed. Candidates that added \"no change is requested\" clauses elsewhere were attached to genuine preservation constraints and remained fact-safe."
+}
+```

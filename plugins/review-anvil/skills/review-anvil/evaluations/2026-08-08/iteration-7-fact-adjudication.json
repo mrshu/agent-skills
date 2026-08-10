@@ -1,0 +1,56 @@
+{
+  "raw_fact_safe_counts": {
+    "claude": {"sol": 22, "luna": 21, "terra": 22},
+    "sol": {"sol": 21, "luna": 20, "terra": 20},
+    "luna": {"sol": 21, "luna": 17, "terra": 19},
+    "terra": {"sol": 21, "luna": 21, "terra": 20}
+  },
+  "candidate_selected_for_readability_only": "sol",
+  "selection_reason": "Sol had the highest cross-judge fact-safe total (85/88) and no Claude fact loss. It remained disqualified from final selection because material fact losses were confirmed.",
+  "material_rulings": [
+    {
+      "id": 3737053204,
+      "candidate": "luna",
+      "ruling": "confirmed_fact_loss",
+      "reason": "The explicit request to leave existing output unchanged became a statement that no change was requested."
+    },
+    {
+      "id": 3737383919,
+      "candidate": "terra",
+      "ruling": "confirmed_fact_loss",
+      "reason": "Stop a no-match check reverses the requested behavior; the check must stop processing."
+    },
+    {
+      "id": 3737383919,
+      "candidate": "all",
+      "ruling": "confirmed_modality_loss",
+      "reason": "Each candidate made the permitted early-stop boundary unconditional. The author obligation is to add a no-match check; the source separately says the check can stop before discovery or publication."
+    },
+    {
+      "id": 3737449070,
+      "candidate": "all",
+      "ruling": "confirmed_fact_loss",
+      "reason": "Each candidate turned the permission to report unresolved keys after preserving valid metrics into a mandatory action."
+    },
+    {
+      "id": 3737449101,
+      "candidate": "terra",
+      "ruling": "confirmed_fact_loss",
+      "reason": "The provider-prefixed-key test lost the requirement to cover the reachable nested-serialization path."
+    },
+    {
+      "id": 3737266661,
+      "candidate": "luna",
+      "ruling": "judge_false_positive",
+      "reason": "Keeping the nonzero exit conditional on failures is a preservation constraint. Can remain conditional plus an explicit no-change statement preserves that boundary."
+    },
+    {
+      "id": 3737291965,
+      "candidate": "luna",
+      "ruling": "judge_false_positive",
+      "reason": "Keeping file-symlink behavior unchanged is a preservation constraint, not new author work."
+    }
+  ],
+  "gate": "failed",
+  "next_change": "Separate a new author obligation from its modal implementation boundary, and keep standalone permissions in prose."
+}

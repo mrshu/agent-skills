@@ -1,0 +1,208 @@
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 3, "scanability": 3, "naturalness": 4, "cognitive_ease": 3}
+      },
+      "winner": "A",
+      "reason": "A splits the two independently checkable items (reject the base, add mismatched-override tests) into a labeled action list, while B buries the test request in a hedged \"tests would cover this path\" clause that reads as an observation rather than a request."
+    },
+    {
+      "id": 3737044354,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 3, "scanability": 3, "naturalness": 4, "cognitive_ease": 3},
+        "B": {"defect_clarity": 4, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "B",
+      "reason": "B's \"Requested actions\" list makes the retention constraint and the mid-write failure test separately visible; A's \"A mid-write failure test ... would cover this path\" softens the second action into a remark."
+    },
+    {
+      "id": 3737044361,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "The two versions are word-for-word identical, including the three-step causal chain and the preservation note that reconciled repository may still drive routing."
+    },
+    {
+      "id": 3737044371,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3}
+      },
+      "winner": "tie",
+      "reason": "Identical text; both carry the same dense closing sentence stacking \"atomic report replacement\" with three record categories and a ledger constraint."
+    },
+    {
+      "id": 3737053181,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 3, "scanability": 5, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 3, "scanability": 5, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "Identical text; both leave \"a shared representation for neutral measures\" abstract, with no named destination for the change."
+    },
+    {
+      "id": 3737053197,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3}
+      },
+      "winner": "tie",
+      "reason": "Identical text; both compress three separate validation rules plus an exception into one sentence."
+    },
+    {
+      "id": 3737053204,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "Identical text; both state the 429/server-error trigger and the 401 exception in the same words."
+    },
+    {
+      "id": 3737181823,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3}
+      },
+      "winner": "tie",
+      "reason": "Identical text; both carry the same multi-condition deferral clause (\"present but is neither a string nor `None`\")."
+    },
+    {
+      "id": 3737266652,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3}
+      },
+      "winner": "tie",
+      "reason": "Identical text; both open with a two-clause compound headline that has to be re-read before the failure mode lands."
+    },
+    {
+      "id": 3737266656,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3}
+      },
+      "winner": "tie",
+      "reason": "Identical text; both name the same single action (resolve each supplied reference once) with the same twin preservation goals."
+    },
+    {
+      "id": 3737266661,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 5, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 5, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "Identical text; both are short, with the condition (`result.failures` nonempty) and the exit-code constraint stated once each."
+    },
+    {
+      "id": 3737291965,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 3, "scanability": 3, "naturalness": 4, "cognitive_ease": 3}
+      },
+      "winner": "A",
+      "reason": "After a four-sentence diagnosis, A's action list cleanly separates the rejection rule from the two required tests; B appends both to the same prose block, and the test sentence's \"would cover the boundary\" reads as commentary."
+    },
+    {
+      "id": 3737383919,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 3, "scanability": 3, "naturalness": 4, "cognitive_ease": 3},
+        "B": {"defect_clarity": 4, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "B",
+      "reason": "B gives the second item a concrete actor and destination (\"Add a no-match check that stops processing before existing-output discovery or publication\"), where A's \"A no-match check can stop before ...\" is permissive and easy to skim past."
+    },
+    {
+      "id": 3737383922,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3}
+      },
+      "winner": "tie",
+      "reason": "Identical text; both use the same concrete `/tmp/intended` → `/tmp/wild` example and the same single validation request."
+    },
+    {
+      "id": 3737449039,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3}
+      },
+      "winner": "tie",
+      "reason": "Identical text; both pack the four ID ingredients into one sentence, which is the same load in either version."
+    },
+    {
+      "id": 3737449052,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3}
+      },
+      "winner": "tie",
+      "reason": "Identical text; both state the ledger request and the skipped-derived-rows exception in the same two sentences."
+    },
+    {
+      "id": 3737449059,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3}
+      },
+      "winner": "tie",
+      "reason": "Identical text; both distinguish `original_num_docs` from `effective_num_docs` and ask for both counts with the same role labels."
+    },
+    {
+      "id": 3737449070,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 3, "scanability": 3, "naturalness": 4, "cognitive_ease": 3},
+        "B": {"defect_clarity": 4, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "B",
+      "reason": "B turns \"Unresolved keys can be reported ...\" into an explicit second action item, so the reporting requirement is visible as work rather than as an allowance."
+    },
+    {
+      "id": 3737449081,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3}
+      },
+      "winner": "tie",
+      "reason": "Identical text; both close with the same long noun-heavy request about canonical global IDs and namespaced lighteval-specific IDs."
+    },
+    {
+      "id": 3737449090,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "Identical text; both explain the mixed-grain denominator and ask for one grain plus a separate output-log count."
+    },
+    {
+      "id": 3737449098,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "Identical text; both contrast the single-file branch with working directory input and request one report-before-raise path."
+    },
+    {
+      "id": 3737449101,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 3, "scanability": 3, "naturalness": 4, "cognitive_ease": 3},
+        "B": {"defect_clarity": 4, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "B",
+      "reason": "B lists the recursive sanitizer and the provider-prefixed key tests as two checkable items; A's \"Tests ... would cover the reachable path\" leaves the test work looking optional."
+    }
+  ],
+  "winner_counts": {"A": 2, "B": 4, "tie": 16},
+  "mean_scores": {
+    "A": {"defect_clarity": 4.05, "action_recall": 3.86, "scanability": 4.0, "naturalness": 4.0, "cognitive_ease": 3.36},
+    "B": {"defect_clarity": 4.05, "action_recall": 4.05, "scanability": 4.18, "naturalness": 4.0, "cognitive_ease": 3.45}
+  },
+  "summary": "Sixteen of the twenty-two pairs are identical, so they tie; the six that differ all turn on the same axis, whether a second action (usually a test) appears as its own bullet under \"Requested actions\" or as a trailing \"would cover this path\" clause. The bulleted form consistently wins because it gives the second action an imperative verb and makes it separately checkable, while the prose form demotes it to an observation a busy author can skim past. B carries the bulleted form in four of those six, so it edges ahead overall on action_recall and scanability; defect diagnosis and prose quality are effectively equal across the corpus."
+}

@@ -1,0 +1,223 @@
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_loss"
+      },
+      "fact_losses": [
+        "C: Changes the requested preservation of unchanged existing output into optional behavior by saying the existing output can remain unchanged."
+      ]
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_safe"
+      },
+      "fact_losses": [
+        "B: Weakens the requested constraint that the nonzero exit remain conditional on failures by changing it to optional behavior ('can remain conditional')."
+      ]
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_loss",
+        "C": "fact_safe"
+      },
+      "fact_losses": [
+        "B: Weakens the requested preservation of unchanged file-symlink behavior by changing it to optional behavior ('can remain unchanged')."
+      ]
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_loss",
+        "C": "fact_loss"
+      },
+      "fact_losses": [
+        "A: Strengthens the source's qualified statement that a no-match check can stop before existing-output discovery or publication into an unconditional stop requirement.",
+        "B: Strengthens the source's qualified statement that a no-match check can stop before existing-output discovery or publication into an unconditional stop requirement.",
+        "C: Strengthens the source's qualified statement that a no-match check can stop before existing-output discovery or publication into an unconditional stop requirement."
+      ]
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe",
+        "C": "fact_loss"
+      },
+      "fact_losses": [
+        "A: Changes 'unresolved keys can be reported' into the stronger imperative obligation to report unresolved keys.",
+        "C: Changes 'unresolved keys can be reported' into the stronger imperative obligation to report unresolved keys."
+      ]
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {
+        "A": "fact_safe",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": []
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {
+        "A": "fact_loss",
+        "B": "fact_safe",
+        "C": "fact_safe"
+      },
+      "fact_losses": [
+        "A: Omits the source-backed test boundary that the provider-prefixed-key tests cover the reachable path."
+      ]
+    }
+  ],
+  "fact_safe_counts": {
+    "A": 19,
+    "B": 20,
+    "C": 18
+  },
+  "summary": "Most candidates preserve the source facts, requested actions, exceptions, and test boundaries. Losses mainly weaken required preservation constraints, strengthen qualified 'can' behavior into mandatory actions, or omit the explicit reachable-path test boundary."
+}
