@@ -72,6 +72,11 @@ behavior that may remain unchanged.
 Do not force an actor or destination that the source does not establish.
 Group requested work by implementation obligation, not by grammar.
 An obligation is work the author must perform in code or tests.
+Classify by the source behavior, not by modal grammar. A proposed new check,
+validation, write, report, or test is author work even when the source says it
+`can`, `could`, or `would` produce the result. A unit is no-change only when
+the source leaves current behavior allowed, preserved, unchanged, or outside
+the requested error boundary.
 One obligation is a cohesive change that can be implemented and verified
 independently.
 Do not split a list of values governed by one rule into repeated actions.
@@ -89,6 +94,9 @@ own exact boundary.
 For example: `Files containing only intentionally skipped derived rows can remain explicit exclusions; no change is requested for them.`
 Reuse exact source wording for scope and collection phrases; do not replace
 them with inferred member names.
+Before writing, map every requested source unit to either an author-work
+obligation or a no-change constraint. Do not emit until every author-work unit
+appears as an explicit request.
 For each source-backed obligation in a critical, high, or medium finding, make
 its requested status explicit. For exactly one obligation, write one short
 request sentence beginning with `Please` and a direct action verb.
@@ -169,6 +177,19 @@ The fallback also accepts invalid or zero denominators.
 
 Please use separate rules for uncertainty, counts, and positive denominators to keep bad rows in the failure report.
 Empty optional cells can remain allowed.
+```
+
+When modal grammar proposes new author work, keep each obligation explicit:
+
+```md
+**RAV-RUN3-R1-F003 [medium] no-match-order** — Existing output can block an empty sweep
+
+The command checks existing output before it knows whether any models matched.
+
+**Requested actions**
+
+- Require one or more values for `--models`.
+- Add a no-match check before existing-output discovery or publication.
 ```
 
 Keep only evidence that helps the author trust or fix the finding. Do not

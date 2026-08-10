@@ -23,6 +23,7 @@ Use short active declarative sentences for problems and evidence.
 For critical, high, and medium findings, group requested work by cohesive
 implementation obligation, not by grammar. An obligation is work the author
 must perform in code or tests. Do not split values governed by one rule.
+Classify author work by the requested behavior, not by modal grammar.
 Never turn a permission, exception, carve-out, or already-correct behavior into an action bullet.
 Keep a no-change constraint with the action it limits or in short modal prose
 immediately after that action. Treat a required test as author work.
