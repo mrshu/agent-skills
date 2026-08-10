@@ -1,0 +1,33 @@
+{
+  "audited_candidate": "luna",
+  "audit_method": "For every source proposal, identify each post-change behavior and ask whether omitting it leaves the reported defect or required boundary unresolved. Preservation clauses remain constraints; every other necessary behavior must be an explicit author request.",
+  "items": [
+    {"id": 3725747243, "required_actions": ["Use a stable source-run timestamp or deterministic token"], "constraints": ["Keep the required ID shape", "Keep retrieval time in retrieved_timestamp"], "status": "pass"},
+    {"id": 3725747244, "required_actions": ["Add a task-level error boundary"], "constraints": ["Preserve valid logs", "Account for each rejected task"], "status": "pass"},
+    {"id": 3725747245, "required_actions": ["Emit llm_scoring only when the real template is available"], "constraints": ["Keep the sound aggregate conversion intact"], "status": "pass"},
+    {"id": 3725776269, "required_actions": ["Add a nearest-data-ancestor note with the repeated-data example"], "constraints": [], "status": "pass"},
+    {"id": 3725827216, "required_actions": ["Stop identity comparison when check_path_structure owns a path error"], "constraints": [], "status": "pass"},
+    {"id": 3725830951, "required_actions": ["Add a short guidance section"], "constraints": ["The section can state the alias trigger, warning-only result, and single-record evidence limit"], "status": "pass"},
+    {"id": 3725853148, "required_actions": ["Resolve network-mode refs once to a commit SHA"], "constraints": ["Keep offline replay on the stored immutable ref without network access"], "status": "pass"},
+    {"id": 3725853152, "required_actions": ["Use the shared parser in the module entry point", "Add one offline entry-point test covering defaults"], "constraints": [], "status": "pass"},
+    {"id": 3725853155, "required_actions": ["Validate numeric fields as finite values under metric rules", "Enter invalid rows in SourceConversionResult"], "constraints": [], "status": "fail", "missing_explicit_action": "Enter invalid rows in SourceConversionResult"},
+    {"id": 3725853159, "required_actions": ["Store pinned prompt content in new snapshots", "Mark missing prompt content in legacy snapshots"], "constraints": ["Legacy snapshots can leave prompt_template unset"], "status": "fail", "missing_explicit_action": "Mark missing prompt content in legacy snapshots"},
+    {"id": 3725853163, "required_actions": ["Query present-null entries in live mode"], "constraints": ["Keep offline behavior unchanged"], "status": "pass"},
+    {"id": 3725853168, "required_actions": ["Resolve exact canonical IDs first", "Resolve normalized spellings only when one organization owns them"], "constraints": [], "status": "pass"},
+    {"id": 3725913004, "required_actions": ["Stage complete output before publication", "Reject existing logical output until replacement is atomic"], "constraints": ["Keep sidecar validation streaming"], "status": "fail", "missing_explicit_action": "Reject existing logical output until replacement is atomic"},
+    {"id": 3725913007, "required_actions": ["Use data/<collection> for smoke output", "Pass a quoted fixed-depth file glob to validation"], "constraints": [], "status": "pass"},
+    {"id": 3725913013, "required_actions": ["Enter invalid scores in the failure report", "Omit incomplete token usage"], "constraints": ["Base token means only on complete values"], "status": "pass"},
+    {"id": 3725913015, "required_actions": ["Use evaluation_name to distinguish tasks"], "constraints": ["Keep accuracy as the metric ID"], "status": "pass"},
+    {"id": 3725913021, "required_actions": ["Require at least one path for --parquet"], "constraints": [], "status": "pass"},
+    {"id": 3725972277, "required_actions": ["Integrate current main before moving the adapter and references"], "constraints": ["Move under every_eval_ever/adapters/open_medical_llm"], "status": "pass"},
+    {"id": 3725972282, "required_actions": ["Derive the expected value from the imported schema version"], "constraints": [], "status": "pass"},
+    {"id": 3725972285, "required_actions": ["Use task-specific evaluation names to preserve benchmark identity"], "constraints": ["Keep accuracy as the metric ID"], "status": "pass"},
+    {"id": 3725972287, "required_actions": ["Reject existing output JSON before UUID generation or batch publication"], "constraints": [], "status": "pass"},
+    {"id": 3726043665, "required_actions": ["Use the batch publisher for new or empty targets", "Fail by default for symlinks, roots, and populated targets until replacement has an ownership manifest"], "constraints": [], "status": "fail", "missing_explicit_action": "Fail by default for symlinks, roots, and populated targets"},
+    {"id": 3726043671, "required_actions": ["Use metric cells as the source unit", "Count each attempted or rejected cell once", "Retain row references for malformed objects and missing datasets"], "constraints": [], "status": "pass"},
+    {"id": 3726043679, "required_actions": ["Restrict tolerance to scale classification", "Add a strict pre-publication check for unproven overruns"], "constraints": [], "status": "fail", "missing_explicit_action": "Restrict tolerance to scale classification"},
+    {"id": 3726043682, "required_actions": ["Set a unit only when the canonical contract or an explicit conversion proves it"], "constraints": ["Otherwise leave the unit unset", "Keep pwc_scale in details"], "status": "pass"}
+  ],
+  "summary": {"pass": 20, "fail": 5},
+  "decision": "The preselected Luna output fails the holdout action-lock gate. Sol cannot replace it post hoc because the finalist protocol froze Luna before opening the holdout."
+}

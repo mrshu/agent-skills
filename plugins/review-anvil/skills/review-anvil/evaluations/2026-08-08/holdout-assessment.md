@@ -57,13 +57,31 @@ Claude Opus scored the representative output as follows:
 
 The other three judges also selected Luna on every holdout comment. The largest gain was action recall: the historical modal suggestions frequently described a possible mechanism without explicitly stating that the author should implement it.
 
-## Decision
+## Manual action-lock audit
 
-The holdout confirms the iteration-eight contract:
+The four fact judges treated retained words as complete preservation. A
+source-unit audit found that the frozen Luna output left five necessary
+post-change behaviors as modal prose rather than explicit author requests:
 
-- every generated candidate preserved all judged technical facts and boundaries;
-- the preselected representative received 100/100 readability wins;
-- no true baseline preference remained after inspecting label/rationale consistency;
-- gains generalized to comments and PRs absent from every development artifact.
+- `3725853155`: enter invalid rows in `SourceConversionResult`;
+- `3725853159`: mark missing prompt content in legacy snapshots;
+- `3725913004`: reject existing logical output until replacement is atomic;
+- `3726043665`: fail by default for symlinks, roots, and populated targets;
+- `3726043679`: restrict tolerance to scale classification.
 
-Iteration eight passes the holdout and advances to final contract selection and repository verification.
+The complete 25-comment audit is in `holdout-action-lock-audit.json`. It applies
+a counterfactual test to every proposed behavior: if omitting the behavior
+leaves the reported defect or a required boundary unresolved, it is author
+work regardless of modal wording. Explicit preservation clauses remain
+constraints.
+
+## Amended decision
+
+Iteration eight does not pass the sealed holdout. The representative Luna
+output fails five of 25 action locks even though the text remains factually
+present and readability judges prefer it. Sol makes those actions explicit,
+but cannot replace Luna post hoc because `holdout-finalists.json` froze Luna
+before the holdout was opened.
+
+Iteration eight remains a useful readability result and a diagnostic for the
+next contract. It does not advance to final selection.

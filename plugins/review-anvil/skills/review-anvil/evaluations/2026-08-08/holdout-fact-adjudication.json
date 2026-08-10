@@ -7,7 +7,16 @@
   },
   "total_fact_safe_judgments": 300,
   "total_fact_loss_judgments": 0,
-  "adjudications": [],
-  "gate": "passed",
-  "gate_reason": "Every one-shot holdout generator output received 25/25 fact-safe judgments from Claude Opus and all three GPT judges."
+  "manual_action_lock_audit": {
+    "candidate": "luna",
+    "pass": 20,
+    "fail": 5,
+    "artifact": "holdout-action-lock-audit.json",
+    "missed_ids": [3725853155, 3725853159, 3725913004, 3726043665, 3726043679]
+  },
+  "adjudications": [
+    "All four fact judges missed five requested behaviors that Luna retained only as modal prose. These are action-lock losses even though the words remain present."
+  ],
+  "gate": "failed_after_manual_audit",
+  "gate_reason": "The frozen representative output leaves five necessary post-change behaviors outside explicit author requests. Judge unanimity cannot override the source-unit audit."
 }
