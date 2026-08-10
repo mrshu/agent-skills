@@ -1,0 +1,208 @@
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 3, "scanability": 3, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 5, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "B",
+      "reason": "B states the test work as an explicit request (\"Add mismatched source and `collection_override` tests\"), while A buries it in the hedge \"tests would cover this path\"; the bullets also separate the guard change from the test as two checkable items."
+    },
+    {
+      "id": 3737044354,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 3, "scanability": 3, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "Two genuinely independent deliverables (retain old files, add a mid-write failure test) are each visible as bullets in A; B's \"would cover this path\" phrasing makes the test read as optional commentary."
+    },
+    {
+      "id": 3737044361,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 3, "cognitive_ease": 3}
+      },
+      "winner": "A",
+      "reason": "There is one change plus one \"no change needed\" allowance; A's \"can still drive\" marks that clearly, whereas B's repeated \"Keep… / Keep…\" bullets flatten a preservation note into a second work item."
+    },
+    {
+      "id": 3737044371,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 3, "cognitive_ease": 3}
+      },
+      "winner": "A",
+      "reason": "A's verb phrase \"atomically replace the report\" names actor and action directly; B's \"use an atomic report replacement\" turns the same instruction into a noun stack at the head of an already long sentence."
+    },
+    {
+      "id": 3737053181,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "The two versions are word-for-word identical, so neither can help the author more."
+    },
+    {
+      "id": 3737053197,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 3, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "Only one change is requested; A's \"Empty optional cells can remain allowed\" reads as the exception it is, while B's imperative bullet \"Keep empty optional cells allowed\" under a \"Requested actions\" heading implies a second task."
+    },
+    {
+      "id": 3737053204,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 3, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A's second sentence (\"Expected 401 responses can keep their current handling\") clearly scopes the fix; B recasts that same exception as a bullet action about a \"current handling path,\" adding template noise for a single change."
+    },
+    {
+      "id": 3737181823,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 3, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "The request is one deferral plus an explicit carve-out; A states the carve-out with \"can keep the current warning path,\" while B's second bullet reads as extra work under a \"Requested actions\" heading."
+    },
+    {
+      "id": 3737266652,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 3, "naturalness": 4, "cognitive_ease": 3},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "B",
+      "reason": "B splits the constraint into its own sentence (\"Unexpected program or infrastructure errors can remain visible\"), where A's trailing \"while leaving … visible\" clause stacks the catch scope and the exclusion into one dense sentence."
+    },
+    {
+      "id": 3737266656,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "The only difference is \"once to keep\" versus \"once, keeping\"; both convey the same single action and the same two preserved properties with equal effort."
+    },
+    {
+      "id": 3737266661,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 3, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "B",
+      "reason": "For one short action plus one exit-code constraint, B's single sentence (\"save the shared report for either collection while keeping the nonzero exit conditional on failures\") carries everything A needs a heading and two bullets to say."
+    },
+    {
+      "id": 3737291965,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 3, "scanability": 3, "naturalness": 4, "cognitive_ease": 3}
+      },
+      "winner": "A",
+      "reason": "Three separately checkable items (reject directory-target symlinks, preserve file-symlink behavior, add two kinds of tests) are each visible in A; B compresses them into a \"while keeping\" clause plus a hedged \"would cover the boundary\" sentence."
+    },
+    {
+      "id": 3737383919,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 5, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 3, "scanability": 3, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A names the target flag (\"Require one or more values for `--models`\") and states the no-match check as a requested action; B drops the flag name and softens the second fix to \"A no-match check can stop before…\"."
+    },
+    {
+      "id": 3737383922,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "The two versions are identical in wording and structure."
+    },
+    {
+      "id": 3737449039,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 3, "naturalness": 4, "cognitive_ease": 3}
+      },
+      "winner": "A",
+      "reason": "After the four-part ID recipe, A gives the retrieval-time constraint its own sentence; B's semicolon appends it to an already long enumeration, so the second requirement is easy to miss on one read."
+    },
+    {
+      "id": 3737449052,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 3, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "B",
+      "reason": "B's \"can stay explicit exclusions\" tells the author no work is needed for that class, whereas A's parallel bullet under \"Requested actions\" makes a possibly no-op preservation look like a second task."
+    },
+    {
+      "id": 3737449059,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "Both versions are the same text, including the single \"keep both counts visible\" request."
+    },
+    {
+      "id": 3737449070,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 3, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "B",
+      "reason": "The second item is a permission, not a task; B's \"Unresolved keys can be reported after the valid metrics are preserved\" says so, while A's imperative \"Allow unresolved keys to be reported\" bullet inflates the requested-work list."
+    },
+    {
+      "id": 3737449081,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "The two versions are identical, down to the single mapping-reuse request."
+    },
+    {
+      "id": 3737449090,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "Identical wording in both versions, so comprehension is the same."
+    },
+    {
+      "id": 3737449098,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "The two versions are the same text describing one requested file-result path."
+    },
+    {
+      "id": 3737449101,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 5, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 3, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A lists the provider-prefixed-key tests as a requested action; B's \"Tests … would cover the reachable path\" leaves it unclear whether the author must write them."
+    }
+  ],
+  "winner_counts": {"A": 10, "B": 5, "tie": 7},
+  "mean_scores": {
+    "A": {"defect_clarity": 4.18, "action_recall": 4.18, "scanability": 3.95, "naturalness": 4.05, "cognitive_ease": 3.95},
+    "B": {"defect_clarity": 4.18, "action_recall": 3.86, "scanability": 3.82, "naturalness": 3.77, "cognitive_ease": 3.82}
+  },
+  "summary": "Both versions open with the same strong pattern — a labeled one-line defect statement followed by the triggering condition — so defect clarity is effectively equal, and seven pairs are textually identical. The differences are all in the closing request: an explicit \"Requested actions\" list wins whenever a test or a second real change would otherwise be softened into \"would cover this path\", and loses whenever it recasts an exception or a no-op preservation as an imperative bullet. Version A lands on the better side of that split more often, mainly by naming tests as requested work and by keeping carve-outs in modal prose."
+}
