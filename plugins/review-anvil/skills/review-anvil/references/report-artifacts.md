@@ -78,6 +78,12 @@ new actor-action-target obligation separately from the modal boundary.
 If a new mechanism is needed to resolve the described failure, request the
 mechanism and keep its permitted behavior as modal prose. Do not infer
 mandatory work from a standalone permission or allowed follow-up.
+Apply an omission counterfactual to every proposed post-change behavior.
+If omitting it leaves the reported defect or a required boundary unresolved, it is author work.
+Classify each predicate independently when one sentence mixes preservation and new behavior. A modal verb does not make necessary
+post-change behavior optional. Words such as `remain`, `keep`, `leave`,
+`unchanged`, or `still` can identify preservation only when the source says
+that behavior is already acceptable.
 One obligation is a cohesive change that can be implemented and verified
 independently.
 Do not split a list of values governed by one rule into repeated actions.
@@ -195,6 +201,27 @@ The command checks existing output before it knows whether any models matched.
 - Add a no-match check.
 
 It can stop before existing-output discovery or publication.
+```
+
+Apply the counterfactual to each predicate in a compound modal sentence:
+
+```md
+**Requested actions**
+
+- Validate numeric fields as finite values under their metric rules.
+- Enter invalid rows in `SourceConversionResult`.
+```
+
+The second action is required because validation still drops invalid rows
+without it. Preserve only a true no-change boundary:
+
+```md
+**Requested actions**
+
+- Use the batch publisher for new or empty targets.
+- Fail by default for symlinks, roots, and populated targets.
+
+Replacement can remain blocked until it has an explicit ownership manifest.
 ```
 
 A standalone permission remains prose:

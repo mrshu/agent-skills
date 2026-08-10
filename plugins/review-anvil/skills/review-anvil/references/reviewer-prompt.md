@@ -199,6 +199,9 @@ For each issue, return a structured finding with these keys:
   actor-action-target change and retain its permitted behavior as modal prose.
   Do not infer mandatory work from a standalone permission or allowed
   follow-up.
+  Use the omission counterfactual for every proposed post-change behavior.
+  If omitting one predicate leaves the reported defect or a required boundary
+  unresolved, classify that predicate as author work even when it uses a modal.
   Do not count a preservation constraint, permission, carve-out, exception, or
   already-correct behavior as a separate obligation. Keep it with the action
   it limits, or use short modal prose immediately after that action when one
