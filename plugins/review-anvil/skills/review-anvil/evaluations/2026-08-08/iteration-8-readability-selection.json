@@ -1,0 +1,21 @@
+{
+  "fact_safe_candidates": ["sol", "luna"],
+  "head_to_head_winner_counts": {
+    "claude": {"sol": 3, "luna": 1, "tie": 18},
+    "sol": {"sol": 1, "luna": 3, "tie": 18},
+    "luna": {"sol": 0, "luna": 2, "tie": 20},
+    "terra": {"sol": 1, "luna": 3, "tie": 18},
+    "total": {"sol": 5, "luna": 9, "tie": 74}
+  },
+  "selected_candidate": "luna",
+  "selection_reason": "Luna won the cross-judge head-to-head. Claude preferred Sol on three comments, chiefly for detached preservation constraints and the pronoun in the no-match boundary; all four judges found the differences small and tied at least 18 of 22 comments.",
+  "baseline_winner_counts": {
+    "claude": {"baseline": 0, "luna": 5, "tie": 17},
+    "sol": {"baseline": 0, "luna": 5, "tie": 17},
+    "luna": {"baseline": 0, "luna": 5, "tie": 17},
+    "terra": {"baseline": 0, "luna": 4, "tie": 18},
+    "total": {"baseline": 0, "luna": 19, "tie": 69}
+  },
+  "gate": "passed",
+  "tradeoff": "Explicit action grouping improved recall and scanability. Three judges scored naturalness slightly lower on average, although none selected the baseline as the better complete comment."
+}

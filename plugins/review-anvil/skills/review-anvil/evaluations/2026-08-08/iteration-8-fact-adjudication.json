@@ -1,0 +1,25 @@
+{
+  "raw_fact_safe_counts": {
+    "claude": {"sol": 22, "luna": 22, "terra": 22},
+    "sol": {"sol": 22, "luna": 22, "terra": 22},
+    "luna": {"sol": 22, "luna": 22, "terra": 21},
+    "terra": {"sol": 22, "luna": 22, "terra": 21}
+  },
+  "unanimously_fact_safe_candidates": ["sol", "luna"],
+  "material_rulings": [
+    {
+      "id": 3737383919,
+      "candidate": "terra",
+      "ruling": "confirmed_fact_loss",
+      "reason": "The validation action says only one or more values and no longer names the `--models` option."
+    },
+    {
+      "id": 3737042592,
+      "candidate": "terra",
+      "ruling": "confirmed_fact_loss",
+      "reason": "The mismatched-source and collection-override tests no longer explicitly cover the mismatched collection-directory path."
+    }
+  ],
+  "gate": "passed",
+  "gate_reason": "Sol and Luna each received 88/88 fact-safe judgments across Claude Opus and the three GPT judges."
+}
