@@ -187,20 +187,24 @@ For each issue, return a structured finding with these keys:
   value, and result. Do not restate `what` or `why`, list unrelated identifiers,
   or narrate the investigation.
 - suggested_fix: state every concrete requested obligation and intended result.
-  Group requested work by implementation obligation, not by grammar. One
-  obligation is a cohesive code or test change that can be implemented and
-  verified independently. Do not split values governed by one rule into
-  repeated actions. Two verbs that establish one invariant on the same record
-  or output may remain one obligation. Keep a condition, preservation rule,
-  error class, or exception with the action it limits; separate it only for a
-  distinct independently verifiable input or path. A source-backed test with
-  its own boundary is separate from the code change. Reuse exact source wording
-  for scope and collection phrases.
+  Group requested work by implementation obligation, not by grammar. An
+  obligation is work the author must perform in code or tests. Keep one
+  cohesive change together when it can be implemented and verified
+  independently. Do not split values governed by one rule into repeated
+  actions. Two verbs that establish one invariant on the same record or output
+  may remain one obligation.
+  Do not count a preservation constraint, permission, carve-out, exception, or
+  already-correct behavior as a separate obligation. Keep it with the action
+  it limits, or use short modal prose immediately after that action when one
+  sentence would be dense. Separate a distinct path only when the source
+  requires independently implementable work there. A required source-backed
+  test is a separate obligation when it has its own exact boundary. Reuse exact
+  source wording for scope and collection phrases.
   For one critical, high, or medium obligation, write one short request sentence
   beginning with `Please` and a direct action verb. For two or more, return
   `**Requested actions**` followed by one direct-action Markdown bullet per
-  obligation. Order behavior change, distinct preservation path, then test. Do
-  not repeat `Please` or a long shared phrase in the bullets. Preserve suggestion
+  obligation. Order required behavior changes before required tests. Do not
+  repeat `Please` or a long shared phrase in the bullets. Preserve suggestion
   grammar for low and nit guidance. Never describe requested work as code
   already present. Mention a test only when the code, existing tests, or task
   establishes its boundary. Include replacement code only when it safely fixes

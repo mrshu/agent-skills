@@ -1,0 +1,116 @@
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {"A": "fact_safe", "B": "fact_loss", "C": "fact_safe"},
+      "fact_losses": ["B: drops the stated remediation outcome that resolving every supplied reference once makes all file URLs reproducible, losing the 'all file URLs' scope of the fix"]
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_loss"},
+      "fact_losses": ["C: adds 'no change is requested for that path', which negates the source's proposed no-match check stopping before existing-output discovery or publication"]
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    }
+  ],
+  "fact_safe_counts": {"A": 22, "B": 21, "C": 21},
+  "summary": "Nearly all candidates preserved the source ID, severity, area, mechanism, scope, diagnostic modality ('can'), quantifiers, and error classes, and they converted suggestive remediation into explicit requests without broadening the action, target, or exception. Two candidates lost material content: B on 3737266656 dropped the reproducibility outcome covering all file URLs, and C on 3737383919 asserted that no change was requested for the no-match check path, negating a source-proposed obligation. Remaining variations were phrasing of the same requested action or omission of a purely purposive 'to cover this path' clause while the exact test boundary stayed intact."
+}

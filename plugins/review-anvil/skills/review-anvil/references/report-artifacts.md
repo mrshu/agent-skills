@@ -67,34 +67,43 @@ Do not replace technical verbs, quantifiers, or scope words.
 Preserve modals that express diagnostic certainty.
 Treat remediation as a requested change, not as observed code.
 Prefer a direct verb with a concrete target, condition, or destination.
-Prefer `Keep X as Y`, `Record X in Y`, or `Leave X visible` over abstract state
-phrases such as `X can stay Y`. For example: `Keep files with only intentionally skipped derived rows as explicit exclusions.`
+Use an imperative only for work the author must perform. Use modal prose for
+behavior that may remain unchanged.
 Do not force an actor or destination that the source does not establish.
 Group requested work by implementation obligation, not by grammar.
-One obligation is a cohesive code or test change that can be implemented and
-verified independently.
+An obligation is work the author must perform in code or tests.
+One obligation is a cohesive change that can be implemented and verified
+independently.
 Do not split a list of values governed by one rule into repeated actions.
 Two verbs that establish one invariant on the same record or output may remain
 one obligation.
-A condition, preservation rule, error class, or exception stays with the action
-it limits. Make it separate only when it governs a distinct input or code path
-that can be verified independently.
-A source-backed test with its own boundary is separate from the code change.
+A preservation constraint, permission, carve-out, exception, or
+already-correct behavior is not a separate obligation.
+Keep a no-change constraint out of `**Requested actions**`.
+Keep it with the action it limits. State it as short modal prose immediately
+after the action it limits when combining them would make the request dense.
+Make a distinct path separate only when the source requires the author to
+change that path independently.
+A required source-backed test is author work and is separate when it has its
+own exact boundary.
+For example: `Files containing only intentionally skipped derived rows can remain explicit exclusions; no change is requested for them.`
 Reuse exact source wording for scope and collection phrases; do not replace
 them with inferred member names.
-For each source-backed action in a critical, high, or medium finding, make its
-requested status explicit. For exactly one obligation, write one short request
-sentence beginning with `Please` and a direct action verb.
+For each source-backed obligation in a critical, high, or medium finding, make
+its requested status explicit. For exactly one obligation, write one short
+request sentence beginning with `Please` and a direct action verb.
 For two or more independently implementable obligations, use this form:
 
 ```md
 **Requested actions**
 
 - <Direct verb, target, and necessary condition or destination.>
-- <Direct verb and distinct preserved path or exact test boundary.>
+- <Direct verb, target, and a distinct implementation or exact test boundary.>
 ```
 
-Order the bullets as behavior change, distinct preservation path, then test.
+Order required behavior changes before required tests. Keep no-change
+constraints with the action they limit or in the modal prose immediately after
+it.
 Do not repeat `Please` in the bullets; the heading establishes request mode.
 Avoid repeating a long shared phrase across bullets.
 Keep suggestion grammar for low and nit guidance.
@@ -149,6 +158,17 @@ The changed handler reads missing fields and fails before conversion.
 
 - Use the shared top-level parser in the module entry point.
 - Add one offline entry-point test.
+```
+
+When one code change has a no-change constraint, keep the constraint in prose:
+
+```
+**RAV-RUN3-R1-F002 [medium] input-validation** — Invalid populated cells become absent values
+
+The fallback also accepts invalid or zero denominators.
+
+Please use separate rules for uncertainty, counts, and positive denominators to keep bad rows in the failure report.
+Empty optional cells can remain allowed.
 ```
 
 Keep only evidence that helps the author trust or fix the finding. Do not

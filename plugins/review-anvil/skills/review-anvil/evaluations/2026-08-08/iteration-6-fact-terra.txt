@@ -1,0 +1,120 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "fact_status": {"A": "fact_safe", "B": "fact_loss", "C": "fact_safe"},
+      "fact_losses": ["B: The requested mismatched source and `collection_override` tests no longer specify that they cover this path."]
+    },
+    {
+      "id": 3737044354,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_loss"},
+      "fact_losses": ["C: The requested mid-write failure test across several routes no longer specifies that it covers this path."]
+    },
+    {
+      "id": 3737044361,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737044371,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737053181,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737053197,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737053204,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737181823,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737266652,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737266656,
+      "fact_status": {"A": "fact_safe", "B": "fact_loss", "C": "fact_safe"},
+      "fact_losses": ["B: The requested resolution of every supplied reference no longer preserves the requirement to make all file URLs reproducible."]
+    },
+    {
+      "id": 3737266661,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737291965,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737383919,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_loss"},
+      "fact_losses": ["C: It states that no change is requested for the no-match path, contradicting the requested no-match check before existing-output discovery or publication."]
+    },
+    {
+      "id": 3737383922,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449039,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449052,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449059,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449070,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449081,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449090,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449098,
+      "fact_status": {"A": "fact_safe", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": []
+    },
+    {
+      "id": 3737449101,
+      "fact_status": {"A": "fact_loss", "B": "fact_safe", "C": "fact_safe"},
+      "fact_losses": ["A: The requested provider-prefixed-key tests no longer specify that they cover the reachable path."]
+    }
+  ],
+  "fact_safe_counts": {"A": 21, "B": 20, "C": 20},
+  "summary": "Most candidates preserve the source findings and requested remediation. The fact losses weaken exact test boundaries, omit the all-file-URLs reproducibility outcome, or explicitly deny a requested no-match-path change."
+}
+
+
+Wall time: 94.71 seconds

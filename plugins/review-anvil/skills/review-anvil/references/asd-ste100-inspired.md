@@ -21,8 +21,11 @@ Use active voice or a direct imperative. Name the actor when it matters.
 
 Use short active declarative sentences for problems and evidence.
 For critical, high, and medium findings, group requested work by cohesive
-implementation obligation, not by grammar. Do not split values governed by one
-rule. Keep a constraint or exception with the action it limits.
+implementation obligation, not by grammar. An obligation is work the author
+must perform in code or tests. Do not split values governed by one rule.
+Never turn a permission, exception, carve-out, or already-correct behavior into an action bullet.
+Keep a no-change constraint with the action it limits or in short modal prose
+immediately after that action. Treat a required test as author work.
 Use `Please` plus an action verb for one obligation. For two or more
 independently implementable obligations, use `**Requested actions**` and one
 direct-action bullet per obligation. Preserve suggestion grammar for low and

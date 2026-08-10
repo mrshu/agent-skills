@@ -1,0 +1,244 @@
+{
+  "source_repo": "evaleval/every_eval_ever",
+  "captured_at": "2026-08-10T13:20:35Z",
+  "selection_rule": "Select pull-request inline comments whose bodies start with **RAV and whose IDs and verbatim bodies are absent from every pre-existing 2026-08-08 evaluation artifact; prefer comments created on or after 2026-08-08T00:00:00Z, then supplement from the newest absent historical comments; sort entries by numeric ID.",
+  "inline_comment_count": 25,
+  "pr_numbers": [
+    190,
+    203,
+    204,
+    209,
+    220,
+    223,
+    227,
+    230
+  ],
+  "sha256": "71a5aec66fc5cf7fc0c44b4b903e398f384ca62d4773c0b80dcf3e931287725a",
+  "inline_comments": [
+    {
+      "id": 3725747243,
+      "pr": 220,
+      "created_at": "2026-08-06T03:45:51Z",
+      "path": "every_eval_ever/converters/sayf_eval/adapter.py",
+      "line": 364,
+      "body": "**RAV-RUN1-R1-F003 [high] record-identity** — `evaluation_id` changes every time the same record is converted\n\nThe current clock supplies this ID segment. An unchanged source run therefore becomes a new logical evaluation on each conversion.\n\nA stable source-run timestamp or deterministic token can keep the required ID shape while `retrieved_timestamp` records retrieval time.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/220#discussion_r3725747243"
+    },
+    {
+      "id": 3725747244,
+      "pr": 220,
+      "created_at": "2026-08-06T03:45:51Z",
+      "path": "every_eval_ever/converters/sayf_eval/adapter.py",
+      "line": 422,
+      "body": "**RAV-RUN1-R1-F005 [high] partial-conversion** — One invalid task discards valid sibling task logs\n\nThis loop builds logs locally, but any later exception exits the whole file conversion. The directory path then records one file failure and loses logs that were already valid.\n\nA task-level error boundary can preserve valid logs and account for each rejected task.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/220#discussion_r3725747244"
+    },
+    {
+      "id": 3725747245,
+      "pr": 220,
+      "created_at": "2026-08-06T03:45:51Z",
+      "path": "every_eval_ever/converters/sayf_eval/adapter.py",
+      "line": 164,
+      "body": "**RAV-RUN1-R1-F007 [medium] judge-metadata** — `input_prompt` receives a scoring description instead of the judge prompt\n\n`LlmScoring.input_prompt` represents the actual prompt template. The fallback also invents prompt text when the record has none.\n\nThe sound aggregate conversion can remain intact if `llm_scoring` is emitted only when the real template is available.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/220#discussion_r3725747245"
+    },
+    {
+      "id": 3725776269,
+      "pr": 227,
+      "created_at": "2026-08-06T03:54:03Z",
+      "path": "every_eval_ever/helpers/io.py",
+      "line": null,
+      "body": "**RAV-RUN1-R1-F002 [medium] report-placement** — A nested `data` component can keep the report inside an outer datastore tree\n\nThe helper selects the nearest ancestor named `data`. For `data/outer/data/collection`, it writes below `data/outer/adapter_reports`, which conflicts with the stated outside-tree guarantee.\n\nA note that the nearest `data` ancestor wins, plus this repeated-`data` example, would make the placement limit clear.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/227#discussion_r3725776269"
+    },
+    {
+      "id": 3725827216,
+      "pr": 223,
+      "created_at": "2026-08-06T04:09:17Z",
+      "path": "every_eval_ever/validator/validation_core.py",
+      "line": null,
+      "body": "**RAV-RUN1-R1-F003 [medium] path-check-ownership** — Other malformed paths can receive both a path error and an identity warning\n\nThis guard checks only path depth. A five-component path with a nonportable developer or model component continues into the identity comparison, so both checks report the same bad path.\n\nIdentity comparison can stop whenever `check_path_structure` already owns a path error.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/223#discussion_r3725827216"
+    },
+    {
+      "id": 3725830951,
+      "pr": 230,
+      "created_at": "2026-08-06T04:10:25Z",
+      "path": "every_eval_ever/validator/validation_core.py",
+      "line": 795,
+      "body": "**RAV-RUN1-R1-F004 [medium] contributor-guidance** — The new registered warning is missing from the required datastore gate guide\n\nThe repository instructions require contributor guidance with validator changes and name `.claude/skills/eee-dataset-conversion/reference/datastore-gate.md` as the rule location. This PR adds the check but does not update that guide.\n\nA short section can state the alias trigger, warning-only result, and single-record evidence limit.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/230#discussion_r3725830951"
+    },
+    {
+      "id": 3725853148,
+      "pr": 190,
+      "created_at": "2026-08-06T04:17:11Z",
+      "path": "every_eval_ever/converters/alpaca_eval/adapter.py",
+      "line": 976,
+      "body": "**RAV-RUN2-R1-F002 [medium] reproducibility** — Branch and tag refs are used in stable IDs and provenance URLs without commit resolution. Two network runs can fetch different input under the same identity.\n\nNetwork-mode refs can resolve once to a commit SHA. Offline replay can keep the stored immutable ref without network access.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/190#discussion_r3725853148"
+    },
+    {
+      "id": 3725853152,
+      "pr": 190,
+      "created_at": "2026-08-06T04:17:11Z",
+      "path": "every_eval_ever/cli.py",
+      "line": 392,
+      "body": "**RAV-RUN2-R1-F003 [medium] cli** — The module entry point builds the old argument namespace. This handler now reads missing fields and fails before conversion.\n\nThe module entry point can use the shared parser, with one offline entry-point test covering its defaults.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/190#discussion_r3725853152"
+    },
+    {
+      "id": 3725853155,
+      "pr": 190,
+      "created_at": "2026-08-06T04:17:11Z",
+      "path": "every_eval_ever/converters/alpaca_eval/adapter.py",
+      "line": 307,
+      "body": "**RAV-RUN2-R1-F005 [medium] input-validation** — Populated invalid `win_rate` values bypass row-level failure handling. They can omit the headline metric or abort strict JSON publication.\n\nNumeric fields can validate as finite values under their metric rules before result construction. Invalid rows can enter `SourceConversionResult`.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/190#discussion_r3725853155"
+    },
+    {
+      "id": 3725853159,
+      "pr": 190,
+      "created_at": "2026-08-06T04:17:11Z",
+      "path": "every_eval_ever/converters/alpaca_eval/adapter.py",
+      "line": null,
+      "body": "**RAV-RUN2-R1-F007 [medium] generation-provenance** — `GenerationArgs.prompt_template` contains an upstream path instead of prompt content. Offline records cannot reconstruct the generation prompt.\n\nNew snapshots can store pinned prompt content. Legacy snapshots can leave this typed value unset and mark the missing content.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/190#discussion_r3725853159"
+    },
+    {
+      "id": 3725853163,
+      "pr": 190,
+      "created_at": "2026-08-06T04:17:11Z",
+      "path": "every_eval_ever/helpers/eval_card_registry.py",
+      "line": 251,
+      "body": "**RAV-RUN2-R1-F009 [medium] registry-resolution** — Live mode skips keys whose vendored value is null. A known gap cannot discover a new registry entry until the snapshot refreshes.\n\nLive mode can query present-null entries while offline behavior remains unchanged.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/190#discussion_r3725853163"
+    },
+    {
+      "id": 3725853168,
+      "pr": 190,
+      "created_at": "2026-08-06T04:17:11Z",
+      "path": "every_eval_ever/tools/refresh_eval_card_registry.py",
+      "line": null,
+      "body": "**RAV-RUN2-R1-F011 [medium] registry-identity** — Normalized organization collisions can rewrite an exact canonical ID to another canonical organization.\n\nExact canonical IDs can win first. Normalized spellings can resolve only when one organization owns them.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/190#discussion_r3725853168"
+    },
+    {
+      "id": 3725913004,
+      "pr": 203,
+      "created_at": "2026-08-06T04:33:46Z",
+      "path": "utils/wild/adapter.py",
+      "line": null,
+      "body": "**RAV-RUN2-R1-F001 [high] instance-publication** — Instance mode passes a sidecar basename where the schema requires a canonical datastore path. Construction fails after aggregate and sidecar files are written.\n\nComplete output can stage before publication. Existing logical output can be rejected until replacement is atomic, with sidecar validation kept streaming.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/203#discussion_r3725913004"
+    },
+    {
+      "id": 3725913007,
+      "pr": 203,
+      "created_at": "2026-08-06T04:33:46Z",
+      "path": "utils/wild/README.md",
+      "line": null,
+      "body": "**RAV-RUN2-R1-F002 [medium] documentation** — This smoke command passes a directory to a file-only validator. Its output root also cannot satisfy datastore path checks.\n\nSmoke output can use the required `data/<collection>` path, and validation can receive a quoted fixed-depth file glob.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/203#discussion_r3725913007"
+    },
+    {
+      "id": 3725913013,
+      "pr": 203,
+      "created_at": "2026-08-06T04:33:46Z",
+      "path": "utils/wild/adapter.py",
+      "line": null,
+      "body": "**RAV-RUN2-R1-F004 [medium] data-validation** — Missing scores become incorrect answers and stay in aggregate denominators. Missing token data becomes measured zero instead of being omitted.\n\nInvalid scores can enter the failure report. Incomplete token usage can be omitted, with token means based only on complete values.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/203#discussion_r3725913013"
+    },
+    {
+      "id": 3725913015,
+      "pr": 203,
+      "created_at": "2026-08-06T04:33:46Z",
+      "path": "utils/wild/adapter.py",
+      "line": null,
+      "body": "**RAV-RUN2-R1-F005 [medium] metric-identity** — Each task receives a different metric ID even though every result is canonical accuracy. Cross-source joins by metric ID become fragmented.\n\n`accuracy` can remain the metric ID while `evaluation_name` distinguishes tasks.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/203#discussion_r3725913015"
+    },
+    {
+      "id": 3725913021,
+      "pr": 203,
+      "created_at": "2026-08-06T04:33:46Z",
+      "path": "utils/wild/adapter.py",
+      "line": null,
+      "body": "**RAV-RUN2-R1-F011 [medium] cli** — A bare `--parquet` flag yields an empty list. The adapter treats that as no local input and silently starts the full remote 15-shard conversion.\n\nThe option can require at least one path.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/203#discussion_r3725913021"
+    },
+    {
+      "id": 3725972277,
+      "pr": 204,
+      "created_at": "2026-08-06T04:50:32Z",
+      "path": "utils/open_medical_llm/adapter.py",
+      "line": null,
+      "body": "**RAV-RUN2-R1-F002 [medium] repository-integration** — This adapter remains under the retired `utils` layout. Installed packages include `every_eval_ever*`, so the adapter and its documented command are outside the active package.\n\nCurrent main can be integrated before moving the adapter and references under `every_eval_ever/adapters/open_medical_llm`.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/204#discussion_r3725972277"
+    },
+    {
+      "id": 3725972282,
+      "pr": 204,
+      "created_at": "2026-08-06T04:50:32Z",
+      "path": "tests/test_open_medical_llm_adapter.py",
+      "line": null,
+      "body": "**RAV-RUN2-R1-F003 [medium] schema-compatibility** — This assertion requires schema `0.2.2`, while current main emits `0.3.0`. The test fails after integration.\n\nThe expected value can come from the imported schema version.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/204#discussion_r3725972282"
+    },
+    {
+      "id": 3725972285,
+      "pr": 204,
+      "created_at": "2026-08-06T04:50:32Z",
+      "path": "utils/open_medical_llm/adapter.py",
+      "line": null,
+      "body": "**RAV-RUN2-R1-F004 [medium] metric-identity** — Ordinary accuracy receives nine benchmark-specific metric IDs. This fragments the global accuracy join key.\n\n`accuracy` can remain the metric ID while task-specific evaluation names preserve benchmark identity.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/204#discussion_r3725972285"
+    },
+    {
+      "id": 3725972287,
+      "pr": 204,
+      "created_at": "2026-08-06T04:50:32Z",
+      "path": "utils/open_medical_llm/adapter.py",
+      "line": null,
+      "body": "**RAV-RUN2-R1-F006 [medium] publication** — Repeat runs add a fresh UUID file for each stable evaluation ID. A populated target can hold duplicate logical records.\n\nThe collection target can reject existing output JSON before UUID generation or batch publication.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/204#discussion_r3725972287"
+    },
+    {
+      "id": 3726043665,
+      "pr": 209,
+      "created_at": "2026-08-06T05:08:35Z",
+      "path": "utils/paperswithcode/adapter.py",
+      "line": null,
+      "body": "**RAV-RUN2-R1-F001 [critical] publication-safety** — The adapter recursively deletes the selected output tree before publication. Empty batches and later write failures can destroy prior or unrelated data.\n\nNew or empty targets can use the batch publisher. Symlinks, roots, and populated targets can fail by default until replacement has an explicit ownership manifest.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/209#discussion_r3726043665"
+    },
+    {
+      "id": 3726043671,
+      "pr": 209,
+      "created_at": "2026-08-06T05:08:35Z",
+      "path": "every_eval_ever/adapters/paperswithcode/adapter.py",
+      "line": 925,
+      "body": "**RAV-RUN2-R1-F002 [high] conversion-accounting** — Malformed metrics, missing dataset references, and resultless rows are silently omitted. The command can exit successfully with incomplete output.\n\nMetric cells can be the source unit. Each attempted or rejected cell can count once, while malformed objects and missing datasets retain row references.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/209#discussion_r3726043671"
+    },
+    {
+      "id": 3726043679,
+      "pr": 209,
+      "created_at": "2026-08-06T05:08:35Z",
+      "path": "every_eval_ever/adapters/paperswithcode/adapter.py",
+      "line": 356,
+      "body": "**RAV-RUN2-R1-F004 [medium] score-bounds** — Scale tolerance accepts small boundary overruns but emits them unchanged. Current semantic validation rejects those scores.\n\nTolerance can support scale classification only. A strict pre-publication check can reject unproven overruns.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/209#discussion_r3726043679"
+    },
+    {
+      "id": 3726043682,
+      "pr": 209,
+      "created_at": "2026-08-06T05:08:35Z",
+      "path": "utils/paperswithcode/adapter.py",
+      "line": null,
+      "body": "**RAV-RUN2-R1-F005 [medium] metric-metadata** — `metric_unit` stays tied to the PwC source scale after score conversion. It can conflict with the emitted score and canonical bounds.\n\nA unit can be set only when the canonical contract or an explicit conversion proves it. Otherwise it can stay unset while `pwc_scale` remains in details.",
+      "url": "https://github.com/evaleval/every_eval_ever/pull/209#discussion_r3726043682"
+    }
+  ]
+}
