@@ -1,0 +1,1824 @@
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "source_units": [
+        {
+          "text": "Reject every publisher base that is an immediate child of canonical `data`.",
+          "class": "author_work"
+        },
+        {
+          "text": "Mismatched source and `collection_override` tests would cover this path.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_loss",
+          "action_lock_status": "unlocked",
+          "fact_losses": [
+            "The requested tests no longer explicitly cover the mismatched-source and `collection_override` publication-depth path."
+          ],
+          "missing_explicit_actions": [
+            "Add mismatched source and `collection_override` tests that cover the path."
+          ],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737044354,
+      "source_units": [
+        {
+          "text": "Retain recoverable old files until every new write and route transition succeeds.",
+          "class": "author_work"
+        },
+        {
+          "text": "A mid-write failure test across several routes would cover this path.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737044361,
+      "source_units": [
+        {
+          "text": "Keep the raw dataset model path as the evaluation identity input.",
+          "class": "author_work"
+        },
+        {
+          "text": "The reconciled repository can still drive model metadata and routing.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737044371,
+      "source_units": [
+        {
+          "text": "Use an atomic report replacement after successful publication.",
+          "class": "author_work"
+        },
+        {
+          "text": "Record failures, exclusions, and fully clean runs.",
+          "class": "author_work"
+        },
+        {
+          "text": "Do so without losing the last complete ledger.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737053181,
+      "source_units": [
+        {
+          "text": "The adapter approach is consistent with the current schema.",
+          "class": "constraint"
+        },
+        {
+          "text": "Add a shared representation for neutral measures.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737053197,
+      "source_units": [
+        {
+          "text": "Use separate rules for uncertainty, counts, and positive denominators.",
+          "class": "author_work"
+        },
+        {
+          "text": "Keep bad rows in the failure report.",
+          "class": "author_work"
+        },
+        {
+          "text": "Empty optional cells can remain allowed.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737053204,
+      "source_units": [
+        {
+          "text": "Leave the existing output unchanged when a sweep is incomplete.",
+          "class": "author_work"
+        },
+        {
+          "text": "Return a nonzero result when a sweep is incomplete.",
+          "class": "author_work"
+        },
+        {
+          "text": "Expected 401 responses can keep their current handling.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737181823,
+      "source_units": [
+        {
+          "text": "Defer the check for flat IDs when the developer is present but is neither a string nor `None`.",
+          "class": "author_work"
+        },
+        {
+          "text": "Schema-valid blank, unknown, or unsafe strings can keep the current warning path.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737266652,
+      "source_units": [
+        {
+          "text": "Add a narrow boundary that catches expected parsing and schema errors.",
+          "class": "author_work"
+        },
+        {
+          "text": "Unexpected program or infrastructure errors can remain visible.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737266656,
+      "source_units": [
+        {
+          "text": "Resolve every supplied reference once.",
+          "class": "author_work"
+        },
+        {
+          "text": "Keep branch and tag support.",
+          "class": "constraint"
+        },
+        {
+          "text": "Make all file URLs reproducible.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "Keeping branch and tag support is a constraint but is governed by the explicit request."
+          ]
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "Keeping branch and tag support is a constraint but is governed by the explicit request."
+          ]
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737266661,
+      "source_units": [
+        {
+          "text": "Save the shared report for either collection.",
+          "class": "author_work"
+        },
+        {
+          "text": "Keep the nonzero exit conditional on failures.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "Keeping the nonzero exit conditional on failures is a constraint but is included in the explicit request."
+          ]
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "Keeping the nonzero exit conditional on failures is a constraint but is included in the explicit request."
+          ]
+        }
+      }
+    },
+    {
+      "id": 3737291965,
+      "source_units": [
+        {
+          "text": "Reject directory-target symlinks for direct and glob-expanded matches.",
+          "class": "author_work"
+        },
+        {
+          "text": "Keep file-symlink behavior unchanged.",
+          "class": "constraint"
+        },
+        {
+          "text": "Add tests for both directory-symlink inputs and an accepted file symlink.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "Keeping file-symlink behavior unchanged is a constraint but is part of a requested-action bullet."
+          ]
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737383919,
+      "source_units": [
+        {
+          "text": "Require one or more values to block the bare `--models` path.",
+          "class": "author_work"
+        },
+        {
+          "text": "Add a no-match check.",
+          "class": "author_work"
+        },
+        {
+          "text": "The no-match check can stop before existing-output discovery or publication.",
+          "class": "permission"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Add a no-match check."
+          ],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Add a no-match check."
+          ],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737383922,
+      "source_units": [
+        {
+          "text": "Validate the documented `data/wild` shape early.",
+          "class": "author_work"
+        },
+        {
+          "text": "Keep lookup, replacement, and status output on one destination.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449039,
+      "source_units": [
+        {
+          "text": "Build a stable ID from the raw model identity, task key, source timestamp, and a deterministic digest of non-secret run configuration.",
+          "class": "author_work"
+        },
+        {
+          "text": "Retrieval time can remain only in `retrieved_timestamp`.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449052,
+      "source_units": [
+        {
+          "text": "Put a file with measured but unconvertible tasks in the failure ledger.",
+          "class": "author_work"
+        },
+        {
+          "text": "Files containing only intentionally skipped derived rows can stay explicit exclusions.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449059,
+      "source_units": [
+        {
+          "text": "Keep both counts visible.",
+          "class": "author_work"
+        },
+        {
+          "text": "Identify the effective count as score coverage.",
+          "class": "author_work"
+        },
+        {
+          "text": "Retain the original count as dataset provenance.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449070,
+      "source_units": [
+        {
+          "text": "Use source metric specs or an operator-supplied definition to establish the semantics.",
+          "class": "author_work"
+        },
+        {
+          "text": "Report unresolved keys after the valid metrics are preserved.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Report unresolved keys after preserving valid metrics."
+          ],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Report unresolved keys after preserving valid metrics."
+          ],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Report unresolved keys after preserving valid metrics."
+          ],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449081,
+      "source_units": [
+        {
+          "text": "Use the same metric-definition mapping used for direction and bounds.",
+          "class": "author_work"
+        },
+        {
+          "text": "Supply canonical global IDs.",
+          "class": "author_work"
+        },
+        {
+          "text": "Supply stable namespaced IDs for defined lighteval-specific metrics.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449090,
+      "source_units": [
+        {
+          "text": "Keep results files as the source-record grain.",
+          "class": "author_work"
+        },
+        {
+          "text": "Report the converted output-log count separately.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449098,
+      "source_units": [
+        {
+          "text": "Add a small lighteval-local file-result path.",
+          "class": "author_work"
+        },
+        {
+          "text": "Give both entry modes the same report-before-raise behavior.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449101,
+      "source_units": [
+        {
+          "text": "Use one recursive sanitizer for mappings and lists to protect these values before serialization.",
+          "class": "author_work"
+        },
+        {
+          "text": "Add tests with provider-prefixed key names.",
+          "class": "author_work"
+        },
+        {
+          "text": "Cover the reachable path without recording secret values.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725747243,
+      "source_units": [
+        {
+          "text": "Use a stable source-run timestamp or deterministic token for the ID segment.",
+          "class": "author_work"
+        },
+        {
+          "text": "Keep the required ID shape.",
+          "class": "constraint"
+        },
+        {
+          "text": "`retrieved_timestamp` records retrieval time.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "Keeping the required ID shape is a constraint but is governed by the explicit request."
+          ]
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "Keeping the required ID shape is a constraint but is governed by the explicit request."
+          ]
+        }
+      }
+    },
+    {
+      "id": 3725747244,
+      "source_units": [
+        {
+          "text": "Add a task-level error boundary.",
+          "class": "author_work"
+        },
+        {
+          "text": "Preserve valid logs.",
+          "class": "author_work"
+        },
+        {
+          "text": "Account for each rejected task.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725747245,
+      "source_units": [
+        {
+          "text": "Emit `llm_scoring` only when the real template is available.",
+          "class": "author_work"
+        },
+        {
+          "text": "The sound aggregate conversion can remain intact.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725776269,
+      "source_units": [
+        {
+          "text": "Add a note that the nearest `data` ancestor wins.",
+          "class": "author_work"
+        },
+        {
+          "text": "Include the repeated-`data` example `data/outer/data/collection`.",
+          "class": "author_work"
+        },
+        {
+          "text": "Make the placement limit clear.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_loss",
+          "action_lock_status": "locked",
+          "fact_losses": [
+            "The requested documentation no longer states that the note and example must make the placement limit clear."
+          ],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725827216,
+      "source_units": [
+        {
+          "text": "Stop identity comparison whenever `check_path_structure` already owns a path error.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725830951,
+      "source_units": [
+        {
+          "text": "Add a short section.",
+          "class": "author_work"
+        },
+        {
+          "text": "State the alias trigger, warning-only result, and single-record evidence limit.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725853148,
+      "source_units": [
+        {
+          "text": "Resolve network-mode refs once to a commit SHA.",
+          "class": "author_work"
+        },
+        {
+          "text": "Offline replay can keep the stored immutable ref without network access.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725853152,
+      "source_units": [
+        {
+          "text": "Use the shared parser in the module entry point.",
+          "class": "author_work"
+        },
+        {
+          "text": "Add one offline entry-point test covering its defaults.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725853155,
+      "source_units": [
+        {
+          "text": "Validate numeric fields as finite values under their metric rules before result construction.",
+          "class": "author_work"
+        },
+        {
+          "text": "Enter invalid rows into `SourceConversionResult`.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725853159,
+      "source_units": [
+        {
+          "text": "Store pinned prompt content in new snapshots.",
+          "class": "author_work"
+        },
+        {
+          "text": "Legacy snapshots can leave this typed value unset.",
+          "class": "constraint"
+        },
+        {
+          "text": "Mark the missing content.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725853163,
+      "source_units": [
+        {
+          "text": "Query present-null entries in live mode.",
+          "class": "author_work"
+        },
+        {
+          "text": "Offline behavior remains unchanged.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725853168,
+      "source_units": [
+        {
+          "text": "Make exact canonical IDs win first.",
+          "class": "author_work"
+        },
+        {
+          "text": "Resolve normalized spellings only when one organization owns them.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725913004,
+      "source_units": [
+        {
+          "text": "Stage complete output before publication.",
+          "class": "author_work"
+        },
+        {
+          "text": "Reject existing logical output until replacement is atomic.",
+          "class": "author_work"
+        },
+        {
+          "text": "Keep sidecar validation streaming.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "Keeping sidecar validation streaming is a constraint but is part of a requested-action bullet."
+          ]
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725913007,
+      "source_units": [
+        {
+          "text": "Use the required `data/<collection>` path for smoke output.",
+          "class": "author_work"
+        },
+        {
+          "text": "Pass a quoted fixed-depth file glob to validation.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725913013,
+      "source_units": [
+        {
+          "text": "Enter invalid scores in the failure report.",
+          "class": "author_work"
+        },
+        {
+          "text": "Omit incomplete token usage.",
+          "class": "author_work"
+        },
+        {
+          "text": "Base token means only on complete values.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725913015,
+      "source_units": [
+        {
+          "text": "`accuracy` can remain the metric ID.",
+          "class": "constraint"
+        },
+        {
+          "text": "Use `evaluation_name` to distinguish tasks.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "Keeping `accuracy` as the metric ID turns an allowed constraint into a requested action."
+          ]
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "Keeping `accuracy` as the metric ID turns an allowed constraint into a requested action."
+          ]
+        }
+      }
+    },
+    {
+      "id": 3725913021,
+      "source_units": [
+        {
+          "text": "Require at least one path for the `--parquet` option.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725972277,
+      "source_units": [
+        {
+          "text": "Integrate current main before moving the adapter and references.",
+          "class": "author_work"
+        },
+        {
+          "text": "Move the adapter and references under `every_eval_ever/adapters/open_medical_llm`.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Integrate current main before moving the adapter and references."
+          ],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725972282,
+      "source_units": [
+        {
+          "text": "Derive the expected value from the imported schema version.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725972285,
+      "source_units": [
+        {
+          "text": "`accuracy` can remain the metric ID.",
+          "class": "constraint"
+        },
+        {
+          "text": "Use task-specific evaluation names to preserve benchmark identity.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "Keeping `accuracy` as the metric ID turns an allowed constraint into a requested action."
+          ]
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "Keeping `accuracy` as the metric ID turns an allowed constraint into a requested action."
+          ]
+        }
+      }
+    },
+    {
+      "id": 3725972287,
+      "source_units": [
+        {
+          "text": "Reject existing output JSON in the collection target before UUID generation or batch publication.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3726043665,
+      "source_units": [
+        {
+          "text": "Use the batch publisher for new or empty targets.",
+          "class": "author_work"
+        },
+        {
+          "text": "Fail by default for symlinks, roots, and populated targets until replacement has an explicit ownership manifest.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Fail by default for symlinks, roots, and populated targets until replacement has an explicit ownership manifest."
+          ],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3726043671,
+      "source_units": [
+        {
+          "text": "Use metric cells as the source unit.",
+          "class": "author_work"
+        },
+        {
+          "text": "Count each attempted or rejected cell once.",
+          "class": "author_work"
+        },
+        {
+          "text": "Retain row references for malformed objects and missing datasets.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Retain row references for malformed objects and missing datasets."
+          ],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3726043679,
+      "source_units": [
+        {
+          "text": "Tolerance can support scale classification only.",
+          "class": "constraint"
+        },
+        {
+          "text": "Add a strict pre-publication check that rejects unproven overruns.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "Using tolerance only for scale classification turns an allowed constraint into a requested action."
+          ]
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "Using tolerance only for scale classification turns an allowed constraint into a requested action."
+          ]
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3726043682,
+      "source_units": [
+        {
+          "text": "Set `metric_unit` only when the canonical contract or an explicit conversion proves it.",
+          "class": "author_work"
+        },
+        {
+          "text": "Otherwise it can stay unset.",
+          "class": "constraint"
+        },
+        {
+          "text": "`pwc_scale` remains in details.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "Leaving the unit unset otherwise is a constraint but is governed by the explicit request."
+          ]
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    }
+  ],
+  "counts": {
+    "A": {
+      "fact_safe": 47,
+      "fact_loss": 0,
+      "locked": 40,
+      "unlocked": 2,
+      "false_action": 5
+    },
+    "B": {
+      "fact_safe": 47,
+      "fact_loss": 0,
+      "locked": 40,
+      "unlocked": 1,
+      "false_action": 6
+    },
+    "C": {
+      "fact_safe": 45,
+      "fact_loss": 2,
+      "locked": 37,
+      "unlocked": 6,
+      "false_action": 4
+    }
+  },
+  "summary": "A and B preserve all material source facts, but each makes several source constraints mandatory actions. C has the most unlocked author work and loses two action-scope facts: the publisher test boundary and the report-placement clarification purpose."
+}

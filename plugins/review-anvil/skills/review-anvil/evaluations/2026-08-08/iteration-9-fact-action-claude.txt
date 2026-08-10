@@ -1,0 +1,1 @@
+TIMEOUT: the Claude fact/action judge produced no JSON before the 1050-second deadline. This result is not counted.

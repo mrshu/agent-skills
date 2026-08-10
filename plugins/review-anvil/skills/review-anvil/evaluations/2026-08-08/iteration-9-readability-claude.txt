@@ -1,0 +1,208 @@
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A's two bullets make the guard change and the test request separately checkable, while B's \"Mismatched source and `collection_override` tests would cover this path\" reads as an observation rather than a second requested item."
+    },
+    {
+      "id": 3737044354,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "For a high-severity data-loss finding, A's list surfaces both the retention change and the mid-write failure test as imperatives; B demotes the test to \"would cover this path,\" which is easy to skim past."
+    },
+    {
+      "id": 3737044361,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "The two versions are word-for-word equivalent, including the three-step causal chain and the \"Please keep... can still drive\" split of action from allowance."
+    },
+    {
+      "id": 3737044371,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "Identical text; both carry the same dense closing clause listing failures, exclusions, and clean runs plus the ledger constraint."
+    },
+    {
+      "id": 3737053181,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 5, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "tie",
+      "reason": "Identical short prose with one action sentence; neither version has any comprehension edge."
+    },
+    {
+      "id": 3737053197,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "Identical text, including the same three-part \"uncertainty, counts, and positive denominators\" rule list and the empty-cell allowance."
+    },
+    {
+      "id": 3737053204,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 4, "cognitive_ease": 3}
+      },
+      "winner": "A",
+      "reason": "B splits one condition into two bullets that both end in \"when a sweep is incomplete,\" and the repeated clause costs more than the added separation; A's single sentence states both effects once."
+    },
+    {
+      "id": 3737181823,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "Identical wording, with the same \"neither a string nor `None`\" condition and the same preserved-warning exception."
+    },
+    {
+      "id": 3737266652,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "Identical text; both give the same one-line consequence and the same narrow-boundary request with its exception."
+    },
+    {
+      "id": 3737266656,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3}
+      },
+      "winner": "A",
+      "reason": "A keeps the action in one sentence and the preservation constraint in its own short sentence; B's \"resolve every supplied reference once to keep branch and tag support while making all file URLs reproducible\" stacks purpose, constraint, and outcome into one clause."
+    },
+    {
+      "id": 3737266661,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A states the save request, then \"The nonzero exit remains conditional on failures\" as a distinct constraint; B's \"while keeping\" subordinates the constraint and blurs it into the action."
+    },
+    {
+      "id": 3737291965,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 3}
+      },
+      "winner": "A",
+      "reason": "After a four-sentence diagnosis, A's bullets isolate the rejection change and the two required tests, with the file-symlink constraint on its own line; B folds constraint into the action sentence and hedges the tests as \"would cover the boundary.\""
+    },
+    {
+      "id": 3737383919,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 4, "cognitive_ease": 3},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A names the target concretely (\"one or more values for `--models`\", \"the bare-option path\") where B says only \"the first path\"; A's orphaned trailing \"It\" is a real cost but does not outweigh the vaguer referent in B."
+    },
+    {
+      "id": 3737383922,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "Identical text, with the same `/tmp/intended` versus `/tmp/wild` illustration and single validation request."
+    },
+    {
+      "id": 3737449039,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "Identical wording, including the four-part stable-ID recipe and the `retrieved_timestamp` allowance."
+    },
+    {
+      "id": 3737449052,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "Identical text; both draw the same line between failure-ledger files and intentionally skipped derived rows."
+    },
+    {
+      "id": 3737449059,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "Identical wording, with the same \"score coverage\" versus \"dataset provenance\" labeling in the closing sentence."
+    },
+    {
+      "id": 3737449070,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "Identical text; both pair the assumed-direction defect with the same two-source remedy and reporting allowance."
+    },
+    {
+      "id": 3737449081,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 3}
+      },
+      "winner": "tie",
+      "reason": "Identical text, including the same noun-heavy closing clause (\"canonical global IDs and stable namespaced IDs for defined lighteval-specific metrics\")."
+    },
+    {
+      "id": 3737449090,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "A's bullets scan marginally better, but B's single short sentence already keeps both actions visible, so the heading buys little here and neither reading is meaningfully easier."
+    },
+    {
+      "id": 3737449098,
+      "scores": {
+        "A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4},
+        "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}
+      },
+      "winner": "tie",
+      "reason": "Identical wording, including the same \"report-before-raise\" phrasing for the requested parity."
+    },
+    {
+      "id": 3737449101,
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "B",
+      "reason": "B's bullets turn the sanitizer change and the provider-prefixed key tests into two checkable items; A's \"Tests ... would cover the reachable path\" reads as commentary on a security finding where the test is clearly wanted."
+    }
+  ],
+  "winner_counts": {"A": 7, "B": 1, "tie": 14},
+  "mean_scores": {
+    "A": {"defect_clarity": 4.68, "action_recall": 4.41, "scanability": 4.23, "naturalness": 4.73, "cognitive_ease": 4.09},
+    "B": {"defect_clarity": 4.64, "action_recall": 4.27, "scanability": 4.09, "naturalness": 4.77, "cognitive_ease": 3.86}
+  },
+  "summary": "Fourteen of the twenty-two pairs are textually identical and score as ties. Among the differing pairs, the decisive pattern is how a second action is presented: versions that state tests and preservation constraints as imperatives or separate sentences beat versions that hedge them as \"would cover this path\" or bury them in a \"while keeping\" subordinate clause. Bulleting helps when actions are genuinely independent and hurts when it forces the same condition to be repeated across lines, as in 3737053204."
+}

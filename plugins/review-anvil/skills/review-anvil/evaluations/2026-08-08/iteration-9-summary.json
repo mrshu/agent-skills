@@ -1,0 +1,69 @@
+{
+  "contract_commit": "98c0ac8",
+  "corpus": {
+    "development_comments": 22,
+    "opened_holdout_diagnostic_comments": 25,
+    "total_comments": 47,
+    "note": "The original 25-comment holdout had already been opened after iteration 8; it is diagnostic evidence here, not a sealed holdout."
+  },
+  "generator_validation": {
+    "sol": {"rows": 47, "unique_ids": 47, "schema_valid": true},
+    "luna": {"rows": 47, "unique_ids": 47, "schema_valid": true},
+    "terra": {"rows": 47, "unique_ids": 47, "schema_valid": true}
+  },
+  "readability_head_to_head": {
+    "sample": "22 development comments, randomized labels per comment",
+    "claude": {
+      "wins": {"baseline": 1, "sol": 7, "tie": 14},
+      "mean_scores": {
+        "baseline": {"defect_clarity": 4.636, "action_recall": 4.182, "scanability": 4.045, "naturalness": 4.864, "cognitive_ease": 3.955},
+        "sol": {"defect_clarity": 4.682, "action_recall": 4.500, "scanability": 4.273, "naturalness": 4.636, "cognitive_ease": 4.000}
+      }
+    },
+    "sol": {
+      "wins": {"baseline": 1, "sol": 8, "tie": 13},
+      "mean_scores": {
+        "baseline": {"defect_clarity": 4.955, "action_recall": 4.364, "scanability": 4.455, "naturalness": 4.545, "cognitive_ease": 4.227},
+        "sol": {"defect_clarity": 4.955, "action_recall": 4.682, "scanability": 4.818, "naturalness": 4.409, "cognitive_ease": 4.636}
+      }
+    },
+    "terra": {
+      "wins": {"baseline": 2, "sol": 7, "tie": 13},
+      "mean_scores": {
+        "baseline": {"defect_clarity": 4.909, "action_recall": 4.773, "scanability": 4.318, "naturalness": 4.773, "cognitive_ease": 4.318},
+        "sol": {"defect_clarity": 4.955, "action_recall": 4.909, "scanability": 4.545, "naturalness": 4.727, "cognitive_ease": 4.545}
+      }
+    },
+    "aggregate_wins": {"baseline": 4, "sol": 22, "tie": 40}
+  },
+  "fact_action_audits": {
+    "sample": "all 47 comments, randomized candidate labels per comment",
+    "luna": {
+      "sol": {"fact_safe": 47, "fact_loss": 0, "locked": 38, "unlocked": 0, "false_action": 9},
+      "luna": {"fact_safe": 46, "fact_loss": 1, "locked": 37, "unlocked": 3, "false_action": 7},
+      "terra": {"fact_safe": 47, "fact_loss": 0, "locked": 36, "unlocked": 4, "false_action": 7}
+    },
+    "terra": {
+      "sol": {"fact_safe": 46, "fact_loss": 1, "locked": 42, "unlocked": 1, "false_action": 4},
+      "luna": {"fact_safe": 46, "fact_loss": 1, "locked": 39, "unlocked": 3, "false_action": 5},
+      "terra": {"fact_safe": 47, "fact_loss": 0, "locked": 36, "unlocked": 5, "false_action": 6}
+    },
+    "timeouts_not_counted": ["sol", "claude"],
+    "interpretation": "The complete judges repeatedly classified source-backed tests and target-state constraints as optional because of modal wording. Their raw counts are retained, but those labels are not accepted as ground truth."
+  },
+  "independent_contract_review": {
+    "model": "Claude Opus",
+    "verdict": "changes requested",
+    "material_findings": [
+      "P0: the omission-counterfactual rule conflicts with the nearby prohibition on promoting standalone permissions, with no precedence rule.",
+      "P0: source predicates such as 'can be reported after' remain underdetermined and can be promoted or omitted inconsistently.",
+      "P1: the dense-sentence fallback can preserve action/modality mixtures without resolving them."
+    ]
+  },
+  "same_day_post_cutoff_holdout": {
+    "eligible_comments": 0,
+    "pr_count": 0,
+    "result": "No second sealed same-day holdout exists."
+  },
+  "decision": "Reject the iteration-9 contract. Keep the Sol output as a positive readability diagnostic, then simplify and make the action/modality precedence explicit before final validation."
+}

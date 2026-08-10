@@ -1,0 +1,1754 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "source_units": [
+        {
+          "text": "Reject every publisher base that is an immediate child of canonical data.",
+          "class": "author_work"
+        },
+        {
+          "text": "Mismatched source and collection_override tests would cover this path.",
+          "class": "permission"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "The optional mismatched source and collection_override test coverage was made a mandatory requested action."
+          ]
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "The optional mismatched source and collection_override test coverage was made a mandatory requested action."
+          ]
+        },
+        "C": {
+          "fact_status": "fact_loss",
+          "action_lock_status": "false_action",
+          "fact_losses": [
+            "The requested test boundary was changed from tests covering this path to tests for mismatched values without explicitly preserving coverage of this path."
+          ],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "The optional mismatched source and collection_override test coverage was made a mandatory requested action."
+          ]
+        }
+      }
+    },
+    {
+      "id": 3737044354,
+      "source_units": [
+        {
+          "text": "Retain recoverable old files until every new write and route transition succeeds.",
+          "class": "author_work"
+        },
+        {
+          "text": "A mid-write failure test across several routes would cover this path.",
+          "class": "permission"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "The optional mid-write failure test was made a mandatory requested action."
+          ]
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "The optional mid-write failure test was made a mandatory requested action."
+          ]
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "The optional mid-write failure test was made a mandatory requested action."
+          ]
+        }
+      }
+    },
+    {
+      "id": 3737044361,
+      "source_units": [
+        {
+          "text": "Keep the raw dataset model path as the evaluation identity input.",
+          "class": "author_work"
+        },
+        {
+          "text": "The reconciled repository can still drive model metadata and routing.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737044371,
+      "source_units": [
+        {
+          "text": "Use an atomic report replacement after successful publication to record failures, exclusions, and fully clean runs without losing the last complete ledger.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737053181,
+      "source_units": [
+        {
+          "text": "The adapter approach is consistent with the current schema.",
+          "class": "constraint"
+        },
+        {
+          "text": "Add a shared representation for neutral measures.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737053197,
+      "source_units": [
+        {
+          "text": "Use separate rules for uncertainty, counts, and positive denominators to keep bad rows in the failure report.",
+          "class": "author_work"
+        },
+        {
+          "text": "Empty optional cells can remain allowed.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737053204,
+      "source_units": [
+        {
+          "text": "Leave the existing output unchanged when a sweep is incomplete.",
+          "class": "author_work"
+        },
+        {
+          "text": "Return a nonzero result when a sweep is incomplete.",
+          "class": "author_work"
+        },
+        {
+          "text": "Expected 401 responses can keep their current handling.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737181823,
+      "source_units": [
+        {
+          "text": "Defer the check for flat IDs when the developer is present but is neither a string nor None.",
+          "class": "author_work"
+        },
+        {
+          "text": "Schema-valid blank, unknown, or unsafe strings can keep the current warning path.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737266652,
+      "source_units": [
+        {
+          "text": "Add a narrow boundary that catches expected parsing and schema errors.",
+          "class": "author_work"
+        },
+        {
+          "text": "Unexpected program or infrastructure errors can remain visible.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737266656,
+      "source_units": [
+        {
+          "text": "Resolve every supplied reference once to keep branch and tag support while making all file URLs reproducible.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737266661,
+      "source_units": [
+        {
+          "text": "Save the shared report for either collection.",
+          "class": "author_work"
+        },
+        {
+          "text": "Keep the nonzero exit conditional on failures.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737291965,
+      "source_units": [
+        {
+          "text": "Reject directory-target symlinks for direct and glob-expanded matches.",
+          "class": "author_work"
+        },
+        {
+          "text": "Keep file-symlink behavior unchanged.",
+          "class": "constraint"
+        },
+        {
+          "text": "Tests for both directory-symlink inputs and an accepted file symlink would cover the boundary.",
+          "class": "permission"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "The optional tests for directory-symlink inputs and an accepted file symlink were made mandatory."
+          ]
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "The optional tests for directory-symlink inputs and an accepted file symlink were made mandatory."
+          ]
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "The optional tests for directory-symlink inputs and an accepted file symlink were made mandatory."
+          ]
+        }
+      }
+    },
+    {
+      "id": 3737383919,
+      "source_units": [
+        {
+          "text": "Require one or more values to block the bare-option path.",
+          "class": "author_work"
+        },
+        {
+          "text": "Add a no-match check that can stop before existing-output discovery or publication.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Add a no-match check."
+          ],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Add a no-match check."
+          ],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737383922,
+      "source_units": [
+        {
+          "text": "Validate the documented data/wild shape early to keep lookup, replacement, and status output on one destination.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449039,
+      "source_units": [
+        {
+          "text": "Build a stable ID from the raw model identity, task key, source timestamp, and a deterministic digest of non-secret run configuration.",
+          "class": "author_work"
+        },
+        {
+          "text": "Retrieval time can remain only in retrieved_timestamp.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449052,
+      "source_units": [
+        {
+          "text": "Put a file with measured but unconvertible tasks in the failure ledger.",
+          "class": "author_work"
+        },
+        {
+          "text": "Files containing only intentionally skipped derived rows can stay explicit exclusions.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449059,
+      "source_units": [
+        {
+          "text": "Keep both counts visible, with the effective count identified as score coverage and the original count retained as dataset provenance.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449070,
+      "source_units": [
+        {
+          "text": "Use source metric specs or an operator-supplied definition to establish the semantics.",
+          "class": "author_work"
+        },
+        {
+          "text": "Unresolved keys can be reported after the valid metrics are preserved.",
+          "class": "permission"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449081,
+      "source_units": [
+        {
+          "text": "Use the same metric-definition mapping used for direction and bounds to supply canonical global IDs and stable namespaced IDs for defined lighteval-specific metrics.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449090,
+      "source_units": [
+        {
+          "text": "Keep results files as the source-record grain.",
+          "class": "author_work"
+        },
+        {
+          "text": "Report the converted output-log count separately.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449098,
+      "source_units": [
+        {
+          "text": "Add a small lighteval-local file-result path to give both entry modes the same report-before-raise behavior.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449101,
+      "source_units": [
+        {
+          "text": "Use one recursive sanitizer for mappings and lists to protect these values before serialization.",
+          "class": "author_work"
+        },
+        {
+          "text": "Tests with provider-prefixed key names would cover the reachable path without recording secret values.",
+          "class": "permission"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "The optional provider-prefixed key-name tests were made mandatory."
+          ]
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "The optional provider-prefixed key-name tests were made mandatory."
+          ]
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "The optional provider-prefixed key-name tests were made mandatory."
+          ]
+        }
+      }
+    },
+    {
+      "id": 3725747243,
+      "source_units": [
+        {
+          "text": "Use a stable source-run timestamp or deterministic token for the ID segment.",
+          "class": "author_work"
+        },
+        {
+          "text": "The required ID shape can remain unchanged.",
+          "class": "constraint"
+        },
+        {
+          "text": "retrieved_timestamp records retrieval time.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725747244,
+      "source_units": [
+        {
+          "text": "Add a task-level error boundary to preserve valid logs and account for each rejected task.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725747245,
+      "source_units": [
+        {
+          "text": "Emit llm_scoring only when the real template is available.",
+          "class": "author_work"
+        },
+        {
+          "text": "The sound aggregate conversion can remain intact.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725776269,
+      "source_units": [
+        {
+          "text": "A note that the nearest data ancestor wins, plus the repeated-data example, would make the placement limit clear.",
+          "class": "permission"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "The optional documentation note and repeated-data example were made mandatory."
+          ]
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "The optional documentation note and repeated-data example were made mandatory."
+          ]
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "The optional documentation note and repeated-data example were made mandatory."
+          ]
+        }
+      }
+    },
+    {
+      "id": 3725827216,
+      "source_units": [
+        {
+          "text": "Stop identity comparison whenever check_path_structure already owns a path error.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725830951,
+      "source_units": [
+        {
+          "text": "Add a short section stating the alias trigger, warning-only result, and single-record evidence limit.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725853148,
+      "source_units": [
+        {
+          "text": "Resolve network-mode refs once to a commit SHA.",
+          "class": "author_work"
+        },
+        {
+          "text": "Offline replay can keep the stored immutable ref without network access.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725853152,
+      "source_units": [
+        {
+          "text": "Use the shared parser in the module entry point.",
+          "class": "author_work"
+        },
+        {
+          "text": "One offline entry-point test covering its defaults would cover the path.",
+          "class": "permission"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "The optional offline entry-point test was made mandatory."
+          ]
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "The optional offline entry-point test was made mandatory."
+          ]
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "The optional offline entry-point test was made mandatory."
+          ]
+        }
+      }
+    },
+    {
+      "id": 3725853155,
+      "source_units": [
+        {
+          "text": "Validate numeric fields as finite values under their metric rules before result construction.",
+          "class": "author_work"
+        },
+        {
+          "text": "Enter invalid rows into SourceConversionResult.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725853159,
+      "source_units": [
+        {
+          "text": "Store pinned prompt content in new snapshots.",
+          "class": "author_work"
+        },
+        {
+          "text": "Mark the missing content in legacy snapshots.",
+          "class": "author_work"
+        },
+        {
+          "text": "Legacy snapshots can leave this typed value unset.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725853163,
+      "source_units": [
+        {
+          "text": "Query present-null entries in live mode.",
+          "class": "author_work"
+        },
+        {
+          "text": "Offline behavior remains unchanged.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725853168,
+      "source_units": [
+        {
+          "text": "Make exact canonical IDs win first.",
+          "class": "author_work"
+        },
+        {
+          "text": "Resolve normalized spellings only when one organization owns them.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725913004,
+      "source_units": [
+        {
+          "text": "Stage complete output before publication.",
+          "class": "author_work"
+        },
+        {
+          "text": "Reject existing logical output until replacement is atomic.",
+          "class": "author_work"
+        },
+        {
+          "text": "Keep sidecar validation streaming.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725913007,
+      "source_units": [
+        {
+          "text": "Use the required data/<collection> path for smoke output.",
+          "class": "author_work"
+        },
+        {
+          "text": "Pass a quoted fixed-depth file glob to validation.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725913013,
+      "source_units": [
+        {
+          "text": "Enter invalid scores in the failure report.",
+          "class": "author_work"
+        },
+        {
+          "text": "Omit incomplete token usage and base token means only on complete values.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725913015,
+      "source_units": [
+        {
+          "text": "Keep accuracy as the metric ID.",
+          "class": "author_work"
+        },
+        {
+          "text": "Use evaluation_name to distinguish tasks.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Keep accuracy as the metric ID."
+          ],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725913021,
+      "source_units": [
+        {
+          "text": "Require at least one path for --parquet.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725972277,
+      "source_units": [
+        {
+          "text": "Move the adapter and references under every_eval_ever/adapters/open_medical_llm.",
+          "class": "author_work"
+        },
+        {
+          "text": "Current main can be integrated before moving the adapter and references.",
+          "class": "permission"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "Optional integration of current main before the move was made a mandatory requested action."
+          ]
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "Optional integration of current main before the move was made a mandatory requested action."
+          ]
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725972282,
+      "source_units": [
+        {
+          "text": "Derive the expected value from the imported schema version.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725972285,
+      "source_units": [
+        {
+          "text": "Keep accuracy as the metric ID.",
+          "class": "author_work"
+        },
+        {
+          "text": "Use task-specific evaluation names to preserve benchmark identity.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Keep accuracy as the metric ID."
+          ],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Use task-specific evaluation names to preserve benchmark identity."
+          ],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725972287,
+      "source_units": [
+        {
+          "text": "Reject existing output JSON in the collection target before UUID generation or batch publication.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3726043665,
+      "source_units": [
+        {
+          "text": "Use the batch publisher for new or empty targets.",
+          "class": "author_work"
+        },
+        {
+          "text": "Fail by default for symlinks, roots, and populated targets until replacement has an explicit ownership manifest.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Fail by default for symlinks, roots, and populated targets until replacement has an explicit ownership manifest."
+          ],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3726043671,
+      "source_units": [
+        {
+          "text": "Use metric cells as the source unit and count each attempted or rejected cell once.",
+          "class": "author_work"
+        },
+        {
+          "text": "Retain row references for malformed objects and missing datasets.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Retain row references for malformed objects and missing datasets."
+          ],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3726043679,
+      "source_units": [
+        {
+          "text": "Tolerance can support scale classification only.",
+          "class": "constraint"
+        },
+        {
+          "text": "Add a strict pre-publication check that rejects unproven overruns.",
+          "class": "author_work"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "The constraint limiting tolerance to scale classification was made a mandatory requested action."
+          ]
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "The constraint limiting tolerance to scale classification was made a mandatory requested action."
+          ]
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3726043682,
+      "source_units": [
+        {
+          "text": "Set metric_unit only when the canonical contract or an explicit conversion proves it.",
+          "class": "author_work"
+        },
+        {
+          "text": "Otherwise it can stay unset while pwc_scale remains in details.",
+          "class": "constraint"
+        }
+      ],
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "The permitted unset metric_unit behavior was made a mandatory action."
+          ]
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    }
+  ],
+  "counts": {
+    "A": {
+      "fact_safe": 46,
+      "fact_loss": 0,
+      "locked": 37,
+      "unlocked": 1,
+      "false_action": 8
+    },
+    "B": {
+      "fact_safe": 46,
+      "fact_loss": 0,
+      "locked": 35,
+      "unlocked": 2,
+      "false_action": 9
+    },
+    "C": {
+      "fact_safe": 45,
+      "fact_loss": 1,
+      "locked": 35,
+      "unlocked": 5,
+      "false_action": 6
+    }
+  },
+  "summary": "Most candidates preserve the technical facts, but several incorrectly turn optional tests, documentation, sequencing, or permitted behavior into mandatory actions. Candidate C also loses the exact test-path boundary in comment 3737042592; candidates A and B have no fact losses."
+}
+
+
+Wall time: 846.14 seconds
