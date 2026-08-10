@@ -71,41 +71,61 @@ Use an imperative only for work the author must perform. Use modal prose for
 behavior that may remain unchanged.
 Do not force an actor or destination that the source does not establish.
 Group requested work by implementation obligation, not by grammar.
-An obligation is work the author must perform in code or tests.
-Classify by the source behavior, not by modal grammar. A modal source sentence
-can contain both author work and a boundary on that work. Extract the smallest
-new actor-action-target obligation separately from the modal boundary.
-If a new mechanism is needed to resolve the described failure, request the
-mechanism and keep its permitted behavior as modal prose. Do not infer
-mandatory work from a standalone permission or allowed follow-up.
-Apply an omission counterfactual to every proposed post-change behavior.
-If omitting it leaves the reported defect or a required boundary unresolved, it is author work.
-Classify each predicate independently when one sentence mixes preservation and new behavior. A modal verb does not make necessary
-post-change behavior optional. Words such as `remain`, `keep`, `leave`,
-`unchanged`, or `still` can identify preservation only when the source says
-that behavior is already acceptable.
-One obligation is a cohesive change that can be implemented and verified
-independently.
+Classify each source predicate before rendering it:
+
+1. Identify whether it describes accepted current behavior, target behavior
+   needed to resolve the finding, required verification or documentation, an
+   allowed implementation boundary, or an explicitly optional follow-up.
+2. Classify target behavior and required verification or documentation as
+   author work. Classify accepted current behavior, allowed implementation
+   boundaries, and explicitly optional follow-ups as no-change boundaries.
+3. Apply the omission counterfactual only after that classification. If leaving
+   the current code without the target behavior, test, or documentation would
+   leave the defect, safety boundary, or reviewer-required verification
+   unresolved, it is author work.
+4. Split every sentence that mixes author work with a no-change boundary.
+   Classify each predicate separately; do not preserve an unsplit fallback.
+
+Source intent outranks modal grammar. `Please`, a direct request, or source
+words such as `must`, `need`, and `required` identify author work. A
+source-backed check, test, document change, or example stated to cover,
+demonstrate, clarify, or make a required boundary clear is author work unless
+the source explicitly calls it optional or additional. Words such as `can`,
+`could`, and `would` do not make that work optional.
+
+A permission is not author work only when it describes acceptable unchanged
+behavior, an allowed implementation boundary, or an explicitly optional
+follow-up. Words such as `remain`, `keep`, `leave`, `unchanged`, and `still`
+identify preservation only when the source says the current behavior is
+already acceptable.
+
+An obligation is one cohesive change that can be implemented and verified
+independently. Extract its smallest actor-action-target change without
+detaching a purpose, result, or safety clause that constrains that change.
+Create a separate obligation only when the source requires another
+independently implementable action. If a new mechanism is needed to resolve
+the failure, request that mechanism and keep only its permitted behavior as modal prose.
 Do not split a list of values governed by one rule into repeated actions.
-Two verbs that establish one invariant on the same record or output may remain
-one obligation.
-A preservation constraint, permission, carve-out, exception, or
-already-correct behavior is not a separate obligation.
-Keep a no-change constraint out of `**Requested actions**`.
-Keep it with the action it limits. State it as short modal prose immediately
-after the action it limits when combining them would make the request dense.
-Keep the source modality on a boundary or permission. Do not fold `can`,
-`could`, or `may` into the imperative that names the author obligation.
-Make a distinct path separate only when the source requires the author to
-change that path independently.
-A required source-backed test is author work and is separate when it has its
-own exact boundary.
+Two verbs that establish one invariant on the same record or output remain one obligation.
+
+A no-change boundary is not a separate obligation. Keep it out of
+`**Requested actions**` and with the action it limits. State it as short modal
+prose immediately after that action when combining them would make the request
+dense. Preserve accepted current behavior as standalone modal prose. Preserve
+a standalone optional follow-up as standalone modal prose after the required
+request, or after the consequence when no request exists.
+
 For example: `Files containing only intentionally skipped derived rows can remain explicit exclusions; no change is requested for them.`
+
+Make a distinct path separate only when the source requires the author to
+change that path independently. A required source-backed test is author work
+and is separate when it has its own exact boundary.
 Reuse exact source wording for scope and collection phrases; do not replace
 them with inferred member names.
-Before writing, map every requested source unit to either an author-work
-obligation or a no-change constraint. Do not emit until every author-work unit
-appears as an explicit request.
+
+Before writing, map every source predicate to author work or a no-change
+boundary. Do not emit until every author-work predicate appears as an explicit
+request.
 For each source-backed obligation in a critical, high, or medium finding, make
 its requested status explicit. For exactly one obligation, write one short
 request sentence beginning with `Please` and a direct action verb.
@@ -159,7 +179,7 @@ Before emitting the body, run this author check:
 - If the title changes the actor, action, target, condition, scope, or certainty,
   restore the synthesized finding sentence verbatim.
 - When a path, count, or state change is hard to picture, give one minimal example instead of making the reader simulate it.
-- Remove a test sentence unless it defines the failure boundary.
+- Remove a test sentence only when the source does not request it. Keep every source-backed required verification with its exact boundary.
 - Remove any sentence that repeats the title without adding a trigger, result,
   constraint, or fix boundary.
 
@@ -187,6 +207,18 @@ The fallback also accepts invalid or zero denominators.
 Please use separate rules for uncertainty, counts, and positive denominators to keep bad rows in the failure report.
 Empty optional cells can remain allowed.
 ```
+
+Modal wording does not make requested verification optional:
+
+```md
+**Requested actions**
+
+- Reject every publisher base that is an immediate child of canonical `data`.
+- Add mismatched source and `collection_override` tests for this path.
+```
+
+The test remains author work because the reviewer presents it as verification,
+even if the source says it “would cover” the path.
 
 When modal grammar proposes new author work, keep each obligation explicit:
 
@@ -224,11 +256,11 @@ without it. Preserve only a true no-change boundary:
 Replacement can remain blocked until it has an explicit ownership manifest.
 ```
 
-A standalone permission remains prose:
+A mixed permission sentence must expose its required predicate:
 
 ```md
-Please use source metric specs or an operator-supplied definition to establish the semantics.
-Unresolved keys can be reported after the valid metrics are preserved.
+Please preserve valid metrics while using source metric specs or an operator-supplied definition to establish their semantics.
+After valid metrics are preserved, unresolved keys can be reported.
 ```
 
 Keep only evidence that helps the author trust or fix the finding. Do not

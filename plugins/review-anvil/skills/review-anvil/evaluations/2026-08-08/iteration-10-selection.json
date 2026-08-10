@@ -1,0 +1,45 @@
+{
+  "contract_reviews": {
+    "sol": "approve",
+    "terra": "approve",
+    "material_findings": 0
+  },
+  "generator_validation": {
+    "sol": {"rows": 47, "unique_ids": 47, "schema_valid": true},
+    "luna": {"rows": 47, "unique_ids": 47, "schema_valid": true},
+    "terra": {"rows": 47, "unique_ids": 47, "schema_valid": true}
+  },
+  "action_lock_pre_gate": {
+    "method": "Manual source/candidate comparison. Stop after the first material action-lock failure; a rejected candidate does not advance to fact or readability ranking.",
+    "sol": {
+      "status": "rejected",
+      "failures": [
+        {"id": 3737383919, "reason": "Promotes the allowed no-match stopping point into a mandatory action before existing-output discovery or publication."},
+        {"id": 3737449070, "reason": "Leaves preservation of valid metrics as a condition in modal prose instead of explicit author work."},
+        {"id": 3725853159, "reason": "Promotes the legacy-snapshot no-change boundary into an action bullet."},
+        {"id": 3725913004, "reason": "Weakens the required rejection of existing logical output to the modal phrase 'can be rejected'."},
+        {"id": 3726043665, "reason": "Weakens the required batch-publisher path for new or empty targets to the permission 'can use'."}
+      ]
+    },
+    "luna": {
+      "status": "rejected",
+      "failures": [
+        {"id": 3737383919, "reason": "Promotes the allowed no-match stopping point into a mandatory action."},
+        {"id": 3725747243, "reason": "Promotes the permitted retrieved_timestamp behavior into the direct request."},
+        {"id": 3725853159, "reason": "Leaves the required 'mark the missing content' predicate inside modal prose."},
+        {"id": 3726043665, "reason": "Leaves the required default failure for symlinks, roots, and populated targets as modal prose."},
+        {"id": 3726043679, "reason": "Leaves the required tolerance limitation as modal prose instead of an explicit request."}
+      ]
+    },
+    "terra": {
+      "status": "rejected",
+      "failures": [
+        {"id": 3725776269, "reason": "Drops the exact repeated-data path from the requested example."},
+        {"id": 3725830951, "reason": "Drops the exact required datastore-gate guide path from the documentation request."},
+        {"id": 3725853159, "reason": "Promotes the accepted legacy unset state into an action bullet."},
+        {"id": 3726043665, "reason": "Leaves required default failure for symlinks, roots, and populated targets as modal prose."}
+      ]
+    }
+  },
+  "decision": "Reject all three generator candidates before fact/readability ranking. The written contract is coherent, but one-pass generation does not enforce it reliably across 47 comments. Add a mandatory independent post-render action-lock audit and repair pass."
+}

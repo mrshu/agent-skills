@@ -188,32 +188,46 @@ For each issue, return a structured finding with these keys:
   or narrate the investigation.
 - suggested_fix: state every concrete requested obligation and intended result.
   Group requested work by implementation obligation, not by grammar. An
-  obligation is work the author must perform in code or tests. Keep one
-  cohesive change together when it can be implemented and verified
+  obligation is work the author must perform in code, tests, or documentation.
+  Classify each source predicate before rendering it. First identify accepted
+  current behavior, target behavior needed to resolve the finding, required
+  verification or documentation, allowed implementation boundaries, and
+  explicitly optional follow-ups. Target behavior and required verification
+  or documentation are author work. Accepted current behavior, allowed
+  implementation boundaries, and explicitly optional follow-ups are no-change
+  boundaries.
+  Apply the omission counterfactual only after this classification. If leaving
+  the current code without a target behavior, test, or document change leaves
+  the defect, safety boundary, or reviewer-required verification unresolved,
+  that predicate is author work.
+  Source intent outranks modal grammar. A source-backed check, test, document
+  change, or example stated to cover, demonstrate, clarify, or make a required
+  boundary clear is author work unless the source explicitly calls it optional
+  or additional. `Can`, `could`, and `would` do not make that work optional. A
+  permission is a no-change boundary only when it describes acceptable
+  unchanged behavior, an allowed implementation boundary, or an explicitly
+  optional follow-up.
+  Split every sentence that mixes author work with a no-change boundary.
+  Classify each predicate separately; do not keep an unsplit fallback.
+  Extract the smallest actor-action-target change without detaching a purpose,
+  result, or safety clause that constrains it. Create a separate obligation
+  only when the source requires another independently implementable action.
+  Keep one cohesive change together when it can be implemented and verified
   independently. Do not split values governed by one rule into repeated
   actions. Two verbs that establish one invariant on the same record or output
-  may remain one obligation.
-  Classify each unit by source behavior, not modal grammar. Separate the
-  required action from any modal implementation boundary. When a new
-  mechanism is needed to resolve the described failure, request the smallest
-  actor-action-target change and retain its permitted behavior as modal prose.
-  Do not infer mandatory work from a standalone permission or allowed
-  follow-up.
-  Use the omission counterfactual for every proposed post-change behavior.
-  If omitting one predicate leaves the reported defect or a required boundary
-  unresolved, classify that predicate as author work even when it uses a modal.
-  Do not count a preservation constraint, permission, carve-out, exception, or
-  already-correct behavior as a separate obligation. Keep it with the action
+  remain one obligation.
+  A no-change boundary is not a separate obligation. Keep it with the action
   it limits, or use short modal prose immediately after that action when one
-  sentence would be dense. Separate a distinct path only when the source
+  sentence would be dense. Preserve accepted current behavior as standalone
+  modal prose. Preserve a standalone optional follow-up as standalone modal
+  prose after the required request, or after the consequence when no request
+  exists. Separate a distinct path only when the source
   requires independently implementable work there. A required source-backed
-  test is a separate obligation when it has its own exact boundary. Reuse exact
-  source wording for scope and collection phrases.
-  Preserve `can`, `could`, or `may` on a boundary or permission instead of
-  folding it into the imperative that names the author obligation.
-  Privately map every requested source unit to either an obligation or a
-  no-change constraint. Do not return the finding until every obligation
-  appears as an explicit request.
+  test is a separate obligation when it has its own exact boundary. Reuse
+  exact source wording for scope and collection phrases.
+  Privately map every source predicate to author work or a no-change boundary.
+  Do not return the finding until every author-work predicate appears as an
+  explicit request.
   For one critical, high, or medium obligation, write one short request sentence
   beginning with `Please` and a direct action verb. For two or more, return
   `**Requested actions**` followed by one direct-action Markdown bullet per
