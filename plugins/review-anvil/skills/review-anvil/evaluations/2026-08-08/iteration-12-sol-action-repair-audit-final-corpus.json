@@ -1,0 +1,20 @@
+[
+  {
+    "id": "3737383919",
+    "source_context": "**RAV-RUN3-R1-F001 [medium] cli** — A bare `--models` parses as an empty list, which disables filtering and starts the full source run\n\nA nonempty filter with no matches instead exits successfully with zero logs.",
+    "source_requested_work": "Please require one or more values to block the first path. A no-match check can stop before existing-output discovery or publication.",
+    "rendered_requested_work": "**Requested actions**\n\n- Require one or more values for `--models` to block a bare option from starting the full source run.\n- Add a no-match check.\n\nIt can stop before existing-output discovery or publication."
+  },
+  {
+    "id": "3737449070",
+    "source_context": "**RAV-RUN1-R1-F005 [medium] metric-semantics** — When a result key has no matching metric spec, the converter assumes higher-is-better and publishes no verified scale or bounds\n\nA finite custom key does not prove that direction.",
+    "source_requested_work": "Please use source metric specs or an operator-supplied definition to establish the semantics. Unresolved keys can be reported after the valid metrics are preserved.",
+    "rendered_requested_work": "**Requested actions**\n\n- Use source metric specs or an operator-supplied definition to establish the semantics.\n- Preserve the valid metrics.\n\nUnresolved keys can be reported after the valid metrics are preserved."
+  },
+  {
+    "id": "3726043665",
+    "source_context": "**RAV-RUN2-R1-F001 [critical] publication-safety** — The adapter recursively deletes the selected output tree before publication. Empty batches and later write failures can destroy prior or unrelated data.",
+    "source_requested_work": "New or empty targets can use the batch publisher. Symlinks, roots, and populated targets can fail by default until replacement has an explicit ownership manifest.",
+    "rendered_requested_work": "**Requested actions**\n\n- Use the batch publisher for new or empty targets.\n- Make symlinks, roots, and populated targets fail by default until replacement has an explicit ownership manifest."
+  }
+]

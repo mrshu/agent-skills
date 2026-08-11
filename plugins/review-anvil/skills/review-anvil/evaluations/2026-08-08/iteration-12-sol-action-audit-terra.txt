@@ -1,0 +1,400 @@
+Working...
+{
+  "items": [
+    {
+      "id": "3737042592",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737044354",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737044361",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737044371",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737053181",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737053197",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737053204",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737181823",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737266652",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737266656",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737266661",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737291965",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737383919",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [
+        "Rendered phrase “Add a no-match check before existing-output discovery or publication” turns the permitted stopping point in source predicate “A no-match check can stop before existing-output discovery or publication” into a required ordering."
+      ],
+      "fact_losses": [
+        "Source permission “can stop before existing-output discovery or publication” is not preserved; the rendered phrase requires the check to run before that point."
+      ],
+      "repair_instructions": [
+        "Request a no-match check directly, but retain “It can stop before existing-output discovery or publication” as a no-change boundary. Do not request that the check run before existing-output discovery or publication."
+      ]
+    },
+    {
+      "id": "3737383922",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737449039",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737449052",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737449059",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737449070",
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate “valid metrics are preserved” in “Unresolved keys can be reported after the valid metrics are preserved” is author work, but rendered phrase “After the valid metrics are preserved, unresolved keys can be reported” leaves it only as modal prose rather than a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Add a direct request to preserve valid metrics. Keep unresolved-key reporting as optional and do not turn it into a requested action."
+      ]
+    },
+    {
+      "id": "3737449081",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737449090",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737449098",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737449101",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725747243",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725747244",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725747245",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725776269",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725827216",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725830951",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725853148",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725853152",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725853155",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725853159",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725853163",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725853168",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725913004",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725913007",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725913013",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725913015",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725913021",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725972277",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725972282",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725972285",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725972287",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3726043665",
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate “New or empty targets can use the batch publisher” is target behavior, but rendered phrase “New or empty targets can use the batch publisher” is not a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Add a direct request that new or empty targets use the batch publisher, while retaining the source condition that symlinks, roots, and populated targets fail by default until replacement has an explicit ownership manifest."
+      ]
+    },
+    {
+      "id": "3726043671",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3726043679",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3726043682",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    }
+  ],
+  "pass_count": 44,
+  "fail_count": 3
+}
+
+
+Wall time: 222.34 seconds

@@ -1,0 +1,1334 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Add mismatched source and `collection_override` tests covering this path."
+          ],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737044354,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Add a mid-write failure test across several routes covering this path."
+          ],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737044361,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737044371,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737053181,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737053197,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737053204,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737181823,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737266652,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737266656,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737266661,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": [
+            "Keep the nonzero exit conditional on failures."
+          ]
+        }
+      }
+    },
+    {
+      "id": 3737291965,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "false_action",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Add tests for both directory-symlink inputs and an accepted file symlink covering the boundary."
+          ],
+          "false_actions": [
+            "Keep file-symlink behavior unchanged."
+          ]
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737383919,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Add a no-match check."
+          ],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737383922,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449039,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449052,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449059,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449070,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Preserve valid metrics before reporting unresolved keys."
+          ],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449081,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449090,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449098,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3737449101,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Add tests with provider-prefixed key names covering the reachable path without recording secret values."
+          ],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725747243,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Use a stable source-run timestamp or deterministic token to keep the required ID shape."
+          ],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725747244,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Add a task-level error boundary that preserves valid logs and accounts for each rejected task."
+          ],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725747245,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Emit `llm_scoring` only when the real template is available."
+          ],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725776269,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Document that the nearest `data` ancestor wins.",
+            "Add the repeated-`data` example to make the placement limit clear."
+          ],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725827216,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Stop identity comparison whenever `check_path_structure` already owns a path error."
+          ],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725830951,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Add a section stating the alias trigger, warning-only result, and single-record evidence limit."
+          ],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725853148,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Resolve network-mode refs once to a commit SHA."
+          ],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725853152,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Use the shared parser in the module entry point.",
+            "Add one offline entry-point test covering its defaults."
+          ],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725853155,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Validate numeric fields as finite values under their metric rules before result construction.",
+            "Put invalid rows in `SourceConversionResult`."
+          ],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725853159,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Store pinned prompt content in new snapshots.",
+            "For legacy snapshots, leave the typed value unset and mark the missing content."
+          ],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725853163,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Query present-null entries in live mode."
+          ],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725853168,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Give exact canonical IDs precedence.",
+            "Resolve normalized spellings only when one organization owns them."
+          ],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725913004,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Stage complete output before publication."
+          ],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725913007,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Use the required `data/<collection>` path for smoke output.",
+            "Pass a quoted fixed-depth file glob to validation."
+          ],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725913013,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Put invalid scores in the failure report.",
+            "Omit incomplete token usage and base token means only on complete values."
+          ],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725913015,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Keep `accuracy` as the metric ID.",
+            "Use `evaluation_name` to distinguish tasks."
+          ],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725913021,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Require at least one path for the `--parquet` option."
+          ],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725972277,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Integrate current main before moving the adapter and references.",
+            "Move the adapter and references under `every_eval_ever/adapters/open_medical_llm`."
+          ],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725972282,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Derive the expected value from the imported schema version."
+          ],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725972285,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Keep `accuracy` as the metric ID.",
+            "Use task-specific evaluation names to preserve benchmark identity."
+          ],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3725972287,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Reject existing output JSON in the collection target before UUID generation or batch publication."
+          ],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3726043665,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Use the batch publisher for new or empty targets.",
+            "Make symlinks, roots, and populated targets fail by default until replacement has an explicit ownership manifest."
+          ],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3726043671,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Use metric cells as the source unit and count each attempted or rejected cell once.",
+            "Retain row references for malformed objects and missing datasets."
+          ],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3726043679,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Limit tolerance to scale classification only.",
+            "Add a strict pre-publication check to reject unproven overruns."
+          ],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        }
+      }
+    },
+    {
+      "id": 3726043682,
+      "candidates": {
+        "A": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "B": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "locked",
+          "fact_losses": [],
+          "missing_explicit_actions": [],
+          "false_actions": []
+        },
+        "C": {
+          "fact_status": "fact_safe",
+          "action_lock_status": "unlocked",
+          "fact_losses": [],
+          "missing_explicit_actions": [
+            "Set `metric_unit` only when the canonical contract or an explicit conversion proves it.",
+            "Otherwise leave `metric_unit` unset."
+          ],
+          "false_actions": []
+        }
+      }
+    }
+  ],
+  "counts": {
+    "A": {
+      "fact_safe": 47,
+      "fact_loss": 0,
+      "locked": 35,
+      "unlocked": 11,
+      "false_action": 1
+    },
+    "B": {
+      "fact_safe": 47,
+      "fact_loss": 0,
+      "locked": 39,
+      "unlocked": 8,
+      "false_action": 0
+    },
+    "C": {
+      "fact_safe": 47,
+      "fact_loss": 0,
+      "locked": 35,
+      "unlocked": 11,
+      "false_action": 1
+    }
+  },
+  "summary": "All 141 candidates preserve the material technical facts. Action locking differs: B locks 39 comments, while A and C each lock 35; one A candidate and one C candidate turn accepted current behavior into mandatory work."
+}
+
+
+Wall time: 391.70 seconds

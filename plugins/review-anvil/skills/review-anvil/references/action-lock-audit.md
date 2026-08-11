@@ -79,6 +79,11 @@ Use source context to settle meaning before applying those rules:
 - “Retrieval time can remain only in `retrieved_timestamp`” is a no-change
   boundary when the context shows that field already records retrieval time.
   Do not fold it into the stable-ID request.
+- If construction currently fails after files are written, “Complete output
+  can stage before publication” is author work. “Existing logical output can
+  be rejected until replacement is atomic, with sidecar validation kept
+  streaming” preserves two allowed boundaries; do not turn either into an
+  action.
 - Preserve every source condition on accepted current behavior exactly.
 
 Return valid, pretty-printed JSON only:
@@ -107,8 +112,12 @@ predicate and rendered phrase in every failure. Never rewrite a comment.
 
 The renderer repairs only failed comments. Apply each audit instruction without
 changing the title, diagnosis, evidence, severity, complete ID, or already
-passing requested-work predicates. Audit the repaired rows once more with the
-same independent verifier.
+passing requested-work predicates.
+
+After the semantic repair, reapply the inline-comment form: use one concise
+`Please` sentence for exactly one author obligation, or `**Requested actions**`
+with one bullet per obligation for two or more. Never use a one-item action
+list. Audit the repaired rows once more with the same independent verifier.
 
 If the second audit still fails, restore the exact source requested-work prose.
 Do not paraphrase the failed request section. A denser fact-safe request is

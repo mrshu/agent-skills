@@ -1,0 +1,18 @@
+[
+  {
+    "id": "3737383919",
+    "rendered_requested_work": "**Requested actions**\n\n- Require one or more values for `--models` to block a bare option from starting the full source run.\n- Add a no-match check.\n\nIt can stop before existing-output discovery or publication."
+  },
+  {
+    "id": "3737449070",
+    "rendered_requested_work": "**Requested actions**\n\n- Use source metric specs or an operator-supplied definition to establish the semantics.\n- Preserve the valid metrics.\n\nUnresolved keys can be reported after the valid metrics are preserved."
+  },
+  {
+    "id": "3725913004",
+    "rendered_requested_work": "**Requested actions**\n\n- Stage complete output before publication.\n- Reject existing logical output until replacement is atomic.\n\nSidecar validation can remain streaming."
+  },
+  {
+    "id": "3726043665",
+    "rendered_requested_work": "**Requested actions**\n\n- Use the batch publisher for new or empty targets.\n- Make symlinks, roots, and populated targets fail by default until replacement has an explicit ownership manifest."
+  }
+]

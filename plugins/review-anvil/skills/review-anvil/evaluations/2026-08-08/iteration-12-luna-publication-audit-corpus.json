@@ -1,0 +1,8 @@
+[
+  {
+    "id": "3725913004",
+    "source_context": "**RAV-RUN2-R1-F001 [high] instance-publication** — Instance mode passes a sidecar basename where the schema requires a canonical datastore path. Construction fails after aggregate and sidecar files are written.",
+    "source_requested_work": "Complete output can stage before publication. Existing logical output can be rejected until replacement is atomic, with sidecar validation kept streaming.",
+    "rendered_requested_work": "**Requested actions**\n\n- Stage complete output before publication.\n- Reject existing logical output until replacement is atomic.\n\nSidecar validation can remain streaming."
+  }
+]

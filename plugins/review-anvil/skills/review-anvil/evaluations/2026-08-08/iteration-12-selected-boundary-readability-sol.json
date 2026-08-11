@@ -1,0 +1,26 @@
+{
+  "per_comment": [
+    {
+      "id": 3725913004,
+      "ranking": [
+        "C",
+        "A",
+        "B"
+      ],
+      "winner": "C",
+      "reason": "C states the requested staging action directly and expresses the atomic-replacement and streaming-validation boundaries more naturally than A, while B's \"can stage\" wording obscures the request."
+    }
+  ],
+  "winner_counts": {
+    "A": 0,
+    "B": 0,
+    "C": 1
+  },
+  "overall_ranking": [
+    "C",
+    "A",
+    "B"
+  ],
+  "recommended_version": "C",
+  "summary": "C is the easiest to understand in one pass because its request and preserved boundaries read as direct, natural prose. A is nearly as clear but ends with a stiffer construction, while B weakens the requested action into a statement of possibility."
+}

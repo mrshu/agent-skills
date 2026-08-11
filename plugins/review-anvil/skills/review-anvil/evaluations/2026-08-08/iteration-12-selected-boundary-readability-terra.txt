@@ -1,0 +1,22 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3725913004,
+      "ranking": ["A", "C", "B"],
+      "winner": "A",
+      "reason": "A gives a direct request and states the publication, replacement, and streaming-validation boundaries in the clearest compact structure."
+    }
+  ],
+  "winner_counts": {
+    "A": 1,
+    "B": 0,
+    "C": 0
+  },
+  "overall_ranking": ["A", "C", "B"],
+  "recommended_version": "A",
+  "summary": "A is the most direct and complete for a busy author. C is similarly clear but uses less decisive wording for the preserved streaming-validation boundary, while B reads as a statement of possibility rather than a requested outcome."
+}
+
+
+Wall time: 15.08 seconds

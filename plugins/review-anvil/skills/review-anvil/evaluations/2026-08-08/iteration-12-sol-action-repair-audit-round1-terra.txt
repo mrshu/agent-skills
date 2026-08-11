@@ -1,0 +1,48 @@
+Working...
+{
+  "items": [
+    {
+      "id": "3737383919",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737449070",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725913004",
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate \"with sidecar validation kept streaming\" is author work but appears only as the modal rendered phrase \"Sidecar validation can remain streaming.\""
+      ],
+      "false_actions": [],
+      "fact_losses": [
+        "The required preservation in source predicate \"with sidecar validation kept streaming\" is weakened to the optional rendered phrase \"Sidecar validation can remain streaming.\""
+      ],
+      "repair_instructions": [
+        "Make \"with sidecar validation kept streaming\" a direct requested action; do not leave it only in the modal phrase \"Sidecar validation can remain streaming.\""
+      ]
+    },
+    {
+      "id": "3726043665",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    }
+  ],
+  "pass_count": 3,
+  "fail_count": 1
+}
+
+
+Wall time: 161.88 seconds

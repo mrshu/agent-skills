@@ -1,0 +1,308 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "ranking": ["D", "A", "B", "C"],
+      "winner": "D",
+      "reason": "The bulleted requests make the required rejection and test coverage easiest to scan."
+    },
+    {
+      "id": 3737044354,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "The problem, data-loss consequence, and two recovery steps are separated into clear scanable units."
+    },
+    {
+      "id": 3737044361,
+      "ranking": ["A", "C", "D", "B"],
+      "winner": "A",
+      "reason": "Its final recommendation stays together, making the identity change and allowed metadata use immediately clear."
+    },
+    {
+      "id": 3737044371,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All versions present the same concise failure, stale-report consequence, and atomic replacement outcome."
+    },
+    {
+      "id": 3737053181,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All versions state the misleading Boolean consequence and requested neutral representation equally directly."
+    },
+    {
+      "id": 3737053197,
+      "ranking": ["A", "C", "D", "B"],
+      "winner": "A",
+      "reason": "Keeping the validation outcome and empty-cell exception in one paragraph reads more smoothly than the split ending."
+    },
+    {
+      "id": 3737053204,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "The two required safeguards are most quickly understood as parallel bullets, followed by the 401 exception."
+    },
+    {
+      "id": 3737181823,
+      "ranking": ["A", "C", "D", "B"],
+      "winner": "A",
+      "reason": "The requested narrow boundary and preserved visibility of unexpected errors form one clear outcome statement."
+    },
+    {
+      "id": 3737266652,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All versions clearly connect one malformed value to loss of valid rows and the missing row-level record."
+    },
+    {
+      "id": 3737266656,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All versions concisely explain the moving-reference trigger and the reproducible-resolution outcome."
+    },
+    {
+      "id": 3737266661,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "Separating report persistence from exit status makes the two independent expected outcomes easier to absorb."
+    },
+    {
+      "id": 3737291965,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "The bullets isolate the directory-symlink fix and boundary tests, while the unchanged file-symlink behavior remains easy to find."
+    },
+    {
+      "id": 3737383919,
+      "ranking": ["D", "A", "B", "C"],
+      "winner": "D",
+      "reason": "It names `--models` in the first action and gives the no-match stopping point without a dangling pronoun."
+    },
+    {
+      "id": 3737383922,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All versions clearly contrast the requested path with the actual target and give one coherent validation outcome."
+    },
+    {
+      "id": 3737449039,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "The stable-ID recipe and retrieval-time exception read as one complete, immediately actionable instruction."
+    },
+    {
+      "id": 3737449052,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All versions directly distinguish unconvertible measured tasks from intentional derived-row exclusions."
+    },
+    {
+      "id": 3737449059,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All versions make the two counts and their distinct score-coverage and provenance roles clear."
+    },
+    {
+      "id": 3737449070,
+      "ranking": ["D", "C", "A", "B"],
+      "winner": "D",
+      "reason": "It states the semantic source, preservation order, and unresolved-key handling in the clearest sequence."
+    },
+    {
+      "id": 3737449081,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All versions clearly identify the missing join key and the mapping needed to supply stable metric IDs."
+    },
+    {
+      "id": 3737449090,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "The bulleted sanitizer and test requests are easier to scan after the concrete nested-secret exposure."
+    },
+    {
+      "id": 3737449098,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All versions clearly contrast single-file and directory behavior, then name the small parity path needed."
+    },
+    {
+      "id": 3737449101,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "The bullets make the recursive sanitizer and safe test boundary more immediately actionable."
+    },
+    {
+      "id": 3725747243,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "It directly requests the stable token or timestamp and clearly preserves the role of `retrieved_timestamp`."
+    },
+    {
+      "id": 3725747244,
+      "ranking": ["A", "C", "D", "B"],
+      "winner": "A",
+      "reason": "The direct request cleanly links task-level isolation to retaining valid sibling logs and rejected-task accounting."
+    },
+    {
+      "id": 3725747245,
+      "ranking": ["D", "B", "A", "C"],
+      "winner": "D",
+      "reason": "It gives the condition for emitting `llm_scoring` and the preserved aggregate behavior without repeating the condition."
+    },
+    {
+      "id": 3725776269,
+      "ranking": ["A", "C", "D", "B"],
+      "winner": "A",
+      "reason": "The explicit bullets retain both the nearest-ancestor rule and the concrete repeated-`data` placement example."
+    },
+    {
+      "id": 3725827216,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "The direct imperative makes the ownership boundary between path validation and identity comparison immediately clear."
+    },
+    {
+      "id": 3725830951,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "The explicit documentation request names the three pieces of guidance a contributor needs to add."
+    },
+    {
+      "id": 3725853148,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "The direct instruction separates network resolution from the offline replay exception with minimal effort."
+    },
+    {
+      "id": 3725853152,
+      "ranking": ["A", "B", "D", "C"],
+      "winner": "A",
+      "reason": "The two bullets clearly separate replacing the obsolete parser path from testing entry-point defaults."
+    },
+    {
+      "id": 3725853155,
+      "ranking": ["A", "C", "B", "D"],
+      "winner": "A",
+      "reason": "It clearly pairs finite-value validation with placing each invalid row in the existing result structure."
+    },
+    {
+      "id": 3725853159,
+      "ranking": ["A", "B", "D", "C"],
+      "winner": "A",
+      "reason": "The separate bullets make the new-snapshot behavior and legacy-snapshot treatment easy to scan."
+    },
+    {
+      "id": 3725853163,
+      "ranking": ["A", "C", "D", "B"],
+      "winner": "A",
+      "reason": "The direct request and following offline exception state the needed live-mode change in the clearest order."
+    },
+    {
+      "id": 3725853168,
+      "ranking": ["C", "A", "B", "D"],
+      "winner": "C",
+      "reason": "The two bullets cleanly distinguish exact-ID precedence from the condition for normalized resolution."
+    },
+    {
+      "id": 3725913004,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "The staged-publication and replacement-safety requirements are immediately visible as separate actions."
+    },
+    {
+      "id": 3725913007,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "The bullets make the invalid smoke-output root and file-glob correction quick to identify."
+    },
+    {
+      "id": 3725913013,
+      "ranking": ["B", "D", "C", "A"],
+      "winner": "B",
+      "reason": "It uses concise parallel actions for score failures and incomplete token usage without softening either outcome."
+    },
+    {
+      "id": 3725913015,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All versions clearly preserve `accuracy` as the join key while assigning task distinction to `evaluation_name`."
+    },
+    {
+      "id": 3725913021,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All versions make the bare-option trigger, unexpected remote conversion, and required argument validation clear."
+    },
+    {
+      "id": 3725972277,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "It directly gives the required integration-before-move sequence and the destination package path."
+    },
+    {
+      "id": 3725972282,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "The direct request to derive the assertion from the imported version is clearest after the version mismatch."
+    },
+    {
+      "id": 3725972285,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "It directly preserves the global accuracy ID while clearly assigning benchmark distinction to evaluation names."
+    },
+    {
+      "id": 3725972287,
+      "ranking": ["A", "B", "D", "C"],
+      "winner": "A",
+      "reason": "The direct instruction makes the duplicate-record trigger and correct pre-publication check immediately clear."
+    },
+    {
+      "id": 3726043665,
+      "ranking": ["B", "D", "A", "C"],
+      "winner": "B",
+      "reason": "The bullets separate safe new-target publication from the default rejection of dangerous replacement targets."
+    },
+    {
+      "id": 3726043671,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "The two bullets cleanly state the source unit and the retained references needed for complete accounting."
+    },
+    {
+      "id": 3726043679,
+      "ranking": ["B", "A", "D", "C"],
+      "winner": "B",
+      "reason": "It precisely separates tolerance classification from strict rejection in concise parallel actions."
+    },
+    {
+      "id": 3726043682,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "The single instruction clearly states both the proof threshold for a unit and the fallback of leaving it unset."
+    }
+  ],
+  "winner_counts": {
+    "A": 27,
+    "B": 14,
+    "C": 1,
+    "D": 5
+  },
+  "overall_ranking": ["A", "B", "D", "C"],
+  "dimension_winners": {
+    "immediate_comprehension": "A",
+    "consequence_clarity": "A",
+    "actionability": "A",
+    "jargon_load": "A",
+    "sentence_clarity": "A",
+    "tone": "A",
+    "scanability": "A"
+  },
+  "recommended_version": "A",
+  "summary": "A most consistently presents the issue, consequence, and requested outcome in a calm, direct sequence. B often improves readability through concise imperative wording and separated actions, while D wins several cases by removing repetition or clarifying the action target."
+}
+
+
+Wall time: 129.23 seconds

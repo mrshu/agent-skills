@@ -1,0 +1,34 @@
+{
+  "items": [
+    {
+      "id": "3737383919",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737449070",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3726043665",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [
+        "Source predicate: \"Symlinks, roots, and populated targets can fail by default until replacement has an explicit ownership manifest.\" This is an allowed implementation boundary, but the rendered action \"Make symlinks, roots, and populated targets fail by default until replacement has an explicit ownership manifest.\" turns it into required author work."
+      ],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Remove the direct request to make symlinks, roots, and populated targets fail. Retain only the required action to use the batch publisher for new or empty targets; do not convert the permitted default-failure boundary into an action."
+      ]
+    }
+  ],
+  "pass_count": 2,
+  "fail_count": 1
+}

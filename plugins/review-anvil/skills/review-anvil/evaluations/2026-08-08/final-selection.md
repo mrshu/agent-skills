@@ -1,5 +1,8 @@
 # Final selection — fact-locked requested changes
 
+> Superseded by `iteration-12-assessment.md`, which records the final
+> action-locked renderer comparison and recommendations.
+
 ## Decision
 
 Select the final production contract in `references/report-artifacts.md`.

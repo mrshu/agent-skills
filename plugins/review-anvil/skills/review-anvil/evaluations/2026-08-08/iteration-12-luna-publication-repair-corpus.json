@@ -1,0 +1,33 @@
+[
+  {
+    "id": "3725913004",
+    "source_context": "**RAV-RUN2-R1-F001 [high] instance-publication** — Instance mode passes a sidecar basename where the schema requires a canonical datastore path. Construction fails after aggregate and sidecar files are written.",
+    "source_requested_work": "Complete output can stage before publication. Existing logical output can be rejected until replacement is atomic, with sidecar validation kept streaming.",
+    "rendered_requested_work": "**Requested actions**\n\n- Stage complete output before publication.\n- Reject existing logical output until replacement is atomic.\n\nSidecar validation can remain streaming.",
+    "sol_audit": {
+      "id": "3725913004",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [
+        "The source predicate \"Existing logical output can be rejected until replacement is atomic\" is an allowed no-change boundary, but the rendered phrase \"Reject existing logical output until replacement is atomic.\" makes it a direct author action."
+      ],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Remove the direct action derived from \"Existing logical output can be rejected until replacement is atomic\" and preserve it only as a no-change boundary, retaining the exact condition \"until replacement is atomic.\""
+      ]
+    },
+    "terra_audit": {
+      "id": "3725913004",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [
+        "Source predicate \"Existing logical output can be rejected until replacement is atomic\" is a no-change boundary, but rendered phrase \"Reject existing logical output until replacement is atomic.\" makes it a direct action."
+      ],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Remove the direct-action bullet derived from the no-change boundary \"Existing logical output can be rejected until replacement is atomic.\""
+      ]
+    },
+    "adjudication": "Directly request complete staging. Keep existing-output rejection until atomic replacement and streaming sidecar validation as no-change boundaries."
+  }
+]

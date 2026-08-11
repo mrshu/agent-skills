@@ -1,0 +1,10 @@
+Working...
+[
+  {
+    "id": "3725913004",
+    "rendered_requested_work": "Please stage complete output before publication. Existing logical output can be rejected until replacement is atomic, and sidecar validation can remain streaming."
+  }
+]
+
+
+Wall time: 12.90 seconds

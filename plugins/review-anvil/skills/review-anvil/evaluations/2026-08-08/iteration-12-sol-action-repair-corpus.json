@@ -1,0 +1,95 @@
+[
+  {
+    "id": "3737383919",
+    "source_context": "**RAV-RUN3-R1-F001 [medium] cli** — A bare `--models` parses as an empty list, which disables filtering and starts the full source run\n\nA nonempty filter with no matches instead exits successfully with zero logs.",
+    "source_requested_work": "Please require one or more values to block the first path. A no-match check can stop before existing-output discovery or publication.",
+    "rendered_requested_work": "**Requested actions**\n\n- Require one or more values for `--models` to block a bare option from starting the full source run.\n- Add a no-match check before existing-output discovery or publication.",
+    "sol_audit": {
+      "id": "3737383919",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [
+        "Source predicate \"A no-match check can stop before existing-output discovery or publication\" permits that stopping point; rendered phrase \"Add a no-match check before existing-output discovery or publication\" makes the permitted point a required action boundary."
+      ],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Keep the no-match check as a direct request, but preserve source predicate \"can stop before existing-output discovery or publication\" as a permission rather than incorporating it into the required action."
+      ]
+    },
+    "terra_audit": {
+      "id": "3737383919",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [
+        "Rendered phrase “Add a no-match check before existing-output discovery or publication” turns the permitted stopping point in source predicate “A no-match check can stop before existing-output discovery or publication” into a required ordering."
+      ],
+      "fact_losses": [
+        "Source permission “can stop before existing-output discovery or publication” is not preserved; the rendered phrase requires the check to run before that point."
+      ],
+      "repair_instructions": [
+        "Request a no-match check directly, but retain “It can stop before existing-output discovery or publication” as a no-change boundary. Do not request that the check run before existing-output discovery or publication."
+      ]
+    },
+    "adjudication": "Require one or more --models values to block the bare-option full-run path and directly request a no-match check. Keep its permitted stopping point modal."
+  },
+  {
+    "id": "3737449070",
+    "source_context": "**RAV-RUN1-R1-F005 [medium] metric-semantics** — When a result key has no matching metric spec, the converter assumes higher-is-better and publishes no verified scale or bounds\n\nA finite custom key does not prove that direction.",
+    "source_requested_work": "Please use source metric specs or an operator-supplied definition to establish the semantics. Unresolved keys can be reported after the valid metrics are preserved.",
+    "rendered_requested_work": "Please use source metric specs or an operator-supplied definition to establish the semantics. After the valid metrics are preserved, unresolved keys can be reported.",
+    "sol_audit": {
+      "id": "3737449070",
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate \"Unresolved keys can be reported after the valid metrics are preserved\" contains required preservation work in \"the valid metrics are preserved\"; rendered phrase \"After the valid metrics are preserved\" leaves that work only as a condition rather than a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Make preservation of the valid metrics a direct request. Keep unresolved-key reporting optional or omit that optional follow-up."
+      ]
+    },
+    "terra_audit": {
+      "id": "3737449070",
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate “valid metrics are preserved” in “Unresolved keys can be reported after the valid metrics are preserved” is author work, but rendered phrase “After the valid metrics are preserved, unresolved keys can be reported” leaves it only as modal prose rather than a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Add a direct request to preserve valid metrics. Keep unresolved-key reporting as optional and do not turn it into a requested action."
+      ]
+    },
+    "adjudication": "Directly request source metric semantics and preservation of valid metrics. Keep unresolved-key reporting as optional modal prose."
+  },
+  {
+    "id": "3725913004",
+    "source_context": "**RAV-RUN2-R1-F001 [high] instance-publication** — Instance mode passes a sidecar basename where the schema requires a canonical datastore path. Construction fails after aggregate and sidecar files are written.",
+    "source_requested_work": "Complete output can stage before publication. Existing logical output can be rejected until replacement is atomic, with sidecar validation kept streaming.",
+    "rendered_requested_work": "Please stage complete output before publication. Existing logical output can be rejected until replacement is atomic, with sidecar validation kept streaming.",
+    "sol_audit": null,
+    "terra_audit": null,
+    "adjudication": "Directly request complete staging and rejection of existing logical output until replacement is atomic. Keep streaming sidecar validation as accepted behavior."
+  },
+  {
+    "id": "3726043665",
+    "source_context": "**RAV-RUN2-R1-F001 [critical] publication-safety** — The adapter recursively deletes the selected output tree before publication. Empty batches and later write failures can destroy prior or unrelated data.",
+    "source_requested_work": "New or empty targets can use the batch publisher. Symlinks, roots, and populated targets can fail by default until replacement has an explicit ownership manifest.",
+    "rendered_requested_work": "Please make symlinks, roots, and populated targets fail by default until replacement has an explicit ownership manifest. New or empty targets can use the batch publisher.",
+    "sol_audit": null,
+    "terra_audit": {
+      "id": "3726043665",
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate “New or empty targets can use the batch publisher” is target behavior, but rendered phrase “New or empty targets can use the batch publisher” is not a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Add a direct request that new or empty targets use the batch publisher, while retaining the source condition that symlinks, roots, and populated targets fail by default until replacement has an explicit ownership manifest."
+      ]
+    },
+    "adjudication": "Directly request default failure for symlinks, roots, and populated targets until an ownership manifest exists, and directly request the batch publisher for new or empty targets."
+  }
+]

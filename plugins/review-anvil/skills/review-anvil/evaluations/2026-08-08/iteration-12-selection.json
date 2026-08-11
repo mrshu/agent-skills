@@ -1,0 +1,57 @@
+{
+  "corpus": {
+    "total": 47,
+    "today": 22,
+    "unseen_holdout": 25
+  },
+  "selected": "luna_repaired_with_publication_boundary_repair",
+  "fact_action_gate": {
+    "sol": {
+      "fact_safe": 47,
+      "action_locked": 47,
+      "false_actions": 0
+    },
+    "terra": {
+      "fact_safe": 47,
+      "action_locked": 47,
+      "false_actions": 0
+    }
+  },
+  "blind_readability_pairwise": {
+    "selected_vs_baseline": {
+      "selected": 73,
+      "baseline": 21,
+      "today": {
+        "selected": 26,
+        "baseline": 18
+      },
+      "unseen_holdout": {
+        "selected": 47,
+        "baseline": 3
+      }
+    },
+    "selected_vs_sol_repaired": {
+      "selected": 50,
+      "sol_repaired": 44,
+      "comments_with_different_wording": {
+        "selected": 35,
+        "sol_repaired": 25
+      }
+    }
+  },
+  "publication_boundary_regression": {
+    "unsafe_candidate_detected": {
+      "sol": true,
+      "terra": true
+    },
+    "repaired_candidate_passed": {
+      "sol": true,
+      "terra": true
+    },
+    "readability_ranking": {
+      "sol": ["selected", "sol_repaired", "baseline"],
+      "terra": ["sol_repaired", "selected", "baseline"]
+    }
+  },
+  "decision": "Select the repaired Luna rendering evidence and retain the independent post-render action-lock audit with bounded repair and exact-source fallback."
+}

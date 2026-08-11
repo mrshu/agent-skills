@@ -1,0 +1,308 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "ranking": ["C", "A", "B", "D"],
+      "winner": "C",
+      "reason": "C turns the two requested outcomes into direct sentences without list overhead, keeping the failure path and correction easy to scan."
+    },
+    {
+      "id": 3737044354,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B keeps the remedy and regression scenario in a compact, natural paragraph immediately after the consequence."
+    },
+    {
+      "id": 3737044361,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "B separates the identity correction from the retained metadata and routing behavior, making both outcomes easier to absorb."
+    },
+    {
+      "id": 3737044371,
+      "ranking": ["D", "A", "B", "C"],
+      "winner": "D",
+      "reason": "All four versions are textually identical, so their first-read comprehension is equivalent and the ordering is necessarily arbitrary."
+    },
+    {
+      "id": 3737053181,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All four versions are textually identical, so their first-read comprehension is equivalent and the ordering is necessarily arbitrary."
+    },
+    {
+      "id": 3737053197,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "B isolates the allowance for empty optional cells from the validation request, clarifying the boundary of the expected change."
+    },
+    {
+      "id": 3737053204,
+      "ranking": ["A", "B", "D", "C"],
+      "winner": "A",
+      "reason": "A uses separate bullets for the two incomplete-sweep outcomes and leaves the expected 401 behavior as a distinct caveat."
+    },
+    {
+      "id": 3737181823,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A places the schema-valid exceptions on their own line, separating them cleanly from the requested deferral rule."
+    },
+    {
+      "id": 3737266652,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "B separates the required error boundary from the intentional visibility of unexpected errors, giving each idea its own line."
+    },
+    {
+      "id": 3737266656,
+      "ranking": ["C", "A", "B", "D"],
+      "winner": "C",
+      "reason": "All four versions are textually identical, so their first-read comprehension is equivalent and the ordering is necessarily arbitrary."
+    },
+    {
+      "id": 3737266661,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A directly couples persistent reporting with the unchanged failure-based exit condition in one concise sentence."
+    },
+    {
+      "id": 3737291965,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B separates the implementation and test requests into bullets while presenting unchanged file-symlink behavior as a clear boundary."
+    },
+    {
+      "id": 3737383919,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D gives each CLI requirement its own bullet and attaches the stopping point directly to the no-match check."
+    },
+    {
+      "id": 3737383922,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "All four versions are textually identical, so their first-read comprehension is equivalent and the ordering is necessarily arbitrary."
+    },
+    {
+      "id": 3737449039,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A places the stable-ID construction and the limited role of retrieval time on separate lines, making the corrected identity behavior explicit."
+    },
+    {
+      "id": 3737449052,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A separates the failure-ledger requirement from the exception for intentionally skipped rows, making the accounting boundary easy to find."
+    },
+    {
+      "id": 3737449059,
+      "ranking": ["D", "A", "B", "C"],
+      "winner": "D",
+      "reason": "All four versions are textually identical, so their first-read comprehension is equivalent and the ordering is necessarily arbitrary."
+    },
+    {
+      "id": 3737449070,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D states the required source of metric semantics first and then explains when unresolved keys may be reported in a clear sequence."
+    },
+    {
+      "id": 3737449081,
+      "ranking": ["C", "A", "B", "D"],
+      "winner": "C",
+      "reason": "All four versions are textually identical, so their first-read comprehension is equivalent and the ordering is necessarily arbitrary."
+    },
+    {
+      "id": 3737449090,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "All four versions are textually identical, so their first-read comprehension is equivalent and the ordering is necessarily arbitrary."
+    },
+    {
+      "id": 3737449098,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All four versions are textually identical, so their first-read comprehension is equivalent and the ordering is necessarily arbitrary."
+    },
+    {
+      "id": 3737449101,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "B presents the recursive sanitizer and its regression coverage as separate bullets, making both expected results immediately visible."
+    },
+    {
+      "id": 3725747243,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A separates the stable identity source from the role of `retrieved_timestamp`, giving the two timestamps distinct purposes at a glance."
+    },
+    {
+      "id": 3725747244,
+      "ranking": ["C", "A", "D", "B"],
+      "winner": "C",
+      "reason": "C directly requests a task-level boundary and states both resulting behaviors—preserved valid logs and accounted rejected tasks—in one sentence."
+    },
+    {
+      "id": 3725747245,
+      "ranking": ["A", "D", "B", "C"],
+      "winner": "A",
+      "reason": "A states the real-template condition and the unaffected aggregate outcome as two concise sentences without repeating the condition."
+    },
+    {
+      "id": 3725776269,
+      "ranking": ["D", "A", "C", "B"],
+      "winner": "D",
+      "reason": "D uses short bullets to distinguish the documentation rule from the example that demonstrates its placement limit."
+    },
+    {
+      "id": 3725827216,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B states the stopping condition as a direct request, making ownership of the duplicate-diagnostic problem immediately clear."
+    },
+    {
+      "id": 3725830951,
+      "ranking": ["C", "D", "B", "A"],
+      "winner": "C",
+      "reason": "C directly requests the missing guide section and lists its three required contents in a single readable sentence."
+    },
+    {
+      "id": 3725853148,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A puts the required online resolution and the offline exception on separate lines, making the mode boundary easiest to scan."
+    },
+    {
+      "id": 3725853152,
+      "ranking": ["D", "A", "B", "C"],
+      "winner": "D",
+      "reason": "D uses two bullets to separate the parser correction from its entry-point test, exposing both expected actions immediately."
+    },
+    {
+      "id": 3725853155,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "B uses the natural phrase “Add invalid rows” and keeps validation and failure accounting as distinct, scannable steps."
+    },
+    {
+      "id": 3725853159,
+      "ranking": ["D", "A", "B", "C"],
+      "winner": "D",
+      "reason": "D clearly scopes its second bullet to legacy snapshots while keeping the new-snapshot requirement separate."
+    },
+    {
+      "id": 3725853163,
+      "ranking": ["A", "C", "D", "B"],
+      "winner": "A",
+      "reason": "A directly requests the live-mode lookup while preserving the offline exception in the same compact statement."
+    },
+    {
+      "id": 3725853168,
+      "ranking": ["C", "A", "B", "D"],
+      "winner": "C",
+      "reason": "C turns collision handling into two short bullets, making exact-ID precedence and normalized-name uniqueness independently visible."
+    },
+    {
+      "id": 3725913004,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B separates staging and existing-output rejection into bullets and leaves streaming validation as a distinct retained behavior."
+    },
+    {
+      "id": 3725913007,
+      "ranking": ["B", "A", "C", "D"],
+      "winner": "B",
+      "reason": "B presents the corrected output path and validator input as separate bullets, matching the two failures described above."
+    },
+    {
+      "id": 3725913013,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B clearly separates invalid-score accounting from incomplete-token omission and states the corrected denominator rule."
+    },
+    {
+      "id": 3725913015,
+      "ranking": ["C", "A", "B", "D"],
+      "winner": "C",
+      "reason": "C explicitly assigns `accuracy` to metric identity and `evaluation_name` to task identity in a direct parallel construction."
+    },
+    {
+      "id": 3725913021,
+      "ranking": ["C", "A", "B", "D"],
+      "winner": "C",
+      "reason": "C names `--parquet` directly and states the one-path minimum without unnecessary wording."
+    },
+    {
+      "id": 3725972277,
+      "ranking": ["A", "C", "D", "B"],
+      "winner": "A",
+      "reason": "A uses ordered bullets to make the required integration-before-move sequence immediately apparent."
+    },
+    {
+      "id": 3725972282,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B directly requests deriving the expectation from the imported version, making the corrected test behavior unambiguous."
+    },
+    {
+      "id": 3725972285,
+      "ranking": ["C", "A", "D", "B"],
+      "winner": "C",
+      "reason": "C explicitly says to use task-specific evaluation names while preserving `accuracy` as the shared metric ID."
+    },
+    {
+      "id": 3725972287,
+      "ranking": ["D", "A", "B", "C"],
+      "winner": "D",
+      "reason": "D directly states where existing JSON must be rejected and places the check before both UUID generation and publication."
+    },
+    {
+      "id": 3726043665,
+      "ranking": ["B", "D", "A", "C"],
+      "winner": "B",
+      "reason": "B uses separate bullets for supported empty targets and prohibited risky targets, making the safe publication boundary fastest to scan."
+    },
+    {
+      "id": 3726043671,
+      "ranking": ["C", "A", "B", "D"],
+      "winner": "C",
+      "reason": "C uses two bullets to expose both the accounting unit and the source-reference requirement without compressing them into one sentence."
+    },
+    {
+      "id": 3726043679,
+      "ranking": ["D", "A", "B", "C"],
+      "winner": "D",
+      "reason": "D separates tolerance classification from strict pre-publication rejection, making the two validation stages immediately distinct."
+    },
+    {
+      "id": 3726043682,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "B states the proof condition and unset fallback in one direct sentence, then preserves `pwc_scale` as a concise caveat."
+    }
+  ],
+  "winner_counts": {
+    "A": 12,
+    "B": 16,
+    "C": 10,
+    "D": 9
+  },
+  "overall_ranking": ["B", "A", "C", "D"],
+  "dimension_winners": {
+    "immediate_comprehension": "B",
+    "consequence_clarity": "A",
+    "actionability": "B",
+    "jargon_load": "C",
+    "sentence_clarity": "B",
+    "tone": "A",
+    "scanability": "B"
+  },
+  "recommended_version": "B",
+  "summary": "B most often combines direct requests with separate bullets or lines for multi-part outcomes, helping a busy author find the expected correction quickly. A is close in compact prose, while C and D more often reduce structure or use optional phrasing; many comments are identical, so the aggregate differences are modest."
+}
+
+
+Wall time: 176.73 seconds

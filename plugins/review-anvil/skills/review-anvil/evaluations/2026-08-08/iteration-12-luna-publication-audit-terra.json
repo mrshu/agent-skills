@@ -1,0 +1,18 @@
+{
+  "items": [
+    {
+      "id": "3725913004",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [
+        "Source predicate \"Existing logical output can be rejected until replacement is atomic\" is a no-change boundary, but rendered phrase \"Reject existing logical output until replacement is atomic.\" makes it a direct action."
+      ],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Remove the direct-action bullet derived from the no-change boundary \"Existing logical output can be rejected until replacement is atomic.\""
+      ]
+    }
+  ],
+  "pass_count": 0,
+  "fail_count": 1
+}

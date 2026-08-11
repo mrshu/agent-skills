@@ -1,0 +1,11 @@
+[
+  {
+    "id": 3725913004,
+    "pr": 203,
+    "candidates": {
+      "A": "**RAV-RUN2-R1-F001 [high] instance-publication** — Instance mode passes a sidecar basename where the schema requires a canonical datastore path. Construction fails after aggregate and sidecar files are written.\n\nPlease stage complete output before publication. Existing logical output can be rejected until replacement is atomic, with sidecar validation kept streaming.",
+      "B": "**RAV-RUN2-R1-F001 [high] instance-publication** — Instance mode passes a sidecar basename where the schema requires a canonical datastore path. Construction fails after aggregate and sidecar files are written.\n\nComplete output can stage before publication. Existing logical output can be rejected until replacement is atomic, with sidecar validation kept streaming.",
+      "C": "**RAV-RUN2-R1-F001 [high] instance-publication** — Instance mode passes a sidecar basename where the schema requires a canonical datastore path. Construction fails after aggregate and sidecar files are written.\n\nPlease stage complete output before publication. Existing logical output can be rejected until replacement is atomic, and sidecar validation can remain streaming."
+    }
+  }
+]
