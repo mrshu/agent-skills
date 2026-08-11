@@ -76,6 +76,8 @@ require "$ARTIFACTS" '`<!-- review-anvil: id=<complete-id> severity=<severity> a
 require "$ARTIFACTS" 'The finding-metadata marker remains the final line.'
 require "$ENGINE" 'must match the terminal marker severity exactly; the helper aborts'
 require "$PR_PRESET" 'must match the terminal marker severity exactly; the helper aborts'
+require "$ENGINE" 'A present but unrecognized helper severity also aborts'
+require "$PR_PRESET" 'A present but unrecognized helper severity also aborts'
 require "$ARTIFACTS" 'ordinary prior-feedback'
 require "$ARTIFACTS" 'carry-forwards do not create a new inline thread.'
 require "$ARTIFACTS" 'The report row, hidden inline marker, reproduction'

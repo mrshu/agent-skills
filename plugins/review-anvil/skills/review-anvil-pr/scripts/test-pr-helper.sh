@@ -275,6 +275,51 @@ JSON
         || fail "severity mismatch must leave inline JSON unchanged"
 }
 
+test_process_inline_rejects_invalid_marker_severity_field() {
+    local tmp inline original stderr legacy
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    inline="$tmp/inline.json"
+    original="$tmp/original.json"
+    stderr="$tmp/stderr.txt"
+    legacy="$tmp/legacy.json"
+    cat >"$inline" <<'JSON'
+[
+  {
+    "path": "src/publish.py",
+    "line": 61,
+    "side": "RIGHT",
+    "severity": "HIGH ",
+    "body": "**Replacement can delete prior records**\n\nThe old files are removed before validation.\n\n<!-- review-anvil: id=RAV-RUN5-R1-F001 severity=high area=publication -->"
+  }
+]
+JSON
+    cp "$inline" "$original"
+
+    if "$HELPER" process-inline "$inline" 2>"$stderr"; then
+        fail "process-inline must reject an invalid helper severity beside metadata"
+    fi
+    grep -Fq 'RAV-RUN5-R1-F001' "$stderr"
+    grep -Fq 'helper severity is invalid' "$stderr"
+    cmp -s "$inline" "$original" \
+        || fail "invalid helper severity must leave inline JSON unchanged"
+
+    cat >"$legacy" <<'JSON'
+[
+  {
+    "path": "src/legacy.py",
+    "line": 8,
+    "side": "RIGHT",
+    "severity": "urgent",
+    "body": "**RAV-R3-F002 [high] runtime** — Legacy visible severity remains readable."
+  }
+]
+JSON
+    REVIEW_ANVIL_INLINE_MIN_SEVERITY=high "$HELPER" process-inline "$legacy"
+    jq -e 'length == 1 and (.[0] | keys == ["body", "line", "path", "side"])' \
+        "$legacy" >/dev/null
+}
+
 test_history_parses_hidden_inline_metadata() {
     local tmp bin fixture output
     tmp="$(mktemp -d)"
@@ -1803,6 +1848,7 @@ main() {
     test_process_inline_infers_id_prefixed_severity
     test_process_inline_preserves_terminal_finding_metadata
     test_process_inline_rejects_severity_mismatch
+    test_process_inline_rejects_invalid_marker_severity_field
     test_history_parses_hidden_inline_metadata
     test_hidden_identity_outranks_rewritten_prose
     test_post_review_success

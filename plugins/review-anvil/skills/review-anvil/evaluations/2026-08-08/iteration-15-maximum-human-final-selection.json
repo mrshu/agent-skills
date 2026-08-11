@@ -116,16 +116,17 @@
     "full_suite": "passed",
     "payload_smoke": "passed: helper-only fields stripped; suggestion then prior-feedback marker then terminal finding marker",
     "independent_code_review": {
-      "findings": 3,
-      "fixed": 3,
+      "findings": 4,
+      "fixed": 4,
       "regressions": [
         "report suppression carries canonical identity into history matching",
         "natural title parser accepts asterisks inside inline code",
-        "process-inline rejects helper severity that disagrees with terminal metadata"
+        "process-inline rejects helper severity that disagrees with terminal metadata",
+        "process-inline rejects a present invalid helper severity when terminal metadata exists while preserving legacy no-marker fallback"
       ]
     },
     "final_full_suite": "passed after review fixes",
-    "severity_authority": "terminal marker and helper field must agree; mismatch aborts before filtering or posting"
+    "severity_authority": "with terminal metadata, a present helper field must be recognized and equal; malformed or unequal values abort before filtering or posting, while absence may use the marker for migration"
   },
   "limitations": [
     "Model judges are not a substitute for a timed study with human PR authors.",
