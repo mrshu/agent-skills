@@ -208,6 +208,219 @@ JSON
     jq -e '.[0].path == "src/db.ts"' "$inline" >/dev/null
 }
 
+test_process_inline_preserves_terminal_finding_metadata() {
+    local tmp inline marker
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    inline="$tmp/inline.json"
+    marker='<!-- review-anvil: id=RAV-RUN5-R1-F001 severity=high area=publication -->'
+    cat >"$inline" <<'JSON'
+[
+  {
+    "path": "src/publish.py",
+    "line": 61,
+    "side": "RIGHT",
+    "body": "**`--replace-existing` can remove the only good copy before replacement is ready**\n\nThe old files are deleted before the replacement is validated.\n\nPlease keep the old files recoverable until the replacement completes.\n\n<!-- review-anvil: id=RAV-RUN5-R1-F001 severity=high area=publication -->",
+    "suggestion": "keep_recoverable(old_files)\nwrite_replacement()",
+    "prior_feedback": "reintroduced"
+  },
+  {
+    "path": "docs/cli.md",
+    "line": 7,
+    "side": "RIGHT",
+    "body": "**The CLI help uses a different option name**\n\n<!-- review-anvil: id=RAV-RUN5-R1-F002 severity=low area=docs -->"
+  }
+]
+JSON
+
+    "$HELPER" process-inline "$inline" >/dev/null
+
+    jq -e 'length == 1' "$inline" >/dev/null
+    jq -e '.[0].severity == null and .[0].suggestion == null and .[0].prior_feedback == null' "$inline" >/dev/null
+    jq -e --arg marker "$marker" '.[0].body | endswith($marker)' "$inline" >/dev/null
+    jq -e --arg marker "$marker" '.[0].body | split($marker) | length == 2' "$inline" >/dev/null
+    jq -e --arg marker "$marker" '
+      .[0].body
+      | index("```suggestion") < index("<!-- review-anvil: prior_feedback=reintroduced -->")
+        and index("<!-- review-anvil: prior_feedback=reintroduced -->") < index($marker)
+    ' "$inline" >/dev/null
+}
+
+test_process_inline_rejects_severity_mismatch() {
+    local tmp inline original stderr
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    inline="$tmp/inline.json"
+    original="$tmp/original.json"
+    stderr="$tmp/stderr.txt"
+    cat >"$inline" <<'JSON'
+[
+  {
+    "path": "src/publish.py",
+    "line": 61,
+    "side": "RIGHT",
+    "severity": "critical",
+    "body": "**Replacement can delete prior records**\n\nThe old files are removed before validation.\n\n<!-- review-anvil: id=RAV-RUN5-R1-F001 severity=high area=publication -->"
+  }
+]
+JSON
+    cp "$inline" "$original"
+
+    if "$HELPER" process-inline "$inline" 2>"$stderr"; then
+        fail "process-inline must reject helper and marker severity mismatch"
+    fi
+    grep -Fq 'RAV-RUN5-R1-F001' "$stderr"
+    grep -Fq 'helper severity critical does not match terminal marker severity high' "$stderr"
+    cmp -s "$inline" "$original" \
+        || fail "severity mismatch must leave inline JSON unchanged"
+}
+
+test_process_inline_rejects_invalid_marker_severity_field() {
+    local tmp inline original stderr legacy
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    inline="$tmp/inline.json"
+    original="$tmp/original.json"
+    stderr="$tmp/stderr.txt"
+    legacy="$tmp/legacy.json"
+    cat >"$inline" <<'JSON'
+[
+  {
+    "path": "src/publish.py",
+    "line": 61,
+    "side": "RIGHT",
+    "severity": "HIGH ",
+    "body": "**Replacement can delete prior records**\n\nThe old files are removed before validation.\n\n<!-- review-anvil: id=RAV-RUN5-R1-F001 severity=high area=publication -->"
+  }
+]
+JSON
+    cp "$inline" "$original"
+
+    if "$HELPER" process-inline "$inline" 2>"$stderr"; then
+        fail "process-inline must reject an invalid helper severity beside metadata"
+    fi
+    grep -Fq 'RAV-RUN5-R1-F001' "$stderr"
+    grep -Fq 'helper severity is invalid' "$stderr"
+    cmp -s "$inline" "$original" \
+        || fail "invalid helper severity must leave inline JSON unchanged"
+
+    cat >"$legacy" <<'JSON'
+[
+  {
+    "path": "src/legacy.py",
+    "line": 8,
+    "side": "RIGHT",
+    "severity": "urgent",
+    "body": "**RAV-R3-F002 [high] runtime** — Legacy visible severity remains readable."
+  }
+]
+JSON
+    REVIEW_ANVIL_INLINE_MIN_SEVERITY=high "$HELPER" process-inline "$legacy"
+    jq -e 'length == 1 and (.[0] | keys == ["body", "line", "path", "side"])' \
+        "$legacy" >/dev/null
+}
+
+test_history_parses_hidden_inline_metadata() {
+    local tmp bin fixture output
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+    fixture="$tmp/graphql.json"
+    cat >"$fixture" <<'JSON'
+{"data":{"repository":{"pullRequest":{
+  "author":{"login":"pr-author"},
+  "reviewThreads":{"nodes":[
+    {"isResolved":false,"isOutdated":false,"path":"src/publish.py","line":61,"comments":{"nodes":[
+      {"body":"**`--replace-existing` can remove the only good copy before replacement is ready**\n\nThe old files are deleted before the replacement is validated.\n\nPlease keep the old files recoverable until the replacement completes.\n\n<!-- review-anvil: id=RAV-RUN5-R1-F001 severity=high area=publication -->","url":"https://example.invalid/maximum-human"}
+    ]}},
+    {"isResolved":false,"isOutdated":false,"path":"src/input.ts","line":13,"comments":{"nodes":[
+      {"body":"**`*.json` files bypass validation**\n\nThe wildcard input reaches the parser without validation.\n\n<!-- review-anvil: id=RAV-RUN5-R1-F002 severity=high area=input-files -->","url":"https://example.invalid/input"}
+    ]}}
+  ],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "reviews":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}
+}}}}
+JSON
+    output="$tmp/history.txt"
+
+    GH_MOCK_GRAPHQL_RESPONSE="$fixture" PATH="$bin:$PATH" \
+      "$HELPER" history github.com acme widgets 42 >"$output"
+
+    grep -Fq '[open] src/publish.py:61 — [high] publication — `--replace-existing` can remove the only good copy before replacement is ready' "$output"
+    grep -Fq 'id=RAV-RUN5-R1-F001' "$output"
+    grep -Fq '[open] src/input.ts:13 — [high] input-files — `*.json` files bypass validation' "$output"
+    grep -Fq 'id=RAV-RUN5-R1-F002' "$output"
+}
+
+test_hidden_identity_outranks_rewritten_prose() {
+    local tmp bin fixture report inline f001_line f002_line earlier_line
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+    fixture="$tmp/graphql.json"
+    cat >"$fixture" <<'JSON'
+{"data":{"repository":{"pullRequest":{
+  "author":{"login":"pr-author"},
+  "reviewThreads":{"nodes":[
+    {"isResolved":false,"isOutdated":false,"path":"src/auth.ts","line":12,"comments":{"nodes":[
+      {"body":"**Stale tokens can create sessions**\n\nThe old request can rotate the session before validation.\n\n<!-- review-anvil: id=RAV-RUN5-R1-F001 severity=medium area=auth -->","url":"https://example.invalid/open"}
+    ]}}
+  ],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "reviews":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}
+}}}}
+JSON
+    report="$tmp/report.md"
+    inline="$tmp/report.md.inline.json"
+    cat >"$report" <<'REPORT'
+# review-anvil report
+
+## Findings
+- **RAV-RUN5-R1-F001 [medium] auth** `src/auth.ts:12` — Session rotation runs before state validation.
+- **RAV-RUN5-R1-F002 [medium] auth** `src/auth.ts:12` — Stale tokens can create sessions.
+REPORT
+    cat >"$inline" <<'JSON'
+[
+  {
+    "path": "src/auth.ts",
+    "line": 12,
+    "side": "RIGHT",
+    "severity": "medium",
+    "body": "**Session rotation runs before state validation**\n\nThe handler mutates the session before it checks the state token.\n\n<!-- review-anvil: id=RAV-RUN5-R1-F001 severity=medium area=auth -->"
+  },
+  {
+    "path": "src/auth.ts",
+    "line": 12,
+    "side": "RIGHT",
+    "severity": "medium",
+    "body": "**Stale tokens can create sessions**\n\nThe old request can rotate the session before validation.\n\n<!-- review-anvil: id=RAV-RUN5-R1-F002 severity=medium area=auth -->"
+  }
+]
+JSON
+    printf '{"event":"COMMENT","head_sha":"head-sha"}\n' >"$tmp/report.md.approval.json"
+
+    GH_MOCK_GRAPHQL_RESPONSE="$fixture" \
+    GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
+    GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
+    PATH="$bin:$PATH" \
+      "$HELPER" post github.com acme widgets 42 marker-hidden-identity "$report" \
+      >/tmp/review-anvil-hidden-identity.out
+
+    jq -e '.comments | length == 1' "$tmp/review-payload.json" >/dev/null
+    jq -e '.comments[0].body | contains("id=RAV-RUN5-R1-F002")' "$tmp/review-payload.json" >/dev/null
+    jq -e '.comments[0].body | contains("id=RAV-RUN5-R1-F001") | not' "$tmp/review-payload.json" >/dev/null
+    jq -r '.body' "$tmp/review-payload.json" >"$tmp/review-body.md"
+    f001_line="$(grep -nF 'RAV-RUN5-R1-F001' "$tmp/review-body.md" | cut -d: -f1)"
+    f002_line="$(grep -nF 'RAV-RUN5-R1-F002' "$tmp/review-body.md" | cut -d: -f1)"
+    earlier_line="$(grep -nF '### Earlier review comments' "$tmp/review-body.md" | cut -d: -f1)"
+    [[ -n "$f001_line" && -n "$f002_line" && -n "$earlier_line" ]]
+    (( f002_line < earlier_line && earlier_line < f001_line ))
+}
+
 test_post_review_success() {
     local tmp bin report inline
     tmp="$(mktemp -d)"
@@ -1633,6 +1846,11 @@ main() {
     command -v jq >/dev/null 2>&1 || fail "jq is required"
     test_process_inline
     test_process_inline_infers_id_prefixed_severity
+    test_process_inline_preserves_terminal_finding_metadata
+    test_process_inline_rejects_severity_mismatch
+    test_process_inline_rejects_invalid_marker_severity_field
+    test_history_parses_hidden_inline_metadata
+    test_hidden_identity_outranks_rewritten_prose
     test_post_review_success
     test_post_fallback_comment
     test_post_start_uses_short_declarative_comment

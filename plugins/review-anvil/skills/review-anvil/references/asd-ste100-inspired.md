@@ -19,8 +19,31 @@ Use active voice or a direct imperative. Name the actor when it matters.
 
 ## Author-Facing Reports and Comments
 
-Use short active declarative sentences. Do not give a bare-verb command.
-State what the code does, what happens, and the evidence.
+Use short active declarative sentences for problems and evidence.
+For critical, high, and medium findings, group requested work by cohesive
+implementation obligation, not by grammar. Classify every source predicate
+before rendering it. Target behavior and required verification or
+documentation are author work. Accepted current behavior, allowed
+implementation boundaries, and explicitly optional follow-ups are no-change
+boundaries. Apply the omission counterfactual only after that classification.
+Source intent outranks modal grammar; `can`, `could`, and `would` do not make
+target behavior optional. Classify every predicate in a sentence that mixes
+author work with a no-change boundary. Keep a required purpose, result, or
+safety clause with the action it constrains. Never turn acceptable unchanged
+behavior, a permission, an exception, or an explicitly optional follow-up
+into a separate action bullet. When accepted current behavior directly
+constrains a requested change, keep it in that action sentence using
+`without changing …` or `while keeping … unchanged`. Use short modal prose
+after the action if one sentence would be dense. Preserve other accepted
+current behavior and standalone optional follow-ups as standalone modal prose.
+Treat a required source-backed test or document change as author work unless
+it is explicitly optional.
+Use `Please` plus an action verb for one obligation. For two or more
+independently implementable obligations, use `**What to change**` and one
+direct-action bullet per obligation. Preserve suggestion grammar for low and
+nit guidance.
+Prefer a direct verb with a concrete target, condition, or destination.
+Do not give a context-free command.
 
 Apply these rules to generated prose only. Preserve quoted external output,
 code, JSON, commands, Markdown fences, and fixed machine-readable fields.

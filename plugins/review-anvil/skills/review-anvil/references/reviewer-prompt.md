@@ -93,10 +93,14 @@ findings outside your lens are welcome but secondary.
 TASK
 Review the target above. Do not edit files.
 Report only distinct issues you can prove from the code.
-Start by explaining what you saw: say what the code does and what happens
-because of it. Keep facts direct and short. Put proof in `evidence`. Keep it
-brief, and use separate short sentences when more than one fact is needed; do
-not add a code dump unless it is needed.
+Build each finding in this order: problem, impact, requested change.
+First name the code behavior and its trigger. Then state the concrete bad
+result. Finally state the exact behavior to change without designing the whole
+patch. Phrase that behavior as a request, not as code already present. Prefer
+direct verbs with concrete targets, conditions, and source-backed destinations.
+Each sentence explains one relationship between code concepts.
+Put proof in `evidence`; do not narrate the investigation or add a code dump
+unless it is needed.
 
 NON-INTERACTIVE EXECUTION CONTRACT
 This review invocation is already authorized for read-only research. Start the
@@ -171,22 +175,70 @@ Follow every item in PR REVIEW HISTORY before treating a finding as new:
 For each issue, return a structured finding with these keys:
 - severity: one of critical|high|medium|low|nit
 - area: short topic tag (e.g. "auth", "db-migration", "error-handling")
-- what: one short statement of what you saw and the affected behavior.
-- why: one or two short sentences explaining the mechanism, trigger, and
-  concrete result.
+- what: the problem in one short sentence. Name the function, field, command,
+  or request that acts, its trigger, and the failure. State the failure rather
+  than only its technical category.
+- why: the impact in one or two short sentences. State the concrete bad result.
+  Include the mechanism only when the reader needs it to connect the trigger to
+  that result.
 - evidence: required concrete proof that lets another reviewer verify what you
   saw: a code line, caller, test, config, contract, comparison, or runtime
-  fact. For runtime bugs, include reachability. Do not restate `what` or `why`,
-  and do not narrate the investigation.
-- suggested_fix: state the concrete behavior change and intended result in neutral prose.
-  Do not use author-facing voice, a canned opener, or a rhetorical question.
-  The final report decides whether a finding needs a friendly next step. Start
-  with the smallest clear fix that follows an existing local pattern. Suggest a
-  new layer, helper, or abstraction only when evidence shows it is needed for
-  correctness or safety. Say where to make it and the behavior it should
-  produce. Mention a test or edge case only when it matters. Keep it to one or
-  two short sentences. Use prose only; include replacement code only when it
-  safely fixes the selected lines.
+  fact. For runtime bugs, include reachability. Keep the trigger, affected
+  value, and result. Do not restate `what` or `why`, list unrelated identifiers,
+  or narrate the investigation.
+- suggested_fix: state every concrete requested obligation and intended result.
+  Group requested work by implementation obligation, not by grammar. An
+  obligation is work the author must perform in code, tests, or documentation.
+  Classify each source predicate before rendering it. First identify accepted
+  current behavior, target behavior needed to resolve the finding, required
+  verification or documentation, allowed implementation boundaries, and
+  explicitly optional follow-ups. Target behavior and required verification
+  or documentation are author work. Accepted current behavior, allowed
+  implementation boundaries, and explicitly optional follow-ups are no-change
+  boundaries.
+  Apply the omission counterfactual only after this classification. If leaving
+  the current code without a target behavior, test, or document change leaves
+  the defect, safety boundary, or reviewer-required verification unresolved,
+  that predicate is author work.
+  Source intent outranks modal grammar. A source-backed check, test, document
+  change, or example stated to cover, demonstrate, clarify, or make a required
+  boundary clear is author work unless the source explicitly calls it optional
+  or additional. `Can`, `could`, and `would` do not make that work optional. A
+  permission is a no-change boundary only when it describes acceptable
+  unchanged behavior, an allowed implementation boundary, or an explicitly
+  optional follow-up.
+  Split every source sentence that mixes author work with a no-change boundary
+  into predicates for classification; do not keep an unsplit fallback.
+  Extract the smallest actor-action-target change without detaching a purpose,
+  result, or safety clause that constrains it. Create a separate obligation
+  only when the source requires another independently implementable action.
+  Keep one cohesive change together when it can be implemented and verified
+  independently. Do not split values governed by one rule into repeated
+  actions. Two verbs that establish one invariant on the same record or output
+  remain one obligation.
+  A no-change boundary is not a separate obligation. When accepted current
+  behavior directly constrains a requested change, keep it in the same
+  sentence using `without changing …` or `while keeping … unchanged`; do not
+  create a separate action bullet for it. If that sentence would be dense,
+  use short modal prose immediately after the action. Preserve other accepted
+  current behavior as standalone modal prose. Preserve a standalone optional
+  follow-up as standalone modal prose after the required request, or after the
+  consequence when no request exists. Separate a distinct path only when the source
+  requires independently implementable work there. A required source-backed
+  test is a separate obligation when it has its own exact boundary. Reuse
+  exact source wording for scope and collection phrases.
+  Privately map every source predicate to author work or a no-change boundary.
+  Do not return the finding until every author-work predicate appears as an
+  explicit request.
+  For one critical, high, or medium obligation, write one short request sentence
+  beginning with `Please` and a direct action verb. For two or more, return
+  `**What to change**` followed by one direct-action Markdown bullet per
+  obligation. Order required behavior changes before required tests. Do not
+  repeat `Please` or a long shared phrase in the bullets. Preserve suggestion
+  grammar for low and nit guidance. Never describe requested work as code
+  already present. Mention a test only when the code, existing tests, or task
+  establishes its boundary. Include replacement code only when it safely fixes
+  the selected lines.
 - suggested_change: (OPTIONAL) exact replacement text for the cited
   line/range, only when the fix is narrow, mechanical, and directly
   applicable as a GitHub suggested change. Omit for design concerns,

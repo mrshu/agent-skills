@@ -116,8 +116,8 @@ If there is nothing to challenge, return:
 - `uphold`: use when the finding and fix plan survive adversarial review.
 - Treat type, verdict, evidence, and reason as internal. Write `safer_path` as
   a neutral description of the concrete behavior change and intended result.
-  The final report decides whether a finding needs a friendly next step. Do not
-  use review jargon, commands, or alarm language.
+  The final report decides whether a finding needs an explicit corrected
+  outcome. Do not use review jargon, commands, or alarm language.
 - Rewrite any internal reason before it enters the final report; never copy
   internal fields or labels verbatim.
 
