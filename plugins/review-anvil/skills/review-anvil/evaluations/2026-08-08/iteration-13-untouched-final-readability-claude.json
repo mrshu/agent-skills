@@ -1,0 +1,556 @@
+{
+  "per_comment": [
+    {
+      "id": 3525225568,
+      "scores": {
+        "A": {
+          "defect_clarity": 3,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 3,
+          "action_recall": 4,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B opens with the concrete ask (\"Please make this a specific option ... and execute it after this handle command\") and demotes the opinion to a trailing clause, while A buries the same two actions inside a hedged question that ends in a stray question mark."
+    },
+    {
+      "id": 2614980077,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "B's backticked identifiers scan better than A's bare quotes, but A's suggestion block makes the replacement string equally concrete; neither edge would change how quickly the author acts."
+    },
+    {
+      "id": 2614980178,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B names the condition plainly (\"no changes (empty \\\"modified\\\" list)\") and hands over the exact comment text in a suggestion block, whereas A's closing sentence stacks \"including that it gives ... and likely aids ...\" into one clause the reader must unpack."
+    },
+    {
+      "id": 2952666730,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "The two versions are word-for-word identical, so there is nothing to separate them."
+    },
+    {
+      "id": 2952666872,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "B drops A's parenthetical in favour of \"or for `target_line` absence/presence\", a marginal smoothing that leaves defect, cause, and fix identically placed in both."
+    },
+    {
+      "id": 3088978085,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "The two versions are word-for-word identical, including the suggestion block."
+    },
+    {
+      "id": 3096650221,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "The two versions are word-for-word identical, down to the bolded \"N+1 loading.\" lead."
+    },
+    {
+      "id": 3102848524,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "B states the cost more directly (\"obscures that the test covers unsupported-extension rejection\") but pays for it with the comma-heavy \"or, as a longer-term change,\"; A offsets its clunkier parenthetical with a concrete `pytest.raises` snippet."
+    },
+    {
+      "id": 3134292915,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B closes with a suggestion block showing the exact `\"qwen\": \"qwen\"` mapping, so the fix is visible at a glance rather than reconstructed from A's \"use `qwen` here, or otherwise align the mapping and overrides\"."
+    },
+    {
+      "id": 3153765816,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "B's short opening sentence isolates the typo slightly better, but its \"signature/assignments\" slash is a touch more clipped than A's \"signature and assignments\"; the rename and call-site updates are equally visible in both."
+    },
+    {
+      "id": 3161743720,
+      "scores": {
+        "A": {
+          "defect_clarity": 3,
+          "action_recall": 4,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B leads with the defect (\"hardcoded to `Top 10`\"), then impact, then the ask, while A folds all three into one long question whose \"instead of hardcoding `Top 10`\" arrives only at the very end."
+    },
+    {
+      "id": 3161807141,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 3,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B puts the gating question first with explicit branches (\"If yes, ignore this comment. If not, we should pass ...\"), whereas A attaches the same condition after the ask via a semicolon, forcing a re-read to learn the request may not apply."
+    },
+    {
+      "id": 3493867085,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "The two versions are word-for-word identical, including both reference links."
+    },
+    {
+      "id": 3520340907,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "A ends with an explicit \"Please confirm whether this path and branch behavior is intentional\" while B fronts the same question as \"Is this path intentional?\"; both surface the write/read mismatch and the branch concern in the same order."
+    },
+    {
+      "id": 3652735574,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 3,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "A's \"see my comment on `validation_core.py`\" is a concrete pointer and \"this could keep the conventional key name\" keeps an actor, while B's \"as discussed\" plus passive \"the conventional key name could be kept\" leaves both the reference and the doer vague."
+    },
+    {
+      "id": 3653129512,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 1,
+          "action_recall": 2,
+          "scanability": 3,
+          "naturalness": 2,
+          "cognitive_ease": 2
+        }
+      },
+      "winner": "A",
+      "reason": "B is a bare suggestion block with no prose, so the author must reverse-engineer the rule from ~30 lines of code; A states the hosting-platform principle and the ask before showing the same patch."
+    },
+    {
+      "id": 3677101235,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 3,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 5,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B ends with an owned instruction (\"Please replace the adapter-owned aggregate and sidecar as one set, writing the sidecar afresh ...\"), while A's agentless \"can be replaced as one set\" reads as an observation the author may not register as work."
+    },
+    {
+      "id": 3677104436,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 3,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "A closes with \"Please make collision discovery inspect same-parent, same-stem variants while keeping payload validation limited to the requested files\", whereas B states the same scope as \"Collision discovery can inspect ...\", which reads as description rather than a request."
+    },
+    {
+      "id": 3677218975,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 3,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B turns the long list of artifacts into a direct \"Please move its schema copies, emitters, models, fixtures, tests, and current-version docs to new identifiers together\", while A's semicolon-joined \"can move ... together\" hides the same list behind a scoping remark."
+    },
+    {
+      "id": 3677354603,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 3,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "A has the explicit \"Please feed both outcomes into a final status\" but trails the condition after it, while B fronts \"If this entry point keeps independent work\" and loses the imperative; the two costs roughly cancel."
+    },
+    {
+      "id": 3677461204,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 3,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B's \"Please keep that error inside the per-benchmark boundary so the adapter continues with later work\" states the fix as work; A's \"That error can stay inside the per-benchmark boundary\" describes a possibility."
+    },
+    {
+      "id": 3677564751,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 3,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "A splits the pass-metric and cost rules into two checkable sentences but phrases them stiffly (\"Pass metrics can use finite inclusive 0–100 checks\"); B's single \"Please validate ...\" sentence is more natural yet carries all three requirements at once."
+    },
+    {
+      "id": 3677669726,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 5,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "A asks outright to \"expose an accurate serialization contract for each bound covering finite numbers, null, and its field-valid sentinel\", while B's \"Each bound can expose ...\" leaves the author unsure whether anything is being requested."
+    },
+    {
+      "id": 3677713059,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 3,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 5,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B gives the fix as an instruction (\"Please resolve one Hugging Face dataset revision and use it to pin every live read\") and keeps the note about `source_git_commit` as an explicit non-change; A's \"Resolving one ... can pin every live read\" states no obligation."
+    },
+    {
+      "id": 3699205371,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 2,
+          "naturalness": 3,
+          "cognitive_ease": 2
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "A's closing sentence chains the ask, the publisher rationale, the `.JSON` aside, and the consistency argument through a semicolon and three clauses; B breaks the same content into paragraphs and parks the `.JSON` tangent in a parenthetical."
+    }
+  ],
+  "winner_counts": {
+    "A": 4,
+    "B": 10,
+    "tie": 11
+  },
+  "mean_scores": {
+    "A": {
+      "defect_clarity": 3.92,
+      "action_recall": 3.84,
+      "scanability": 3.6,
+      "naturalness": 3.64,
+      "cognitive_ease": 3.72
+    },
+    "B": {
+      "defect_clarity": 3.84,
+      "action_recall": 3.96,
+      "scanability": 3.8,
+      "naturalness": 3.84,
+      "cognitive_ease": 3.92
+    }
+  },
+  "overall_ranking": [
+    "B",
+    "A"
+  ],
+  "recommended_version": "B",
+  "summary": "B wins 10 rows to A's 4 with 11 ties, driven mostly by explicit owned requests (\"Please replace ...\", \"Please keep ...\") where A leaves the fix as an agentless \"can be\" observation, and by paragraph breaks that defuse A's longest chained sentences. A wins where the roles invert — it holds the imperative on ids 3677104436 and 3677669726, carries a real cross-reference on 3652735574, and decisively beats B on 3653129512, where B ships a bare suggestion block with no explanation at all. Defect clarity is effectively level; B's margin comes from action recall, scanability, and cognitive ease."
+}

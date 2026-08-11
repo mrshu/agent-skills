@@ -1,0 +1,1018 @@
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "Both diagnose identically, but B's two bullets expose two genuinely separate pieces of work, while A buries the test request in the hedged trailing clause \"would cover this path\"."
+    },
+    {
+      "id": 3737044354,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "A's \"Requested actions\" list separates the rollback fix from the mid-write failure test; B's \"A mid-write failure test ... would cover this path\" reads as an aside rather than a second task."
+    },
+    {
+      "id": 3737044361,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "The only difference is whether the \"can still drive model metadata and routing\" permission sits on the same line or the next; neither placement changes what the author does."
+    },
+    {
+      "id": 3737044371,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "The two versions are word-for-word identical."
+    },
+    {
+      "id": 3737053181,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "The two versions are word-for-word identical."
+    },
+    {
+      "id": 3737053197,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "Identical text apart from a line break before \"Empty optional cells can remain allowed\", which is a permission either way."
+    },
+    {
+      "id": 3737053204,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "Same sentences; only the line break before the 401 carve-out differs, which does not change what the author must do."
+    },
+    {
+      "id": 3737181823,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "The defer-the-check request and the unchanged-warning carve-out are worded identically; only the line break between them differs."
+    },
+    {
+      "id": 3737266652,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "One narrow-boundary request plus one carve-out in both; only the line break between them differs."
+    },
+    {
+      "id": 3737266656,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "The two versions are word-for-word identical."
+    },
+    {
+      "id": 3737266661,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B states the single action then the unchanged exit behavior separately, while A's \"while keeping the nonzero exit conditional on failures\" fuses the request and the carve-out into one clause the reader must untangle."
+    },
+    {
+      "id": 3737291965,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 3
+        }
+      },
+      "winner": "A",
+      "reason": "A splits the rejection change from the test work and leaves \"File-symlink behavior can remain unchanged\" outside the list; B packs reject, keep-unchanged, and tests into two dense sentences."
+    },
+    {
+      "id": 3737383919,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "A's \"to block the first path\" forces the reader back to the header to resolve the referent; B names it as \"the bare-flag full-run path\" and lists the no-match check as its own item."
+    },
+    {
+      "id": 3737383922,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "The two versions are word-for-word identical."
+    },
+    {
+      "id": 3737449039,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "Same stable-ID request in both; only the line break before the `retrieved_timestamp` note differs."
+    },
+    {
+      "id": 3737449052,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "Identical failure-ledger request and identical exclusion carve-out; only line breaking differs."
+    },
+    {
+      "id": 3737449059,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "The two versions are word-for-word identical."
+    },
+    {
+      "id": 3737449070,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 2,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "A promotes \"Preserve valid metrics\" into a bullet and then restates it in the trailing sentence, and its first bullet repeats \"result keys without matching metric specs\" from the header; B says the same thing once, cleanly."
+    },
+    {
+      "id": 3737449081,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "The two versions are word-for-word identical."
+    },
+    {
+      "id": 3737449090,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "The two versions are word-for-word identical."
+    },
+    {
+      "id": 3737449098,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "The two versions are word-for-word identical."
+    },
+    {
+      "id": 3737449101,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "The sanitizer change and the provider-prefixed-key tests are two separately checkable items, and B's list keeps both visible where A's \"Tests ... would cover\" reads as optional colour."
+    },
+    {
+      "id": 3725747243,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 2,
+          "scanability": 3,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        }
+      },
+      "winner": "A",
+      "reason": "A opens with \"Please use a stable source-run timestamp\"; B's \"A stable ... token can keep the required ID shape while `retrieved_timestamp` records retrieval time\" states a possibility and leaves the author unsure anything is being asked."
+    },
+    {
+      "id": 3725747244,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 2,
+          "scanability": 3,
+          "naturalness": 3,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B's \"Please add a task-level error boundary\" is an unmistakable request; A's \"A task-level error boundary can preserve valid logs\" reads as an observation."
+    },
+    {
+      "id": 3725747245,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 2,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 3,
+          "naturalness": 2,
+          "cognitive_ease": 3
+        }
+      },
+      "winner": "B",
+      "reason": "B leads with the explicit \"Please emit `llm_scoring` only when the real template is available\", which A buries inside a conditional; B's verbatim repetition of that clause in the next line is clumsy but costs less than a missing ask."
+    },
+    {
+      "id": 3725776269,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        }
+      },
+      "winner": "A",
+      "reason": "A's two bullets are two concrete doc edits; B's \"A note ..., plus this repeated-`data` example, would make the placement limit clear\" wraps both in one hedged subject-heavy sentence."
+    },
+    {
+      "id": 3725827216,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 3,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "\"Please stop identity comparison whenever `check_path_structure` already owns a path error\" names the ask directly, where B's \"Identity comparison can stop\" leaves the author guessing whether it is required."
+    },
+    {
+      "id": 3725830951,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 3,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "The body establishes that guidance is required by repo rules, so A's \"Please add a short section\" matches the stakes better than B's optional-sounding \"A short section can state\"."
+    },
+    {
+      "id": 3725853148,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 2,
+          "scanability": 3,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B separates the request (\"Please resolve network-mode refs once to a commit SHA\") from the offline carve-out; A states both as equally weighted possibilities, so neither stands out as the work."
+    },
+    {
+      "id": 3725853152,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        }
+      },
+      "winner": "A",
+      "reason": "A lists the parser swap and the entry-point test as two items; B's \"with one offline entry-point test covering its defaults\" demotes the test to a trailing modifier that is easy to skip."
+    },
+    {
+      "id": 3725853155,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 2,
+          "scanability": 3,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "A's \"Invalid rows can enter `SourceConversionResult`\" reads as a permission rather than the fix; B's \"Add invalid rows to `SourceConversionResult`\" makes the accounting change unambiguous."
+    },
+    {
+      "id": 3725853159,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "The new-snapshot and legacy-snapshot cases behave differently, and A's two bullets keep that split visible where B's single sentence pair blurs them into general possibilities."
+    },
+    {
+      "id": 3725853163,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "A asks plainly (\"Please query present-null entries in live mode\") and states the offline behavior as unchanged; B's \"while offline behavior remains unchanged\" folds the reassurance into the request clause."
+    },
+    {
+      "id": 3725853168,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 2,
+          "scanability": 3,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "\"Give exact canonical IDs precedence\" is a change the author can implement; A's \"Exact canonical IDs can win first\" describes a desirable end state without naming the work."
+    },
+    {
+      "id": 3725913004,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 2,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "A's \"Complete output can stage before publication\" is stilted and hides the ask; B leads with \"Please stage complete output before publication\" and keeps the streaming-validation reassurance as a plain clause."
+    },
+    {
+      "id": 3725913007,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "Two distinct edits to the smoke command (output path, quoted file glob) stay separately checkable in A's list; B's single \"and\" sentence makes it easy to fix one and forget the other."
+    },
+    {
+      "id": 3725913013,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 3,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "The score-reporting fix and the token-usage fix are independent, and A keeps them as separate items; B reads more smoothly but its \"can be omitted\" phrasing softens both into suggestions."
+    },
+    {
+      "id": 3725913015,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 3,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B's \"Please keep `accuracy` as the metric ID and use `evaluation_name` to distinguish tasks\" gives two verbs to act on; A states the same as a condition that already holds."
+    },
+    {
+      "id": 3725913021,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 2,
+          "scanability": 4,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B names the flag in the request (\"at least one path for `--parquet`\") while A's \"The option can require at least one path\" leaves the referent implicit and the ask optional."
+    },
+    {
+      "id": 3725972277,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B's active \"Please integrate current main before moving the adapter\" makes the ordering requirement concrete; A's passive \"Current main can be integrated before moving\" obscures who does what."
+    },
+    {
+      "id": 3725972282,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 3,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "For a test that will fail after integration, A's \"Please derive the expected value from the imported schema version\" is a direct fix; B's \"can come from\" understates a required change."
+    },
+    {
+      "id": 3725972285,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 3,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B asks explicitly to keep `accuracy` as the metric ID and use task-specific evaluation names; A phrases the same fix as a state that \"can remain\", which is easy to read as no change needed."
+    },
+    {
+      "id": 3725972287,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 3,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B's imperative \"Please reject existing output JSON in the collection target\" names the actor and the timing; A makes \"The collection target\" the subject of a capability sentence."
+    },
+    {
+      "id": 3726043665,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "For a critical data-destruction finding, B's two imperative bullets state the safe path and the fail-by-default rule as work; A's \"can use\" / \"can fail by default\" phrasing reads as musing about options."
+    },
+    {
+      "id": 3726043671,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 2,
+          "scanability": 3,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B's first bullet joins the grain choice and the counting rule into one coherent action and its second bullet isolates row references; A's three chained \"can\" clauses force the reader to work out which are requests."
+    },
+    {
+      "id": 3726043679,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "\"Limit tolerance to scale classification only\" and \"Add a strict pre-publication check\" are two verifiable edits; A's \"Tolerance can support ... only\" leaves the scoping change implicit."
+    },
+    {
+      "id": 3726043682,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B repeats `metric_unit` in both items so the referent never has to be reconstructed, where A's \"A unit\" and \"it\" make the reader carry the subject across sentences."
+    }
+  ],
+  "winner_counts": {
+    "A": 12,
+    "B": 20,
+    "tie": 15
+  },
+  "mean_scores": {
+    "A": {
+      "defect_clarity": 4.02,
+      "action_recall": 3.45,
+      "scanability": 3.7,
+      "naturalness": 3.62,
+      "cognitive_ease": 3.7
+    },
+    "B": {
+      "defect_clarity": 4.02,
+      "action_recall": 3.72,
+      "scanability": 3.79,
+      "naturalness": 3.83,
+      "cognitive_ease": 3.89
+    }
+  },
+  "overall_ranking": [
+    "B",
+    "A"
+  ],
+  "recommended_version": "B",
+  "summary": "Defect statements are effectively identical across the pair — the headers and evidence paragraphs match almost everywhere — so the decisive difference is how the requested work is phrased. B more often uses a direct \"Please <verb>\" and keeps unchanged-behavior carve-outs out of the action, while A more often falls back on \"X can <verb>\" constructions that read as observations and leave the author unsure whether a change is being requested. Bullet formatting alone did not decide rows: lists helped when they exposed two independent edits (3737291965, 3725853152, 3725776269, all won by A) and hurt when they promoted a permission or a restatement into work (3737449070)."
+}

@@ -1,0 +1,183 @@
+{
+  "initial_generator_audits": {
+    "terra": {
+      "sol": {
+        "fact_safe": 23,
+        "action_locked": 22,
+        "both": 21
+      },
+      "luna": {
+        "fact_safe": 23,
+        "action_locked": 24,
+        "both": 23
+      }
+    },
+    "claude": {
+      "sol": {
+        "fact_safe": 23,
+        "action_locked": 24,
+        "both": 22
+      },
+      "luna": {
+        "fact_safe": 20,
+        "action_locked": 19,
+        "both": 15
+      }
+    },
+    "sol": {
+      "sol": {
+        "fact_safe": 22,
+        "action_locked": 24,
+        "both": 21
+      },
+      "luna": {
+        "fact_safe": 23,
+        "action_locked": 22,
+        "both": 21
+      }
+    }
+  },
+  "initial_nonunanimous_ids": [
+    2614980178,
+    3102848524,
+    3161743720,
+    3493867085,
+    3652735574
+  ],
+  "first_repair_ids": [
+    3102848524,
+    3161743720
+  ],
+  "final_reaudit": {
+    "claude": {
+      "pass_count": 23,
+      "fail_count": 2,
+      "failed_ids": [
+        2952666730,
+        3493867085
+      ]
+    },
+    "sol": {
+      "pass_count": 22,
+      "fail_count": 3,
+      "failed_ids": [
+        2952666730,
+        3088978085,
+        3493867085
+      ]
+    },
+    "terra": {
+      "pass_count": 9,
+      "fail_count": 16,
+      "failed_ids": [
+        3525225568,
+        2614980077,
+        2614980178,
+        3096650221,
+        3102848524,
+        3134292915,
+        3493867085,
+        3677101235,
+        3677104436,
+        3677218975,
+        3677354603,
+        3677461204,
+        3677564751,
+        3677669726,
+        3677713059,
+        3699205371
+      ]
+    }
+  },
+  "terra_protocol_readjudication": {
+    "claude": {
+      "counts": {
+        "valid_failure": 2,
+        "protocol_failure": 14
+      },
+      "valid_failure_ids": [
+        3096650221,
+        3493867085
+      ],
+      "protocol_failure_ids": [
+        3525225568,
+        2614980077,
+        2614980178,
+        3102848524,
+        3134292915,
+        3677101235,
+        3677104436,
+        3677218975,
+        3677354603,
+        3677461204,
+        3677564751,
+        3677669726,
+        3677713059,
+        3699205371
+      ]
+    },
+    "sol": {
+      "counts": {
+        "valid_failure": 2,
+        "protocol_failure": 14
+      },
+      "valid_failure_ids": [
+        3096650221,
+        3493867085
+      ],
+      "protocol_failure_ids": [
+        3525225568,
+        2614980077,
+        2614980178,
+        3102848524,
+        3134292915,
+        3677101235,
+        3677104436,
+        3677218975,
+        3677354603,
+        3677461204,
+        3677564751,
+        3677669726,
+        3677713059,
+        3699205371
+      ]
+    }
+  },
+  "decision": "Claude and Sol independently agreed that 14 of Terra’s 16 failures classified by modal grammar instead of behavior and were evaluator protocol failures. Apply the union fail-safe only to material failures accepted by at least one behavior-compliant final auditor: restore exact source text for four IDs and retain 21 rewrites.",
+  "source_fallback_ids": [
+    2952666730,
+    3088978085,
+    3096650221,
+    3493867085
+  ],
+  "retained_rewrite_ids": [
+    3525225568,
+    2614980077,
+    2614980178,
+    2952666872,
+    3102848524,
+    3134292915,
+    3153765816,
+    3161743720,
+    3161807141,
+    3520340907,
+    3652735574,
+    3653129512,
+    3677101235,
+    3677104436,
+    3677218975,
+    3677354603,
+    3677461204,
+    3677564751,
+    3677669726,
+    3677713059,
+    3699205371
+  ],
+  "final_counts": {
+    "fact_safe": 25,
+    "behavior-audited_action_locked_rewrites": 21,
+    "exact_source_fallback": 4,
+    "semantic_losses": 0,
+    "false_actions_introduced": 0
+  }
+}

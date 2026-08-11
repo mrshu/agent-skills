@@ -1,0 +1,556 @@
+{
+  "per_comment": [
+    {
+      "id": 3525225568,
+      "scores": {
+        "A": {
+          "defect_clarity": 3,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 2,
+          "action_recall": 2,
+          "scanability": 2,
+          "naturalness": 2,
+          "cognitive_ease": 2
+        }
+      },
+      "winner": "A",
+      "reason": "A states the request directly. B buries it under \"I personally think\" and ends a declarative suggestion as a question."
+    },
+    {
+      "id": 2614980077,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "Both explain the mismatch clearly, but B's suggestion makes the exact replacement immediately available."
+    },
+    {
+      "id": 2614980178,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B supplies the requested comment with both reasons already expressed, reducing the work needed to translate the review into an edit."
+    },
+    {
+      "id": 2952666730,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "tie",
+      "reason": "Both clearly contrast the documented and actual validators, then present the same two resolution paths."
+    },
+    {
+      "id": 2952666872,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "tie",
+      "reason": "The versions differ only cosmetically; both give the trigger, consequence, and replacement check in a direct sequence."
+    },
+    {
+      "id": 3088978085,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B's two bullets expose the table and argument-list fixes as independently checkable actions. A's suggestion shows only the argument-list edit."
+    },
+    {
+      "id": 3096650221,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "tie",
+      "reason": "Both identify the repeated operations, name the one-call replacement, and preserve the same documented exception for strict typing."
+    },
+    {
+      "id": 3102848524,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B keeps the immediate assertion and the longer-term alternative together in one explicit request. The purpose of the test is also stated more directly."
+    },
+    {
+      "id": 3134292915,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "tie",
+      "reason": "A is slightly more compact, while B provides the exact likely edit; both make the inconsistency, consequence, and alternatives easy to retain."
+    },
+    {
+      "id": 3153765816,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "A separates the typo from its consequence before giving the rename request. B compresses the first two ideas into a slightly denser sentence."
+    },
+    {
+      "id": 3161743720,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "tie",
+      "reason": "The two versions are identical."
+    },
+    {
+      "id": 3161807141,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "A leads with the hidden dependency and crash before stating the conditional action. B delays the defect behind a question and permission to ignore the comment."
+    },
+    {
+      "id": 3493867085,
+      "scores": {
+        "A": {
+          "defect_clarity": 3,
+          "action_recall": 3,
+          "scanability": 2,
+          "naturalness": 4,
+          "cognitive_ease": 2
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B separates the serializer tradeoff and examples from a final explicit request. A's conversational asides and detached links make the desired action harder to recover."
+    },
+    {
+      "id": 3520340907,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "tie",
+      "reason": "A sounds more conversational, while B states the two inconsistencies more directly. Neither turns the branch concern into a distinct requested action."
+    },
+    {
+      "id": 3652735574,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B separates the diagnostic question from the conditional request and explicitly says to keep the conventional key name."
+    },
+    {
+      "id": 3653129512,
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 5,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 2,
+          "action_recall": 4,
+          "scanability": 3,
+          "naturalness": 2,
+          "cognitive_ease": 3
+        }
+      },
+      "winner": "A",
+      "reason": "A explicitly identifies the requested URL-account inference change before presenting the code. B contains only a suggestion block, forcing the reader to derive the review's point from the implementation."
+    },
+    {
+      "id": 3677101235,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "tie",
+      "reason": "A makes the replacement an explicit request, while B's heading and paragraph structure make the failure chain easier to scan. Neither advantage is decisive."
+    },
+    {
+      "id": 3677104436,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "A",
+      "reason": "A ends with a direct request that clearly distinguishes collision discovery from payload validation. B's final \"can inspect\" wording is easier to overlook as an action."
+    },
+    {
+      "id": 3677218975,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "tie",
+      "reason": "A marks the coordinated version move as an explicit request; B gives the same complete list with slightly better visual separation."
+    },
+    {
+      "id": 3677354603,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "B",
+      "reason": "B's explicit \"Please feed both outcomes\" makes the required status propagation harder to miss. A is better spaced but phrases the fix as something the code merely \"can\" do."
+    },
+    {
+      "id": 3677461204,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "A",
+      "reason": "A makes catching the validation error inside the per-benchmark boundary a direct request. B's separate final paragraph scans well but softens the action to \"can stay.\""
+    },
+    {
+      "id": 3677564751,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B uses separate paragraphs for the failure, reachable trigger, and validation rules. That structure makes the distinct pass, cost, and boolean checks easier to retain."
+    },
+    {
+      "id": 3677669726,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "tie",
+      "reason": "A has the stronger explicit request, while B's paragraph breaks better expose the declared-versus-emitted schema mismatch."
+    },
+    {
+      "id": 3677713059,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "reason": "B separates the mixed-revision failure, metadata fallback, and pinning strategy into an easy-to-follow sequence. A contains the same information in a denser paragraph."
+    },
+    {
+      "id": 3699205371,
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 3,
+          "naturalness": 4,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 2,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "reason": "A explicitly requests dropping `re.IGNORECASE` and avoids the distracting generated-by footer. B scans better in paragraphs, but its action is less direct and the attribution makes it feel templated."
+    }
+  ],
+  "winner_counts": {
+    "A": 7,
+    "B": 9,
+    "tie": 9
+  },
+  "mean_scores": {
+    "A": {
+      "defect_clarity": 4.64,
+      "action_recall": 4.52,
+      "scanability": 3.92,
+      "naturalness": 4.4,
+      "cognitive_ease": 4.24
+    },
+    "B": {
+      "defect_clarity": 4.6,
+      "action_recall": 4.4,
+      "scanability": 4.28,
+      "naturalness": 4.16,
+      "cognitive_ease": 4.52
+    }
+  },
+  "overall_ranking": [
+    "B",
+    "A"
+  ],
+  "recommended_version": "tie",
+  "summary": "B has a slight aggregate edge because paragraph breaks, suggestions, and explicit structure improve scanability and cognitive ease. A is slightly stronger on direct requests, defect clarity, and naturalness, and many differences are too small to matter to a busy author. Neither version is consistently superior enough for an overall recommendation."
+}

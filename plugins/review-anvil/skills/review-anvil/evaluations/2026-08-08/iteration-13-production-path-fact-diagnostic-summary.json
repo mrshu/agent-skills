@@ -1,0 +1,43 @@
+{
+  "claude": {
+    "safe": 21,
+    "loss": 4,
+    "loss_ids": [
+      2952666730,
+      3102848524,
+      3493867085,
+      3699205371
+    ]
+  },
+  "sol": {
+    "safe": 17,
+    "loss": 8,
+    "loss_ids": [
+      2614980077,
+      2614980178,
+      2952666730,
+      3088978085,
+      3102848524,
+      3493867085,
+      3525225568,
+      3699205371
+    ]
+  },
+  "both_flagged_ids": [
+    2952666730,
+    3102848524,
+    3493867085,
+    3699205371
+  ],
+  "union_flagged_ids": [
+    2614980077,
+    2614980178,
+    2952666730,
+    3088978085,
+    3102848524,
+    3493867085,
+    3525225568,
+    3699205371
+  ],
+  "scope": "Diagnostic only. The production action-lock pipeline does not run a whole-comment fact auditor, and this corpus uses raw historical inline comments rather than normalized synthesized findings."
+}

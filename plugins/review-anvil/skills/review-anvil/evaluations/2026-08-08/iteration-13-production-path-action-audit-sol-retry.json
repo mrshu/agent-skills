@@ -1,0 +1,222 @@
+{
+  "items": [
+    {
+      "id": 3525225568,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 2614980077,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 2614980178,
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [
+        "Source predicate: \"consider adding a comment explaining why an empty manifest is still created\". Rendered phrase: \"Add `print(\\\"No changes detected, nothing to upload\\\")`.\" The print action is not requested by the source."
+      ],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Remove the unsourced `print(\"No changes detected, nothing to upload\")` action; retain only the direct request for the explanatory comment."
+      ]
+    },
+    {
+      "id": 2952666730,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 2952666872,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3088978085,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3096650221,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3102848524,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3134292915,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3153765816,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3161743720,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3161807141,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3493867085,
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate: \"It may be worth it to abstract the specific json reader / writer so the stdlib json is always an option, but you can opt-in to something like `orjson` or `ujson`.\" Rendered phrase: \"An optional follow-up is to abstract the specific JSON reader/writer so stdlib `json` is always an option while callers can opt in to `orjson` or `ujson`.\" The rendered phrase downgrades the requested abstraction to an optional follow-up instead of making it a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Express the JSON reader/writer abstraction as a direct request, preserving that stdlib `json` remains available and `orjson` or `ujson` are opt-in choices."
+      ]
+    },
+    {
+      "id": 3520340907,
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [
+        "Source predicate: \"Is this path intentional?\" Rendered phrase: \"Please confirm whether this path and branch behavior is intentional.\" The direct request to confirm branch behavior is added from diagnostic context; the source request asks only whether the path is intentional."
+      ],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Restrict the direct confirmation request to whether the path is intentional; do not turn the branch-state diagnosis into an additional action."
+      ]
+    },
+    {
+      "id": 3652735574,
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate: \"If the walk is fixed to skip `additional_details` (see my comment on `validation_core.py`), this could keep the conventional key name.\" Rendered phrase: \"If the walk is fixed to skip `additional_details` as discussed for `validation_core.py`, the conventional key name could be kept.\" The conditional target remains modal prose rather than a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Make keeping the conventional key name a direct request conditioned exactly on fixing the walk to skip `additional_details`, while retaining the workaround question."
+      ]
+    },
+    {
+      "id": 3653129512,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3677101235,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3677104436,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3677218975,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3677354603,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3677461204,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3677564751,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3677669726,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3677713059,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3699205371,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    }
+  ],
+  "pass_count": 21,
+  "fail_count": 4
+}

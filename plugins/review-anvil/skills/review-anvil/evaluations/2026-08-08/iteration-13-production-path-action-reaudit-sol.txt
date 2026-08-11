@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "id": "2614980178",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3161743720",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [
+        "The source predicate \"That way the plot stays accurate when someone runs the CLI with `--top-n 3` or another value, instead of hardcoding `Top 10`.\" is a required result and condition attached to building the title and filename from `top_n`. The rendered phrase \"Please build the title and the filename at line 448 from `top_n`\" omits that result and condition."
+      ],
+      "repair_instructions": [
+        "Keep the direct request and explicitly attach the source result and condition: the plot must stay accurate when the CLI is run with `--top-n 3` or another value instead of hardcoding `Top 10`."
+      ]
+    },
+    {
+      "id": "3493867085",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3520340907",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3652735574",
+      "status": "fail",
+      "missing_author_work": [
+        "The source predicate \"Was this rename a workaround for `check_integer_counts()` rejecting stringified `samples_number` in `additional_details`?\" requests confirmation of the rename's purpose. The rendered phrase \"If the walk is fixed to skip `additional_details` (see my comment on `validation_core.py`), please keep the conventional key name.\" contains no direct request to provide that confirmation."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Add a direct request to confirm whether the rename was a workaround for `check_integer_counts()` rejecting stringified `samples_number` in `additional_details`; retain the existing conditional request unchanged."
+      ]
+    }
+  ],
+  "pass_count": 3,
+  "fail_count": 2
+}

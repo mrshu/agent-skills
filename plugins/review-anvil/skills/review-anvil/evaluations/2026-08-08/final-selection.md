@@ -1,7 +1,7 @@
 # Final selection — fact-locked requested changes
 
-> Superseded by `iteration-12-assessment.md`, which records the final
-> action-locked renderer comparison and recommendations.
+> Superseded by `iteration-13-assessment.md`, which stress-tests and hardens
+> the iteration-12 production contract and records its current limits.
 
 ## Decision
 

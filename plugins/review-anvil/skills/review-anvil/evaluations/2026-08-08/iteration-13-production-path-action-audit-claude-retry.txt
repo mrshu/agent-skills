@@ -1,0 +1,229 @@
+```json
+{
+  "items": [
+    {
+      "id": 3525225568,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 2614980077,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 2614980178,
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [
+        "Rendered bullet \"Add `print(\\\"No changes detected, nothing to upload\\\")`.\" has no source predicate. The source requests only \"consider adding a comment explaining why an empty manifest is still created\"; no print statement or message is requested anywhere in the source."
+      ],
+      "fact_losses": [
+        "Source no-change boundary \"While this is handled correctly by the upload script\" is dropped. The rendered text states no accepted current behavior, so the empty-manifest creation reads as a defect to fix rather than behavior already handled correctly.",
+        "Source hedge \"(likely for debugging or workflow clarity purposes)\" is rendered as the asserted purpose \"so downstream scripts have a consistent file to read and this aids debugging and workflow clarity\", converting a speculative rationale into a stated fact."
+      ],
+      "repair_instructions": [
+        "Delete the bullet requesting `print(\"No changes detected, nothing to upload\")`; it is not derived from any source predicate.",
+        "Restore the accepted-current-behavior clause \"this is handled correctly by the upload script\" attached to the comment request.",
+        "Restore the source hedge on the purpose (\"likely for debugging or workflow clarity purposes\") rather than asserting the purpose outright."
+      ]
+    },
+    {
+      "id": 2952666730,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 2952666872,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3088978085,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3096650221,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3102848524,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3134292915,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3153765816,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3161743720,
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [
+        "Source locator \"(line 448)\" in \"could we build this title and filename (line 448) from `top_n`\" is dropped. The rendered phrase \"build the title and filename from `top_n`\" loses the exact location of the second action target, which sits at a different line from the comment anchor."
+      ],
+      "repair_instructions": [
+        "Restore the \"(line 448)\" locator on the filename target so the request reads as building the title and the filename at line 448 from `top_n`."
+      ]
+    },
+    {
+      "id": 3161807141,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3493867085,
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate \"It may be worth it to abstract the specific json reader / writer so the stdlib json is always an option, but you can opt-in to something like `orjson` or `ujson`\" proposes target behavior and is therefore author work, but it appears only as modal prose in the rendered phrase \"An optional follow-up is to abstract the specific JSON reader/writer so stdlib `json` is always an option while callers can opt in to `orjson` or `ujson`.\" It is never stated as a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [
+        "The rendered phrase \"An optional follow-up\" has no source basis. The source never calls this optional or a follow-up; it states \"It may be worth it to abstract...\", so the rendered label downgrades the obligation status of a target-behavior predicate."
+      ],
+      "repair_instructions": [
+        "Render the abstraction predicate as a direct request (abstract the JSON reader/writer so stdlib `json` remains an option while callers can opt in to `orjson` or `ujson`).",
+        "Remove the \"An optional follow-up is to\" framing, which is not present in the source.",
+        "Keep the `orjson` caveat about non-serializable nans/infs and both reference links as supporting prose attached to the request."
+      ]
+    },
+    {
+      "id": 3520340907,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3652735574,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3653129512,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3677101235,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3677104436,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3677218975,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3677354603,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3677461204,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3677564751,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3677669726,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3677713059,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3699205371,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    }
+  ],
+  "pass_count": 22,
+  "fail_count": 3
+}
+```

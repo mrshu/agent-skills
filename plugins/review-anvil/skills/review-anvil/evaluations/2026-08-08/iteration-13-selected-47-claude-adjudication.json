@@ -1,0 +1,46 @@
+{
+  "scope": "Selected iteration-12 renderer on all 47 frozen comments",
+  "initial_claude_counts": {
+    "fact_safe": 47,
+    "action_locked": 44,
+    "both": 44
+  },
+  "initial_disputed_ids": [
+    3737383919,
+    3737449070,
+    3725913004
+  ],
+  "method": "Inspect each disagreement against the authoritative examples in references/action-lock-audit.md, then ask a clean Claude Opus adjudicator to apply those exact examples. Do not aggregate the initial labels blindly.",
+  "authoritative_examples": {
+    "3737383919": "A no-match check is required; only its stopping point is permitted.",
+    "3737449070": "Preserving valid metrics is required; reporting unresolved keys is permitted.",
+    "3725913004": "Staging complete output is required; rejecting existing output until atomic replacement and streaming sidecar validation are permitted."
+  },
+  "focused_claude_adjudication": {
+    "items": [
+      {
+        "id": 3737383919,
+        "status": "pass",
+        "reason": "Per example 1 the candidate requests the no-match check and keeps its permitted stopping point attached with a semicolon rather than creating a separate \"Stop before…\" action."
+      },
+      {
+        "id": 3737449070,
+        "status": "pass",
+        "reason": "Per example 2 the candidate makes preservation of valid metrics an explicit separate action and leaves the unresolved-key reporting as allowed modal prose instead of requesting it."
+      },
+      {
+        "id": 3725913004,
+        "status": "pass",
+        "reason": "Per example 3 the candidate converts \"Complete output can stage before publication\" into author work because construction fails after files are written, while keeping rejection-until-atomic and streaming sidecar validation as modal prose rather than actions."
+      }
+    ],
+    "pass_count": 3,
+    "fail_count": 0
+  },
+  "final_selected_counts": {
+    "fact_safe": 47,
+    "action_locked": 47,
+    "both": 47
+  },
+  "decision": "All three initial failures were evaluator interpretation errors on examples explicitly defined by the production audit contract; retain the selected comments unchanged."
+}

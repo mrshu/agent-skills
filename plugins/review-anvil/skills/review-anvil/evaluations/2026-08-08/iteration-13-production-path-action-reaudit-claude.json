@@ -1,0 +1,50 @@
+{
+  "items": [
+    {
+      "id": 2614980178,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3161743720,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3493867085,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3520340907,
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": 3652735574,
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate: \"Was this rename a workaround for `check_integer_counts()` rejecting stringified `samples_number` in `additional_details`?\" This is a request for author confirmation (author work under rule 1), but the rendered requested work contains no corresponding phrase; it renders only the conditional \"If the walk is fixed to skip `additional_details` (see my comment on `validation_core.py`), please keep the conventional key name.\" The question survives only as background prose in the source context, not as a direct request, which rule 5 rejects."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Restore the confirmation request as a direct request alongside the existing conditional, asking the author to confirm whether the rename was a workaround for `check_integer_counts()` rejecting stringified `samples_number` in `additional_details`. Keep the exact identifiers `check_integer_counts()`, `samples_number`, and `additional_details`, and keep the existing conditional request (condition, the `validation_core.py` cross-reference, and \"keep the conventional key name\") unchanged."
+      ]
+    }
+  ],
+  "pass_count": 4,
+  "fail_count": 1
+}

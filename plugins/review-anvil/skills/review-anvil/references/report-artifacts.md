@@ -25,6 +25,11 @@ author-facing profile. Preserve evidence tokens verbatim.
 
 ## Inline-comment voice (bodies in `.inline.json`)
 
+The voice rules below do not replace the mandatory two-auditor action-lock gate
+in `action-lock-audit.md`; every rewritten draft body must pass that gate before
+it enters `.inline.json`. The exact-source fallback is exempt and
+forces COMMENT.
+
 Write each inline comment in plain language about the code at that line. Use
 comments for `critical`, `high`, and `medium` problems; put `low` and `nit`
 items in the summary.
@@ -57,6 +62,8 @@ Edit structure before vocabulary.
 Keep an exact supporting phrase for every fact-lock item.
 Privately map every fact-lock item to its exact supporting phrase in the draft.
 Do not emit until every fact-lock item has a supporting phrase.
+Preserve a verified exact source suggestion only when it satisfies every
+safety exclusion in the engine `SKILL.md`; otherwise omit it.
 Privately map every draft relationship and boundary back to one fact-lock item.
 Delete any draft claim that has no source fact.
 If deletion would break the meaning, restore the source sentence.

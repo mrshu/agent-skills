@@ -1,0 +1,26 @@
+{
+  "judge": "Claude Opus",
+  "scope": 47,
+  "winner_counts": {
+    "selected": 31,
+    "baseline": 1,
+    "tie": 15
+  },
+  "mean_scores": {
+    "selected": {
+      "defect_clarity": 4.021,
+      "action_recall": 4.0,
+      "scanability": 3.979,
+      "naturalness": 3.894,
+      "cognitive_ease": 3.957
+    },
+    "baseline": {
+      "defect_clarity": 4.021,
+      "action_recall": 3.17,
+      "scanability": 3.511,
+      "naturalness": 3.553,
+      "cognitive_ease": 3.638
+    }
+  },
+  "decision": "selected"
+}

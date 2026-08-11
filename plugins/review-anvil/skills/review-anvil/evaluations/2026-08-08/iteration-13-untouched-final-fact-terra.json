@@ -1,0 +1,558 @@
+{
+  "items": [
+    {
+      "id": 3525225568,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "loss",
+          "action_status": "locked",
+          "fact_losses": [
+            "Source: \"I personally think it would make more sense\"; candidate B's \"Please make this\" omits the source's personal, tentative rationale."
+          ],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 2614980077,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 2614980178,
+      "candidates": {
+        "A": {
+          "fact_status": "loss",
+          "action_status": "unlocked",
+          "fact_losses": [
+            "Source suggestion: \"print(\\\"No changes detected, nothing to upload\\\")\"; candidate A omits this concrete output."
+          ],
+          "missing_author_work": [
+            "Source suggestion: \"print(\\\"No changes detected, nothing to upload\\\")\"; candidate A contains no direct request to add that output."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 2952666730,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 2952666872,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3088978085,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3096650221,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3102848524,
+      "candidates": {
+        "A": {
+          "fact_status": "loss",
+          "action_status": "unlocked",
+          "fact_losses": [
+            "Source: \"or (longer-term) updating `expand_paths`\"; candidate A's \"or update `expand_paths`\" omits the longer-term boundary."
+          ],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": [
+            "Source: \"or (longer-term) updating `expand_paths`\"; candidate A's immediate alternative \"or update `expand_paths`\" removes the stated longer-term scope."
+          ]
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3134292915,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3153765816,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3161743720,
+      "candidates": {
+        "A": {
+          "fact_status": "loss",
+          "action_status": "locked",
+          "fact_losses": [
+            "Source: \"filename (line 448)\"; candidate A omits the exact line-448 reference."
+          ],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3161807141,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3493867085,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [
+            "Source: \"It may be worth it to abstract the specific json reader / writer\"; candidate A's \"Please abstract the specific JSON reader and writer\" turns an optional follow-up into required author work."
+          ],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3520340907,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3652735574,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [
+            "Source: \"the conventional key name could be kept\"; candidate B's \"Please keep the conventional `samples_number` key\" converts an allowed conditional outcome into required author work."
+          ],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3653129512,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3677101235,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3677104436,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3677218975,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3677354603,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3677461204,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3677564751,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3677669726,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3677713059,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3699205371,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    }
+  ],
+  "counts": {
+    "A": {
+      "fact_safe": 22,
+      "action_locked": 22,
+      "both": 21
+    },
+    "B": {
+      "fact_safe": 24,
+      "action_locked": 24,
+      "both": 23
+    }
+  },
+  "summary": "Candidate A loses the suggested no-changes output, removes the longer-term boundary for the alternative `expand_paths` change, omits the line-448 locator, and promotes an optional JSON abstraction. Candidate B preserves the technical remediation and boundaries except for omitting the source's personal tentative rationale in item 3525225568 and converting the conditional conventional-key outcome into required work in item 3652735574."
+}

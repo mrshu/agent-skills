@@ -1,0 +1,124 @@
+{
+  "items": [
+    {
+      "id": 3525225568,
+      "terra_status": "protocol_failure",
+      "source_classification": "author_work",
+      "reason": "The defect is that the command-specific option and execution order make less sense in their current form; omitting both changes leaves that stated concern unresolved. The source says \"make it a specific option for this command and execute it after this handle command,\" and the candidate preserves that target behavior and the qualifier \"I personally think,\" so Terra rejected it solely for interrogative and modal grammar.",
+      "remaining_candidate_issues": []
+    },
+    {
+      "id": 2614980077,
+      "terra_status": "protocol_failure",
+      "source_classification": "author_work",
+      "reason": "The defect is that \"file(s)\" ambiguously describes a count of parquet rows or entries; omitting the wording change leaves the misleading message unresolved. The source says \"consider clarifying the message,\" while the candidate accurately requests that clarification and preserves both offered wordings, so Terra's modal-based rejection is a protocol failure.",
+      "remaining_candidate_issues": []
+    },
+    {
+      "id": 2614980178,
+      "terra_status": "protocol_failure",
+      "source_classification": "author_work",
+      "reason": "The defect is that the reason for writing an empty manifest is undocumented; omitting the comment leaves that documentation gap unresolved. The source says \"consider adding a comment explaining why an empty manifest is still created,\" and the candidate requests exactly that documentation while preserving the downstream-consistency and likely debugging rationale, so Terra's rejection is purely grammatical.",
+      "remaining_candidate_issues": []
+    },
+    {
+      "id": 3096650221,
+      "terra_status": "valid_failure",
+      "source_classification": "author_work",
+      "reason": "The defect is N+1 loading without either using the available bulk path or documenting why strict typing prevents it; omitting both alternatives leaves the performance problem or its necessary explanation unresolved. The source says \"a one-line comment explaining that would help future readers,\" but the candidate only says \"add a one-line comment if strict `NOT NULL` typing on `{table}_instances` prevents that fast path,\" losing the stated benefit to future readers.",
+      "remaining_candidate_issues": [
+        "The candidate omits the source's exact rationale that the fallback explanation \"would help future readers\"."
+      ]
+    },
+    {
+      "id": 3102848524,
+      "terra_status": "protocol_failure",
+      "source_classification": "mixed",
+      "reason": "The defect is that the test matches a missing-path message for an existing unsupported file and thereby obscures the behavior under test; omitting both alternatives leaves that misleading assertion unresolved. The source's immediate option is \"asserting only that an exception is raised for non-JSON files,\" while updating `expand_paths` is explicitly \"(longer-term),\" and the candidate preserves both that required immediate path and the longer-term qualifier.",
+      "remaining_candidate_issues": []
+    },
+    {
+      "id": 3134292915,
+      "terra_status": "protocol_failure",
+      "source_classification": "author_work",
+      "reason": "The defect is an inconsistent Qwen developer slug that can split models across directories; omitting alignment of the mapping and overrides leaves that inconsistency unresolved. The source says \"Consider using `qwen` here (or otherwise aligning the mapping + overrides so the developer slug is consistent),\" and the candidate preserves both implementation alternatives, so Terra rejected correct author work solely because of \"Consider\" grammar.",
+      "remaining_candidate_issues": []
+    },
+    {
+      "id": 3493867085,
+      "terra_status": "valid_failure",
+      "source_classification": "optional_or_no_change",
+      "reason": "The concern is a possible future JSON serialization bottleneck, but \"may be worth it\" makes the abstraction an optional follow-up, so omitting it does not leave required author work incomplete. The source says \"I've handled this in a few ways in the past: simple wrappers\" and \"And module level globals,\" whereas the candidate says only \"Similar approaches include simple wrappers\" and \"module-level globals,\" losing the factual attribution to the reviewer's prior experience.",
+      "remaining_candidate_issues": [
+        "The candidate removes the reviewer's exact factual claim, \"I've handled this in a few ways in the past,\" while retaining only the examples."
+      ]
+    },
+    {
+      "id": 3677101235,
+      "terra_status": "protocol_failure",
+      "source_classification": "author_work",
+      "reason": "The defect is that repeated runs create duplicate logical evaluations because aggregate and sidecar output is not idempotent; omitting replacement of the adapter-owned set leaves duplication unresolved. The source says the aggregate and sidecar \"can be replaced as one set\" and that the sidecar \"needs a fresh write,\" which behaviorally specifies author work despite \"can,\" and the candidate preserves both requirements.",
+      "remaining_candidate_issues": []
+    },
+    {
+      "id": 3677104436,
+      "terra_status": "protocol_failure",
+      "source_classification": "author_work",
+      "reason": "The defect is that explicit-file validation misses compressed same-stem siblings and permits duplicate variants; omitting sibling collision discovery leaves the one-variant rule bypassable. The source says collision discovery \"can inspect same-parent, same-stem variants while payload validation stays limited to requested files,\" and the candidate preserves both the required discovery behavior and the payload-validation boundary.",
+      "remaining_candidate_issues": []
+    },
+    {
+      "id": 3677218975,
+      "terra_status": "protocol_failure",
+      "source_classification": "author_work",
+      "reason": "The defect is that new fields are emitted under unchanged schema identifiers whose existing models reject or discard them; omitting coordinated new identifiers leaves the schema contract invalid. The source says the \"schema copies, emitters, models, fixtures, tests, and current-version docs can move to new identifiers together,\" and the candidate preserves that complete migration scope, so \"can\" does not make the work optional.",
+      "remaining_candidate_issues": []
+    },
+    {
+      "id": 3677354603,
+      "terra_status": "protocol_failure",
+      "source_classification": "mixed",
+      "reason": "The defect is that handled failures still produce `Done!` and status 0, allowing automation to accept a partial dataset; omitting failure propagation or removal of the duplicate path leaves that false-success behavior unresolved. The source requires a propagated final status \"If this entry point keeps independent work\" while allowing that \"Delegation may remove this duplicate path,\" and the candidate preserves both the conditional author work and the delegation boundary.",
+      "remaining_candidate_issues": []
+    },
+    {
+      "id": 3677461204,
+      "terra_status": "protocol_failure",
+      "source_classification": "author_work",
+      "reason": "The defect is that an uncaught Pydantic `ValidationError` aborts later benchmarks instead of joining the partial-run report; omitting per-benchmark isolation leaves that failure mode unresolved. The source says the error \"can stay inside the per-benchmark boundary while the adapter continues with later work,\" and the candidate requests exactly that behavior, so Terra's rejection rests solely on \"can\" grammar.",
+      "remaining_candidate_issues": []
+    },
+    {
+      "id": 3677564751,
+      "terra_status": "protocol_failure",
+      "source_classification": "author_work",
+      "reason": "The defect is that supported replay input can emit booleans, non-finite values, out-of-range pass metrics, and negative costs contrary to the source contract; omitting validation leaves all of those invalid outputs reachable. The source says pass metrics \"can use finite inclusive 0–100 checks\" and cost \"can use a finite non-negative check, with booleans rejected before numeric conversion,\" and the candidate preserves those exact validation requirements.",
+      "remaining_candidate_issues": []
+    },
+    {
+      "id": 3677669726,
+      "terra_status": "protocol_failure",
+      "source_classification": "author_work",
+      "reason": "The defect is that the declared serialization schema excludes sentinel strings that `model_dump_json()` can emit; omitting an accurate output union leaves the schema inconsistent with serialization behavior. The source says each bound \"can expose an accurate serialization contract for finite numbers, null, and its field-valid sentinel,\" and the candidate requests precisely that contract, so Terra rejected it solely because the source used \"can.\"",
+      "remaining_candidate_issues": []
+    },
+    {
+      "id": 3677713059,
+      "terra_status": "protocol_failure",
+      "source_classification": "mixed",
+      "reason": "The defect is that separate reads from mutable `main` can combine revisions and lose a stable version anchor; omitting revision pinning leaves snapshot provenance unreliable. The source says resolving one revision \"can pin every live read\" while allowing the dataset revision and `source_git_commit` to \"remain separate provenance fields,\" and the candidate preserves both the required pinning and that no-change boundary.",
+      "remaining_candidate_issues": []
+    },
+    {
+      "id": 3699205371,
+      "terra_status": "protocol_failure",
+      "source_classification": "author_work",
+      "reason": "The defect is that `re.IGNORECASE` admits mixed-case sample filenames that bypass every companion rule; omitting the flag removal leaves the verified validation hole open. The source states that \"dropping `re.IGNORECASE` closes the hole with no loss,\" and the candidate directly requests that same fix while preserving the lowercase-publisher and mixed-case-extension facts, so Terra incorrectly treated the declarative solution wording as optional.",
+      "remaining_candidate_issues": []
+    }
+  ],
+  "counts": {
+    "valid_failure": 2,
+    "protocol_failure": 14
+  }
+}

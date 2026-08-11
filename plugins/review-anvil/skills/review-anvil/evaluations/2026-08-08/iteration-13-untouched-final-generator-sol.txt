@@ -1,0 +1,104 @@
+{
+  "comments": [
+    {
+      "id": 3525225568,
+      "body": "Please make this a specific option for this command and execute it after this handle command; I personally think that would make more sense."
+    },
+    {
+      "id": 2614980077,
+      "body": "The message \"No new files to add, keeping existing X file(s)\" calls the count \"file(s)\", although it counts Parquet rows and each row represents a JSON file. This makes the message ambiguous. Please change it to \"No new rows to add, keeping existing X row(s)\" or \"No new entries to add\"."
+    },
+    {
+      "id": 2614980178,
+      "body": "The manifest is created even when `modified` is empty. The upload script handles this correctly, but the reason for keeping an empty manifest is not documented. Please add a comment explaining why the empty manifest is still written, including that it gives downstream scripts a consistent file to read and likely aids debugging or workflow clarity."
+    },
+    {
+      "id": 2952666730,
+      "body": "The README says validation uses generated Pydantic models, but the pre-commit hook in `.pre-commit-config.yaml` still runs `utils/validate_data.py` with `jsonschema` against `eval.schema.json`. This misrepresents what runs automatically on commit or in CI. Please either update the pre-commit hook to call `validate.py` and handle JSONL, or clarify that `validate.py` is an optional, manual, or separate-CI validator while pre-commit remains JSON Schema-based."
+    },
+    {
+      "id": 2952666872,
+      "body": "`apply_discriminator_patch()` treats the file as already patched when `\"Discriminator\"` appears anywhere in it. An unrelated occurrence could therefore skip the patch and leave `source_data` unpatched. Please check for the specific patched field signature, or for `target_line` being absent or present, instead of using the global substring match."
+    },
+    {
+      "id": 3088978085,
+      "body": "The metrics table has extra leading pipes (`|| Metric`), which breaks Markdown table rendering. The sample argument list also omits the argument placeholder for `--output_dir`, so the rendered documentation does not match actual CLI usage.\n\n**Requested actions**\n\n- Remove the extra leading pipes from the metrics table.\n- Show the option as `--output_dir OUTPUT_DIR` in the argument list."
+    },
+    {
+      "id": 3096650221,
+      "body": "**N+1 loading.** For every URL, this runs a `DESCRIBE` followed by an `INSERT ... SELECT`. DuckDB can handle missing columns across the heterogeneous list in one `read_parquet(urls, union_by_name=true, filename=true)` call, as the schema code a few lines above already does. Please either replace the loop with one `INSERT ... SELECT ... FROM read_parquet(?, union_by_name=true, filename=true)` using the full `instance_urls` list, or add a one-line comment if strict `NOT NULL` typing on `{table}_instances` prevents that fast path."
+    },
+    {
+      "id": 3102848524,
+      "body": "For the existing `.txt` path, the test matches the same \"Could not find file or directory\" message used for missing paths. That message is misleading for an existing but unsupported file, and matching it obscures that the test covers unsupported-extension rejection. Please either assert only that non-JSON files raise an exception, or, as a longer-term change, make `expand_paths` raise a distinct exception or message for unsupported extensions."
+    },
+    {
+      "id": 3134292915,
+      "body": "`MODEL_DEVELOPER_MAP` maps `qwen` to `alibaba`, while `utils/arc_agi/adapter.py` and `utils/sciarena/adapter.py` use `qwen` as the developer slug. HAL exports can therefore differ from the rest of the dataset and split Qwen models across two developer directories depending on whether `MODEL_ID_OVERRIDES` fires. Please map `qwen` to `qwen` here, or otherwise align the mapping and overrides so the developer slug is consistent."
+    },
+    {
+      "id": 3153765816,
+      "body": "The constructor parameter is misspelled as `evaulation_id`. This is easy to miss and prevents keyword calls such as `evaluation_id=...`. Please rename it to `evaluation_id` throughout the signature and assignments, and update every call site."
+    },
+    {
+      "id": 3161743720,
+      "body": "The plot title and filename hardcode `Top 10`, so they become inaccurate when the CLI runs with `--top-n 3` or another value. Please build both from `top_n`, for example `f'Top {top_n} Benchmarks by Number of Models'` and `f'top{top_n}_benchmarks_by_models.png'`."
+    },
+    {
+      "id": 3161807141,
+      "body": "`create_visualisations()` currently depends on `main()` setting `viz_dir` and `top_n` first. It would crash if someone imported and called the function directly. Please pass `viz_dir` and `top_n` directly into `create_visualisations()` if this file is intended to support imported calls. If it is meant to run only as a CLI script, no change is needed."
+    },
+    {
+      "id": 3493867085,
+      "body": "This might become a bottleneck. I have handled this with simple wrappers such as https://gitlab.kitware.com/computer-vision/kwutil/-/blob/main/kwutil/util_json.py?blame=1&ref_type=heads#L391 and module-level globals such as https://gitlab.kitware.com/computer-vision/kwcoco/-/blob/main/kwcoco/coco_dataset.py?blame=1&ref_type=heads#L117. Please abstract the specific JSON reader and writer so stdlib `json` remains available while callers can opt in to `orjson` or `ujson`. `orjson` is fast but opinionated: it cannot serialize generic floats such as NaN or infinity, which are not technically JSON, while stdlib `json` and `ujson` are less strict."
+    },
+    {
+      "id": 3520340907,
+      "body": "This reads `adapter_stats.json` from the repository root, but the code below writes `data/adapter_stats.json`. It also reads from the default branch while the upload creates a PR, so it is unclear whether one run's state is available to the next. Please confirm whether both the path mismatch and the cross-run state flow are intentional."
+    },
+    {
+      "id": 3652735574,
+      "body": "Was this rename a workaround for `check_integer_counts()` rejecting the stringified `samples_number` in `additional_details`? Please keep the conventional `samples_number` key if the validation walk is fixed to skip `additional_details`, as discussed on `validation_core.py`."
+    },
+    {
+      "id": 3653129512,
+      "body": "On hosting platforms, the organization is the account that owns the content rather than the platform. Editorial and paper URLs carry no account, so they should infer nothing. Please infer the organization from `urls[0]` using these host and path rules.\n\n```suggestion\n    parsed = urlparse(urls[0])\n    host = (parsed.hostname or '').removeprefix('www.')\n    path_parts = [part for part in parsed.path.split('/') if part]\n    if host in {'x.com', 'twitter.com'} and path_parts:\n        return normalize_slug(path_parts[0])\n\n    # On hosting platforms the organization is the account that owns the\n    # content, not the platform, so read it from the URL instead of the\n    # domain. Editorial and paper URLs carry no account, so infer nothing.\n    if host in {'github.com', 'gist.github.com', 'raw.githubusercontent.com'}:\n        return normalize_slug(path_parts[0]) if path_parts else None\n    if host == 'huggingface.co':\n        if not path_parts or path_parts[0] in {\n            'blog',\n            'papers',\n            'posts',\n            'collections',\n            'docs',\n        }:\n            return None\n        if path_parts[0] in {'datasets', 'spaces'}:\n            if len(path_parts) > 1:\n                return normalize_slug(path_parts[1])\n            return None\n        return normalize_slug(path_parts[0])\n    if host.endswith('.github.io'):\n        owner = host.removesuffix('.github.io')\n        return normalize_slug(owner) if owner else None\n    if host == 'arxiv.org':\n        return None\n```"
+    },
+    {
+      "id": 3677101235,
+      "body": "**[medium] repeat runs** — Reusing an output directory creates duplicate logical evaluations\n\n`save_evaluation_log()` creates a new UUID filename on every call, and instance mode creates another full sidecar. Stable `evaluation_id` values therefore do not make filesystem output idempotent. Please replace an adapter-owned aggregate and sidecar as one set, using a fresh sidecar write because append mode would duplicate its rows."
+    },
+    {
+      "id": 3677104436,
+      "body": "**[medium] duplicate variants** — Explicit-file validation cannot see compressed siblings\n\n`expand_paths()` returns only the named file, and this call checks only that limited list. When the caller names only `abc.json`, `abc.json.gz` can therefore escape the one-variant rule. Please make collision discovery inspect same-parent, same-stem variants while keeping payload validation limited to the requested files."
+    },
+    {
+      "id": 3677218975,
+      "body": "**[high] schema versioning** — New instance records keep `instance_level_eval_0.2.2`, although the existing 0.2.2 model rejects `modality` and null `is_correct`. The old aggregate model also discards the new modality under its unchanged identifier.\n\nThe extension is well scoped. Please move its schema copies, emitters, models, fixtures, tests, and current-version documentation to new identifiers together."
+    },
+    {
+      "id": 3677354603,
+      "body": "**[medium] error handling** — A handled fetch, conversion, or write failure reaches the final `Done!` message and exits with status 0. Automation can therefore treat a partial dataset as complete.\n\nPlease feed the success and failure outcomes into a final status that `__main__` propagates if this entry point keeps independent work. Delegation may instead remove this duplicate path."
+    },
+    {
+      "id": 3677461204,
+      "body": "**[medium] error isolation** — Pydantic `ValidationError` is outside this catch tuple. One malformed benchmark can therefore stop every later target instead of joining the final partial-run report.\n\nPlease catch `ValidationError` inside the per-benchmark boundary so the adapter continues with later work."
+    },
+    {
+      "id": 3677564751,
+      "body": "**[medium] score validation** — Supported replay input can emit values outside the source contract\n\n`float()` accepts booleans, NaN, infinity, Pass^k values outside 0–100, and negative costs. Current official submissions are valid, but local replay and custom sources can reach this path.\n\n**Requested actions**\n\n- Reject booleans before numeric conversion.\n- Require Pass metrics to be finite and within the inclusive 0–100 range.\n- Require costs to be finite and non-negative."
+    },
+    {
+      "id": 3677669726,
+      "body": "**[medium] Pydantic schema** — The serialization schema excludes emitted sentinel strings\n\nThis serializer has no declared output union. Pydantic therefore describes each bound as a number or null, although `model_dump_json()` can emit `\"Infinity\"` or `\"-Infinity\"`. Please give each bound an accurate serialization contract covering finite numbers, null, and its field-valid sentinel."
+    },
+    {
+      "id": 3677713059,
+      "body": "**[medium] snapshot provenance** — One export can combine files from different revisions\n\nMetadata and the three CSVs are read separately from mutable `main`. Metadata errors become an empty object, after which the adapter uses the current time and omits its promised version anchor. Please resolve one Hugging Face dataset revision and pin every live read to it. The dataset revision and manifest `source_git_commit` can remain separate provenance fields."
+    },
+    {
+      "id": 3699205371,
+      "body": "`re.IGNORECASE` makes this path rule wider than the case-sensitive pairing logic: `_aggregate_repo_path_for_samples` uses `endswith('_samples.jsonl')`, and the sibling probe builds a lowercase path. As verified, `<uuid>_Samples.jsonl` passes `check_path_structure`, while `check_instance_companion` returns no errors. The file therefore needs no sibling aggregate, and no aggregate has to declare it. Publishers emit only lowercase names, so the wider match provides no valid behavior. A mixed-case `.JSON` suffix is already handled safely because it later fails with `unsupported_extension`. Please drop `re.IGNORECASE` to close the companion-rule hole and make the two paths consistent."
+    }
+  ]
+}

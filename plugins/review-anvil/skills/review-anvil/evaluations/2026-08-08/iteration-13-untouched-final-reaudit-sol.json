@@ -1,0 +1,213 @@
+{
+  "items": [
+    {
+      "id": 3525225568,
+      "status": "pass",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 2614980077,
+      "status": "pass",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 2614980178,
+      "status": "pass",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 2952666730,
+      "status": "fail",
+      "fact_losses": [
+        "Source: \"see `.pre-commit-config.yaml`\"; candidate: \"the repository's pre-commit hook\" omits the exact `.pre-commit-config.yaml` file identifier."
+      ],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 2952666872,
+      "status": "pass",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 3088978085,
+      "status": "fail",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": [
+        "Source: \"it should show something like \\\"--output_dir OUTPUT_DIR\\\"\" presents that rendering as an example; candidate: \"Show the option as `--output_dir OUTPUT_DIR`\" makes that exact rendering mandatory."
+      ]
+    },
+    {
+      "id": 3096650221,
+      "status": "pass",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 3102848524,
+      "status": "pass",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 3134292915,
+      "status": "pass",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 3153765816,
+      "status": "pass",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 3161743720,
+      "status": "pass",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 3161807141,
+      "status": "pass",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 3493867085,
+      "status": "fail",
+      "fact_losses": [
+        "Source: \"orjson is a bit opinionated\"; candidate: \"`orjson` is fast but opinionated\" drops the degree qualifier \"a bit\".",
+        "Source: \"I've handled this in a few ways in the past\"; candidate: \"Similar approaches include\" removes the reviewer's firsthand, past-use attribution for the linked approaches."
+      ],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 3520340907,
+      "status": "pass",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 3652735574,
+      "status": "pass",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 3653129512,
+      "status": "pass",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 3677101235,
+      "status": "pass",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 3677104436,
+      "status": "pass",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 3677218975,
+      "status": "pass",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 3677354603,
+      "status": "pass",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 3677461204,
+      "status": "pass",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 3677564751,
+      "status": "pass",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 3677669726,
+      "status": "pass",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 3677713059,
+      "status": "pass",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    },
+    {
+      "id": 3699205371,
+      "status": "pass",
+      "fact_losses": [],
+      "missing_author_work": [],
+      "false_actions": [],
+      "changed_action_boundaries": []
+    }
+  ],
+  "pass_count": 22,
+  "fail_count": 3
+}

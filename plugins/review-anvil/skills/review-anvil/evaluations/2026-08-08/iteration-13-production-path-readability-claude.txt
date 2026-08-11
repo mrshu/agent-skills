@@ -1,0 +1,164 @@
+```json
+{
+  "per_comment": [
+    {
+      "id": 3525225568,
+      "scores": {"A": {"defect_clarity": 3, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 5}, "B": {"defect_clarity": 2, "action_recall": 4, "scanability": 4, "naturalness": 3, "cognitive_ease": 3}},
+      "winner": "A",
+      "reason": "A states the requested change directly, while B buries it in \"I personally think it would make more sense to...\" and ends a non-question with a question mark, leaving the ask ambiguous."
+    },
+    {
+      "id": 2614980077,
+      "scores": {"A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}, "B": {"defect_clarity": 4, "action_recall": 5, "scanability": 4, "naturalness": 3, "cognitive_ease": 4}},
+      "winner": "B",
+      "reason": "B's suggestion block turns the wording fix into concrete, checkable work the author can see at a glance; A's slightly tighter prose does not offset that."
+    },
+    {
+      "id": 2614980178,
+      "scores": {"A": {"defect_clarity": 4, "action_recall": 3, "scanability": 3, "naturalness": 4, "cognitive_ease": 3}, "B": {"defect_clarity": 4, "action_recall": 5, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}},
+      "winner": "B",
+      "reason": "The ask is \"add a comment,\" and B supplies the exact comment text; A instead describes the required contents in a long clause the reader must reassemble into prose."
+    },
+    {
+      "id": 2952666730,
+      "scores": {"A": {"defect_clarity": 4, "action_recall": 4, "scanability": 3, "naturalness": 4, "cognitive_ease": 4}, "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 3, "naturalness": 4, "cognitive_ease": 4}},
+      "winner": "tie",
+      "reason": "Same three-part structure and same either/or remedy; B's `.pre-commit-config.yaml` pointer and A's \"Please either\" framing are minor offsetting gains."
+    },
+    {
+      "id": 2952666872,
+      "scores": {"A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}, "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}},
+      "winner": "tie",
+      "reason": "Near-identical wording; the only differences are quoting \"already patched\" and a parenthetical versus an \"or\" clause, neither of which changes what the author does."
+    },
+    {
+      "id": 3088978085,
+      "scores": {"A": {"defect_clarity": 4, "action_recall": 4, "scanability": 3, "naturalness": 4, "cognitive_ease": 4}, "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 3, "cognitive_ease": 4}},
+      "winner": "B",
+      "reason": "Two genuinely separate edits (table pipes, argument placeholder) become two independently checkable bullets in B, whereas A's suggestion block covers only the argument list and leaves the table fix in prose."
+    },
+    {
+      "id": 3096650221,
+      "scores": {"A": {"defect_clarity": 4, "action_recall": 5, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}, "B": {"defect_clarity": 4, "action_recall": 3, "scanability": 3, "naturalness": 4, "cognitive_ease": 3}},
+      "winner": "A",
+      "reason": "A gives the primary fix first and the `NOT NULL` escape hatch second; B leads with the conditional and defers the real instruction to a trailing \"Otherwise replace the loop...\"."
+    },
+    {
+      "id": 3102848524,
+      "scores": {"A": {"defect_clarity": 4, "action_recall": 5, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}, "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 3, "naturalness": 3, "cognitive_ease": 3}},
+      "winner": "A",
+      "reason": "A hands over the `with pytest.raises(Exception):` change as an applicable block, while B's em-dash interruption (\"the intent—unsupported-extension rejection—less clear\") adds parsing cost in a narrow pane."
+    },
+    {
+      "id": 3134292915,
+      "scores": {"A": {"defect_clarity": 4, "action_recall": 4, "scanability": 3, "naturalness": 4, "cognitive_ease": 4}, "B": {"defect_clarity": 4, "action_recall": 5, "scanability": 4, "naturalness": 3, "cognitive_ease": 4}},
+      "winner": "B",
+      "reason": "B shows the exact map entry (`\"qwen\": \"qwen\"`), making the one-line fix immediately visible; A's \"Please use `qwen` here\" leaves the author to locate and edit the mapping unaided."
+    },
+    {
+      "id": 3153765816,
+      "scores": {"A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}, "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 3, "naturalness": 4, "cognitive_ease": 4}},
+      "winner": "tie",
+      "reason": "Identical content; A's shorter sentences and B's single \"which\" clause plus \"Please\" trade off too evenly to matter to a busy author."
+    },
+    {
+      "id": 3161743720,
+      "scores": {"A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}, "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}},
+      "winner": "tie",
+      "reason": "The two versions are word-for-word identical, so no difference exists to judge."
+    },
+    {
+      "id": 3161807141,
+      "scores": {"A": {"defect_clarity": 5, "action_recall": 4, "scanability": 3, "naturalness": 3, "cognitive_ease": 3}, "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}},
+      "winner": "B",
+      "reason": "B's \"If yes, ignore this comment. If not, we should pass...\" resolves applicability in one read, whereas A's closing double negative (\"if this file is not meant to run only as a CLI script; if it is CLI-only...\") must be untangled."
+    },
+    {
+      "id": 3493867085,
+      "scores": {"A": {"defect_clarity": 3, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 4}, "B": {"defect_clarity": 3, "action_recall": 4, "scanability": 2, "naturalness": 3, "cognitive_ease": 2}},
+      "winner": "A",
+      "reason": "A introduces the pluggable reader idea before the `orjson` caveat and puts each reference link on its own labeled line; B raises `orjson` before the idea it qualifies and crams both long URLs into one sentence."
+    },
+    {
+      "id": 3520340907,
+      "scores": {"A": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}, "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 3, "naturalness": 4, "cognitive_ease": 4}},
+      "winner": "tie",
+      "reason": "Both raise the same path mismatch and branch concern and both ask only for confirmation; A's question-first framing and B's isolated closing ask are equally easy to act on."
+    },
+    {
+      "id": 3652735574,
+      "scores": {"A": {"defect_clarity": 3, "action_recall": 3, "scanability": 3, "naturalness": 4, "cognitive_ease": 3}, "B": {"defect_clarity": 3, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}},
+      "winner": "B",
+      "reason": "B separates the question from the conditional ask and says \"please keep the conventional key name\"; A's \"this could keep\" leaves both the agent and the referent of \"this\" for the reader to infer."
+    },
+    {
+      "id": 3653129512,
+      "scores": {"A": {"defect_clarity": 2, "action_recall": 4, "scanability": 3, "naturalness": 4, "cognitive_ease": 3}, "B": {"defect_clarity": 1, "action_recall": 2, "scanability": 2, "naturalness": 2, "cognitive_ease": 2}},
+      "winner": "A",
+      "reason": "A at least frames the change with \"Please update the URL account inference as follows\"; B is a bare code block with no sentence at all, so the reader must reverse-engineer both the problem and the request."
+    },
+    {
+      "id": 3677101235,
+      "scores": {"A": {"defect_clarity": 4, "action_recall": 5, "scanability": 3, "naturalness": 4, "cognitive_ease": 3}, "B": {"defect_clarity": 5, "action_recall": 3, "scanability": 4, "naturalness": 3, "cognitive_ease": 3}},
+      "winner": "A",
+      "reason": "A's \"Please replace the adapter-owned aggregate and sidecar as one set\" names an owner and an obligation; B's agentless \"An adapter-owned aggregate and sidecar can be replaced\" reads as optional despite its useful headline."
+    },
+    {
+      "id": 3677104436,
+      "scores": {"A": {"defect_clarity": 4, "action_recall": 5, "scanability": 3, "naturalness": 4, "cognitive_ease": 4}, "B": {"defect_clarity": 5, "action_recall": 3, "scanability": 4, "naturalness": 3, "cognitive_ease": 3}},
+      "winner": "A",
+      "reason": "B's headline helps, but its remedy (\"Collision discovery can inspect...\") states a possibility rather than a request; A's \"Please inspect same-parent, same-stem variants\" is what the author must remember."
+    },
+    {
+      "id": 3677218975,
+      "scores": {"A": {"defect_clarity": 4, "action_recall": 5, "scanability": 3, "naturalness": 4, "cognitive_ease": 4}, "B": {"defect_clarity": 4, "action_recall": 3, "scanability": 4, "naturalness": 3, "cognitive_ease": 3}},
+      "winner": "A",
+      "reason": "The long list of artifacts to renumber needs an explicit imperative; A gives \"Please move its schema copies, emitters, models...\", while B's semicolon plus \"can move\" hides the obligation."
+    },
+    {
+      "id": 3677354603,
+      "scores": {"A": {"defect_clarity": 4, "action_recall": 3, "scanability": 4, "naturalness": 3, "cognitive_ease": 4}, "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 3, "naturalness": 4, "cognitive_ease": 3}},
+      "winner": "tie",
+      "reason": "A's condition-first paragraph is easier to parse but hedged (\"both outcomes can feed\"), while B says \"Please feed\" yet trails the condition after a long clause; the gains cancel."
+    },
+    {
+      "id": 3677461204,
+      "scores": {"A": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}, "B": {"defect_clarity": 5, "action_recall": 3, "scanability": 4, "naturalness": 3, "cognitive_ease": 4}},
+      "winner": "A",
+      "reason": "In a comment this short the paragraph break buys B nothing, and \"That error can stay inside the per-benchmark boundary\" is weaker and more stilted than A's \"Please keep that error inside...\"."
+    },
+    {
+      "id": 3677564751,
+      "scores": {"A": {"defect_clarity": 4, "action_recall": 5, "scanability": 3, "naturalness": 4, "cognitive_ease": 3}, "B": {"defect_clarity": 4, "action_recall": 3, "scanability": 4, "naturalness": 3, "cognitive_ease": 4}},
+      "winner": "A",
+      "reason": "Both open with the same defect sentence, but A ends with an explicit validation requirement; B's \"Pass metrics can use... Cost can use...\" describes options rather than the work being asked for."
+    },
+    {
+      "id": 3677669726,
+      "scores": {"A": {"defect_clarity": 4, "action_recall": 5, "scanability": 3, "naturalness": 4, "cognitive_ease": 4}, "B": {"defect_clarity": 4, "action_recall": 3, "scanability": 4, "naturalness": 2, "cognitive_ease": 3}},
+      "winner": "A",
+      "reason": "B's closing \"Each bound can expose an accurate serialization contract\" makes the bound the actor, which is stilted and vague; A's \"Please expose an accurate serialization contract for each bound\" is directly actionable."
+    },
+    {
+      "id": 3677713059,
+      "scores": {"A": {"defect_clarity": 4, "action_recall": 5, "scanability": 3, "naturalness": 4, "cognitive_ease": 3}, "B": {"defect_clarity": 5, "action_recall": 3, "scanability": 4, "naturalness": 3, "cognitive_ease": 4}},
+      "winner": "tie",
+      "reason": "B's headline and chunked evidence read faster, but A's \"Please resolve one Hugging Face dataset revision and use it to pin every live read\" is the clearer obligation; the advantages offset."
+    },
+    {
+      "id": 3699205371,
+      "scores": {"A": {"defect_clarity": 4, "action_recall": 3, "scanability": 2, "naturalness": 3, "cognitive_ease": 2}, "B": {"defect_clarity": 4, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}},
+      "winner": "B",
+      "reason": "A ends with one sentence stacking the ask and three justifications joined by a semicolon, \"because\", and \"so\"; B splits evidence from rationale and demotes the `.JSON` aside to a parenthetical, despite its trailing generated-by footer."
+    }
+  ],
+  "winner_counts": {"A": 11, "B": 7, "tie": 7},
+  "mean_scores": {
+    "A": {"defect_clarity": 3.92, "action_recall": 4.24, "scanability": 3.44, "naturalness": 3.92, "cognitive_ease": 3.68},
+    "B": {"defect_clarity": 3.92, "action_recall": 3.72, "scanability": 3.72, "naturalness": 3.36, "cognitive_ease": 3.56}
+  },
+  "overall_ranking": ["A", "B"],
+  "recommended_version": "A",
+  "summary": "A wins more rows mainly on action recall: it consistently names an agent and an obligation (\"Please replace...\", \"Please keep...\") where B states the same remedy as a possibility (\"can be replaced\", \"can stay\"), which a busy author reads as optional. B is the better version where it adds an applicable suggestion block, splits two distinct edits into separately checkable bullets, or breaks a single overlong sentence into idea-at-a-time paragraphs, and it scores slightly higher on scanability overall. Where B's only change is a summary headline plus permission-voice remedy, the scanning gain does not compensate for the lost instruction."
+}
+```

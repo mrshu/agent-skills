@@ -1,0 +1,1079 @@
+{
+  "items": [
+    {
+      "id": 3737042592,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Source predicate \"Mismatched source and `collection_override` tests would cover this path.\" is source-backed test work covering the required rejection boundary, but candidate A leaves it as the modal sentence \"Mismatched source and `collection_override` tests would cover this path.\" with no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3737044354,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Source predicate \"A mid-write failure test across several routes would cover this path.\" is source-backed test work for the retention requirement, but candidate B keeps only that modal sentence and issues no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3737044361,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3737044371,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3737053181,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3737053197,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3737053204,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3737181823,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3737266652,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3737266656,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3737266661,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3737291965,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Source predicate \"Tests for both directory-symlink inputs and an accepted file symlink would cover the boundary.\" is source-backed test work covering the required rejection boundary, but candidate B keeps only that modal sentence and issues no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3737383919,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [
+            "Candidate B bullet \"Add a no-match check; it can stop before existing-output discovery or publication.\" is a direct request derived only from the permitted-implementation boundary \"A no-match check can stop before existing-output discovery or publication.\"; the source scopes required work to \"Please require one or more values to block the first path.\""
+          ],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3737383922,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3737449039,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3737449052,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3737449059,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3737449070,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [
+            "Candidate A bullet \"Preserve valid metrics.\" is a direct request derived only from the subordinate boundary clause in \"Unresolved keys can be reported after the valid metrics are preserved.\", which candidate A also restates as a boundary."
+          ],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3737449081,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3737449090,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3737449098,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3737449101,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Source predicate \"Tests with provider-prefixed key names would cover the reachable path without recording secret values.\" is source-backed test work covering the required sanitizer path, but candidate A keeps only that modal sentence and issues no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725747243,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"A stable source-run timestamp or deterministic token can keep the required ID shape\" remains only as that modal sentence in candidate B; no direct request asks the author to use a stable source-run timestamp or deterministic token."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725747244,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"A task-level error boundary can preserve valid logs and account for each rejected task.\" remains only as that modal sentence in candidate A; no direct request asks the author to add the task-level error boundary."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725747245,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior inside \"The sound aggregate conversion can remain intact if `llm_scoring` is emitted only when the real template is available.\" — emitting `llm_scoring` only when the real template is available — stays only in that conditional modal sentence in candidate A, with no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725776269,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Source predicate \"A note that the nearest `data` ancestor wins, plus this repeated-`data` example, would make the placement limit clear.\" is documentation work making a required boundary clear, but candidate B keeps only that modal sentence and issues no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725827216,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"Identity comparison can stop whenever `check_path_structure` already owns a path error.\" remains only as that modal sentence in candidate B; no direct request asks the author to stop identity comparison in that case."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725830951,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Required documentation work \"A short section can state the alias trigger, warning-only result, and single-record evidence limit.\" (required by repository instructions naming `.claude/skills/eee-dataset-conversion/reference/datastore-gate.md`) remains only as that modal sentence in candidate B, with no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725853148,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"Network-mode refs can resolve once to a commit SHA.\" remains only as that modal sentence in candidate A; no direct request asks the author to resolve network-mode refs once to a commit SHA."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725853152,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"The module entry point can use the shared parser\" remains only as modal prose in candidate B, with no direct request.",
+            "Source-backed test work \"with one offline entry-point test covering its defaults\" remains only as modal prose in candidate B, with no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725853155,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"Numeric fields can validate as finite values under their metric rules before result construction.\" remains only as that modal sentence in candidate A, with no direct request.",
+            "Target behavior \"Invalid rows can enter `SourceConversionResult`.\" remains only as that modal sentence in candidate A, with no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725853159,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"New snapshots can store pinned prompt content.\" remains only as that modal sentence in candidate B, with no direct request.",
+            "Target behavior \"Legacy snapshots can leave this typed value unset and mark the missing content.\" remains only as that modal sentence in candidate B, with no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725853163,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"Live mode can query present-null entries\" remains only as modal prose in candidate B; no direct request asks the author to query present-null entries in live mode."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725853168,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"Exact canonical IDs can win first.\" remains only as that modal sentence in candidate A, with no direct request.",
+            "Target behavior \"Normalized spellings can resolve only when one organization owns them.\" remains only as that modal sentence in candidate A, with no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725913004,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"Complete output can stage before publication.\" remains only as that modal sentence in candidate A, with no direct request.",
+            "Target behavior \"Existing logical output can be rejected until replacement is atomic\" remains only as modal prose in candidate A, with no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"Existing logical output can be rejected until replacement is atomic\" is left in candidate B as the modal clause \"Existing logical output can be rejected until replacement is atomic\"; only the staging predicate becomes a direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725913007,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"Smoke output can use the required `data/<collection>` path\" remains only as modal prose in candidate B, with no direct request.",
+            "Target behavior \"validation can receive a quoted fixed-depth file glob\" remains only as modal prose in candidate B, with no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725913013,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"Invalid scores can enter the failure report.\" remains only as that modal sentence in candidate B, with no direct request.",
+            "Target behavior \"Incomplete token usage can be omitted, with token means based only on complete values.\" remains only as that modal sentence in candidate B, with no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725913015,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"`accuracy` can remain the metric ID while `evaluation_name` distinguishes tasks.\" remains only as that modal sentence in candidate A, with no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725913021,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"The option can require at least one path.\" remains only as that modal sentence in candidate A, with no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725972277,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"Current main can be integrated before moving the adapter and references under `every_eval_ever/adapters/open_medical_llm`.\" remains only as that modal sentence in candidate A, with no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725972282,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"The expected value can come from the imported schema version.\" remains only as that modal sentence in candidate B, with no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725972285,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"`accuracy` can remain the metric ID while task-specific evaluation names preserve benchmark identity.\" remains only as that modal sentence in candidate A, with no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725972287,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"The collection target can reject existing output JSON before UUID generation or batch publication.\" remains only as that modal sentence in candidate A, with no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3726043665,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"New or empty targets can use the batch publisher.\" remains only as that modal sentence in candidate A, with no direct request.",
+            "Safety target behavior \"Symlinks, roots, and populated targets can fail by default until replacement has an explicit ownership manifest.\" remains only as that modal sentence in candidate A, with no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3726043671,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"Metric cells can be the source unit. Each attempted or rejected cell can count once\" remains only as modal prose in candidate A, with no direct request.",
+            "Target behavior \"while malformed objects and missing datasets retain row references\" remains only as modal prose in candidate A, with no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3726043679,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"Tolerance can support scale classification only.\" remains only as that modal sentence in candidate A, with no direct request.",
+            "Target behavior \"A strict pre-publication check can reject unproven overruns.\" remains only as that modal sentence in candidate A, with no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3726043682,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Target behavior \"A unit can be set only when the canonical contract or an explicit conversion proves it.\" remains only as that modal sentence in candidate A, with no direct request.",
+            "Target behavior \"Otherwise it can stay unset\" remains only as modal prose in candidate A, with no direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    }
+  ],
+  "counts": {
+    "A": {
+      "fact_safe": 47,
+      "action_locked": 29,
+      "both": 29
+    },
+    "B": {
+      "fact_safe": 47,
+      "action_locked": 33,
+      "both": 33
+    }
+  },
+  "summary": "No candidate on either side dropped or altered a material source predicate: identifiers, numbers, triggers, conditions, quantifiers, diagnostic certainty, and stated valid behavior were preserved in all 47 rows, so fact status is safe throughout. Action status separates the sides: pass-through candidates that leave remediation or required tests in modal prose (\"can\", \"would cover\") failed to render author work as direct requests, accounting for 18 unlocked A rows and 14 unlocked B rows, and row 3725913004 is unlocked on both sides because the required rejection of existing logical output stays modal in each. Two rows failed in the opposite direction by manufacturing requests from no-change boundaries: candidate B on 3737383919 (\"Add a no-match check\") and candidate A on 3737449070 (\"Preserve valid metrics.\")."
+}

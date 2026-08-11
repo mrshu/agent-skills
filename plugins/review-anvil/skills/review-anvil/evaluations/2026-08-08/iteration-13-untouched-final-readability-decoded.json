@@ -1,0 +1,110 @@
+{
+  "artifact_scope": "Two-renderer, three-whole-comment-auditor selection artifact; not the production one-renderer/two-action-auditor path.",
+  "corpus": {
+    "count": 25,
+    "changed_rewrites": 21,
+    "exact_source_fallbacks": 4,
+    "repositories": [
+      "dotnet/sign",
+      "evaleval/every_eval_ever"
+    ]
+  },
+  "judges": {
+    "claude": {
+      "winner_counts": {
+        "selected": 9,
+        "baseline": 5,
+        "tie": 11
+      },
+      "mean_scores": {
+        "selected": {
+          "defect_clarity": 3.96,
+          "action_recall": 4.16,
+          "scanability": 3.56,
+          "naturalness": 3.8,
+          "cognitive_ease": 3.8
+        },
+        "baseline": {
+          "defect_clarity": 3.8,
+          "action_recall": 3.64,
+          "scanability": 3.84,
+          "naturalness": 3.68,
+          "cognitive_ease": 3.84
+        }
+      }
+    },
+    "sol": {
+      "winner_counts": {
+        "selected": 10,
+        "baseline": 3,
+        "tie": 12
+      },
+      "mean_scores": {
+        "selected": {
+          "defect_clarity": 4.72,
+          "action_recall": 4.64,
+          "scanability": 3.8,
+          "naturalness": 4.44,
+          "cognitive_ease": 4.32
+        },
+        "baseline": {
+          "defect_clarity": 4.48,
+          "action_recall": 4.24,
+          "scanability": 4.16,
+          "naturalness": 4.0,
+          "cognitive_ease": 4.32
+        }
+      }
+    },
+    "terra": {
+      "winner_counts": {
+        "selected": 13,
+        "baseline": 4,
+        "tie": 8
+      },
+      "mean_scores": {
+        "selected": {
+          "defect_clarity": 4.72,
+          "action_recall": 4.64,
+          "scanability": 3.64,
+          "naturalness": 4.28,
+          "cognitive_ease": 4.04
+        },
+        "baseline": {
+          "defect_clarity": 4.4,
+          "action_recall": 3.92,
+          "scanability": 4.0,
+          "naturalness": 4.04,
+          "cognitive_ease": 4.32
+        }
+      }
+    }
+  },
+  "aggregate_winner_counts": {
+    "selected": 32,
+    "baseline": 12,
+    "tie": 31
+  },
+  "changed_rows_only": {
+    "selected": 32,
+    "baseline": 12,
+    "tie": 19
+  },
+  "aggregate_mean_scores": {
+    "selected": {
+      "defect_clarity": 4.467,
+      "action_recall": 4.48,
+      "scanability": 3.667,
+      "naturalness": 4.173,
+      "cognitive_ease": 4.053
+    },
+    "baseline": {
+      "defect_clarity": 4.227,
+      "action_recall": 3.933,
+      "scanability": 4.0,
+      "naturalness": 3.907,
+      "cognitive_ease": 4.16
+    }
+  },
+  "decision": "The selected artifact wins 32-12 with 31 ties. It improves defect clarity, action recall, and naturalness, but loses average scanability and cognitive ease on this mixed human/Copilot corpus. Keep this separate from production-path validation."
+}

@@ -1,0 +1,572 @@
+{
+  "items": [
+    {
+      "id": 3525225568,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "loss",
+          "action_status": "locked",
+          "fact_losses": [
+            "Source: \"I personally think it would make more sense to make it a specific option for this command\" — B states only \"Please make this a specific option for this command and execute it after this handle command.\" and omits the reviewer's personal-opinion framing and rationale, raising the stated certainty of the recommendation."
+          ],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 2614980077,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 2614980178,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "loss",
+          "action_status": "unlocked",
+          "fact_losses": [
+            "Source: \"(likely for debugging or workflow clarity purposes)\" — B asserts \"this aids debugging and workflow clarity\" without the hedge \"likely\", raising the stated certainty of the reason."
+          ],
+          "missing_author_work": [],
+          "false_actions": [
+            "Source prose requests only \"consider adding a comment explaining why an empty manifest is still created\"; B adds the separate action bullet \"Add `print(\\\"No changes detected, nothing to upload\\\")`\", turning a context line of the suggestion block into requested author work."
+          ],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 2952666730,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": [
+            "Source: \"or clarify in this section that `validate.py` is an optional/manual (or separate CI) validator\" — A writes \"or clarify that `validate.py` is an optional, manual, or separate-CI validator\", dropping the \"in this section\" scope of the documentation change."
+          ]
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 2952666872,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3088978085,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": [
+            "Source: \"The metrics table markup has extra leading pipes (\\\"|| Metric\\\")\" and \"Please fix the table\" — B's action bullet \"Fix the metrics table markup by removing the extra leading pipe\" narrows the plural quantifier to a single pipe, changing the extent of the requested fix."
+          ]
+        }
+      }
+    },
+    {
+      "id": 3096650221,
+      "candidates": {
+        "A": {
+          "fact_status": "loss",
+          "action_status": "locked",
+          "fact_losses": [
+            "Source: \"For each URL you run a `DESCRIBE` then an `INSERT ... SELECT`.\" — A adds \"creating the N+1 loading path and a possible bottleneck\", a severity/consequence claim the source never makes."
+          ],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3102848524,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": [
+            "Source: \"or (longer-term) updating `expand_paths` to raise a distinct exception/message for unsupported extensions\" — A writes \"or update `expand_paths` to raise a distinct exception/message\", dropping the \"(longer-term)\" qualifier that bounds the second alternative."
+          ]
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3134292915,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "loss",
+          "action_status": "locked",
+          "fact_losses": [
+            "Source: \"other adapters in this repo use `qwen` as the developer slug (e.g. `utils/arc_agi/adapter.py` and `utils/sciarena/adapter.py`)\" — B writes \"while `utils/arc_agi/adapter.py` and `utils/sciarena/adapter.py` use `qwen` as the developer slug\", dropping the non-exhaustive quantifier \"other adapters in this repo (e.g. ...)\" and narrowing the inconsistency to two files.",
+            "Source: \"This will make HAL exports inconsistent with the rest of the dataset\" — B writes \"HAL exports can therefore differ from the rest of the dataset\", weakening a stated certainty into a possibility."
+          ],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3153765816,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3161743720,
+      "candidates": {
+        "A": {
+          "fact_status": "loss",
+          "action_status": "locked",
+          "fact_losses": [
+            "Source: \"nit: could we build this title and filename ...\" — A drops the \"nit\" severity marker, presenting a nit-level suggestion at full severity.",
+            "Source: \"could we build this title and filename (line 448) from `top_n`\" — A omits the \"(line 448)\" location that identifies where the filename is built."
+          ],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "loss",
+          "action_status": "locked",
+          "fact_losses": [
+            "Source: \"nit: could we build this title and filename ...\" — B drops the \"nit\" severity marker, presenting a nit-level suggestion at full severity."
+          ],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3161807141,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3493867085,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Source: \"It may be worth it to abstract the specific json reader / writer so the stdlib json is always an option, but you can opt-in to something like `orjson` or `ujson`\" — B leaves this target behavior in modal prose as \"An optional follow-up is to abstract the specific JSON reader/writer\", labeling it optional though the source never marks it optional, so no direct request is made."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3520340907,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3652735574,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "Source: \"If the walk is fixed to skip `additional_details` ..., this could keep the conventional key name.\" — A leaves this conditional target behavior in modal prose (\"the conventional key name could be kept\") instead of stating it as a direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3653129512,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": [
+            "Source is a ```suggestion block whose lines are indented four spaces (\"    parsed = urlparse(urls[0])\" through \"        return None\") — A re-emits the code as a dedented ```python block, so the exact suggested code and its directly applicable suggestion form are altered."
+          ]
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3677101235,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3677104436,
+      "candidates": {
+        "A": {
+          "fact_status": "loss",
+          "action_status": "locked",
+          "fact_losses": [
+            "Source headline: \"Explicit-file validation cannot see compressed siblings\" — A omits it entirely, leaving only the `abc.json` / `abc.json.gz` instance and narrowing the stated scope of the defect from explicit-file validation generally to the single example."
+          ],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3677218975,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3677354603,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3677461204,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3677564751,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3677669726,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3677713059,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3699205371,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    }
+  ],
+  "counts": {
+    "A": {
+      "fact_safe": 22,
+      "action_locked": 21,
+      "both": 18
+    },
+    "B": {
+      "fact_safe": 21,
+      "action_locked": 22,
+      "both": 19
+    }
+  },
+  "summary": "Both arms preserve most source predicates on the structured audit-style comments, and their failures cluster on short conversational sources with hedges, qualifiers, and suggestion blocks. A's characteristic failures are dropped action qualifiers and scopes (\"in this section\", \"(longer-term)\", the indented suggestion block) plus one invented severity claim, while B's are dropped certainty and quantifier markers (\"likely\", \"I personally think\", \"other adapters in this repo\", \"will make\") and two boundary errors: a suggestion-block context line promoted to a requested action and a hedged improvement relabeled as an optional follow-up. Net counts are close: A 22 fact-safe / 21 action-locked / 18 both, B 21 / 22 / 19."
+}

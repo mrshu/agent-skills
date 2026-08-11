@@ -1,0 +1,151 @@
+{
+  "items": [
+    {
+      "id": 3525225568,
+      "fact_status": "loss",
+      "fact_losses": [
+        "Source: \"I personally think it would make more sense to make it a specific option for this command\". Candidate: \"Please make this a specific option for this command\" omits the speaker's personal assessment and the rationale that the option would make more sense."
+      ]
+    },
+    {
+      "id": 2614980077,
+      "fact_status": "loss",
+      "fact_losses": [
+        "Source: \"print(f\\\"No new rows to add, keeping existing {len(existing_df)} row(s)\\\")\". Candidate: \"`No new rows to add, keeping existing X row(s)`\" omits the concrete `len(existing_df)` expression from the suggested implementation."
+      ]
+    },
+    {
+      "id": 2614980178,
+      "fact_status": "loss",
+      "fact_losses": [
+        "Source: \"print(\\\"No changes detected, nothing to upload\\\")\". Candidate: \"Please add a comment explaining why the empty manifest is still created\" omits this concrete output statement from the suggested implementation.",
+        "Source: \"Always create and write an (empty) manifest file, even when there are no changes.\" Candidate: \"the reason for always creating the empty manifest\" omits the explicit write action."
+      ]
+    },
+    {
+      "id": 2952666730,
+      "fact_status": "loss",
+      "fact_losses": [
+        "Source: \"(see `.pre-commit-config.yaml`)\". Candidate: \"the repository's pre-commit hook still runs `utils/validate_data.py`\" omits the `.pre-commit-config.yaml` locator."
+      ]
+    },
+    {
+      "id": 2952666872,
+      "fact_status": "safe",
+      "fact_losses": []
+    },
+    {
+      "id": 3088978085,
+      "fact_status": "loss",
+      "fact_losses": [
+        "Source: \"--version {v1,v2}            Which leaderboard to convert. Omit to convert both (default).\" Candidate: \"Update the sample argument list to show `--output_dir OUTPUT_DIR`.\" omits the `--version` option, its `{v1,v2}` values, its purpose, and the accepted default behavior of converting both when omitted.",
+        "Source: \"--output_dir OUTPUT_DIR      Base output directory (default: data).\" Candidate: \"show `--output_dir OUTPUT_DIR`\" omits that this is the base output directory and that its default is `data`."
+      ]
+    },
+    {
+      "id": 3096650221,
+      "fact_status": "safe",
+      "fact_losses": []
+    },
+    {
+      "id": 3102848524,
+      "fact_status": "loss",
+      "fact_losses": [
+        "Source: \"That message is a bit misleading for an existing-but-unsupported file, and matching on it makes the intent (unsupported extension rejection) less clear.\" Candidate: \"That message is misleading for an existing-but-unsupported file and makes the intent—unsupported-extension rejection—less clear.\" strengthens \"a bit misleading\" to \"misleading\" and changes the cause of the unclear intent from matching on the message to the message itself.",
+        "Source: \"(longer-term) updating `expand_paths` to raise a distinct exception/message for unsupported extensions.\" Candidate: \"or update `expand_paths` to raise a distinct exception/message for unsupported extensions\" omits the longer-term qualifier."
+      ]
+    },
+    {
+      "id": 3134292915,
+      "fact_status": "safe",
+      "fact_losses": []
+    },
+    {
+      "id": 3153765816,
+      "fact_status": "safe",
+      "fact_losses": []
+    },
+    {
+      "id": 3161743720,
+      "fact_status": "safe",
+      "fact_losses": []
+    },
+    {
+      "id": 3161807141,
+      "fact_status": "safe",
+      "fact_losses": []
+    },
+    {
+      "id": 3493867085,
+      "fact_status": "loss",
+      "fact_losses": [
+        "Source: \"orjson is a bit opinionated.\" Candidate: \"`orjson` is fast but opinionated\" omits the degree qualifier \"a bit\".",
+        "Source: \"I've handled this in a few ways in the past: simple wrappers\" and \"And module level globals\". Candidate: \"Similar approaches include simple wrappers\" and \"module-level globals\" omits the speaker's actor relationship and the fact that the linked approaches were ways the speaker had used in the past."
+      ]
+    },
+    {
+      "id": 3520340907,
+      "fact_status": "safe",
+      "fact_losses": []
+    },
+    {
+      "id": 3652735574,
+      "fact_status": "safe",
+      "fact_losses": []
+    },
+    {
+      "id": 3653129512,
+      "fact_status": "safe",
+      "fact_losses": []
+    },
+    {
+      "id": 3677101235,
+      "fact_status": "safe",
+      "fact_losses": []
+    },
+    {
+      "id": 3677104436,
+      "fact_status": "safe",
+      "fact_losses": []
+    },
+    {
+      "id": 3677218975,
+      "fact_status": "safe",
+      "fact_losses": []
+    },
+    {
+      "id": 3677354603,
+      "fact_status": "safe",
+      "fact_losses": []
+    },
+    {
+      "id": 3677461204,
+      "fact_status": "safe",
+      "fact_losses": []
+    },
+    {
+      "id": 3677564751,
+      "fact_status": "safe",
+      "fact_losses": []
+    },
+    {
+      "id": 3677669726,
+      "fact_status": "safe",
+      "fact_losses": []
+    },
+    {
+      "id": 3677713059,
+      "fact_status": "safe",
+      "fact_losses": []
+    },
+    {
+      "id": 3699205371,
+      "fact_status": "loss",
+      "fact_losses": [
+        "Source: \"Generated by [Claude Code](https://claude.ai/code)\". Candidate ends with \"lowercasing the rule set makes the two paths consistent\" and omits both the Claude Code attribution and the `https://claude.ai/code` URL."
+      ]
+    }
+  ],
+  "fact_safe_count": 17,
+  "fact_loss_count": 8
+}

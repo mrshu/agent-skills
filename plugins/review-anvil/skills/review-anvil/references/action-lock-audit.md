@@ -9,23 +9,30 @@ hiding author work, inventing work, or changing a requested boundary.
 Before drafting, freeze the exact requested-work prose from each accepted
 synthesized finding. Include its permissions, accepted current behavior,
 exceptions, tests, documentation, purpose clauses, and safety clauses. Also
-freeze the minimum source context needed to resolve pronouns, identifiers, and
-whether a predicate describes current or target behavior.
+freeze the exact source title and diagnosis plus the
+exact evidence and code fragments that the body may retain. Include source
+suggestions. Do not give the auditors unrelated repository or report context.
 
-Build one audit row per inline body:
+Build one audit row per inline body. Convert each finding ID to a canonical
+opaque string before dispatch.
+If an original ID contains only digits, prefix it with `AUDIT:`.
 
 ```json
 {
   "id": "RAV-RUN3-R1-F001",
-  "source_context": "<exact title and diagnostic prose>",
+  "source_context": "<exact source material used by the rendered body>",
   "source_requested_work": "<exact frozen source prose>",
-  "rendered_requested_work": "<request and boundary prose from the draft>"
+  "rendered_body": "<exact complete inline body>"
 }
 ```
 
+Do not extract or summarize a request-only subset.
+The auditors need the whole rendered body.
+
 Use `source_context` only to resolve antecedents and current-versus-target
-status. Do not derive new work from it. Do not include unrelated evidence or
-report sections. Return every input ID exactly once.
+status, and to confirm source support for rendered evidence or code.
+Do not derive new work from it. Return every input ID exactly once.
+Each ID is the canonical string.
 
 ## Independent auditor prompt
 
@@ -34,7 +41,12 @@ auditor may have rendered the comments. Use different model families when the
 runtime permits it. Give them only these rules and the audit rows. The auditors
 must not inspect or edit the repository.
 
-Compare source meaning with rendered obligation status. Do not classify by modal grammar.
+Copy each input ID verbatim into the output. Treat IDs as opaque JSON strings;
+never parse, normalize, or reformat them.
+Return exactly one item for every input ID, no unknown or duplicate IDs.
+
+Compare source meaning with rendered obligation status.
+Do not classify by modal grammar.
 
 For each source predicate:
 
@@ -51,14 +63,23 @@ For each source predicate:
    draft that leaves it only in modal prose.
 6. Reject every action bullet or direct request derived only from a no-change
    boundary.
-7. Preserve the action target, condition, scope, quantifier, order, modality,
-   exact test boundary, and exact path or identifier.
+7. Map every semantic predicate in the complete `rendered_body` back to a
+   source predicate, regardless of grammar. This includes requested work,
+   author-facing questions, permissions, exceptions, no-change boundaries,
+   accepted behavior, optional follow-ups, evidence, and code-sketch behavior.
+   The required label and Markdown structure are not semantic predicates.
+8. Reject every unmatched rendered predicate. Record unmatched author work in
+   `false_actions` and every other source-free predicate in
+   `invented_predicates`. Keep `fact_losses` for source predicates that the
+   draft omits or changes. Preserve each matched action target, condition,
+   scope, quantifier, order, modality, exact test boundary, path, and
+   identifier.
 
-Before returning a verdict, build an internal predicate ledger for each item.
-Quote every source predicate, classify it, and point to its exact rendered
-phrase and obligation status. Split every mixed sentence before checking it.
-Return `pass` only when every ledger row is mapped correctly. Do not include
-the ledger in the output.
+Before returning a verdict, build source-to-rendered and rendered-to-source
+predicate ledgers for each item. Quote and classify every predicate in each
+direction, then point to its exact counterpart and obligation status. Split
+every mixed sentence before checking it. Return `pass` only when both ledgers
+are complete and mapped correctly. Do not include the ledgers in the output.
 
 Use source context to settle meaning before applying those rules:
 
@@ -98,6 +119,7 @@ Return valid, pretty-printed JSON only:
       "missing_author_work": [],
       "false_actions": [],
       "fact_losses": [],
+      "invented_predicates": [],
       "repair_instructions": []
     }
   ],
@@ -106,22 +128,32 @@ Return valid, pretty-printed JSON only:
 }
 ```
 
-Use `pass` only when all three issue arrays are empty. Name the exact source
-predicate and rendered phrase in every failure. Never rewrite a comment.
+Use `pass` only when all four issue arrays are empty. Name the exact source or
+rendered predicate and its counterpart in every failure.
+Never rewrite a comment.
+Use `false_actions` for source-free author work, `invented_predicates` for
+other source-free rendered predicates, and `fact_losses` only for omitted or
+changed source predicates.
 
-Validate each auditor independently before using its verdicts. It must return
-exactly one item for every input ID, no unknown or duplicate IDs, valid status
-and issue-array fields, and counts that match the items. A row passes only when
-both auditors return a valid `pass`. For valid failures, take the union of
-their issues and repair instructions. For every missing, duplicate, malformed,
-timed-out, or otherwise unverifiable row, restore the exact source
-requested-work prose without attempting a repair and force COMMENT.
+Validate returned items independently before using their verdicts. The auditor
+must return exactly one item for every input ID. For each input ID, accept a
+verdict only when exactly one item has the exact canonical string ID, valid
+status and all four issue-array fields, and internally consistent status. Do
+not coerce an ID's type or value. Unknown or malformed items and mismatched
+top-level counts are protocol errors, but they do not invalidate another
+unique, well-formed matching item. A well-formed matching row remains usable.
+A row passes only when both auditors return a valid `pass`. Union valid
+failures. For every missing, duplicate, malformed, timed-out, or otherwise
+unverifiable row, restore the exact source requested-work prose
+without attempting a repair and force COMMENT.
 
 ## Repair and fail-safe
 
-The renderer repairs only comments with a valid failed verdict. Apply each audit instruction without
-changing the title, diagnosis, evidence, severity, complete ID, or already
-passing requested-work predicates.
+The renderer repairs only comments with a valid failed verdict.
+Apply each audit instruction without changing source-backed title, diagnosis,
+evidence, severity, complete ID, or already passing requested-work predicates.
+Remove any source-free predicate named by `false_actions` or
+`invented_predicates`.
 
 After the semantic repair, reapply the inline-comment form: use one concise
 `Please` sentence for exactly one author obligation, or `**Requested actions**`
@@ -131,5 +163,11 @@ same validation and union rules.
 
 If either second-audit verdict fails or is unverifiable, restore the exact
 source requested-work prose for that comment and force the review event to
-COMMENT. Do not paraphrase the failed request section. A denser fact-safe
-request is better than a readable comment that changes what the author must do.
+COMMENT. Do not paraphrase the failed request section or add new prose. A
+denser source-verbatim request is better than a readable comment that changes
+what the author must do.
+
+The byte-identity rule applies to passed rewrites. Their `.inline.json` body
+must be byte-identical to the audited `rendered_body`; any later edit requires
+a new two-auditor wave. An exact-source fallback is exempt because it replaces
+the failed request with frozen source prose and forces COMMENT.

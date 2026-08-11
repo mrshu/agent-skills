@@ -1,0 +1,916 @@
+{
+  "items": [
+    {
+      "id": 3754142973,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754142975,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754206009,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754206017,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "\"Policy-specific rankings over numeric `start_epoch` would align selection with the README and avoid lexical timestamp ordering.\" — Candidate A requests only \"Please use policy-specific rankings over numeric `start_epoch`\" and leaves the README-alignment and lexical-ordering boundaries outside the direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754206021,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754206025,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754223961,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754223973,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754223975,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "loss",
+          "action_status": "unlocked",
+          "fact_losses": [
+            "\"Unknown tokens can remain typed `unknown`, with their raw text preserved.\" — Candidate B changes this allowed behavior to the mandatory phrase \"while keeping unknown tokens typed as `unknown` with their raw text preserved.\""
+          ],
+          "missing_author_work": [],
+          "false_actions": [
+            "\"Unknown tokens can remain typed `unknown`, with their raw text preserved.\" — Candidate B directly requests \"while keeping unknown tokens typed as `unknown` with their raw text preserved,\" although the source presents it as an allowed boundary."
+          ],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754223977,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "loss",
+          "action_status": "unlocked",
+          "fact_losses": [
+            "\"A pinned mapping can canonicalize metrics only when source metadata proves their meaning.\" — Candidate B omits the required \"pinned mapping.\""
+          ],
+          "missing_author_work": [
+            "\"A pinned mapping can canonicalize metrics only when source metadata proves their meaning.\" — Candidate B's direct request, \"Please canonicalize metrics only when source metadata proves their meaning,\" omits the pinned-mapping requirement."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754223982,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754223992,
+      "candidates": {
+        "A": {
+          "fact_status": "loss",
+          "action_status": "unlocked",
+          "fact_losses": [
+            "\"Mixed groups can use `unknown` while keeping each result's source claim.\" — Candidate A changes this allowed behavior to \"use `unknown` for mixed groups.\""
+          ],
+          "missing_author_work": [],
+          "false_actions": [
+            "\"Mixed groups can use `unknown` while keeping each result's source claim.\" — Candidate A directly requires \"use `unknown` for mixed groups,\" rather than preserving it as an allowed boundary."
+          ],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754223999,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754264211,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754264213,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754357957,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754371416,
+      "candidates": {
+        "A": {
+          "fact_status": "loss",
+          "action_status": "unlocked",
+          "fact_losses": [
+            "\"an unresolved unsafe route can remain a structured source failure.\" — Candidate A changes this allowed boundary to \"report an unresolved unsafe route as a structured source failure.\""
+          ],
+          "missing_author_work": [],
+          "false_actions": [
+            "\"an unresolved unsafe route can remain a structured source failure.\" — Candidate A adds the direct request \"report an unresolved unsafe route as a structured source failure\" from an allowed no-change boundary."
+          ],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754371417,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754371419,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754404625,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "loss",
+          "action_status": "unlocked",
+          "fact_losses": [
+            "\"One follow-up worth considering is preserving a failing signal\" — Candidate B changes the optional follow-up into \"Requested actions.\""
+          ],
+          "missing_author_work": [],
+          "false_actions": [
+            "\"One follow-up worth considering is preserving a failing signal\" — Candidate B directly requests moving the marker and adding the sentinel despite the source making that follow-up optional."
+          ],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754410441,
+      "candidates": {
+        "A": {
+          "fact_status": "loss",
+          "action_status": "unlocked",
+          "fact_losses": [
+            "\"would preserve both completeness and append-only history.\" — Candidate A omits the append-only-history purpose from its request."
+          ],
+          "missing_author_work": [
+            "\"would preserve both completeness and append-only history.\" — Candidate A's \"Please append a receipt-only entry linked to this decision and the validated data head\" does not directly require preserving append-only history."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754410447,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754410450,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754419474,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754419477,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "loss",
+          "action_status": "unlocked",
+          "fact_losses": [
+            "\"an installed but incompatible release can be skipped even in full CI.\" — Candidate B replaces the full-CI boundary with the weaker phrase \"an installed package's captured import error remains visible.\""
+          ],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": [
+            "\"an installed but incompatible release can be skipped even in full CI.\" — Candidate B omits the required full-CI scope from its direct request."
+          ]
+        }
+      }
+    },
+    {
+      "id": 3754488852,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "loss",
+          "action_status": "unlocked",
+          "fact_losses": [
+            "\"It may be helpful to keep boolean metric contributions in this fan-out.\" — Candidate B changes the optional suggestion to \"Please normalize booleans.\""
+          ],
+          "missing_author_work": [],
+          "false_actions": [
+            "\"It may be helpful to keep boolean metric contributions in this fan-out.\" — Candidate B directly requests normalization even though the source marks it optional."
+          ],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754488853,
+      "candidates": {
+        "A": {
+          "fact_status": "loss",
+          "action_status": "unlocked",
+          "fact_losses": [
+            "\"Could entries with an `evaluation_result_id` be excluded from this name index (or could the model reject both selectors together)?\" — Candidate A changes both optional alternatives into required actions."
+          ],
+          "missing_author_work": [],
+          "false_actions": [
+            "\"Could entries with an `evaluation_result_id` be excluded from this name index (or could the model reject both selectors together)?\" — Candidate A directly requests an optional selector-policy choice."
+          ],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "loss",
+          "action_status": "unlocked",
+          "fact_losses": [
+            "\"A small two-result test would make the intended precedence especially clear.\" — Candidate B changes the source-backed verification obligation into \"A small two-result test could make the intended precedence especially clear.\""
+          ],
+          "missing_author_work": [
+            "\"A small two-result test would make the intended precedence especially clear.\" — Candidate B leaves the two-result precedence test only inside \"Optional follow-up\" rather than making it a direct request."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754547095,
+      "candidates": {
+        "A": {
+          "fact_status": "loss",
+          "action_status": "unlocked",
+          "fact_losses": [
+            "\"Could unknown direction be marked explicitly here\" — Candidate A changes the optional suggestion to \"Please add `polarity: unknown`.\""
+          ],
+          "missing_author_work": [],
+          "false_actions": [
+            "\"Could unknown direction be marked explicitly here\" — Candidate A directly requires `polarity: unknown` although the source offers it as a suggestion."
+          ],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754547098,
+      "candidates": {
+        "A": {
+          "fact_status": "loss",
+          "action_status": "unlocked",
+          "fact_losses": [
+            "\"Keying this check on `aggregation` (as `standard_error_method()` already does) would keep `num_bootstrap_samples` faithful for custom metric names too.\" — Candidate A changes the suggestion into \"Please key this check on `aggregation`.\""
+          ],
+          "missing_author_work": [],
+          "false_actions": [
+            "\"Keying this check on `aggregation` (as `standard_error_method()` already does) would keep `num_bootstrap_samples` faithful for custom metric names too.\" — Candidate A directly requires an optional follow-up."
+          ],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754547099,
+      "candidates": {
+        "A": {
+          "fact_status": "loss",
+          "action_status": "unlocked",
+          "fact_losses": [
+            "\"a `metric_id` override can also refresh its generated status/revision atomically.\" — Candidate A changes this optional follow-up into \"Refresh generated status and revision atomically when `metric_id` is overridden.\""
+          ],
+          "missing_author_work": [],
+          "false_actions": [
+            "\"a `metric_id` override can also refresh its generated status/revision atomically.\" — Candidate A directly requests an optional `metric_id` follow-up."
+          ],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "loss",
+          "action_status": "unlocked",
+          "fact_losses": [
+            "\"Adding matching model fields and an end-to-end override test would make this useful correction path reachable.\" — Candidate B reclassifies the required correction-path work as \"Optional follow-up.\""
+          ],
+          "missing_author_work": [
+            "\"Adding matching model fields and an end-to-end override test would make this useful correction path reachable.\" — Candidate B leaves both matching model fields and the end-to-end override test only in optional prose."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3754547101,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "loss",
+          "action_status": "unlocked",
+          "fact_losses": [
+            "\"Could the collision have deterministic policy (or preserve the alternate in details), and could the chosen metric's params populate bootstrap count/clustering metadata?\" — Candidate B changes both suggestions into \"Requested actions.\""
+          ],
+          "missing_author_work": [],
+          "false_actions": [
+            "\"Could the collision have deterministic policy (or preserve the alternate in details), and could the chosen metric's params populate bootstrap count/clustering metadata?\" — Candidate B directly requests optional follow-ups."
+          ],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725747241,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "\"The upstream name can stay in `source_data`; an explicit sayf-eval collection override can handle routing.\" — Candidate B leaves preserving the upstream dataset name in `source_data` as modal prose rather than directly requesting it."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725776266,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "\"The wording can describe a path below the nearest `data` root. Its relative components form the report name, while `data/<collection>` remains the usual adapter case.\" — Candidate B leaves the documentation change only in modal prose."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725827214,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "\"blank strings can use the helper's focused error path.\" — Candidate B leaves routing blank strings through `datastore_path_components` only in modal prose."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725830949,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "\"After rebase, one default-rich CLI check for this warning would confirm the complete path.\" — Candidate A leaves the required default-rich CLI verification only in modal prose."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725853144,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "\"Only model IDs emitted by the pinned snapshot need vendored resolution.\" — Candidate B leaves vendored resolution for pinned-snapshot IDs only in modal prose."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3725913011,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "\"Bounded record batches can flush and hash incrementally.\" — Candidate B leaves incremental bounded-batch flushing and hashing only in modal prose."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3726043677,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "\"Rescaling can require an explicit recognized marker and compatible canonical definition.\" — Candidate A leaves the rescaling guard only in modal prose."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "locked",
+          "fact_losses": [],
+          "missing_author_work": [],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    },
+    {
+      "id": 3726043685,
+      "candidates": {
+        "A": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "\"`--dump` can be required in the current environment until the declared client supports bucket access.\" — Candidate A leaves requiring `--dump` in the current environment only in modal prose."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        },
+        "B": {
+          "fact_status": "safe",
+          "action_status": "unlocked",
+          "fact_losses": [],
+          "missing_author_work": [
+            "\"`--dump` can be required in the current environment until the declared client supports bucket access.\" — Candidate B leaves requiring `--dump` in the current environment only in modal prose."
+          ],
+          "false_actions": [],
+          "changed_action_boundaries": []
+        }
+      }
+    }
+  ],
+  "counts": {
+    "A": {
+      "fact_safe": 32,
+      "action_locked": 29,
+      "both": 29
+    },
+    "B": {
+      "fact_safe": 31,
+      "action_locked": 25,
+      "both": 25
+    }
+  },
+  "summary": "A preserves more source facts and keeps more author obligations locked than B. The principal failures are converting explicitly optional or allowed boundaries into requests, and leaving required implementation, documentation, or verification work only in modal prose."
+}

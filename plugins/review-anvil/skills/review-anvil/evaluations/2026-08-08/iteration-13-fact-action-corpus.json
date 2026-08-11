@@ -1,0 +1,314 @@
+[
+  {
+    "id": 3754142973,
+    "source": "**RAV-RUN3-R1-F001 [high] model-identity** — A Hugging Face collection URL becomes a model identity\n\nThe expression excludes `datasets/` and `spaces/`, but it accepts `collections/`. `model_identity()` then reads `collections/<owner>` as a model repository. The source snapshot includes one collection URL, so this path is reachable.\n\nLocal URL-shape checks can reject reserved namespaces without adding network dependence. An independent fallback identity can remain available and marked unverified.",
+    "candidates": {
+      "A": "**RAV-RUN3-R1-F001 [high] model-identity** — A Hugging Face collection URL becomes a model identity\n\nThe expression excludes `datasets/` and `spaces/`, but accepts `collections/`. `model_identity()` then reads `collections/<owner>` as a model repository. The source snapshot includes one collection URL, so this path is reachable.\n\nPlease reject reserved namespaces with local URL-shape checks without adding network dependence. An independent fallback identity can remain available and marked unverified.",
+      "B": "**RAV-RUN3-R1-F001 [high] model-identity** — A Hugging Face collection URL becomes a model identity\n\nThe expression excludes `datasets/` and `spaces/`, but accepts `collections/`. `model_identity()` then reads `collections/<owner>` as a model repository. The source snapshot includes one collection URL, so this path is reachable.\n\nPlease reject reserved namespaces with local URL-shape checks that add no network dependence. An independent fallback identity may remain available if marked unverified."
+    }
+  },
+  {
+    "id": 3754142975,
+    "source": "**RAV-RUN3-R1-F002 [high] stable-identity** — Same-day snapshots can share an ID while their bundled content differs\n\n`dump_version_from_path()` discards the filename time. `evaluation_id` then uses only that date and the model ID. Two same-day backups can therefore produce different model bundles with one identity.\n\nAn immutable dump hash or object revision can identify the source. A stable digest of the bundle's included raw evaluation units can distinguish content without depending on selector syntax.",
+    "candidates": {
+      "A": "**RAV-RUN3-R1-F002 [high] stable-identity** — Same-day snapshots can share an ID while their bundled content differs\n\n`dump_version_from_path()` discards the filename time. `evaluation_id` then uses only that date and the model ID. Two same-day backups can therefore produce different model bundles with one identity.\n\nPlease identify the source with an immutable dump hash or object revision, or distinguish its content with a stable digest of the bundle’s included raw evaluation units without depending on selector syntax.",
+      "B": "**RAV-RUN3-R1-F002 [high] stable-identity** — Same-day snapshots can share an ID while their bundled content differs\n\n`dump_version_from_path()` discards the filename time. `evaluation_id` then uses only that date and the model ID. Two same-day backups can therefore produce different model bundles with one identity.\n\nPlease distinguish bundled content by including an immutable dump hash or object revision in the identity, or by using a stable digest of the included raw evaluation units that does not depend on selector syntax."
+    }
+  },
+  {
+    "id": 3754206009,
+    "source": "**RAV-RUN2-R1-F004 [medium] workflow-identity** — The fallback maps distinct accepted labels such as `DetectWorkflow` and `Detect` to the same slug. Matching model, config, and timestamp values can then publish one evaluation identity.\n\nThe existing `WORKFLOW_SLUGS` map provides a clear boundary. Unknown names can enter the normal source-failure path until their semantics are mapped.",
+    "candidates": {
+      "A": "**RAV-RUN2-R1-F004 [medium] workflow-identity** — The fallback maps distinct accepted labels such as `DetectWorkflow` and `Detect` to the same slug\n\nMatching model, config, and timestamp values can then publish one evaluation identity. The existing `WORKFLOW_SLUGS` map provides a clear boundary.\n\nPlease restrict workflow identity resolution to `WORKFLOW_SLUGS` and send unknown names through the normal source-failure path until their semantics are mapped.",
+      "B": "**RAV-RUN2-R1-F004 [medium] workflow-identity** — The fallback maps distinct accepted labels such as `DetectWorkflow` and `Detect` to the same slug\n\nMatching model, config, and timestamp values can then publish one evaluation identity.\n\nPlease use the existing `WORKFLOW_SLUGS` map as the boundary and route unknown names through the normal source-failure path until their semantics are mapped."
+    }
+  },
+  {
+    "id": 3754206017,
+    "source": "**RAV-RUN2-R1-F005 [medium] attempt-selection** — The shared ranking makes `best` choose the latest final tie. It also makes `latest` prefer an earlier usable attempt over a later startup failure.\n\nPolicy-specific rankings over numeric `start_epoch` would align selection with the README and avoid lexical timestamp ordering.",
+    "candidates": {
+      "A": "**RAV-RUN2-R1-F005 [medium] attempt-selection** — The shared ranking makes `best` choose the latest final tie and makes `latest` prefer an earlier usable attempt over a later startup failure\n\nThis selection does not align with the README and relies on lexical timestamp ordering.\n\nPlease use policy-specific rankings over numeric `start_epoch`.",
+      "B": "**RAV-RUN2-R1-F005 [medium] attempt-selection** — The shared ranking makes `best` choose the latest final tie\n\nIt also makes `latest` prefer an earlier usable attempt over a later startup failure.\n\nPlease replace the shared ranking with policy-specific rankings over numeric `start_epoch` so selection aligns with the README and avoids lexical timestamp ordering."
+    }
+  },
+  {
+    "id": 3754206021,
+    "source": "**RAV-RUN2-R1-F006 [medium] source-accounting** — Attempt selection happens before startup exclusions. A startup row can disappear when a retry wins, while an all-startup group also adds a synthetic exclusion and can count one row twice.\n\nA ledger derived once from the original group would preserve one accounting entry per source row.",
+    "candidates": {
+      "A": "**RAV-RUN2-R1-F006 [medium] source-accounting** — Attempt selection happens before startup exclusions\n\nA startup row can disappear when a retry wins, while an all-startup group also adds a synthetic exclusion and can count one row twice.\n\nPlease derive one ledger once from the original group so it preserves one accounting entry per source row.",
+      "B": "**RAV-RUN2-R1-F006 [medium] source-accounting** — Attempt selection happens before startup exclusions\n\nA startup row can disappear when a retry wins. An all-startup group also adds a synthetic exclusion and can count one row twice.\n\nPlease derive the ledger once from the original group so each source row has one accounting entry."
+    }
+  },
+  {
+    "id": 3754206025,
+    "source": "**RAV-RUN2-R1-F008 [medium] output-path** — Publication receives `args.output_dir.parent` and appends `bountybench`. A request such as `/safe/job/chosen` therefore writes to `/safe/job/bountybench`.\n\nEarly validation of the documented collection-directory shape would keep staging, reports, and publication on the requested path.",
+    "candidates": {
+      "A": "**RAV-RUN2-R1-F008 [medium] output-path** — Publication receives `args.output_dir.parent` and appends `bountybench`\n\nA request such as `/safe/job/chosen` therefore writes to `/safe/job/bountybench` instead of the requested path.\n\nPlease validate the documented collection-directory shape early so staging, reports, and publication stay on the requested path.",
+      "B": "**RAV-RUN2-R1-F008 [medium] output-path** — Publication receives `args.output_dir.parent` and appends `bountybench`\n\nA request such as `/safe/job/chosen` therefore writes to `/safe/job/bountybench`.\n\nPlease validate the documented collection-directory shape early so staging, reports, and publication stay on the requested path."
+    }
+  },
+  {
+    "id": 3754223961,
+    "source": "**RAV-RUN3-R1-F001 [high] data-selection** — A missing `audit_status` column can produce a successful empty run\n\n`_parse_scores()` reads this field with `get()`. This branch then treats every absent value as a normal exclusion. With all rows excluded, no failure reaches `raise_if_incomplete()`.\n\nMissing or blank status values can become row failures before policy filtering. A fresh report and non-zero exit would preserve the incompatible export evidence.",
+    "candidates": {
+      "A": "**RAV-RUN3-R1-F001 [high] data-selection** — A missing `audit_status` column can produce a successful empty run\n\n`_parse_scores()` reads this field with `get()`. This branch then treats every absent value as a normal exclusion. With all rows excluded, no failure reaches `raise_if_incomplete()`.\n\nPlease turn missing or blank status values into row failures before policy filtering and emit a fresh report with a non-zero exit, preserving the incompatible export evidence.",
+      "B": "**RAV-RUN3-R1-F001 [high] data-selection** — A missing `audit_status` column can produce a successful empty run\n\n`_parse_scores()` reads this field with `get()`. This branch treats every absent value as a normal exclusion. When all rows are excluded, no failure reaches `raise_if_incomplete()`.\n\nPlease treat missing or blank status values as row failures before policy filtering, preserving the incompatible export evidence in a fresh report and a non-zero exit."
+    }
+  },
+  {
+    "id": 3754223973,
+    "source": "**RAV-RUN3-R1-F002 [high] stable-identity** — The ID does not include the immutable score-matrix revision\n\nThis timestamp can fall back to conversion time, and the source manifest can lag the pinned CSV revision. Replays can change identity, while distinct revisions can collide.\n\nThe raw model, relationship, and required `dataset_revision` can define the ID. Generated and retrieved times can stay as metadata.",
+    "candidates": {
+      "A": "**RAV-RUN3-R1-F002 [high] stable-identity** — The ID does not include the immutable score-matrix revision\n\nThis timestamp can fall back to conversion time, and the source manifest can lag the pinned CSV revision. Replays can change identity, while distinct revisions can collide.\n\nPlease define the ID from the raw model, relationship, and required `dataset_revision`. Generated and retrieved times can stay as metadata.",
+      "B": "**RAV-RUN3-R1-F002 [high] stable-identity** — The ID does not include the immutable score-matrix revision\n\nThis timestamp can fall back to conversion time, and the source manifest can lag the pinned CSV revision. Replays can change identity, while distinct revisions can collide.\n\nPlease define the ID from the raw model, relationship, and required `dataset_revision`. Generated and retrieved times may remain metadata."
+    }
+  },
+  {
+    "id": 3754223975,
+    "source": "**RAV-RUN3-R1-F003 [medium] model-metadata** — Typed availability remains unknown despite source evidence\n\nThe source provides `open_weights` values, and this code keeps them only as raw additional detail. `ModelInfo` then fills `model_availability` with `unknown`.\n\nRecognized booleans can map to `open_weights` or `closed_weights`. Unknown tokens can remain typed `unknown`, with their raw text preserved.",
+    "candidates": {
+      "A": "**RAV-RUN3-R1-F003 [medium] model-metadata** — Typed availability remains unknown despite source evidence\n\nThe source provides `open_weights` values, and this code keeps them only as raw additional detail. `ModelInfo` then fills `model_availability` with `unknown`.\n\nPlease map recognized booleans to `open_weights` or `closed_weights`. Unknown tokens can remain typed `unknown`, with their raw text preserved.",
+      "B": "**RAV-RUN3-R1-F003 [medium] model-metadata** — Typed availability remains unknown despite source evidence\n\nThe source provides `open_weights` values, but this code keeps them only as raw additional detail. `ModelInfo` then fills `model_availability` with `unknown`.\n\nPlease map recognized booleans to `open_weights` or `closed_weights`, while keeping unknown tokens typed as `unknown` with their raw text preserved."
+    }
+  },
+  {
+    "id": 3754223977,
+    "source": "**RAV-RUN3-R1-F004 [medium] metric-semantics** — Known global metrics receive benchmark-specific IDs and source scales\n\nThe AIME fixture declares percent correct, but this path emits `benchpress.aime-2025.score` on a 0–100 scale. That result cannot join canonical accuracy records.\n\nA pinned mapping can canonicalize metrics only when source metadata proves their meaning. Score, bounds, unit, and direction can convert together; ambiguous ratings can remain namespaced.",
+    "candidates": {
+      "A": "**RAV-RUN3-R1-F004 [medium] metric-semantics** — Known global metrics receive benchmark-specific IDs and source scales\n\nThe AIME fixture declares percent correct, but this path emits `benchpress.aime-2025.score` on a 0–100 scale. That result cannot join canonical accuracy records.\n\nPlease use a pinned mapping to canonicalize metrics only when source metadata proves their meaning, converting score, bounds, unit, and direction together. Ambiguous ratings can remain namespaced.",
+      "B": "**RAV-RUN3-R1-F004 [medium] metric-semantics** — Known global metrics receive benchmark-specific IDs and source scales\n\nThe AIME fixture declares percent correct, but this path emits `benchpress.aime-2025.score` on a 0–100 scale. That result cannot join canonical accuracy records.\n\nPlease canonicalize metrics only when source metadata proves their meaning, converting score, bounds, unit, and direction together. Ambiguous ratings may remain namespaced."
+    }
+  },
+  {
+    "id": 3754223982,
+    "source": "**RAV-RUN3-R1-F005 [medium] exclusion-accounting** — Repeated exclusion references lose row-level detail\n\nThis exclusion stores only the model and benchmark reference. The fixture contains repeated references, so the report cannot distinguish their scores, citations, or status values.\n\nEach exclusion can retain its complete score row through the existing `source_record` field.",
+    "candidates": {
+      "A": "**RAV-RUN3-R1-F005 [medium] exclusion-accounting** — Repeated exclusion references lose row-level detail\n\nThis exclusion stores only the model and benchmark reference. The fixture contains repeated references, so the report cannot distinguish their scores, citations, or status values.\n\nPlease retain each exclusion's complete score row through the existing `source_record` field.",
+      "B": "**RAV-RUN3-R1-F005 [medium] exclusion-accounting** — Repeated exclusion references lose row-level detail\n\nThis exclusion stores only the model and benchmark reference. The fixture contains repeated references, so the report cannot distinguish their scores, citations, or status values.\n\nPlease retain each exclusion’s complete score row through the existing `source_record` field."
+    }
+  },
+  {
+    "id": 3754223992,
+    "source": "**RAV-RUN3-R1-F006 [medium] evaluation-metadata** — The aggregator is recorded as the evaluation harness\n\nBenchPress re-reports scores from varied harnesses, which the results already retain. This log-level value states that BenchPress ran every evaluation in the group.\n\nA common harness can populate this field only when every result agrees. Mixed groups can use `unknown` while keeping each result's source claim.",
+    "candidates": {
+      "A": "**RAV-RUN3-R1-F006 [medium] evaluation-metadata** — The aggregator is recorded as the evaluation harness\n\nBenchPress re-reports scores from varied harnesses, which the results already retain. This log-level value states that BenchPress ran every evaluation in the group.\n\nPlease populate this field with a common harness only when every result agrees, and use `unknown` for mixed groups while keeping each result's source claim.",
+      "B": "**RAV-RUN3-R1-F006 [medium] evaluation-metadata** — The aggregator is recorded as the evaluation harness\n\nBenchPress re-reports scores from varied harnesses, which the results already retain. This log-level value states that BenchPress ran every evaluation in the group.\n\nPlease populate a common harness only when every result agrees. Mixed groups can use `unknown` while keeping each result’s source claim."
+    }
+  },
+  {
+    "id": 3754223999,
+    "source": "**RAV-RUN3-R1-F007 [medium] duplicate-accounting** — Equal duplicate rows disappear from the source ledger\n\nThis branch keeps one result and silently skips the later equal row. `total_records` still includes both, but neither failures nor exclusions identifies the duplicate.\n\nExact source-cell duplicates can remain deduplicated while later rows become exclusions with their complete `source_record`.",
+    "candidates": {
+      "A": "**RAV-RUN3-R1-F007 [medium] duplicate-accounting** — Equal duplicate rows disappear from the source ledger\n\nThis branch keeps one result and silently skips the later equal row. `total_records` still includes both, but neither failures nor exclusions identifies the duplicate.\n\nPlease record later exact source-cell duplicates as exclusions with their complete `source_record`. Exact source-cell duplicates may remain deduplicated.",
+      "B": "**RAV-RUN3-R1-F007 [medium] duplicate-accounting** — Equal duplicate rows disappear from the source ledger\n\nThis branch keeps one result and silently skips the later equal row. `total_records` still includes both, but neither failures nor exclusions identifies the duplicate.\n\nPlease record each later exact source-cell duplicate as an exclusion with its complete `source_record`. The source-cell results may remain deduplicated."
+    }
+  },
+  {
+    "id": 3754264211,
+    "source": "**RAV-RUN4-R1-F001 [medium] canonical routing** — Registry resolution updates `model_info.id`, while this route still comes from the reconciled Hugging Face repository. When those identities differ, canonical-ID consumers can miss the published record. The final route can use the shared datastore identity helpers, with both raw identities retained as provenance.",
+    "candidates": {
+      "A": "**RAV-RUN4-R1-F001 [medium] canonical routing** — Registry resolution updates `model_info.id`, while this route still comes from the reconciled Hugging Face repository\n\nWhen those identities differ, canonical-ID consumers can miss the published record.\n\nPlease build the final route with the shared datastore identity helpers and retain both raw identities as provenance.",
+      "B": "**RAV-RUN4-R1-F001 [medium] canonical routing** — Registry resolution updates `model_info.id`, while this route still comes from the reconciled Hugging Face repository\n\nWhen those identities differ, canonical-ID consumers can miss the published record.\n\nPlease derive the final route with the shared datastore identity helpers and retain both raw identities as provenance."
+    }
+  },
+  {
+    "id": 3754264213,
+    "source": "**RAV-RUN4-R1-F002 [medium] benchmark completeness** — This loop skips missing tasks and tasks without `acc,none`, while the record succeeds if any one result remains. A partial source file can therefore publish fewer than the documented nine benchmarks without an accounting entry. Validation at the worker boundary, plus a partial-file fixture, would keep that omission visible.",
+    "candidates": {
+      "A": "**RAV-RUN4-R1-F002 [medium] benchmark completeness** — This loop skips missing tasks and tasks without `acc,none`, while the record succeeds if any one result remains\n\nA partial source file can therefore publish fewer than the documented nine benchmarks without an accounting entry.\n\n**Requested actions**\n\n- Validate benchmark completeness at the worker boundary so the omission remains visible.\n- Add a partial-file fixture that covers this boundary.",
+      "B": "**RAV-RUN4-R1-F002 [medium] benchmark completeness** — This loop skips missing tasks and tasks without `acc,none`, while the record succeeds if any one result remains\n\nA partial source file can therefore publish fewer than the documented nine benchmarks without an accounting entry.\n\n**Requested actions**\n\n- Validate completeness at the worker boundary so a partial source file cannot publish fewer than the documented nine benchmarks without an accounting entry.\n- Add a partial-file fixture covering this omission boundary."
+    }
+  },
+  {
+    "id": 3754357957,
+    "source": "**RAV-RUN4-R1-F001 [medium] path-semantics** — An unroutable namespaced ID can enter flat-ID warning behavior\n\nFor `/model`, `_developer_prefix()` returns an empty string. This branch then treats `model_info.developer` as path-defining, while `datastore_path_components()` rejects the same ID because its namespace is empty. A warning-only run can therefore exit `2` for a routing claim the publisher cannot make.\n\nIdentity parsing can distinguish flat, namespaced, and unroutable states before registry lookup. Leading, trailing, and repeated empty components can return no alias warning.",
+    "candidates": {
+      "A": "**RAV-RUN4-R1-F001 [medium] path-semantics** — An unroutable namespaced ID can enter flat-ID warning behavior\n\nFor `/model`, `_developer_prefix()` returns an empty string. This branch then treats `model_info.developer` as path-defining, while `datastore_path_components()` rejects the same ID because its namespace is empty. A warning-only run can therefore exit `2` for a routing claim the publisher cannot make.\n\nPlease make identity parsing distinguish flat, namespaced, and unroutable states before registry lookup, and return no alias warning for leading, trailing, and repeated empty components.",
+      "B": "**RAV-RUN4-R1-F001 [medium] path-semantics** — An unroutable namespaced ID can enter flat-ID warning behavior\n\nFor `/model`, `_developer_prefix()` returns an empty string. This branch then treats `model_info.developer` as path-defining, while `datastore_path_components()` rejects the same ID because its namespace is empty. A warning-only run can therefore exit `2` for a routing claim the publisher cannot make.\n\nPlease distinguish flat, namespaced, and unroutable states before registry lookup, returning no alias warning for leading, trailing, or repeated empty components."
+    }
+  },
+  {
+    "id": 3754371416,
+    "source": "**RAV-RUN2-R1-F001 [high] model routing** — A bare `model_name` leaves `developer` unset here. The adapter can build the log, but publication rejects a one-component model ID without a developer route. Shared model helpers, registry resolution, and an explicit identity override can cover known and operator-supplied names; an unresolved unsafe route can remain a structured source failure.",
+    "candidates": {
+      "A": "**RAV-RUN2-R1-F001 [high] model routing** — A bare `model_name` leaves `developer` unset here\n\nThe adapter can build the log, but publication rejects a one-component model ID without a developer route.\n\nPlease resolve known and operator-supplied names with shared model helpers, registry resolution, and an explicit identity override, and report an unresolved unsafe route as a structured source failure.",
+      "B": "**RAV-RUN2-R1-F001 [high] model routing** — A bare `model_name` leaves `developer` unset here\n\nThe adapter can build the log, but publication rejects a one-component model ID without a developer route.\n\nPlease cover known and operator-supplied names with shared model helpers, registry resolution, and an explicit identity override. An unresolved unsafe route can remain a structured source failure."
+    }
+  },
+  {
+    "id": 3754371417,
+    "source": "**RAV-RUN2-R1-F002 [medium] task isolation** — These sibling tasks share one file-level exception boundary. If a later task raises, this function never returns the valid logs already accumulated, so the result contains only the file failure. Per-task conversion can retain valid siblings and aggregate failed-task detail into the existing file-grain report.",
+    "candidates": {
+      "A": "**RAV-RUN2-R1-F002 [medium] task isolation** — These sibling tasks share one file-level exception boundary\n\nIf a later task raises, this function never returns the valid logs already accumulated, so the result contains only the file failure.\n\nPlease convert tasks independently so valid siblings are retained and failed-task detail is aggregated into the existing file-grain report.",
+      "B": "**RAV-RUN2-R1-F002 [medium] task isolation** — These sibling tasks share one file-level exception boundary\n\nIf a later task raises, this function never returns the valid logs already accumulated, so the result contains only the file failure.\n\nPlease isolate conversion per task, retain valid sibling logs, and aggregate failed-task detail into the existing file-grain report."
+    }
+  },
+  {
+    "id": 3754371419,
+    "source": "**RAV-RUN2-R1-F003 [medium] CLI provenance** — This entry point defaults organization to an empty string and evaluator relationship to `first_party`, while the top-level LightEval command uses `unknown` and `third_party`. Sharing one parser/default definition would keep identical inputs from receiving different implicit provenance.",
+    "candidates": {
+      "A": "**RAV-RUN2-R1-F003 [medium] CLI provenance** — This entry point defaults organization to an empty string and evaluator relationship to `first_party`\n\nThe top-level LightEval command uses `unknown` and `third_party`, so identical inputs can receive different implicit provenance.\n\nPlease share one parser/default definition so identical inputs receive identical implicit provenance.",
+      "B": "**RAV-RUN2-R1-F003 [medium] CLI provenance** — This entry point defaults organization to an empty string and evaluator relationship to `first_party`, while the top-level LightEval command uses `unknown` and `third_party`\n\nIdentical inputs can therefore receive different implicit provenance.\n\nPlease share one parser and default definition between the entry points."
+    }
+  },
+  {
+    "id": 3754404625,
+    "source": "**RAV-RUN1-R1-F001 [medium] tests** — Nice improvement over checking only `import helm`: the converter guard is the right signal for these cases. One follow-up worth considering is preserving a failing signal when HELM *is installed* but a guarded converter import is broken. Because this module-wide marker skips for every `_HELM_IMPORT_ERROR`, the full `--all-extras` CI rows can also pass with a skipped HELM suite. Could we move this marker onto the generation-argument tests and add one unmarked sentinel that skips only when the top-level `helm` package is absent, but otherwise calls `_require_helm_dependencies()`? That would keep core installs optional while checking that a full HELM install is actually usable.",
+    "candidates": {
+      "A": "**RAV-RUN1-R1-F001 [medium] tests** — Nice improvement over checking only `import helm`: the converter guard is the right signal for these cases.\n\nThis module-wide marker skips for every `_HELM_IMPORT_ERROR`, so the full `--all-extras` CI rows can also pass with a skipped HELM suite. A HELM installation with a broken guarded converter import therefore has no failing signal.\n\nOptional follow-up: Move this marker onto the generation-argument tests and add one unmarked sentinel that skips only when the top-level `helm` package is absent, but otherwise calls `_require_helm_dependencies()`. This keeps core installs optional while checking that a full HELM install is actually usable.",
+      "B": "**RAV-RUN1-R1-F001 [medium] tests** — The module-wide `_HELM_IMPORT_ERROR` marker can hide broken guarded converter imports when HELM is installed\n\nChecking the converter guard rather than only `import helm` is the right signal for these cases. However, the current marker skips every `_HELM_IMPORT_ERROR`, so full `--all-extras` CI rows can pass with a skipped HELM suite.\n\n**Requested actions**\n\n- Move the marker onto the generation-argument tests.\n- Add one unmarked sentinel that skips only when the top-level `helm` package is absent, but otherwise calls `_require_helm_dependencies()` so core installs remain optional and a full HELM install must be usable."
+    }
+  },
+  {
+    "id": 3754410441,
+    "source": "**RAV-RUN1-R1-F001 [medium] audit-closure** — The append-only record can remain at `pending` after validation completes. This entry must exist before upload, while the matching bot run exists only afterward, and the later workflow does not define a closure entry. A receipt-only append linked to this decision and the validated data head would preserve both completeness and append-only history.",
+    "candidates": {
+      "A": "**RAV-RUN1-R1-F001 [medium] audit-closure** — The append-only record can remain at `pending` after validation completes\n\nThis entry must exist before upload, while the matching bot run exists only afterward. The later workflow does not define a closure entry, so the record can remain incomplete.\n\nPlease append a receipt-only entry linked to this decision and the validated data head.",
+      "B": "**RAV-RUN1-R1-F001 [medium] audit-closure** — The append-only record can remain at `pending` after validation completes\n\nThis entry must exist before upload, while the matching bot run exists only afterward, and the later workflow does not define a closure entry.\n\nPlease append a receipt-only entry linked to this decision and the validated data head to preserve completeness and append-only history."
+    }
+  },
+  {
+    "id": 3754410447,
+    "source": "**RAV-RUN1-R1-F002 [medium] evidence-resolution** — These source IDs have no resolver when `Approved proposal` is `n/a`, and the approval field above has no durable event URL or receipt ID. A compact per-entry Sources section plus an approval-receipt field would let future readers trace both the evidence and authorization.",
+    "candidates": {
+      "A": "**RAV-RUN1-R1-F002 [medium] evidence-resolution** — These source IDs have no resolver when `Approved proposal` is `n/a`, and the approval field has no durable event URL or receipt ID\n\nFuture readers cannot trace either the evidence or the authorization.\n\n**Requested actions**\n\n- Add a compact per-entry Sources section that resolves the source IDs.\n- Add an approval-receipt field for a durable event URL or receipt ID.",
+      "B": "**RAV-RUN1-R1-F002 [medium] evidence-resolution** — These source IDs have no resolver when `Approved proposal` is `n/a`\n\nThe approval field above also has no durable event URL or receipt ID, so future readers cannot trace both the evidence and authorization.\n\n**Requested actions**\n\n- Add a compact per-entry Sources section with a resolver for these source IDs when `Approved proposal` is `n/a`.\n- Add an approval-receipt field containing a durable event URL or receipt ID."
+    }
+  },
+  {
+    "id": 3754410450,
+    "source": "**RAV-RUN1-R1-F003 [medium] authorization-scope** — This approval requirement also applies to temperature, token limits, and other non-deployment fields, but the skill defines a head-bound artifact only for deployment axes. Stating whether ordinary fix authorization or a lightweight head-bound receipt governs these backfills would keep the mutation boundary unambiguous.",
+    "candidates": {
+      "A": "**RAV-RUN1-R1-F003 [medium] authorization-scope** — This approval requirement also applies to temperature, token limits, and other non-deployment fields\n\nThe skill defines a head-bound artifact only for deployment axes, leaving the mutation boundary for these backfills ambiguous.\n\nPlease state whether ordinary fix authorization or a lightweight head-bound receipt governs backfills for temperature, token limits, and other non-deployment fields.",
+      "B": "**RAV-RUN1-R1-F003 [medium] authorization-scope** — The approval requirement covers non-deployment fields, but the skill defines a head-bound artifact only for deployment axes\n\nThe requirement also applies to temperature, token limits, and other non-deployment fields, leaving their mutation boundary ambiguous.\n\nPlease state whether ordinary fix authorization or a lightweight head-bound receipt governs these backfills."
+    }
+  },
+  {
+    "id": 3754419474,
+    "source": "**RAV-RUN1-R1-F001 [medium] result assertions** — This dictionary overwrites duplicate evaluation/metric keys. Since the lm-eval case leaves `results` unset, an extra identical result can still pass the score mapping and semantic gate. An explicit `results=2` plus a uniqueness check before dictionary construction would preserve this useful declarative shape while catching duplicates.",
+    "candidates": {
+      "A": "**RAV-RUN1-R1-F001 [medium] result assertions** — This dictionary overwrites duplicate evaluation/metric keys\n\nSince the lm-eval case leaves `results` unset, an extra identical result can still pass the score mapping and semantic gate.\n\n**Requested actions**\n\n- Set `results=2` explicitly for the lm-eval case to preserve its useful declarative shape.\n- Check uniqueness before dictionary construction so duplicate evaluation/metric keys are caught.",
+      "B": "**RAV-RUN1-R1-F001 [medium] result assertions** — This dictionary overwrites duplicate evaluation/metric keys\n\nThe lm-eval case leaves `results` unset, so an extra identical result can still pass the score mapping and semantic gate. The current declarative shape therefore does not catch duplicates.\n\n**Requested actions**\n\n- Set `results=2` explicitly for the lm-eval case.\n- Check evaluation/metric key uniqueness before constructing the dictionary."
+    }
+  },
+  {
+    "id": 3754419477,
+    "source": "**RAV-RUN1-R1-F002 [medium] optional dependencies** — Every stored import error becomes an unavailable skip here. Because Inspect and HELM capture broad exceptions, an installed but incompatible release can be skipped even in full CI. Declaring each optional distribution explicitly would let core skip a genuinely absent package while surfacing an installed package's captured import error.",
+    "candidates": {
+      "A": "**RAV-RUN1-R1-F002 [medium] optional dependencies** — Every stored import error becomes an unavailable skip here\n\nBecause Inspect and HELM capture broad exceptions, an installed but incompatible release can be skipped even in full CI.\n\nPlease declare each optional distribution explicitly so core installs skip a genuinely absent package while full CI surfaces an installed package’s captured import error.",
+      "B": "**RAV-RUN1-R1-F002 [medium] optional dependencies** — Every stored import error becomes an unavailable skip here\n\nInspect and HELM capture broad exceptions, so an installed but incompatible release can be skipped even in full CI.\n\nPlease declare each optional distribution explicitly so core runs skip a genuinely absent package while an installed package's captured import error remains visible."
+    }
+  },
+  {
+    "id": 3754488852,
+    "source": "**RAV-RUN1-R1-F001 [medium] — suggestion:** It may be helpful to keep boolean metric contributions in this fan-out. The aggregate path accepts `bool` through Python's numeric hierarchy, so excluding it here turns a valid `true` contribution into an unjoined synthetic `0.0` row. Normalizing booleans to `1.0`/`0.0` would preserve the new result-ID join while leaving the fallback for genuinely non-numeric values.",
+    "candidates": {
+      "A": "**RAV-RUN1-R1-F001 [medium] — suggestion:**\n\nThe aggregate path accepts `bool` through Python’s numeric hierarchy, but this fan-out excludes boolean metric contributions. Excluding them turns a valid `true` contribution into an unjoined synthetic `0.0` row.\n\nOptional follow-up: Normalize booleans to `1.0`/`0.0` to preserve the new result-ID join, while leaving the fallback for genuinely non-numeric values.",
+      "B": "**RAV-RUN1-R1-F001 [medium] — suggestion:** Boolean metric contributions are excluded from this fan-out even though the aggregate path accepts `bool` through Python's numeric hierarchy\n\nA valid `true` contribution therefore becomes an unjoined synthetic `0.0` row.\n\nPlease normalize booleans to `1.0` or `0.0` so the new result-ID join is preserved. The fallback may remain for genuinely non-numeric values."
+    }
+  },
+  {
+    "id": 3754488853,
+    "source": "**RAV-RUN1-R1-F002 [medium] — suggestion:** Could entries with an `evaluation_result_id` be excluded from this name index (or could the model reject both selectors together)? As written, one dual-key entry first matches its specific result by ID, then matches sibling results through the shared evaluation name. A small two-result test would make the intended precedence especially clear.",
+    "candidates": {
+      "A": "**RAV-RUN1-R1-F002 [medium] — suggestion:** An entry with both selectors matches its specific result by ID and then matches sibling results through the shared evaluation name\n\nAs written, a dual-key entry can apply beyond its selected result, leaving selector precedence unclear.\n\n**Requested actions**\n\n- Exclude entries with an `evaluation_result_id` from the name index, or reject entries that set both selectors.\n- Add a two-result test that demonstrates the intended precedence.",
+      "B": "**RAV-RUN1-R1-F002 [medium] — suggestion:**\n\nAn entry with both an `evaluation_result_id` and an evaluation name first matches its specific result by ID, then matches sibling results through the shared evaluation name.\n\nOptional follow-up: Exclude entries with an `evaluation_result_id` from this name index, or reject both selectors together. A small two-result test could make the intended precedence especially clear."
+    }
+  },
+  {
+    "id": 3754547095,
+    "source": "**RAV-RUN1-R1-F001 [medium] — suggestion:** Could unknown direction be marked explicitly here, similarly to dispersion's `not_applicable` marker? For any unrecognized loss/error metric this required `false` reads as an affirmative higher-is-better claim, while the current additional details only qualify the bounds. Keeping the boolean but adding `polarity: unknown` until a harness or supplement supplies direction would make the fallback safer for ranking consumers.",
+    "candidates": {
+      "A": "**RAV-RUN1-R1-F001 [medium] — suggestion:** Unknown metric direction is represented by the required `false` value\n\nFor an unrecognized loss or error metric, `false` reads as an affirmative higher-is-better claim. The current additional details qualify only the bounds, making the fallback unsafe for ranking consumers.\n\nPlease add `polarity: unknown` until a harness or supplement supplies the direction. The required boolean may remain.",
+      "B": "**RAV-RUN1-R1-F001 [medium] — suggestion:**\n\nFor any unrecognized loss/error metric, the required `false` reads as an affirmative higher-is-better claim, while the current additional details only qualify the bounds.\n\nOptional follow-up: Keep the boolean and add `polarity: unknown`, similarly to dispersion’s `not_applicable` marker, until a harness or supplement supplies direction."
+    }
+  },
+  {
+    "id": 3754547098,
+    "source": "**RAV-RUN1-R1-F002 [medium] — suggestion:** lm-eval applies this 100-resample cap to the aggregation callable, so an aliased metric can use `aggregation: bleu` without being named `bleu`. Keying this check on `aggregation` (as `standard_error_method()` already does) would keep `num_bootstrap_samples` faithful for custom metric names too.",
+    "candidates": {
+      "A": "**RAV-RUN1-R1-F002 [medium] — suggestion:** The 100-resample cap misses aliased metrics whose aggregation callable is `bleu`\n\nlm-eval applies this cap to the aggregation callable, so a metric can use `aggregation: bleu` without being named `bleu`. Checking the metric name makes `num_bootstrap_samples` inaccurate for custom names.\n\nPlease key this check on `aggregation`, as `standard_error_method()` already does.",
+      "B": "**RAV-RUN1-R1-F002 [medium] — suggestion:**\n\nlm-eval applies this 100-resample cap to the aggregation callable, so an aliased metric can use `aggregation: bleu` without being named `bleu`. Keying this check on the metric name makes `num_bootstrap_samples` unfaithful for custom metric names.\n\nOptional follow-up: Key this check on `aggregation`, as `standard_error_method()` already does, so `num_bootstrap_samples` remains faithful for custom metric names."
+    }
+  },
+  {
+    "id": 3754547099,
+    "source": "**RAV-RUN1-R1-F003 [medium] — suggestion:** These four new fields look intentionally overrideable, but the strict `SupplementalMetricConfig` does not declare them, so exact probes reject each as `extra_forbidden` before this allowlist runs. Adding matching model fields and an end-to-end override test would make this useful correction path reachable; a `metric_id` override can also refresh its generated status/revision atomically.",
+    "candidates": {
+      "A": "**RAV-RUN1-R1-F003 [medium] — suggestion:** The four new override fields are rejected before the allowlist runs\n\nThe strict `SupplementalMetricConfig` does not declare these intentionally overrideable fields, so exact probes reject each as `extra_forbidden`. The correction path is therefore unreachable.\n\n**Requested actions**\n\n- Declare the four allowlisted override fields on `SupplementalMetricConfig`.\n- Refresh generated status and revision atomically when `metric_id` is overridden.\n- Add an end-to-end override test.",
+      "B": "**RAV-RUN1-R1-F003 [medium] — suggestion:**\n\nThese four new fields look intentionally overrideable, but the strict `SupplementalMetricConfig` does not declare them. Exact probes therefore reject each as `extra_forbidden` before this allowlist runs, leaving the correction path unreachable.\n\nOptional follow-up: Add matching model fields and an end-to-end override test to make this correction path reachable. A `metric_id` override can also refresh its generated status/revision atomically."
+    }
+  },
+  {
+    "id": 3754547101,
+    "source": "**RAV-RUN1-R1-F004 [medium] — suggestion:** If a scorer carries both `stderr` and `bootstrap_stderr`, this `next(...)` makes the published value and method depend on mapping order while both source entries are later removed. Could the collision have deterministic policy (or preserve the alternate in details), and could the chosen metric's params populate bootstrap count/clustering metadata? That would retain the useful uncertainty provenance this PR is adding.",
+    "candidates": {
+      "A": "**RAV-RUN1-R1-F004 [medium] — suggestion:**\n\nIf a scorer carries both `stderr` and `bootstrap_stderr`, this `next(...)` makes the published value and method depend on mapping order while both source entries are later removed.\n\nOptional follow-up: Give the collision a deterministic policy or preserve the alternate in details, and populate bootstrap count and clustering metadata from the chosen metric’s params. This retains the useful uncertainty provenance added by this PR.",
+      "B": "**RAV-RUN1-R1-F004 [medium] — suggestion:** When a scorer has both `stderr` and `bootstrap_stderr`, the published value and method depend on mapping order\n\nThe `next(...)` call selects one entry, while both source entries are later removed. The chosen metric's parameters also do not populate bootstrap count or clustering metadata, so useful uncertainty provenance is lost.\n\n**Requested actions**\n\n- Define a deterministic collision policy for `stderr` and `bootstrap_stderr`, or preserve the alternate in details.\n- Populate bootstrap count and clustering metadata from the chosen metric's parameters."
+    }
+  },
+  {
+    "id": 3725747241,
+    "source": "**RAV-RUN1-R1-F001 [high] source-provenance** — The adapter puts the task slug in `source_data.dataset_name`\n\nThe source record already supplies the dataset name, but this line replaces it with a routing slug. Published records then identify task collections instead of datasets such as `CTI-Bench MCQ`.\n\nThe upstream name can stay in `source_data`; an explicit sayf-eval collection override can handle routing.",
+    "candidates": {
+      "A": "**RAV-RUN1-R1-F001 [high] source-provenance** — The adapter puts the task slug in `source_data.dataset_name`\n\nThe source record already supplies the dataset name, but this line replaces it with a routing slug. Published records then identify task collections instead of datasets such as `CTI-Bench MCQ`.\n\nPlease keep the upstream dataset name in `source_data.dataset_name`; an explicit sayf-eval collection override can handle routing.",
+      "B": "**RAV-RUN1-R1-F001 [high] source-provenance** — The adapter puts the task slug in `source_data.dataset_name`\n\nThe source record already supplies the dataset name, but this line replaces it with a routing slug. Published records then identify task collections instead of datasets such as `CTI-Bench MCQ`.\n\nThe upstream name can stay in `source_data`; an explicit sayf-eval collection override can handle routing."
+    }
+  },
+  {
+    "id": 3725776266,
+    "source": "**RAV-RUN1-R1-F001 [medium] api-contract** — `output_dir` also supports report-identity paths below `data`\n\nThe CLI passes paths such as `data/lm_eval_samples`, and the tests require `adapter_reports/lm_eval_samples_failures.json`. Calling the argument only a collection directory narrows a supported contract.\n\nThe wording can describe a path below the nearest `data` root. Its relative components form the report name, while `data/<collection>` remains the usual adapter case.",
+    "candidates": {
+      "A": "**RAV-RUN1-R1-F001 [medium] api-contract** — `output_dir` also supports report-identity paths below `data`\n\nThe CLI passes paths such as `data/lm_eval_samples`, and the tests require `adapter_reports/lm_eval_samples_failures.json`. Calling the argument only a collection directory narrows a supported contract.\n\nPlease describe `output_dir` as a path below the nearest `data` root so its relative components form the report name; `data/<collection>` remains the usual adapter case.",
+      "B": "**RAV-RUN1-R1-F001 [medium] api-contract** — `output_dir` also supports report-identity paths below `data`\n\nThe CLI passes paths such as `data/lm_eval_samples`, and the tests require `adapter_reports/lm_eval_samples_failures.json`. Calling the argument only a collection directory narrows a supported contract.\n\nThe wording can describe a path below the nearest `data` root. Its relative components form the report name, while `data/<collection>` remains the usual adapter case."
+    }
+  },
+  {
+    "id": 3725827214,
+    "source": "**RAV-RUN1-R1-F001 [medium] schema-deferral** — Blank model IDs bypass the new identity-path check\n\nThe schema accepts blank strings, but this guard returns before `datastore_path_components` can reject them. Such a record can pass without any warning that its identity names no directory.\n\nMissing or non-string IDs can stay with schema validation, while blank strings can use the helper's focused error path.",
+    "candidates": {
+      "A": "**RAV-RUN1-R1-F001 [medium] schema-deferral** — Blank model IDs bypass the new identity-path check\n\nThe schema accepts blank strings, but this guard returns before `datastore_path_components` can reject them. Such a record can pass without any warning that its identity names no directory.\n\nPlease route blank strings through `datastore_path_components` so they use the helper's focused error path; missing or non-string IDs can stay with schema validation.",
+      "B": "**RAV-RUN1-R1-F001 [medium] schema-deferral** — Blank model IDs bypass the new identity-path check\n\nThe schema accepts blank strings, but this guard returns before `datastore_path_components` can reject them. Such a record can pass without any warning that its identity names no directory.\n\nMissing or non-string IDs can stay with schema validation, while blank strings can use the helper's focused error path."
+    }
+  },
+  {
+    "id": 3725830949,
+    "source": "**RAV-RUN1-R1-F003 [medium] warning-visibility** — The new warning stays hidden in the default rich output without PR #221\n\nWarning severity leaves the report valid. The current rich renderer prints `PASS` and returns before its warning loop.\n\nPR #221 is already listed as a prerequisite. After rebase, one default-rich CLI check for this warning would confirm the complete path.",
+    "candidates": {
+      "A": "**RAV-RUN1-R1-F003 [medium] warning-visibility** — The new warning stays hidden in the default rich output without PR #221\n\nWarning severity leaves the report valid. The current rich renderer prints `PASS` and returns before its warning loop.\n\nPR #221 is already listed as a prerequisite. After rebase, one default-rich CLI check for this warning would confirm the complete path.",
+      "B": "**RAV-RUN1-R1-F003 [medium] warning-visibility** — The new warning stays hidden in the default rich output without PR #221\n\nWarning severity leaves the report valid. The current rich renderer prints `PASS` and returns before its warning loop.\n\nPR #221 is already listed as a prerequisite. Please run one default-rich CLI check for this warning after rebasing to confirm the complete path."
+    }
+  },
+  {
+    "id": 3725853144,
+    "source": "**RAV-RUN2-R1-F001 [medium] model-identity** — Developer IDs use the registry, but `model_info.id` uses an adapter-private identity ladder. Canonical model aliases cannot affect this join key.\n\nOnly model IDs emitted by the pinned snapshot need vendored resolution. The source-derived ID can remain a marked fallback.",
+    "candidates": {
+      "A": "**RAV-RUN2-R1-F001 [medium] model-identity** — Developer IDs use the registry, but `model_info.id` uses an adapter-private identity ladder. Canonical model aliases cannot affect this join key.\n\nOnly model IDs emitted by the pinned snapshot need vendored resolution.\n\nPlease resolve `model_info.id` through the vendored registry for model IDs emitted by the pinned snapshot, retaining the source-derived ID as a marked fallback.",
+      "B": "**RAV-RUN2-R1-F001 [medium] model-identity** — Developer IDs use the registry, but `model_info.id` uses an adapter-private identity ladder. Canonical model aliases cannot affect this join key.\n\nOnly model IDs emitted by the pinned snapshot need vendored resolution. The source-derived ID can remain a marked fallback."
+    }
+  },
+  {
+    "id": 3725913011,
+    "source": "**RAV-RUN2-R1-F003 [medium] memory-use** — Capped instance runs still materialize all selected columns for a complete row group before the cap is checked. The cap does not bound this allocation.\n\nBounded record batches can flush and hash incrementally.",
+    "candidates": {
+      "A": "**RAV-RUN2-R1-F003 [medium] memory-use** — Capped instance runs still materialize all selected columns for a complete row group before the cap is checked. The cap does not bound this allocation.\n\nPlease flush and hash bounded record batches incrementally so capped instance runs do not materialize all selected columns for a complete row group before the cap is checked.",
+      "B": "**RAV-RUN2-R1-F003 [medium] memory-use** — Capped instance runs still materialize all selected columns for a complete row group before the cap is checked. The cap does not bound this allocation.\n\nBounded record batches can flush and hash incrementally."
+    }
+  },
+  {
+    "id": 3726043677,
+    "source": "**RAV-RUN2-R1-F003 [high] score-scaling** — The adapter divides a group by 100 when its median is out of range and 90 percent then fit. This decision ignores source scale evidence.\n\nRescaling can require an explicit recognized marker and compatible canonical definition. Other out-of-range cells can stay out of publication and retain raw provenance in the failure report.",
+    "candidates": {
+      "A": "**RAV-RUN2-R1-F003 [high] score-scaling** — The adapter divides a group by 100 when its median is out of range and 90 percent then fit. This decision ignores source scale evidence.\n\nRescaling can require an explicit recognized marker and compatible canonical definition. Other out-of-range cells can stay out of publication and retain raw provenance in the failure report.",
+      "B": "**RAV-RUN2-R1-F003 [high] score-scaling** — The adapter divides a group by 100 when its median is out of range and 90 percent then fit. This decision ignores source scale evidence.\n\nPlease require an explicit recognized marker and compatible canonical definition before rescaling. Other out-of-range cells can stay out of publication and retain raw provenance in the failure report."
+    }
+  },
+  {
+    "id": 3726043685,
+    "source": "**RAV-RUN2-R1-F006 [medium] runtime-dependencies** — The default download path needs `huggingface_hub` 1.x, but the project requires a version below 1.0. The declared environment exits before download.\n\n`--dump` can be required in the current environment until the declared client supports bucket access.",
+    "candidates": {
+      "A": "**RAV-RUN2-R1-F006 [medium] runtime-dependencies** — The default download path needs `huggingface_hub` 1.x, but the project requires a version below 1.0. The declared environment exits before download.\n\n`--dump` can be required in the current environment until the declared client supports bucket access.",
+      "B": "**RAV-RUN2-R1-F006 [medium] runtime-dependencies** — The default download path needs `huggingface_hub` 1.x, but the project requires a version below 1.0. The declared environment exits before download.\n\n`--dump` can be required in the current environment until the declared client supports bucket access."
+    }
+  }
+]

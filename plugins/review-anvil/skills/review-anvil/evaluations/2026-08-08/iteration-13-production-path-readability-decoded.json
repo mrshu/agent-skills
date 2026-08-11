@@ -1,0 +1,522 @@
+{
+  "corpus": {
+    "count": 25,
+    "repositories": [
+      "dotnet/sign",
+      "evaleval/every_eval_ever"
+    ]
+  },
+  "judges": {
+    "claude": {
+      "winner_counts": {
+        "production": 11,
+        "baseline": 7,
+        "tie": 7
+      },
+      "mean_scores": {
+        "production": {
+          "defect_clarity": 3.92,
+          "action_recall": 4.32,
+          "scanability": 3.32,
+          "naturalness": 3.8,
+          "cognitive_ease": 3.56
+        },
+        "baseline": {
+          "defect_clarity": 3.92,
+          "action_recall": 3.68,
+          "scanability": 3.76,
+          "naturalness": 3.52,
+          "cognitive_ease": 3.64
+        }
+      },
+      "details": [
+        {
+          "id": 3525225568,
+          "winner": "production",
+          "reason": "A states the requested change directly, while B buries it in \"I personally think it would make more sense to...\" and ends a non-question with a question mark, leaving the ask ambiguous."
+        },
+        {
+          "id": 2614980077,
+          "winner": "baseline",
+          "reason": "B's suggestion block turns the wording fix into concrete, checkable work the author can see at a glance; A's slightly tighter prose does not offset that."
+        },
+        {
+          "id": 2614980178,
+          "winner": "baseline",
+          "reason": "The ask is \"add a comment,\" and B supplies the exact comment text; A instead describes the required contents in a long clause the reader must reassemble into prose."
+        },
+        {
+          "id": 2952666730,
+          "winner": "tie",
+          "reason": "Same three-part structure and same either/or remedy; B's `.pre-commit-config.yaml` pointer and A's \"Please either\" framing are minor offsetting gains."
+        },
+        {
+          "id": 2952666872,
+          "winner": "tie",
+          "reason": "Near-identical wording; the only differences are quoting \"already patched\" and a parenthetical versus an \"or\" clause, neither of which changes what the author does."
+        },
+        {
+          "id": 3088978085,
+          "winner": "production",
+          "reason": "Two genuinely separate edits (table pipes, argument placeholder) become two independently checkable bullets in B, whereas A's suggestion block covers only the argument list and leaves the table fix in prose."
+        },
+        {
+          "id": 3096650221,
+          "winner": "production",
+          "reason": "A gives the primary fix first and the `NOT NULL` escape hatch second; B leads with the conditional and defers the real instruction to a trailing \"Otherwise replace the loop...\"."
+        },
+        {
+          "id": 3102848524,
+          "winner": "baseline",
+          "reason": "A hands over the `with pytest.raises(Exception):` change as an applicable block, while B's em-dash interruption (\"the intent—unsupported-extension rejection—less clear\") adds parsing cost in a narrow pane."
+        },
+        {
+          "id": 3134292915,
+          "winner": "baseline",
+          "reason": "B shows the exact map entry (`\"qwen\": \"qwen\"`), making the one-line fix immediately visible; A's \"Please use `qwen` here\" leaves the author to locate and edit the mapping unaided."
+        },
+        {
+          "id": 3153765816,
+          "winner": "tie",
+          "reason": "Identical content; A's shorter sentences and B's single \"which\" clause plus \"Please\" trade off too evenly to matter to a busy author."
+        },
+        {
+          "id": 3161743720,
+          "winner": "tie",
+          "reason": "The two versions are word-for-word identical, so no difference exists to judge."
+        },
+        {
+          "id": 3161807141,
+          "winner": "baseline",
+          "reason": "B's \"If yes, ignore this comment. If not, we should pass...\" resolves applicability in one read, whereas A's closing double negative (\"if this file is not meant to run only as a CLI script; if it is CLI-only...\") must be untangled."
+        },
+        {
+          "id": 3493867085,
+          "winner": "baseline",
+          "reason": "A introduces the pluggable reader idea before the `orjson` caveat and puts each reference link on its own labeled line; B raises `orjson` before the idea it qualifies and crams both long URLs into one sentence."
+        },
+        {
+          "id": 3520340907,
+          "winner": "tie",
+          "reason": "Both raise the same path mismatch and branch concern and both ask only for confirmation; A's question-first framing and B's isolated closing ask are equally easy to act on."
+        },
+        {
+          "id": 3652735574,
+          "winner": "production",
+          "reason": "B separates the question from the conditional ask and says \"please keep the conventional key name\"; A's \"this could keep\" leaves both the agent and the referent of \"this\" for the reader to infer."
+        },
+        {
+          "id": 3653129512,
+          "winner": "production",
+          "reason": "A at least frames the change with \"Please update the URL account inference as follows\"; B is a bare code block with no sentence at all, so the reader must reverse-engineer both the problem and the request."
+        },
+        {
+          "id": 3677101235,
+          "winner": "production",
+          "reason": "A's \"Please replace the adapter-owned aggregate and sidecar as one set\" names an owner and an obligation; B's agentless \"An adapter-owned aggregate and sidecar can be replaced\" reads as optional despite its useful headline."
+        },
+        {
+          "id": 3677104436,
+          "winner": "production",
+          "reason": "B's headline helps, but its remedy (\"Collision discovery can inspect...\") states a possibility rather than a request; A's \"Please inspect same-parent, same-stem variants\" is what the author must remember."
+        },
+        {
+          "id": 3677218975,
+          "winner": "production",
+          "reason": "The long list of artifacts to renumber needs an explicit imperative; A gives \"Please move its schema copies, emitters, models...\", while B's semicolon plus \"can move\" hides the obligation."
+        },
+        {
+          "id": 3677354603,
+          "winner": "tie",
+          "reason": "A's condition-first paragraph is easier to parse but hedged (\"both outcomes can feed\"), while B says \"Please feed\" yet trails the condition after a long clause; the gains cancel."
+        },
+        {
+          "id": 3677461204,
+          "winner": "production",
+          "reason": "In a comment this short the paragraph break buys B nothing, and \"That error can stay inside the per-benchmark boundary\" is weaker and more stilted than A's \"Please keep that error inside...\"."
+        },
+        {
+          "id": 3677564751,
+          "winner": "production",
+          "reason": "Both open with the same defect sentence, but A ends with an explicit validation requirement; B's \"Pass metrics can use... Cost can use...\" describes options rather than the work being asked for."
+        },
+        {
+          "id": 3677669726,
+          "winner": "production",
+          "reason": "B's closing \"Each bound can expose an accurate serialization contract\" makes the bound the actor, which is stilted and vague; A's \"Please expose an accurate serialization contract for each bound\" is directly actionable."
+        },
+        {
+          "id": 3677713059,
+          "winner": "tie",
+          "reason": "B's headline and chunked evidence read faster, but A's \"Please resolve one Hugging Face dataset revision and use it to pin every live read\" is the clearer obligation; the advantages offset."
+        },
+        {
+          "id": 3699205371,
+          "winner": "baseline",
+          "reason": "A ends with one sentence stacking the ask and three justifications joined by a semicolon, \"because\", and \"so\"; B splits evidence from rationale and demotes the `.JSON` aside to a parenthetical, despite its trailing generated-by footer."
+        }
+      ]
+    },
+    "sol": {
+      "winner_counts": {
+        "production": 11,
+        "baseline": 5,
+        "tie": 9
+      },
+      "mean_scores": {
+        "production": {
+          "defect_clarity": 4.76,
+          "action_recall": 4.8,
+          "scanability": 4.0,
+          "naturalness": 4.44,
+          "cognitive_ease": 4.4
+        },
+        "baseline": {
+          "defect_clarity": 4.48,
+          "action_recall": 4.12,
+          "scanability": 4.2,
+          "naturalness": 4.12,
+          "cognitive_ease": 4.36
+        }
+      },
+      "details": [
+        {
+          "id": 3525225568,
+          "winner": "production",
+          "reason": "A states the request directly. B buries it under \"I personally think\" and ends a declarative suggestion as a question."
+        },
+        {
+          "id": 2614980077,
+          "winner": "baseline",
+          "reason": "Both explain the mismatch clearly, but B's suggestion makes the exact replacement immediately available."
+        },
+        {
+          "id": 2614980178,
+          "winner": "baseline",
+          "reason": "B supplies the requested comment with both reasons already expressed, reducing the work needed to translate the review into an edit."
+        },
+        {
+          "id": 2952666730,
+          "winner": "tie",
+          "reason": "Both clearly contrast the documented and actual validators, then present the same two resolution paths."
+        },
+        {
+          "id": 2952666872,
+          "winner": "tie",
+          "reason": "The versions differ only cosmetically; both give the trigger, consequence, and replacement check in a direct sequence."
+        },
+        {
+          "id": 3088978085,
+          "winner": "production",
+          "reason": "B's two bullets expose the table and argument-list fixes as independently checkable actions. A's suggestion shows only the argument-list edit."
+        },
+        {
+          "id": 3096650221,
+          "winner": "tie",
+          "reason": "Both identify the repeated operations, name the one-call replacement, and preserve the same documented exception for strict typing."
+        },
+        {
+          "id": 3102848524,
+          "winner": "production",
+          "reason": "B keeps the immediate assertion and the longer-term alternative together in one explicit request. The purpose of the test is also stated more directly."
+        },
+        {
+          "id": 3134292915,
+          "winner": "tie",
+          "reason": "A is slightly more compact, while B provides the exact likely edit; both make the inconsistency, consequence, and alternatives easy to retain."
+        },
+        {
+          "id": 3153765816,
+          "winner": "baseline",
+          "reason": "A separates the typo from its consequence before giving the rename request. B compresses the first two ideas into a slightly denser sentence."
+        },
+        {
+          "id": 3161743720,
+          "winner": "tie",
+          "reason": "The two versions are identical."
+        },
+        {
+          "id": 3161807141,
+          "winner": "production",
+          "reason": "A leads with the hidden dependency and crash before stating the conditional action. B delays the defect behind a question and permission to ignore the comment."
+        },
+        {
+          "id": 3493867085,
+          "winner": "production",
+          "reason": "B separates the serializer tradeoff and examples from a final explicit request. A's conversational asides and detached links make the desired action harder to recover."
+        },
+        {
+          "id": 3520340907,
+          "winner": "tie",
+          "reason": "A sounds more conversational, while B states the two inconsistencies more directly. Neither turns the branch concern into a distinct requested action."
+        },
+        {
+          "id": 3652735574,
+          "winner": "production",
+          "reason": "B separates the diagnostic question from the conditional request and explicitly says to keep the conventional key name."
+        },
+        {
+          "id": 3653129512,
+          "winner": "production",
+          "reason": "A explicitly identifies the requested URL-account inference change before presenting the code. B contains only a suggestion block, forcing the reader to derive the review's point from the implementation."
+        },
+        {
+          "id": 3677101235,
+          "winner": "tie",
+          "reason": "A makes the replacement an explicit request, while B's heading and paragraph structure make the failure chain easier to scan. Neither advantage is decisive."
+        },
+        {
+          "id": 3677104436,
+          "winner": "production",
+          "reason": "A ends with a direct request that clearly distinguishes collision discovery from payload validation. B's final \"can inspect\" wording is easier to overlook as an action."
+        },
+        {
+          "id": 3677218975,
+          "winner": "tie",
+          "reason": "A marks the coordinated version move as an explicit request; B gives the same complete list with slightly better visual separation."
+        },
+        {
+          "id": 3677354603,
+          "winner": "production",
+          "reason": "B's explicit \"Please feed both outcomes\" makes the required status propagation harder to miss. A is better spaced but phrases the fix as something the code merely \"can\" do."
+        },
+        {
+          "id": 3677461204,
+          "winner": "production",
+          "reason": "A makes catching the validation error inside the per-benchmark boundary a direct request. B's separate final paragraph scans well but softens the action to \"can stay.\""
+        },
+        {
+          "id": 3677564751,
+          "winner": "baseline",
+          "reason": "B uses separate paragraphs for the failure, reachable trigger, and validation rules. That structure makes the distinct pass, cost, and boolean checks easier to retain."
+        },
+        {
+          "id": 3677669726,
+          "winner": "tie",
+          "reason": "A has the stronger explicit request, while B's paragraph breaks better expose the declared-versus-emitted schema mismatch."
+        },
+        {
+          "id": 3677713059,
+          "winner": "baseline",
+          "reason": "B separates the mixed-revision failure, metadata fallback, and pinning strategy into an easy-to-follow sequence. A contains the same information in a denser paragraph."
+        },
+        {
+          "id": 3699205371,
+          "winner": "production",
+          "reason": "A explicitly requests dropping `re.IGNORECASE` and avoids the distracting generated-by footer. B scans better in paragraphs, but its action is less direct and the attribution makes it feel templated."
+        }
+      ]
+    },
+    "terra": {
+      "winner_counts": {
+        "production": 11,
+        "baseline": 8,
+        "tie": 6
+      },
+      "mean_scores": {
+        "production": {
+          "defect_clarity": 4.64,
+          "action_recall": 4.88,
+          "scanability": 4.36,
+          "naturalness": 4.88,
+          "cognitive_ease": 4.36
+        },
+        "baseline": {
+          "defect_clarity": 4.56,
+          "action_recall": 4.16,
+          "scanability": 4.4,
+          "naturalness": 4.6,
+          "cognitive_ease": 4.52
+        }
+      },
+      "details": [
+        {
+          "id": 3525225568,
+          "winner": "production",
+          "reason": "A leads with the requested change in a direct imperative. B makes the same request sound tentative and buries it in a personal preference."
+        },
+        {
+          "id": 2614980077,
+          "winner": "tie",
+          "reason": "Both clearly explain the count mismatch and give usable replacement wording. B's concrete suggestion is helpful, while A is easier to scan; neither advantage is decisive."
+        },
+        {
+          "id": 2614980178,
+          "winner": "production",
+          "reason": "A isolates the documentation gap and the required explanation. B's suggestion includes an unchanged status print, making the requested comment less immediately distinguishable."
+        },
+        {
+          "id": 2952666730,
+          "winner": "tie",
+          "reason": "The versions present the same clear mismatch, consequence, and two-part resolution. Minor wording and source-reference differences do not affect one-pass readability."
+        },
+        {
+          "id": 2952666872,
+          "winner": "tie",
+          "reason": "Both versions cleanly connect the broad substring check to the missed patch and name the specific replacement checks. The stylistic differences are immaterial."
+        },
+        {
+          "id": 3088978085,
+          "winner": "production",
+          "reason": "B separates the two independently checkable documentation fixes into bullets. A's suggestion includes an unrelated argument line and makes the two actions less skimmable."
+        },
+        {
+          "id": 3096650221,
+          "winner": "production",
+          "reason": "A states the preferred change first and contains the exception as a concise fallback. B makes the reader process the conditional explanation before reaching the requested replacement."
+        },
+        {
+          "id": 3102848524,
+          "winner": "production",
+          "reason": "B keeps the same diagnosis but puts the exact minimal assertion directly in the requested action. It is easier to act on without consulting a separate suggestion block."
+        },
+        {
+          "id": 3134292915,
+          "winner": "baseline",
+          "reason": "B reinforces the primary fix with a directly applicable mapping suggestion. The added snippet is narrowly scoped and makes the intended replacement easier to retain."
+        },
+        {
+          "id": 3153765816,
+          "winner": "tie",
+          "reason": "Both versions state the typo, concrete consequence, and complete rename scope with equal clarity. The sentence split in A does not materially change readability."
+        },
+        {
+          "id": 3161743720,
+          "winner": "tie",
+          "reason": "The versions are identical, including the concrete title and filename examples."
+        },
+        {
+          "id": 3161807141,
+          "winner": "production",
+          "reason": "A leads with the crash condition and gives a complete conditional instruction. B opens with a question and an ignore clause before the actionable point."
+        },
+        {
+          "id": 3493867085,
+          "winner": "production",
+          "reason": "B puts the requested abstraction in a direct final instruction and groups the compatibility rationale before it. A is more conversational and makes the requested outcome less prominent among asides and links."
+        },
+        {
+          "id": 3520340907,
+          "winner": "production",
+          "reason": "B states both path and branch discrepancies before asking for confirmation. A's opening question delays the concrete mismatch the author needs to inspect."
+        },
+        {
+          "id": 3652735574,
+          "winner": "production",
+          "reason": "B separates the diagnostic question from the resulting request and makes retaining the conventional key an explicit action. A leaves that action as a conditional possibility."
+        },
+        {
+          "id": 3653129512,
+          "winner": "baseline",
+          "reason": "B presents the implementation as an inline suggestion, so the exact change is immediately applicable in the review pane. Neither version explains the defect in prose, but the suggestion format improves actionability."
+        },
+        {
+          "id": 3677101235,
+          "winner": "baseline",
+          "reason": "B uses a descriptive heading and separates cause, consequence, and required output behavior. Its less imperative closing still makes the replacement behavior clear."
+        },
+        {
+          "id": 3677104436,
+          "winner": "baseline",
+          "reason": "B's heading exposes the failure mode, and its paragraph boundaries isolate the example from the collision-discovery scope. The final recommendation remains clear despite using softer wording."
+        },
+        {
+          "id": 3677218975,
+          "winner": "production",
+          "reason": "A explicitly directs the coordinated version update after naming the incompatible fields and affected artifacts. B is well structured but leaves the central action as a possibility."
+        },
+        {
+          "id": 3677354603,
+          "winner": "production",
+          "reason": "B uses an explicit request while preserving the applicability condition and delegation caveat. A's separated structure is good, but its modal recommendation is less memorable as a required change."
+        },
+        {
+          "id": 3677461204,
+          "winner": "tie",
+          "reason": "A makes the requested catch-boundary change explicit, while B makes the cause and remedy easier to scan as separate units. The tradeoff is not material for this short comment."
+        },
+        {
+          "id": 3677564751,
+          "winner": "baseline",
+          "reason": "B separates the input problem, exposure scope, and validation rules into easy-to-read units. Its closing still specifies all required validation constraints."
+        },
+        {
+          "id": 3677669726,
+          "winner": "baseline",
+          "reason": "B breaks the serialization mismatch into short causal steps before stating the desired contract. A contains the same information but requires untangling a long sentence."
+        },
+        {
+          "id": 3677713059,
+          "winner": "baseline",
+          "reason": "B gives the cross-revision failure, metadata fallback, and pinning remedy in separate readable chunks. The requested provenance separation remains visible in the final sentence."
+        },
+        {
+          "id": 3699205371,
+          "winner": "baseline",
+          "reason": "B separates the reproduced behavior from the recommendation, reducing the load of the long technical explanation. The generated-by footer is distracting, but the structural improvement matters more in a narrow pane."
+        }
+      ]
+    }
+  },
+  "aggregate_winner_counts": {
+    "production": 33,
+    "baseline": 20,
+    "tie": 22
+  },
+  "aggregate_mean_scores": {
+    "production": {
+      "defect_clarity": 4.44,
+      "action_recall": 4.667,
+      "scanability": 3.893,
+      "naturalness": 4.373,
+      "cognitive_ease": 4.107
+    },
+    "baseline": {
+      "defect_clarity": 4.32,
+      "action_recall": 3.987,
+      "scanability": 4.12,
+      "naturalness": 4.08,
+      "cognitive_ease": 4.173
+    }
+  },
+  "deltas": {
+    "defect_clarity": 0.12,
+    "action_recall": 0.68,
+    "scanability": -0.227,
+    "naturalness": 0.293,
+    "cognitive_ease": -0.066
+  },
+  "decision": "The exact production path wins 33-20 with 22 ties. It improves defect clarity, action recall, and naturalness, while average scanability and cognitive ease remain slightly below the raw baseline.",
+  "changed_rows_only": {
+    "rows": 24,
+    "judgments": 72,
+    "winner_counts": {
+      "production": 33,
+      "baseline": 20,
+      "tie": 19
+    },
+    "mean_scores": {
+      "production": {
+        "defect_clarity": 4.431,
+        "action_recall": 4.667,
+        "scanability": 3.861,
+        "naturalness": 4.361,
+        "cognitive_ease": 4.083
+      },
+      "baseline": {
+        "defect_clarity": 4.306,
+        "action_recall": 3.958,
+        "scanability": 4.097,
+        "naturalness": 4.056,
+        "cognitive_ease": 4.153
+      }
+    },
+    "deltas": {
+      "defect_clarity": 0.125,
+      "action_recall": 0.709,
+      "scanability": -0.236,
+      "naturalness": 0.305,
+      "cognitive_ease": -0.07
+    }
+  }
+}
