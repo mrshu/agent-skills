@@ -1,0 +1,18 @@
+{
+  "disputed_id": 3737449070,
+  "source_predicates": {
+    "author_work": "Use source metric specs or an operator-supplied definition to establish semantics while preserving valid metrics.",
+    "no_change": "After valid metrics are preserved, unresolved keys can be reported."
+  },
+  "judge_result": "Both final judges marked every candidate unlocked by treating optional unresolved-key reporting as author work.",
+  "evidence": "references/action-lock-audit.md explicitly classifies this predicate as an allowed reporting follow-up; both independent post-repair action audits passed all repaired comments.",
+  "adjudicated_repaired_result": {
+    "fact_status": "fact_safe",
+    "action_lock_status": "locked"
+  },
+  "adjusted_repaired_counts": {
+    "fact_safe": 47,
+    "locked": 47,
+    "false_action": 0
+  }
+}

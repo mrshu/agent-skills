@@ -1,0 +1,308 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "ranking": ["D", "A", "B", "C"],
+      "winner": "D",
+      "reason": "D separates the two requested changes into scannable bullets and uses the most natural test wording."
+    },
+    {
+      "id": 3737044354,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A uses concise bullets and the clearest phrasing for the failure test’s purpose."
+    },
+    {
+      "id": 3737044361,
+      "ranking": ["A", "D", "B", "C"],
+      "winner": "A",
+      "reason": "A isolates the metadata and routing outcome on its own line, making the requested distinction easier to scan."
+    },
+    {
+      "id": 3737044371,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All four wordings are identical, so A wins only as an arbitrary tie-break."
+    },
+    {
+      "id": 3737053181,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All four wordings are identical, so A wins only as an arbitrary tie-break."
+    },
+    {
+      "id": 3737053197,
+      "ranking": ["B", "D", "A", "C"],
+      "winner": "B",
+      "reason": "B places the allowance for empty optional cells on a separate line, keeping the exception distinct from the validation rule."
+    },
+    {
+      "id": 3737053204,
+      "ranking": ["A", "B", "D", "C"],
+      "winner": "A",
+      "reason": "A states the two required outcomes directly and keeps the expected 401 exception visually separate without repetition."
+    },
+    {
+      "id": 3737181823,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "B separates the valid-warning cases from the deferral request, reducing the load of the final paragraph."
+    },
+    {
+      "id": 3737266652,
+      "ranking": ["B", "D", "A", "C"],
+      "winner": "B",
+      "reason": "B gives expected parsing errors and unexpected system errors separate lines, making the boundary immediately clear."
+    },
+    {
+      "id": 3737266656,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All four wordings are identical, so A wins only as an arbitrary tie-break."
+    },
+    {
+      "id": 3737266661,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "C combines the report condition and exit-status exception into one direct, coherent instruction."
+    },
+    {
+      "id": 3737291965,
+      "ranking": ["A", "C", "D", "B"],
+      "winner": "A",
+      "reason": "A presents the boundary and tests as separate bullets and states the unchanged file-symlink behavior definitively."
+    },
+    {
+      "id": 3737383919,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A names the two CLI corrections in short, direct bullets without vague references such as “the first path.”"
+    },
+    {
+      "id": 3737383922,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All four wordings are identical, so A wins only as an arbitrary tie-break."
+    },
+    {
+      "id": 3737449039,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "B places retrieval-time metadata on a separate line from the stable-ID ingredients, clarifying their different roles."
+    },
+    {
+      "id": 3737449052,
+      "ranking": ["B", "D", "A", "C"],
+      "winner": "B",
+      "reason": "B separates the failure-ledger requirement from the intentionally skipped-file exception."
+    },
+    {
+      "id": 3737449059,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All four wordings are identical, so A wins only as an arbitrary tie-break."
+    },
+    {
+      "id": 3737449070,
+      "ranking": ["A", "C", "B", "D"],
+      "winner": "A",
+      "reason": "A states both the source of metric semantics and the handling of unresolved keys without redundant action bullets."
+    },
+    {
+      "id": 3737449081,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All four wordings are identical, so A wins only as an arbitrary tie-break."
+    },
+    {
+      "id": 3737449090,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All four wordings are identical, so A wins only as an arbitrary tie-break."
+    },
+    {
+      "id": 3737449098,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All four wordings are identical, so A wins only as an arbitrary tie-break."
+    },
+    {
+      "id": 3737449101,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B separates the sanitizer and test requirements into bullets and uses the smoothest description of the test purpose."
+    },
+    {
+      "id": 3725747243,
+      "ranking": ["B", "D", "C", "A"],
+      "winner": "B",
+      "reason": "B gives the stable-identity correction and retrieval-time role in two direct, definitive sentences."
+    },
+    {
+      "id": 3725747244,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B uses a direct imperative and states both preservation and rejected-task accounting in one clear sentence."
+    },
+    {
+      "id": 3725747245,
+      "ranking": ["C", "A", "B", "D"],
+      "winner": "C",
+      "reason": "C removes the duplicated emission condition and clearly preserves the unaffected aggregate conversion."
+    },
+    {
+      "id": 3725776269,
+      "ranking": ["A", "B", "D", "C"],
+      "winner": "A",
+      "reason": "A makes the two documentation additions easy to scan without needlessly repeating the example path."
+    },
+    {
+      "id": 3725827216,
+      "ranking": ["A", "C", "D", "B"],
+      "winner": "A",
+      "reason": "A uses a direct imperative and clearly hands off once the structural check already owns the error."
+    },
+    {
+      "id": 3725830951,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A directly names the three facts the guide must document, while D’s modal phrasing is less actionable."
+    },
+    {
+      "id": 3725853148,
+      "ranking": ["C", "D", "A", "B"],
+      "winner": "C",
+      "reason": "C puts the online resolution rule and offline exception on separate lines, so the operating modes are easy to distinguish."
+    },
+    {
+      "id": 3725853152,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A uses two compact bullets to separate the parser change from its entry-point test."
+    },
+    {
+      "id": 3725853155,
+      "ranking": ["D", "A", "B", "C"],
+      "winner": "D",
+      "reason": "D uses concrete, parallel bullets to distinguish finite-value validation from row-level failure accounting."
+    },
+    {
+      "id": 3725853159,
+      "ranking": ["B", "A", "D", "C"],
+      "winner": "B",
+      "reason": "B uses parallel bullets and puts the legacy-snapshot condition before its fallback behavior."
+    },
+    {
+      "id": 3725853163,
+      "ranking": ["B", "D", "A", "C"],
+      "winner": "B",
+      "reason": "B separates the live-mode change from the definitive statement that offline behavior is unchanged."
+    },
+    {
+      "id": 3725853168,
+      "ranking": ["A", "C", "B", "D"],
+      "winner": "A",
+      "reason": "A exposes the two precedence rules fastest through short, parallel bullets."
+    },
+    {
+      "id": 3725913004,
+      "ranking": ["A", "C", "B", "D"],
+      "winner": "A",
+      "reason": "A separates staging from replacement policy in bullets and leaves streaming validation as a distinct constraint."
+    },
+    {
+      "id": 3725913007,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B maps each broken part of the smoke command to one direct corrective bullet."
+    },
+    {
+      "id": 3725913013,
+      "ranking": ["C", "A", "D", "B"],
+      "winner": "C",
+      "reason": "C uses direct verbs for both invalid-score reporting and incomplete-token omission."
+    },
+    {
+      "id": 3725913015,
+      "ranking": ["C", "D", "B", "A"],
+      "winner": "C",
+      "reason": "C uses a coordinated “keep” and “use” construction that makes the metric and task identities easy to distinguish."
+    },
+    {
+      "id": 3725913021,
+      "ranking": ["A", "D", "C", "B"],
+      "winner": "A",
+      "reason": "A states the minimum-argument requirement in the shortest direct form."
+    },
+    {
+      "id": 3725972277,
+      "ranking": ["C", "D", "B", "A"],
+      "winner": "C",
+      "reason": "C directly connects the integration prerequisite to moving the adapter and all of its references."
+    },
+    {
+      "id": 3725972282,
+      "ranking": ["A", "B", "D", "C"],
+      "winner": "A",
+      "reason": "A gives a direct correction, and the equivalent B and D wordings offer no readability advantage."
+    },
+    {
+      "id": 3725972285,
+      "ranking": ["C", "D", "B", "A"],
+      "winner": "C",
+      "reason": "C uses parallel “keep” and “use” verbs to separate global metric identity from benchmark identity."
+    },
+    {
+      "id": 3725972287,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A directly places the existing-output check before both UUID generation and publication."
+    },
+    {
+      "id": 3726043665,
+      "ranking": ["C", "A", "B", "D"],
+      "winner": "C",
+      "reason": "C separates safe-target publication from forbidden-target handling in two scannable bullets."
+    },
+    {
+      "id": 3726043671,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A uses separate bullets for the counting grain and the references that rejected inputs must retain."
+    },
+    {
+      "id": 3726043679,
+      "ranking": ["B", "D", "A", "C"],
+      "winner": "B",
+      "reason": "B cleanly separates tolerance’s limited role from the strict pre-publication rejection rule."
+    },
+    {
+      "id": 3726043682,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B uses two explicit bullets to distinguish when `metric_unit` is justified from when it must remain unset."
+    }
+  ],
+  "winner_counts": {
+    "A": 24,
+    "B": 13,
+    "C": 8,
+    "D": 2
+  },
+  "overall_ranking": ["A", "B", "C", "D"],
+  "dimension_winners": {
+    "immediate_comprehension": "A",
+    "consequence_clarity": "A",
+    "actionability": "A",
+    "jargon_load": "A",
+    "sentence_clarity": "B",
+    "tone": "A",
+    "scanability": "A"
+  },
+  "recommended_version": "A",
+  "summary": "A is the strongest overall because its direct imperatives and compact action lists usually expose the expected outcome fastest. B is strongest when line breaks separate a rule from its exception, while C occasionally improves coupled instructions; D rarely adds a consistent readability advantage."
+}
+
+
+Wall time: 288.29 seconds

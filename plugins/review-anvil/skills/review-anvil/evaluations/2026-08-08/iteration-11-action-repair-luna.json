@@ -1,0 +1,30 @@
+[
+  {
+    "id": "3737383919",
+    "rendered_requested_work": "**Requested actions**\n\n- Require one or more `--models` values to block the bare-flag full-run path.\n- Add a no-match check; it can stop before existing-output discovery or publication."
+  },
+  {
+    "id": "3725747243",
+    "rendered_requested_work": "Please use a stable source-run timestamp or deterministic token to keep the required ID shape. `retrieved_timestamp` can continue to record retrieval time."
+  },
+  {
+    "id": "3725853159",
+    "rendered_requested_work": "**Requested actions**\n\n- Store pinned prompt content in new snapshots.\n- For legacy snapshots, leave this typed value unset and mark the missing content."
+  },
+  {
+    "id": "3725853168",
+    "rendered_requested_work": "**Requested actions**\n\n- Give exact canonical IDs precedence.\n- Resolve normalized spellings only when one organization owns them."
+  },
+  {
+    "id": "3726043665",
+    "rendered_requested_work": "**Requested actions**\n\n- Use the batch publisher for new or empty targets.\n- Make symlinks, roots, and populated targets fail by default until replacement has an explicit ownership manifest."
+  },
+  {
+    "id": "3726043679",
+    "rendered_requested_work": "**Requested actions**\n\n- Limit tolerance to scale classification only.\n- Add a strict pre-publication check to reject unproven overruns."
+  },
+  {
+    "id": "3726043682",
+    "rendered_requested_work": "**Requested actions**\n\n- Set `metric_unit` only when the canonical contract or an explicit conversion proves it.\n- Otherwise, leave `metric_unit` unset; `pwc_scale` can remain in details."
+  }
+]

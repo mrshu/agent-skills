@@ -512,6 +512,10 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 
    Keep a no-change boundary as modal prose after the action it limits. Preserve accepted current behavior or an explicitly optional follow-up as standalone modal prose. Request the smallest new mechanism needed to resolve the failure, but keep each required purpose, result, or safety clause with the action it constrains. Treat source-backed verification or documentation stated to cover, demonstrate, clarify, or make a required boundary clear as author work unless it is explicitly optional. Do not convert acceptable unchanged behavior, an allowed implementation boundary, or an explicitly optional follow-up into mandatory work.
 
+   Before drafting, freeze the exact requested-work prose and the minimum source context needed to resolve antecedents and current-versus-target behavior from each accepted synthesized finding. Run the independent post-render action-lock audit in `references/action-lock-audit.md` before writing inline JSON. Give its clean verifier only that frozen context, the frozen source requested-work prose, and each rendered request/boundary section; do not send unrelated evidence or repository context.
+
+   Repair only failed inline bodies and audit them once more. If the second audit still fails, restore the exact source requested-work prose for that comment instead of paraphrasing it again. Never omit the finding or a requested predicate to make the audit pass.
+
 3. Write a sibling `<report_path>.approval.json` so the PR-posting helper can choose the GitHub review event (review-only PR runs; for other runs write `{"event": "COMMENT"}` or omit the file — the helper defaults to COMMENT):
 
    ```json

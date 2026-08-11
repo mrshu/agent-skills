@@ -1,0 +1,100 @@
+Working...
+{
+  "items": [
+    {
+      "id": "3737383919",
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate \"A no-match check\" is author work, but rendered phrase \"Stop a no-match run before existing-output discovery or publication.\" does not directly request adding the check."
+      ],
+      "false_actions": [
+        "Rendered action \"Stop a no-match run before existing-output discovery or publication.\" derives from the allowed boundary \"A no-match check can stop before existing-output discovery or publication.\" and changes that permitted stopping point into a requirement."
+      ],
+      "fact_losses": [
+        "Source purpose clause \"to block the first path\" is absent from rendered phrase \"Require one or more `--models` values.\""
+      ],
+      "repair_instructions": [
+        "Directly request requiring one or more values to block the first path.",
+        "Directly request a no-match check.",
+        "Keep stopping before existing-output discovery or publication as an allowed boundary, not a required action."
+      ]
+    },
+    {
+      "id": "3725747243",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725747245",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725853159",
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate \"Legacy snapshots can leave this typed value unset and mark the missing content.\" appears only as modal prose in rendered phrase \"Legacy snapshots can leave this typed value unset and mark the missing content.\", not as a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Make the legacy-snapshot behavior a direct request: leave the typed value unset and mark the missing content."
+      ]
+    },
+    {
+      "id": "3725853168",
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate \"Normalized spellings can resolve only when one organization owns them.\" appears only as modal prose in rendered phrase \"Normalized spellings can resolve only when one organization owns them.\", not as a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Directly request that normalized spellings resolve only when one organization owns them."
+      ]
+    },
+    {
+      "id": "3726043665",
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate \"Symlinks, roots, and populated targets can fail by default until replacement has an explicit ownership manifest.\" appears only as modal prose in rendered phrase \"Symlinks, roots, and populated targets can fail by default until replacement has an explicit ownership manifest.\", not as a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Directly request default failure for symlinks, roots, and populated targets until replacement has an explicit ownership manifest."
+      ]
+    },
+    {
+      "id": "3726043679",
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate \"Tolerance can support scale classification only.\" appears only as modal prose in rendered phrase \"Tolerance can support scale classification only.\", not as a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Directly request that tolerance support scale classification only, alongside the strict pre-publication check."
+      ]
+    },
+    {
+      "id": "3726043682",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    }
+  ],
+  "pass_count": 3,
+  "fail_count": 5
+}
+
+
+Wall time: 128.91 seconds

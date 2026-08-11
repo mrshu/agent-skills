@@ -1,0 +1,1 @@
+Apply the independent auditor prompt in the attached action-lock protocol to every attached audit row. Treat source_requested_work as authoritative. Return valid, pretty-printed JSON only in the protocol schema. Include every input ID exactly once. Do not rewrite comments and do not emit Markdown fences.

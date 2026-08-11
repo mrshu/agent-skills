@@ -1,0 +1,423 @@
+{
+  "items": [
+    {
+      "id": "3737042592",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737044354",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737044361",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737044371",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737053181",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737053197",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737053204",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737181823",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737266652",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737266656",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737266661",
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate `keeping the nonzero exit conditional on failures` is a required safety constraint, but rendered phrase `The nonzero exit can remain conditional on failures.` leaves it as modal boundary prose rather than a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Make source predicate `keeping the nonzero exit conditional on failures` a direct safety constraint attached to rendered request `Please save the shared report for either collection.`, replacing the non-direct rendered phrase `The nonzero exit can remain conditional on failures.`"
+      ]
+    },
+    {
+      "id": "3737291965",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737383919",
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate `Require one or more values to block the first path` includes the required purpose `to block the first path`, but rendered phrase `Require one or more `--models` values.` omits that purpose."
+      ],
+      "false_actions": [
+        "Source predicate `Require one or more values to block the first path` does not identify `--models`; rendered phrase `Require one or more `--models` values.` invents a more specific action target."
+      ],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Restore source purpose `to block the first path` as part of the direct request and remove unsupported identifier `--models` from rendered phrase `Require one or more `--models` values.`"
+      ]
+    },
+    {
+      "id": "3737383922",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737449039",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737449052",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737449059",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737449070",
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate `Unresolved keys can be reported after the valid metrics are preserved` requires reporting unresolved keys after preserving valid metrics, but rendered phrase `After valid metrics are preserved, unresolved keys can be reported.` leaves reporting as modal prose rather than a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [
+        "Source predicate `use source metric specs or an operator-supplied definition to establish the semantics` has no condition limiting the action to keys without matching metric specs, but rendered phrase `Use source metric specs or an operator-supplied definition to establish semantics for result keys without matching metric specs.` adds that condition and narrows the action scope."
+      ],
+      "repair_instructions": [
+        "Make source predicate `Unresolved keys can be reported after the valid metrics are preserved` a direct request with the preservation order intact, instead of rendered phrase `After valid metrics are preserved, unresolved keys can be reported.`"
+      ],
+      "repair_instructions_note": []
+    },
+    {
+      "id": "3737449081",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737449090",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737449098",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3737449101",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725747243",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725747244",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725747245",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725776269",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725827216",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725830951",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725853148",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725853152",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725853155",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725853159",
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate `Legacy snapshots can leave this typed value unset and mark the missing content` contains required author work to `mark the missing content`, but rendered phrase `Legacy snapshots can leave this typed value unset and mark the missing content.` leaves that action only in modal prose."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Split source predicate `Legacy snapshots can leave this typed value unset and mark the missing content`: keep leaving the typed value unset as the boundary, and make `mark the missing content` a direct request instead of leaving both in rendered phrase `Legacy snapshots can leave this typed value unset and mark the missing content.`"
+      ]
+    },
+    {
+      "id": "3725853163",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725853168",
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate `Normalized spellings can resolve only when one organization owns them` is a required condition on normalized resolution, but rendered phrase `Normalized spellings can resolve only when one organization owns them.` leaves it as modal prose rather than a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Attach source condition `Normalized spellings can resolve only when one organization owns them` directly to the request for exact-canonical-ID precedence, replacing the non-direct rendered phrase `Normalized spellings can resolve only when one organization owns them.`"
+      ]
+    },
+    {
+      "id": "3725913004",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725913007",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725913013",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725913015",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [
+        "Source predicate ``accuracy` can remain the metric ID` is a no-change boundary, but rendered phrase `Please keep `accuracy` as the metric ID` turns it into a direct author action."
+      ],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Keep source predicate ``accuracy` can remain the metric ID` as a no-change boundary rather than direct rendered request `Please keep `accuracy` as the metric ID`; retain the direct request for `evaluation_name` to distinguish tasks."
+      ]
+    },
+    {
+      "id": "3725913021",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [
+        "Source predicate `The option can require at least one path.` does not name `--parquet`; rendered phrase `Please require at least one path for `--parquet`.` invents a specific action target."
+      ],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Preserve source target `The option` in a direct request and remove unsupported identifier `--parquet` from rendered phrase `Please require at least one path for `--parquet`.`"
+      ]
+    },
+    {
+      "id": "3725972277",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725972282",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725972285",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [
+        "Source predicate ``accuracy` can remain the metric ID` is a no-change boundary, but rendered phrase `Please keep `accuracy` as the metric ID` turns it into a direct author action."
+      ],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Keep source predicate ``accuracy` can remain the metric ID` as a no-change boundary rather than direct rendered request `Please keep `accuracy` as the metric ID`; retain the direct request for task-specific evaluation names to preserve benchmark identity."
+      ]
+    },
+    {
+      "id": "3725972287",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3726043665",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3726043671",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3726043679",
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate `Tolerance can support scale classification only` is a required restriction on tolerance, but rendered phrase `Tolerance can support scale classification only.` leaves it as modal prose rather than a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Make source restriction `Tolerance can support scale classification only` a direct request attached to the strict pre-publication check, replacing the non-direct rendered phrase `Tolerance can support scale classification only.`"
+      ]
+    },
+    {
+      "id": "3726043682",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    }
+  ],
+  "pass_count": 38,
+  "fail_count": 9
+}

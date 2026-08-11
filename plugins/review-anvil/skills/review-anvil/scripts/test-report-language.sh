@@ -12,6 +12,7 @@ REVIEWER="$ROOT/references/reviewer-prompt.md"
 REPRODUCTION="$ROOT/references/reproduction-prompt.md"
 ADVERSARIAL="$ROOT/references/adversarial-prompt.md"
 STYLE="$ROOT/references/asd-ste100-inspired.md"
+ACTION_LOCK="$ROOT/references/action-lock-audit.md"
 READONLY="$ROOT/../review-anvil-readonly/SKILL.md"
 IMPROVE_PRESET="$ROOT/../review-anvil-improve-pr/SKILL.md"
 PR_HELPER="$ROOT/../review-anvil-pr/scripts/pr-helper.sh"
@@ -173,6 +174,34 @@ require "$ARTIFACTS" 'Please preserve valid metrics while using source metric sp
 require "$ARTIFACTS" 'Two verbs that establish one invariant on the same record or output remain one obligation.'
 require "$ARTIFACTS" 'After valid metrics are preserved, unresolved keys can be reported.'
 require "$ARTIFACTS" 'Delete a source clause only when another retained clause states the same fact.'
+require "$ENGINE" 'Run the independent post-render action-lock audit in `references/action-lock-audit.md` before writing inline JSON.'
+require "$ENGINE" 'Repair only failed inline bodies and audit them once more.'
+require "$ENGINE" 'restore the exact source requested-work prose'
+require "$ACTION_LOCK" '# Post-Render Action-Lock Audit'
+require "$ENGINE" 'minimum source context needed to resolve antecedents and current-versus-target behavior'
+require "$ACTION_LOCK" '"source_context"'
+require "$ACTION_LOCK" 'Use `source_context` only to resolve antecedents and current-versus-target'
+require "$ACTION_LOCK" 'Do not derive new work from it.'
+require "$ACTION_LOCK" 'The already'
+require "$ACTION_LOCK" 'correct exit condition is a no-change boundary.'
+require "$ACTION_LOCK" '`accuracy` can remain the metric ID'
+require "$ACTION_LOCK" 'Make preservation'
+require "$ACTION_LOCK" 'explicit; do not request reporting.'
+require "$ACTION_LOCK" 'permitted point into a “Stop before…” action.'
+require "$ACTION_LOCK" 'Do not fold it into the stable-ID request.'
+require "$ACTION_LOCK" 'Preserve every source condition on accepted current behavior exactly.'
+require "$ACTION_LOCK" 'Compare source meaning with rendered obligation status.'
+require "$ACTION_LOCK" 'Do not classify by modal grammar.'
+require "$ACTION_LOCK" 'build an internal predicate ledger for each item.'
+require "$ACTION_LOCK" 'Return `pass` only when every ledger row is mapped correctly.'
+require "$ACTION_LOCK" '"status": "pass | fail"'
+require "$ACTION_LOCK" '"missing_author_work"'
+require "$ACTION_LOCK" '"false_actions"'
+require "$ACTION_LOCK" '"fact_losses"'
+require "$ACTION_LOCK" 'Return every input ID exactly once.'
+require "$ACTION_LOCK" 'Never rewrite a comment.'
+require "$ACTION_LOCK" 'The renderer repairs only failed comments.'
+require "$ACTION_LOCK" 'If the second audit still fails, restore the exact source requested-work prose.'
 require "$ENGINE" '- Check the state token before rotating the session.'
 require "$ENGINE" '- Increment `attempts_succeeded` only after `insert_event` returns.'
 require "$ENGINE" '- Reject invalid tokens without creating sessions.'

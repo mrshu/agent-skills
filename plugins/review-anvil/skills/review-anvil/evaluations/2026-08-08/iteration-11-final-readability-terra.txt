@@ -1,0 +1,308 @@
+Working...
+{
+  "per_comment": [
+    {
+      "id": 3737042592,
+      "ranking": ["C", "D", "A", "B"],
+      "winner": "C",
+      "reason": "C states the two requested outcomes in direct prose without the extra review-process heading."
+    },
+    {
+      "id": 3737044354,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A’s separate bullets make the recovery requirement and test coverage immediately scannable."
+    },
+    {
+      "id": 3737044361,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "B keeps the requested identity change and permitted metadata use together in one easy-to-follow sentence."
+    },
+    {
+      "id": 3737044371,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All versions are equally clear, so A wins the otherwise indistinguishable tie."
+    },
+    {
+      "id": 3737053181,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All versions are equally clear, so A wins the otherwise indistinguishable tie."
+    },
+    {
+      "id": 3737053197,
+      "ranking": ["A", "C", "B", "D"],
+      "winner": "A",
+      "reason": "A keeps the validation rule and allowed empty-cell exception in one coherent request."
+    },
+    {
+      "id": 3737053204,
+      "ranking": ["C", "A", "B", "D"],
+      "winner": "C",
+      "reason": "C separates the two operational requirements into bullets while retaining the relevant 401 exception."
+    },
+    {
+      "id": 3737181823,
+      "ranking": ["A", "D", "B", "C"],
+      "winner": "A",
+      "reason": "A presents the defer condition and retained warning path as a compact, connected instruction."
+    },
+    {
+      "id": 3737266652,
+      "ranking": ["A", "C", "B", "D"],
+      "winner": "A",
+      "reason": "A connects the narrow error boundary directly to the intended treatment of unexpected errors."
+    },
+    {
+      "id": 3737266656,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All versions are equally clear, so A wins the otherwise indistinguishable tie."
+    },
+    {
+      "id": 3737266661,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "C expresses the report condition and preserved failure exit behavior as one concise outcome."
+    },
+    {
+      "id": 3737291965,
+      "ranking": ["C", "D", "A", "B"],
+      "winner": "C",
+      "reason": "C uses scannable actions and clearly isolates the unchanged file-symlink boundary."
+    },
+    {
+      "id": 3737383919,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "B explicitly links requiring values to preventing the dangerous bare-option full run."
+    },
+    {
+      "id": 3737383922,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All versions are equally clear, so A wins the otherwise indistinguishable tie."
+    },
+    {
+      "id": 3737449039,
+      "ranking": ["A", "D", "B", "C"],
+      "winner": "A",
+      "reason": "A keeps the stable-ID ingredients and the retrieval-time exception in a single readable instruction."
+    },
+    {
+      "id": 3737449052,
+      "ranking": ["A", "C", "B", "D"],
+      "winner": "A",
+      "reason": "A clearly pairs the failure-ledger outcome with the explicit exclusion boundary."
+    },
+    {
+      "id": 3737449059,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All versions are equally clear, so A wins the otherwise indistinguishable tie."
+    },
+    {
+      "id": 3737449070,
+      "ranking": ["C", "A", "B", "D"],
+      "winner": "C",
+      "reason": "C makes the sequence clear: establish semantics first, then report only unresolved keys."
+    },
+    {
+      "id": 3737449081,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All versions are equally clear, so A wins the otherwise indistinguishable tie."
+    },
+    {
+      "id": 3737449090,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All versions are equally clear, so A wins the otherwise indistinguishable tie."
+    },
+    {
+      "id": 3737449098,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "All versions are equally clear, so A wins the otherwise indistinguishable tie."
+    },
+    {
+      "id": 3737449101,
+      "ranking": ["C", "B", "D", "A"],
+      "winner": "C",
+      "reason": "C’s bullets separate the sanitizer change from the focused test expectation cleanly."
+    },
+    {
+      "id": 3725747243,
+      "ranking": ["C", "B", "D", "A"],
+      "winner": "C",
+      "reason": "C gives a direct corrective action and names the proper retrieval-time field without extra wording."
+    },
+    {
+      "id": 3725747244,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B directly names both the task-level boundary and its two observable outcomes."
+    },
+    {
+      "id": 3725747245,
+      "ranking": ["C", "D", "A", "B"],
+      "winner": "C",
+      "reason": "C gives the concrete emission condition first, followed by the preserved aggregate behavior."
+    },
+    {
+      "id": 3725776269,
+      "ranking": ["C", "A", "B", "D"],
+      "winner": "C",
+      "reason": "C turns the repeated-data path into a concrete documentation example, reducing interpretation work."
+    },
+    {
+      "id": 3725827216,
+      "ranking": ["A", "C", "D", "B"],
+      "winner": "A",
+      "reason": "A directly identifies the condition that should stop the duplicate identity warning."
+    },
+    {
+      "id": 3725830951,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A directly requests the missing guide section and lists the three facts it must convey."
+    },
+    {
+      "id": 3725853148,
+      "ranking": ["A", "C", "D", "B"],
+      "winner": "A",
+      "reason": "A gives a direct commit-resolution action and plainly preserves the offline exception."
+    },
+    {
+      "id": 3725853152,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A’s two short bullets make the parser migration and regression coverage easy to scan."
+    },
+    {
+      "id": 3725853155,
+      "ranking": ["A", "B", "D", "C"],
+      "winner": "A",
+      "reason": "A’s bullets make the validation timing and failure-accounting destination immediately clear."
+    },
+    {
+      "id": 3725853159,
+      "ranking": ["A", "B", "D", "C"],
+      "winner": "A",
+      "reason": "A cleanly distinguishes the new-snapshot behavior from the legacy-snapshot fallback."
+    },
+    {
+      "id": 3725853163,
+      "ranking": ["A", "B", "D", "C"],
+      "winner": "A",
+      "reason": "A directly states the live-mode change and the unchanged offline behavior."
+    },
+    {
+      "id": 3725853168,
+      "ranking": ["C", "B", "A", "D"],
+      "winner": "C",
+      "reason": "C states the precedence rule and collision condition in one compact, unambiguous sentence."
+    },
+    {
+      "id": 3725913004,
+      "ranking": ["A", "C", "B", "D"],
+      "winner": "A",
+      "reason": "A separates the publication safety requirements into two scannable actions and keeps the exception visible."
+    },
+    {
+      "id": 3725913007,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B’s bullets clearly map each documented-command defect to its requested correction."
+    },
+    {
+      "id": 3725913013,
+      "ranking": ["C", "D", "A", "B"],
+      "winner": "C",
+      "reason": "C uses direct verbs and parallel bullets for the score and token-data outcomes."
+    },
+    {
+      "id": 3725913015,
+      "ranking": ["C", "D", "B", "A"],
+      "winner": "C",
+      "reason": "C explicitly assigns each identifier its role with a clear parallel construction."
+    },
+    {
+      "id": 3725913021,
+      "ranking": ["C", "A", "D", "B"],
+      "winner": "C",
+      "reason": "C retains the precise option name while making the required argument count explicit."
+    },
+    {
+      "id": 3725972277,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B breaks the integration prerequisite and destination move into two easy-to-scan actions."
+    },
+    {
+      "id": 3725972282,
+      "ranking": ["A", "B", "D", "C"],
+      "winner": "A",
+      "reason": "A directly names the source of the expected schema value without adding abstraction."
+    },
+    {
+      "id": 3725972285,
+      "ranking": ["C", "D", "B", "A"],
+      "winner": "C",
+      "reason": "C clearly states the stable metric ID and the separate field that preserves benchmark identity."
+    },
+    {
+      "id": 3725972287,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A directly identifies the existing-output check and the point before which it must happen."
+    },
+    {
+      "id": 3726043665,
+      "ranking": ["B", "C", "A", "D"],
+      "winner": "B",
+      "reason": "B makes the safe-target rule and batch-publisher condition separately scannable."
+    },
+    {
+      "id": 3726043671,
+      "ranking": ["A", "B", "C", "D"],
+      "winner": "A",
+      "reason": "A’s parallel bullets make the source-unit rule and retained-reference requirement easy to locate."
+    },
+    {
+      "id": 3726043679,
+      "ranking": ["B", "D", "A", "C"],
+      "winner": "B",
+      "reason": "B provides two ordered, concrete actions with the tolerance limitation stated explicitly."
+    },
+    {
+      "id": 3726043682,
+      "ranking": ["B", "C", "D", "A"],
+      "winner": "B",
+      "reason": "B clearly separates when `metric_unit` is justified from the safe unset fallback."
+    }
+  ],
+  "winner_counts": {
+    "A": 25,
+    "B": 8,
+    "C": 14,
+    "D": 0
+  },
+  "overall_ranking": ["A", "C", "B", "D"],
+  "dimension_winners": {
+    "immediate_comprehension": "A",
+    "consequence_clarity": "A",
+    "actionability": "C",
+    "jargon_load": "A",
+    "sentence_clarity": "C",
+    "tone": "C",
+    "scanability": "B"
+  },
+  "recommended_version": "A",
+  "summary": "A most consistently presents concrete requests in direct, readable language, often with useful scan-friendly bullets. C is strongest where it removes process framing or improves sentence flow, while B performs best when separate actions benefit from explicit structure."
+}
+
+
+Wall time: 141.07 seconds

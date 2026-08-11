@@ -1,0 +1,101 @@
+{
+  "items": [
+    {
+      "id": "3737383919",
+      "status": "fail",
+      "missing_author_work": [
+        "The source author-work predicate \"A no-match check\" is not preserved as the direct action target; the rendered phrase \"Stop a no-match run before existing-output discovery or publication\" directly requests a stopping point instead of directly requesting the check."
+      ],
+      "false_actions": [
+        "The source phrase \"can stop before existing-output discovery or publication\" is an allowed implementation boundary, but the rendered phrase \"Stop a no-match run before existing-output discovery or publication\" turns that permission into a required action."
+      ],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Directly request the source action \"A no-match check\" and remove the direct command derived from \"can stop before existing-output discovery or publication\"; retain that stopping point only as an allowed boundary."
+      ]
+    },
+    {
+      "id": "3725747243",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [
+        "The source phrase \"while `retrieved_timestamp` records retrieval time\" describes accepted current behavior, but the rendered phrase \"and record retrieval time in `retrieved_timestamp`\" turns it into additional author work."
+      ],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Keep the direct request to \"use a stable source-run timestamp or deterministic token to keep the required ID shape,\" but remove the direct request derived from \"while `retrieved_timestamp` records retrieval time\" or state it only as a no-change boundary."
+      ]
+    },
+    {
+      "id": "3725747245",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "3725853159",
+      "status": "fail",
+      "missing_author_work": [
+        "The source author-work predicate \"Legacy snapshots can leave this typed value unset\" appears only in the rendered modal phrase \"Legacy snapshots can leave this typed value unset and mark the missing content,\" not as a direct request.",
+        "The source author-work predicate that legacy snapshots can \"mark the missing content\" appears only in the rendered modal phrase \"Legacy snapshots can leave this typed value unset and mark the missing content,\" not as a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Make both legacy-snapshot predicates direct requests: leave the typed value unset and mark the missing content."
+      ]
+    },
+    {
+      "id": "3725853168",
+      "status": "fail",
+      "missing_author_work": [
+        "The source author-work predicate \"Normalized spellings can resolve only when one organization owns them\" appears only as the rendered modal phrase \"Normalized spellings can resolve only when one organization owns them,\" not as a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Make \"Normalized spellings can resolve only when one organization owns them\" a direct request while preserving its uniqueness condition."
+      ]
+    },
+    {
+      "id": "3726043665",
+      "status": "fail",
+      "missing_author_work": [
+        "The source author-work predicate \"Symlinks, roots, and populated targets can fail by default until replacement has an explicit ownership manifest\" appears only as the rendered modal phrase \"Symlinks, roots, and populated targets can fail by default until replacement has an explicit ownership manifest,\" not as a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Directly request default failure for symlinks, roots, and populated targets, preserving the exact exception \"until replacement has an explicit ownership manifest.\""
+      ]
+    },
+    {
+      "id": "3726043679",
+      "status": "fail",
+      "missing_author_work": [
+        "The source author-work predicate \"Tolerance can support scale classification only\" appears only as the rendered modal phrase \"Tolerance can support scale classification only,\" not as a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Make \"Tolerance can support scale classification only\" a direct request while retaining the already direct strict pre-publication rejection check."
+      ]
+    },
+    {
+      "id": "3726043682",
+      "status": "fail",
+      "missing_author_work": [
+        "The source author-work predicate \"Otherwise it can stay unset\" appears only in the rendered modal phrase \"Otherwise, `metric_unit` can stay unset while `pwc_scale` remains in details,\" not as a direct request. The rendered direct phrase \"set `metric_unit` only when the canonical contract or an explicit conversion proves it\" constrains setting the unit but does not directly request successful handling by leaving it unset otherwise."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "repair_instructions": [
+        "Directly request leaving `metric_unit` unset when neither the canonical contract nor an explicit conversion proves it; keep \"`pwc_scale` remains in details\" only as a no-change boundary."
+      ]
+    }
+  ],
+  "pass_count": 1,
+  "fail_count": 7
+}

@@ -1,0 +1,60 @@
+{
+  "contract_tests": "pass",
+  "action_audit": {
+    "initial_without_context": {
+      "sol": "38 pass / 9 fail",
+      "terra": "41 pass / 6 fail"
+    },
+    "edge_corpus_after_context_and_ledger": {
+      "sol": "7 intended failures detected; safe control passed",
+      "terra": "5 intended failures detected; safe control and two misses passed"
+    },
+    "repairs": 7,
+    "second_audit": {
+      "sol": "7/7 pass",
+      "terra": "7/7 pass"
+    }
+  },
+  "final_fact_action": {
+    "baseline": {
+      "fact_safe": 47,
+      "locked_range": [
+        15,
+        16
+      ]
+    },
+    "luna_pre_audit": {
+      "fact_safe": 45,
+      "locked": 39,
+      "fact_loss": 2,
+      "false_action": 2
+    },
+    "luna_repaired": {
+      "fact_safe": 47,
+      "locked_observed": 46,
+      "locked_adjudicated": 47,
+      "fact_loss": 0,
+      "false_action": 0
+    },
+    "adjudication": "Both judges misclassified the optional unresolved-key reporting boundary in 3737449070; see iteration-11-final-fact-action-adjudication.json."
+  },
+  "final_readability": {
+    "repaired_vs_baseline": {
+      "sol_judge": "41-6 overall; 36-3 on changed comments",
+      "terra_judge": "34-13 overall; 29-10 on changed comments",
+      "combined": "75-19 overall; 65-13 on changed comments",
+      "development_combined": "27-17",
+      "holdout_combined": "48-2"
+    },
+    "repaired_vs_pre_audit_on_7_repairs": {
+      "sol_judge": "6-1",
+      "terra_judge": "4-3"
+    },
+    "repaired_vs_unrepaired_sol": {
+      "sol_judge": "29-18",
+      "terra_judge": "19-28",
+      "combined": "48-46"
+    }
+  },
+  "decision": "Accept the independent action-lock audit and repair protocol. Continue once on a new branch by applying it to the competing Sol renderer, because readability judges split 48-46 between repaired Luna and unrepaired Sol."
+}
