@@ -223,12 +223,18 @@ def append_before_finding_metadata(body, addition):
 
 def infer_severity(item):
     explicit = str(item.get("severity", "")).lower()
-    if explicit in rank:
-        return explicit
     body = item.get("body") or ""
     metadata = terminal_finding_metadata(body)
-    if metadata:
-        return metadata.group("severity").lower()
+    marker_severity = metadata.group("severity").lower() if metadata else None
+    if explicit in rank:
+        if marker_severity and explicit != marker_severity:
+            raise SystemExit(
+                f"pr-helper: inline finding {metadata.group('id')} helper severity "
+                f"{explicit} does not match terminal marker severity {marker_severity}"
+            )
+        return explicit
+    if marker_severity:
+        return marker_severity
     m = re.search(rf"\*\*(?:{finding_id_pattern}\s+)?\[(critical|high|medium|low|nit)\]", body, re.I)
     if m:
         return m.group(1).lower()

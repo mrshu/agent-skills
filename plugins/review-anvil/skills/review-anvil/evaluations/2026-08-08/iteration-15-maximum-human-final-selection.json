@@ -116,14 +116,16 @@
     "full_suite": "passed",
     "payload_smoke": "passed: helper-only fields stripped; suggestion then prior-feedback marker then terminal finding marker",
     "independent_code_review": {
-      "findings": 2,
-      "fixed": 2,
+      "findings": 3,
+      "fixed": 3,
       "regressions": [
         "report suppression carries canonical identity into history matching",
-        "natural title parser accepts asterisks inside inline code"
+        "natural title parser accepts asterisks inside inline code",
+        "process-inline rejects helper severity that disagrees with terminal metadata"
       ]
     },
-    "final_full_suite": "passed after review fixes"
+    "final_full_suite": "passed after review fixes",
+    "severity_authority": "terminal marker and helper field must agree; mismatch aborts before filtering or posting"
   },
   "limitations": [
     "Model judges are not a substitute for a timed study with human PR authors.",

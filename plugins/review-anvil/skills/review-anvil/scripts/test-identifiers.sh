@@ -74,6 +74,8 @@ require "$ENGINE" 'Truly unassigned out-of-scope follow-ups stay distinct and do
 require "$ARTIFACTS" 'Start each identified inline finding with its natural bold title'
 require "$ARTIFACTS" '`<!-- review-anvil: id=<complete-id> severity=<severity> area=<area> -->`.'
 require "$ARTIFACTS" 'The finding-metadata marker remains the final line.'
+require "$ENGINE" 'must match the terminal marker severity exactly; the helper aborts'
+require "$PR_PRESET" 'must match the terminal marker severity exactly; the helper aborts'
 require "$ARTIFACTS" 'ordinary prior-feedback'
 require "$ARTIFACTS" 'carry-forwards do not create a new inline thread.'
 require "$ARTIFACTS" 'The report row, hidden inline marker, reproduction'

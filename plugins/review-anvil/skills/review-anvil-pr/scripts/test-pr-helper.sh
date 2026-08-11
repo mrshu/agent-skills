@@ -246,6 +246,35 @@ JSON
     ' "$inline" >/dev/null
 }
 
+test_process_inline_rejects_severity_mismatch() {
+    local tmp inline original stderr
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    inline="$tmp/inline.json"
+    original="$tmp/original.json"
+    stderr="$tmp/stderr.txt"
+    cat >"$inline" <<'JSON'
+[
+  {
+    "path": "src/publish.py",
+    "line": 61,
+    "side": "RIGHT",
+    "severity": "critical",
+    "body": "**Replacement can delete prior records**\n\nThe old files are removed before validation.\n\n<!-- review-anvil: id=RAV-RUN5-R1-F001 severity=high area=publication -->"
+  }
+]
+JSON
+    cp "$inline" "$original"
+
+    if "$HELPER" process-inline "$inline" 2>"$stderr"; then
+        fail "process-inline must reject helper and marker severity mismatch"
+    fi
+    grep -Fq 'RAV-RUN5-R1-F001' "$stderr"
+    grep -Fq 'helper severity critical does not match terminal marker severity high' "$stderr"
+    cmp -s "$inline" "$original" \
+        || fail "severity mismatch must leave inline JSON unchanged"
+}
+
 test_history_parses_hidden_inline_metadata() {
     local tmp bin fixture output
     tmp="$(mktemp -d)"
@@ -1773,6 +1802,7 @@ main() {
     test_process_inline
     test_process_inline_infers_id_prefixed_severity
     test_process_inline_preserves_terminal_finding_metadata
+    test_process_inline_rejects_severity_mismatch
     test_history_parses_hidden_inline_metadata
     test_hidden_identity_outranks_rewritten_prose
     test_post_review_success

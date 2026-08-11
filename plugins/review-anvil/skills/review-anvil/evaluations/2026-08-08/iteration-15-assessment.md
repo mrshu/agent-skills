@@ -97,10 +97,12 @@ The complete local review-anvil suite passed:
 - `test-reproduction-policy.sh`
 - `test-pr-helper.sh`
 
-Final independent code review found two cutover gaps before commit. The report
-suppression pass did not carry canonical IDs into history matching, and the
-natural-title parser rejected `*` inside code spans such as `` `*.json` ``.
-Both paths now have red-green regression coverage.
+Final independent review found three cutover gaps. The report suppression pass
+did not carry canonical IDs into history matching, the natural-title parser
+rejected `*` inside code spans such as `` `*.json` ``, and inline filtering
+trusted a helper severity that could disagree with the terminal marker.
+All three paths now have red-green regression coverage; severity disagreement
+aborts before filtering or posting and leaves the inline artifact unchanged.
 
 A direct `pr-helper.sh process-inline` smoke test also passed. The processed
 payload contained only GitHub-supported keys; its suggestion block preceded the
