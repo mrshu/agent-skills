@@ -2,7 +2,7 @@
   "corpus": {
     "total": 47,
     "today": 22,
-    "unseen_holdout": 25
+    "prior_held_out_development": 25
   },
   "selected": "luna_repaired_with_publication_boundary_repair",
   "fact_action_gate": {
@@ -25,7 +25,7 @@
         "selected": 26,
         "baseline": 18
       },
-      "unseen_holdout": {
+      "prior_held_out_development": {
         "selected": 47,
         "baseline": 3
       }

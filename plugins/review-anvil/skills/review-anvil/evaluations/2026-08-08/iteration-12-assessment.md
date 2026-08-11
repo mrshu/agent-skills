@@ -6,9 +6,9 @@ Does a repaired Sol rendering beat the repaired Luna rendering after both use th
 
 ## Experiment
 
-The final corpus contains 47 inline comments: the 22 comments available from the requested `every_eval_ever` review runs and a 25-comment unseen holdout from the same repository. Clean, sessionless OMP agents ran with tools, skills, and rules disabled.
+The final corpus contains 47 inline comments: the 22 comments available from the requested `every_eval_ever` review runs and 25 comments that were held out until iteration 8, then used to develop later contracts. Clean, sessionless OMP agents ran with tools, skills, and rules disabled.
 
-Sol generated a fresh 47-comment candidate. Independent Sol and Terra auditors flagged the union of three comments, and Sol repaired those comments. The final blind comparison randomized four versions per finding: today's or unseen baseline, repaired Luna, Sol before audit, and repaired Sol. Fact/action judges saw the source but did not judge style; readability judges did not see the source.
+Sol generated a fresh 47-comment candidate. Independent Sol and Terra auditors flagged the union of three comments, and Sol repaired those comments. The final blind comparison randomized four versions per finding: today's or prior baseline, repaired Luna, Sol before audit, and repaired Sol. Fact/action judges saw the source but did not judge style; readability judges did not see the source.
 
 ## Generator audit result
 
@@ -30,7 +30,7 @@ All three versions preserved the diagnosis facts in the final run. The baseline 
 
 Across the two clean readability judges:
 
-| Pair | All comments | Today's 22 | Unseen 25 |
+| Pair | All comments | Today's 22 | Prior held-out 25 |
 |---|---:|---:|---:|
 | Selected vs baseline | **73–21** | **26–18** | **47–3** |
 | Selected vs repaired Sol | **50–44** | — | — |
@@ -47,8 +47,8 @@ The production contract now:
 2. makes every required author obligation an explicit request;
 3. preserves accepted behavior, permissions, and optional follow-ups as no-change boundaries;
 4. uses one concise `Please` sentence for one obligation and a short action list for two or more;
-5. audits rendered obligation status with a clean verifier;
-6. repairs only failed comments, rechecks them, and restores exact source prose if repair still fails.
+5. audits rendered obligation status with two independent verifiers;
+6. repairs valid failures, rechecks them, and restores exact source prose for any second failure or unverifiable row.
 
 ## What the rounds established
 
@@ -66,14 +66,14 @@ The production contract now:
 
 1. **Ship the current branch contract.** It has the strongest observed balance: 94/94 final fact/action judgments and a 73–21 blind readability win over baseline.
 2. **Keep the audit mandatory for emitted inline comments.** The initial final generators still missed two or three comments. Prompt-only generation is not reliable enough.
-3. **If model choice is exposed, prefer Luna for rendering and use a different model for the audit.** Luna won the combined final readability comparison; model diversity reduces correlated classification errors.
+3. **If model choice is exposed, prefer Luna for rendering and use different model families for the two auditors.** Luna won the combined final readability comparison; model diversity reduces correlated classification errors.
 4. **Next, move obligation classes into structured synthesis artifacts.** Carry `author_work`, `no_change`, and `optional_followup` predicates with stable IDs into the renderer. A deterministic coverage check could then replace part of the LLM audit and reduce latency.
-5. **Validate outside this repository.** The holdout avoided development comments but came from the same codebase. A cross-repository corpus and human PR-author study are the highest-value generalization checks.
+5. **Validate on a newly sealed cross-repository corpus.** The 25-comment set was held out only through iteration 8 and then informed later contracts. A new cross-repository corpus and human PR-author study are the highest-value generalization checks.
 6. **Automate this benchmark.** Freeze corpus construction, randomization keys, fact/action decoding, and pairwise aggregation in one local runner before tuning wording again.
 
 ## Limits
 
-- The benchmark contains 47 comments from one repository; 22 are the requested current test bed and 25 are an unseen same-repository holdout.
+- The benchmark contains 47 comments from one repository. The 22-comment current test bed and the 25-comment prior held-out set both informed the final contract, so neither is evidence of generalization beyond this repository.
 - Readability is judged by language models, not by the developers who received the original reviews.
 - Pairwise preferences are model-sensitive. The final decision uses the combined two-judge result and rejects any candidate that fails either fact/action gate.
-- The independent audit adds latency and an additional model call. The exact-source fallback protects correctness when repair does not converge.
+- The independent gate adds two auditor calls per wave, plus two more if repair is needed. The exact-source fallback protects correctness when repair does not converge or an audit result is unverifiable.

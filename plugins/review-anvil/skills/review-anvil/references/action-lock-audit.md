@@ -29,9 +29,10 @@ report sections. Return every input ID exactly once.
 
 ## Independent auditor prompt
 
-Dispatch one clean read-only verifier subagent that did not render the
-comments. Give it only these rules and the audit rows. The auditor must not
-inspect or edit the repository.
+Dispatch two clean read-only verifier subagents in one parallel wave. Neither
+auditor may have rendered the comments. Use different model families when the
+runtime permits it. Give them only these rules and the audit rows. The auditors
+must not inspect or edit the repository.
 
 Compare source meaning with rendered obligation status. Do not classify by modal grammar.
 
@@ -108,17 +109,27 @@ Return valid, pretty-printed JSON only:
 Use `pass` only when all three issue arrays are empty. Name the exact source
 predicate and rendered phrase in every failure. Never rewrite a comment.
 
+Validate each auditor independently before using its verdicts. It must return
+exactly one item for every input ID, no unknown or duplicate IDs, valid status
+and issue-array fields, and counts that match the items. A row passes only when
+both auditors return a valid `pass`. For valid failures, take the union of
+their issues and repair instructions. For every missing, duplicate, malformed,
+timed-out, or otherwise unverifiable row, restore the exact source
+requested-work prose without attempting a repair and force COMMENT.
+
 ## Repair and fail-safe
 
-The renderer repairs only failed comments. Apply each audit instruction without
+The renderer repairs only comments with a valid failed verdict. Apply each audit instruction without
 changing the title, diagnosis, evidence, severity, complete ID, or already
 passing requested-work predicates.
 
 After the semantic repair, reapply the inline-comment form: use one concise
 `Please` sentence for exactly one author obligation, or `**Requested actions**`
 with one bullet per obligation for two or more. Never use a one-item action
-list. Audit the repaired rows once more with the same independent verifier.
+list. Audit the repaired rows once more with two new clean auditors under the
+same validation and union rules.
 
-If the second audit still fails, restore the exact source requested-work prose.
-Do not paraphrase the failed request section. A denser fact-safe request is
-better than a readable comment that changes what the author must do.
+If either second-audit verdict fails or is unverifiable, restore the exact
+source requested-work prose for that comment and force the review event to
+COMMENT. Do not paraphrase the failed request section. A denser fact-safe
+request is better than a readable comment that changes what the author must do.
