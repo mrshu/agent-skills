@@ -1,0 +1,1 @@
+{"id":"3737044354","winner":"A","reason":"A states the failure mode immediately without the distracting provenance tag while preserving the same technical detail and requested actions."}

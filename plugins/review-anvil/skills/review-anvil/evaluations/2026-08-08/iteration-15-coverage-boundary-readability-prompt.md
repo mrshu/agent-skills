@@ -1,0 +1,8 @@
+Blindly compare two rendered GitHub inline review comments for a busy PR author. A and B are randomized. Hidden metadata is removed. Choose the version easiest to understand correctly after one read while preserving every fact, requested action, and accepted-behavior boundary. Score the explicit request for whether the author will remember both the requested change and its constraint. Return valid JSON only: {"id":"3737449090","winner":"A|B|tie","dimension_winners":{"defect_clarity":"A|B|tie","action_recall":"A|B|tie","scanability":"A|B|tie","naturalness":"A|B|tie","cognitive_ease":"A|B|tie"},"reason":"<one sentence>"}.
+
+INPUT:
+{
+  "id": "3737449090",
+  "A": "**Separate output-log counts from file-level coverage totals**\n\nWhen one successful file contributes several task-level output-log counts but one failed file contributes one file-level count, `total_records` mixes source units. The coverage denominator therefore has no consistent source unit.\n\nPlease report converted output-log count separately while keeping results files as the source-record grain.",
+  "B": "**RAV-RUN1-R1-F007 [medium] coverage-totals** \u2014 `total_records` adds task-level output logs to file-level failures.\n\nOne successful file can contribute several counts, while one failed file contributes one, so the coverage denominator has no consistent source unit.\n\nPlease keep results files as the source-record grain and report converted output-log count separately."
+}

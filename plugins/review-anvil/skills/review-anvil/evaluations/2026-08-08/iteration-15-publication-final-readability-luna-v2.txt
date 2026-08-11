@@ -1,0 +1,1 @@
+{"id":"3737044354","winner":"A","reason":"A leads directly with the concrete data-loss risk, while B adds visible provenance metadata that delays the problem without improving technical specificity or requested actions."}

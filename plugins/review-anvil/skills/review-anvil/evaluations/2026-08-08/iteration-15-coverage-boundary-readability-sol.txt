@@ -1,0 +1,1 @@
+{"id":"3737449090","winner":"A","dimension_winners":{"defect_clarity":"A","action_recall":"A","scanability":"A","naturalness":"A","cognitive_ease":"A"},"reason":"A removes the distracting issue-code prefix, clearly names the unit mismatch, and pairs the requested separate output-log count with the constraint that results files remain the source-record grain."}

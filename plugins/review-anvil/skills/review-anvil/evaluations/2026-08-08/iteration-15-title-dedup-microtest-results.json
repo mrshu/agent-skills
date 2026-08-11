@@ -1,0 +1,42 @@
+[
+  {
+    "rep": 1,
+    "valid_json": true,
+    "exact_title_repeat": false,
+    "title": "Normalized organization collisions can rewrite an exact canonical ID to another canonical organization",
+    "first_visible_sentence": "Make exact canonical IDs win before normalized spellings, and resolve a normalized spelling only when one organization owns it.",
+    "marker_exact": false
+  },
+  {
+    "rep": 2,
+    "valid_json": true,
+    "exact_title_repeat": false,
+    "title": "Normalized organization collisions can rewrite an exact canonical ID to another canonical organization",
+    "first_visible_sentence": "Make exact canonical IDs win first, and resolve a normalized spelling only when one organization owns it.",
+    "marker_exact": false
+  },
+  {
+    "rep": 3,
+    "valid_json": true,
+    "exact_title_repeat": false,
+    "title": "Normalized organization collisions can rewrite an exact canonical ID to another canonical organization",
+    "first_visible_sentence": "Give exact canonical IDs precedence over normalized spellings. Resolve a normalized spelling only when one organization owns it.",
+    "marker_exact": false
+  },
+  {
+    "rep": 4,
+    "valid_json": true,
+    "exact_title_repeat": false,
+    "title": "Normalized organization collisions can rewrite an exact canonical ID to another canonical organization",
+    "first_visible_sentence": "Let exact canonical IDs win first, and resolve each normalized spelling only when one organization owns that spelling.",
+    "marker_exact": false
+  },
+  {
+    "rep": 5,
+    "valid_json": true,
+    "exact_title_repeat": false,
+    "title": "Normalized organization collisions can rewrite an exact canonical ID to another canonical organization",
+    "first_visible_sentence": "The rewrite occurs when an exact canonical ID wins first but a normalized spelling collides across organizations.",
+    "marker_exact": false
+  }
+]

@@ -1,0 +1,1 @@
+{"id":"3737044354","winner":"A","reason":"A opens directly with the concrete risk while B front-loads a finding ID, severity, and category label that delay the problem, and both otherwise carry identical technical detail and requested actions."}

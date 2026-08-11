@@ -1,0 +1,8 @@
+Blindly compare two rendered GitHub inline review comments for a busy PR author. A and B are randomized. Hidden HTML metadata is removed. Choose the version easiest to understand correctly after one read while preserving technical specificity and every requested action. Penalize visible provenance metadata that delays the problem. Return valid JSON only: {"id":"3737044354","winner":"A|B|tie","dimension_winners":{"defect_clarity":"A|B|tie","action_recall":"A|B|tie","scanability":"A|B|tie","naturalness":"A|B|tie","cognitive_ease":"A|B|tie"},"reason":"<one sentence>"}.
+
+INPUT:
+{
+  "id": "3737044354",
+  "A": "**`--replace-existing` can delete prior records before the replacement is ready**\n\nLines 601\u2013602 remove the old files before `save_evaluation_logs()` validates and writes the new batch. Its rollback covers only files created by that call. A later failure can leave the target without its prior records.\n\n**Requested actions**\n\n- Retain recoverable old files until every new write and route transition succeeds.\n- Add a mid-write failure test across several routes.",
+  "B": "**RAV-RUN3-R1-F001 [high] publication** \u2014 `--replace-existing` deletes prior records before replacement preflight.\n\nLines 601\u2013602 remove the old files before `save_evaluation_logs()` validates and writes the new batch. Its rollback covers only files created by that call, so a later failure can leave the target without its prior records.\n\n**Requested actions**\n\n- Retain recoverable old files until every new write and route transition succeeds.\n- Add a mid-write failure test across several routes."
+}

@@ -1,0 +1,1 @@
+{"items":[{"id":"3737266661","status":"pass","missing_author_work":[],"false_actions":[],"fact_losses":[],"invented_predicates":[],"reason":"The rendered body preserves the exclusions-only data-loss condition, existing report capability, save-on-failures-or-exclusions change, and failure-only nonzero exit behavior without inventing work."}]}

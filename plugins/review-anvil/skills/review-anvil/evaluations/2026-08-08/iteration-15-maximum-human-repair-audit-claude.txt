@@ -1,0 +1,3 @@
+```json
+{"items":[{"id":"3737266661","status":"fail","missing_author_work":[],"false_actions":[],"fact_losses":[],"invented_predicates":["Rendered body specifies the save condition as `result.failures` or `result.exclusions` is nonempty, naming a `result.exclusions` field/predicate that the source never states; the source only says the shared report supports exclusions and 'can be saved for either collection'."],"reason":"All source facts, the scope boundary, the current capability, and the allowed unchanged behavior (nonzero exit stays conditional on failures) are preserved, but the rendered body invents a concrete predicate `result.exclusions` not present in the source."}]}
+```

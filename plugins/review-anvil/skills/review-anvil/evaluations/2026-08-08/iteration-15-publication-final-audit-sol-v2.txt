@@ -1,0 +1,1 @@
+{"id":"3737044354","status":"pass","missing_author_work":[],"false_actions":[],"fact_losses":[],"invented_predicates":[],"reason":"The rendered body preserves the deletion order, rollback limitation, failure consequence, replacement-path action, test scope, technical identifiers, line numbers, function name, and exact metadata marker."}

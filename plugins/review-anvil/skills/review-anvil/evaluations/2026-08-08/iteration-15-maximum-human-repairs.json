@@ -1,0 +1,54 @@
+[
+  {
+    "id": "3725913004",
+    "field": "severity",
+    "from": "critical",
+    "to": "high",
+    "reason": "restore exact source severity"
+  },
+  {
+    "id": "3737266661",
+    "field": "body",
+    "reason": "restore shared-report capability and either-collection scope found by both auditors"
+  },
+  {
+    "id": "3737044354",
+    "field": "body",
+    "reason": "repair demonstrated identifier, repetition, or action-recall regression"
+  },
+  {
+    "id": "3737383919",
+    "field": "body",
+    "reason": "repair demonstrated identifier, repetition, or action-recall regression"
+  },
+  {
+    "id": "3725853168",
+    "field": "body",
+    "reason": "repair demonstrated identifier, repetition, or action-recall regression"
+  },
+  {
+    "id": "3737266661",
+    "field": "body",
+    "reason": "remove invented result.exclusions predicate found by second repair auditor"
+  },
+  {
+    "id": "3725853168",
+    "field": "body",
+    "reason": "restore exact rewrite target found by repair auditor"
+  },
+  {
+    "id": "3737044354",
+    "field": "body",
+    "reason": "remove unsupported only-copy claim found by final auditor"
+  },
+  {
+    "id": "3737291965",
+    "field": "body",
+    "reason": "keep a directly coupled no-change boundary in its action sentence after unanimous action-recall loss"
+  },
+  {
+    "id": "3737449090",
+    "field": "body",
+    "reason": "keep the source-record-grain boundary in the directly coupled reporting request after action-recall tie"
+  }
+]

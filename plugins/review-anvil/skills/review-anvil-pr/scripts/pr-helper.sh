@@ -188,17 +188,47 @@ if not isinstance(items, list):
 
 allowed = {"path", "position", "body", "line", "side", "start_line", "start_side"}
 reintroduced_marker = "<!-- review-anvil: prior_feedback=reintroduced -->"
+positive_padded_ordinal = r"(?:00[1-9]|0[1-9][0-9]|[1-9][0-9]{2,})"
+finding_id_pattern = (
+    rf"(?:RAV-(?:RUN[1-9][0-9]*-)?R[1-9][0-9]*-F{positive_padded_ordinal}"
+    r"|RAVF[0-9]{3,}|F-[0-9]{3,})"
+)
+finding_metadata_re = re.compile(
+    rf"<!--\s*review-anvil:\s*id=(?P<id>{finding_id_pattern})\s+"
+    r"severity=(?P<severity>critical|high|medium|low|nit)\s+"
+    r"area=(?P<area>[A-Za-z0-9][A-Za-z0-9._/-]*)\s*-->",
+    re.I,
+)
+
+def terminal_finding_metadata(body):
+    text = (body or "").rstrip()
+    if not text:
+        return None
+    match = finding_metadata_re.fullmatch(text.splitlines()[-1])
+    if match and "--" not in match.group("area"):
+        return match
+    return None
+
+def append_before_finding_metadata(body, addition):
+    text = (body or "").rstrip()
+    metadata = terminal_finding_metadata(text)
+    marker = metadata.group(0) if metadata else None
+    if marker:
+        text = text[:text.rfind(marker)].rstrip()
+    parts = [part for part in (text, str(addition).strip("\n")) if part]
+    rendered = "\n\n".join(parts)
+    if marker:
+        rendered = "\n\n".join(part for part in (rendered, marker) if part)
+    return rendered
 
 def infer_severity(item):
     explicit = str(item.get("severity", "")).lower()
     if explicit in rank:
         return explicit
     body = item.get("body") or ""
-    positive_padded_ordinal = r"(?:00[1-9]|0[1-9][0-9]|[1-9][0-9]{2,})"
-    finding_id_pattern = (
-        rf"(?:RAV-(?:RUN[1-9][0-9]*-)?R[1-9][0-9]*-F{positive_padded_ordinal}"
-        r"|RAVF[0-9]{3,}|F-[0-9]{3,})"
-    )
+    metadata = terminal_finding_metadata(body)
+    if metadata:
+        return metadata.group("severity").lower()
     m = re.search(rf"\*\*(?:{finding_id_pattern}\s+)?\[(critical|high|medium|low|nit)\]", body, re.I)
     if m:
         return m.group(1).lower()
@@ -223,7 +253,8 @@ def append_suggestion(body, item):
     # the comment has a concrete new-side anchor that GitHub can apply.
     if not (item.get("line") or item.get("start_line") or item.get("position")):
         return body
-    return body.rstrip() + "\n\n```suggestion\n" + suggestion + "\n```"
+    block = "```suggestion\n" + suggestion + "\n```"
+    return append_before_finding_metadata(body, block)
 
 kept = []
 filtered = 0
@@ -242,7 +273,7 @@ for item in items:
     if "```suggestion" in body and "```suggestion" not in original_body:
         suggested += 1
     if item.get("prior_feedback") == "reintroduced" and reintroduced_marker not in body:
-        body = body.rstrip() + "\n\n" + reintroduced_marker
+        body = append_before_finding_metadata(body, reintroduced_marker)
     clean = {key: item[key] for key in allowed if key in item}
     clean["body"] = body
     kept.append(clean)
@@ -417,6 +448,15 @@ SUMMARY_RE = re.compile(
     rf"^\s*(?:[-*]\s+)?(?:(?P<finding_id>{FINDING_ID_PATTERN})\s+)?\[(?P<severity>critical|high|medium|low|nit)\]\s*(?P<area>.+?)\s*[-—:]+\s*(?P<finding>.+)$",
     re.I,
 )
+FINDING_METADATA_RE = re.compile(
+    rf"<!--\s*review-anvil:\s*id=(?P<id>{FINDING_ID_PATTERN})\s+"
+    r"severity=(?P<severity>critical|high|medium|low|nit)\s+"
+    r"area=(?P<area>[A-Za-z0-9][A-Za-z0-9._/-]*)\s*-->",
+    re.I,
+)
+NATURAL_INLINE_TITLE_RE = re.compile(
+    r"^\*\*(?P<title>.+)\*\*$"
+)
 IDENTITY_METADATA_RE = re.compile(
     rf"(?:^|;\s*)(?:id|legacy)=(?P<ids>{FINDING_ID_PATTERN}(?:,{FINDING_ID_PATTERN})*)"
     r"(?=\s*(?:;|$))",
@@ -431,6 +471,35 @@ LEDGER_IDENTITY_SUFFIX_RE = re.compile(
     r"\(source=(?P<annotation>[^\n]*)\)\s*$",
     re.I,
 )
+def iter_unfenced_lines(body):
+    in_fence = False
+    for index, line in enumerate((body or "").splitlines()):
+        stripped = line.lstrip()
+        if stripped.startswith(("```", "~~~")):
+            in_fence = not in_fence
+            continue
+        if not in_fence:
+            yield index, line
+
+def terminal_finding_metadata(body):
+    lines = (body or "").rstrip().splitlines()
+    if not lines:
+        return None
+    last_index = len(lines) - 1
+    if not any(index == last_index for index, _ in iter_unfenced_lines("\n".join(lines))):
+        return None
+    match = FINDING_METADATA_RE.fullmatch(lines[-1])
+    if match and "--" not in match.group("area"):
+        return match
+    return None
+
+def natural_inline_title(body):
+    for _, line in iter_unfenced_lines(body):
+        match = NATURAL_INLINE_TITLE_RE.fullmatch(line.strip())
+        if match:
+            return match.group("title").strip()
+    return None
+
 
 def severity_name(value):
     value = (value or "").strip().lower()
@@ -439,6 +508,9 @@ def severity_name(value):
     return SEVERITY_INITIALS.get(value)
 
 def severity_from_body(body):
+    metadata = terminal_finding_metadata(body)
+    if metadata:
+        return severity_name(metadata.group("severity"))
     match = FINDING_RE.search(body or "")
     if match:
         return severity_name(match.group("severity"))
@@ -468,14 +540,10 @@ def table_finding(line):
             "location": cells[3], "finding": finding}
 
 def finding_id_from_body(body):
-    in_fence = False
-    for line in (body or "").splitlines():
-        stripped = line.lstrip()
-        if stripped.startswith(("```", "~~~")):
-            in_fence = not in_fence
-            continue
-        if in_fence:
-            continue
+    metadata = terminal_finding_metadata(body)
+    if metadata:
+        return metadata.group("id")
+    for _, line in iter_unfenced_lines(body):
         match = FINDING_RE.search(line)
         if match and match.group("finding_id"):
             return match.group("finding_id")
@@ -567,8 +635,11 @@ def is_finding_line(line: str) -> bool:
 
 def signature(body: str) -> str:
     body = body or ""
-    # review-anvil body: **[medium] area** -- What ...
-    # Provenance and historical finding IDs are optional.
+    metadata = terminal_finding_metadata(body)
+    title = natural_inline_title(body) if metadata else None
+    if metadata and title:
+        return norm(f'{metadata.group("area")} {title}')
+    # Legacy review-anvil body. Provenance and historical IDs are optional.
     # Report rows may include a code location between the bold label and dash.
     m = FINDING_RE.search(body)
     if m:
@@ -589,6 +660,10 @@ def signature(body: str) -> str:
 
 def summary(body: str) -> str:
     body = body or ""
+    metadata = terminal_finding_metadata(body)
+    title = natural_inline_title(body) if metadata else None
+    if metadata and title:
+        return f'[{metadata.group("severity").lower()}] {metadata.group("area")} — {title}'[:160]
     m = FINDING_RE.search(body)
     if m:
         return f'[{m.group("severity").lower()}] {m.group("area").strip()} — {m.group("finding").strip()}'[:160]
@@ -613,14 +688,18 @@ def state_file():
     return None
 
 def same_finding(cand, previous, require_path):
-    cs, ps = cand.get("sig", ""), previous.get("sig", "")
-    if not cs or not ps:
-        return False
     cpath, ppath = cand.get("path") or "", previous.get("path") or ""
     if require_path:
         if not cpath or not ppath or cpath != ppath:
             return False
     elif cpath and ppath and cpath != ppath:
+        return False
+    current_id = (cand.get("finding_id") or "").casefold()
+    previous_id = (previous.get("finding_id") or "").casefold()
+    if current_id and previous_id:
+        return current_id == previous_id
+    cs, ps = cand.get("sig", ""), previous.get("sig", "")
+    if not cs or not ps:
         return False
     if cs == ps:
         return True
@@ -900,6 +979,7 @@ def inline_candidate(item):
         "line": str(item.get("line") or item.get("start_line") or "") or None,
         "sig": signature(item.get("body") or ""),
         "severity": severity_name(item.get("severity")) or severity_from_body(item.get("body") or ""),
+        **identity_from_body(item.get("body") or ""),
     }
 
 inline_items = None
@@ -932,6 +1012,7 @@ if report.exists():
                 "line": end_line,
                 "sig": signature(line),
                 "severity": severity_from_body(line),
+                **identity_from_body(line),
             }
             delivery_candidates.append(candidate)
             if (index + 1 < len(report_lines)
@@ -1097,7 +1178,8 @@ if report.exists():
             start_line, end_line = location_range_from_block(block)
             block_body = "\n".join(block)
             cand = {"path": path_from_block(block), "start_line": start_line,
-                    "line": end_line, "sig": signature(block_body)}
+                    "line": end_line, "sig": signature(block_body),
+                    **identity_from_body(block_body)}
             reintroduced = explicitly_reintroduced(
                 cand,
                 len(block) > 1 and block[1].strip() == REINTRODUCED_MARKER,

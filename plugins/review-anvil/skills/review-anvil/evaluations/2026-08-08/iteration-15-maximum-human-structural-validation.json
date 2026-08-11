@@ -1,0 +1,8 @@
+{
+  "source_count": 47,
+  "generated_count": 47,
+  "errors": [
+    "3725913004 marker mismatch {'fid': 'RAV-RUN2-R1-F001', 'sev': 'critical', 'area': 'instance-publication'} != {'fid': 'RAV-RUN2-R1-F001', 'sev': 'high', 'area': 'instance-publication', 'title': 'Instance mode passes a sidecar basename where the schema requires a canonical datastore path. Construction fails after aggregate and sidecar files are written.'}",
+    "3725913004 severity mismatch"
+  ]
+}

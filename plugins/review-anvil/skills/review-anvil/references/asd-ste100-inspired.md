@@ -27,15 +27,17 @@ documentation are author work. Accepted current behavior, allowed
 implementation boundaries, and explicitly optional follow-ups are no-change
 boundaries. Apply the omission counterfactual only after that classification.
 Source intent outranks modal grammar; `can`, `could`, and `would` do not make
-target behavior optional. Split every sentence that mixes author work with a
-no-change boundary. Keep a required purpose, result, or safety clause with the
-action it constrains. Never turn acceptable unchanged behavior, a permission,
-an exception, or an explicitly optional follow-up into an action bullet. Keep
-a no-change boundary with the action it limits or in short modal prose
-immediately after that action. Preserve accepted current behavior and a
-standalone optional follow-up as standalone modal prose. Treat a required
-source-backed test or document change as author work unless it is explicitly
-optional.
+target behavior optional. Classify every predicate in a sentence that mixes
+author work with a no-change boundary. Keep a required purpose, result, or
+safety clause with the action it constrains. Never turn acceptable unchanged
+behavior, a permission, an exception, or an explicitly optional follow-up
+into a separate action bullet. When accepted current behavior directly
+constrains a requested change, keep it in that action sentence using
+`without changing …` or `while keeping … unchanged`. Use short modal prose
+after the action if one sentence would be dense. Preserve other accepted
+current behavior and standalone optional follow-ups as standalone modal prose.
+Treat a required source-backed test or document change as author work unless
+it is explicitly optional.
 Use `Please` plus an action verb for one obligation. For two or more
 independently implementable obligations, use `**Requested actions**` and one
 direct-action bullet per obligation. Preserve suggestion grammar for low and

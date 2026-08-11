@@ -1,0 +1,3 @@
+```json
+{"id":"3737449090","status":"pass","missing_author_work":[],"false_actions":[],"fact_losses":[],"invented_predicates":[],"reason":"Rendered body keeps the `total_records` identifier, the mixed-unit mechanism (several task-level output-log counts from one successful file vs one file-level count from one failed file), and the consequence that the coverage denominator has no consistent source unit. The requested action matches the source remedy: report converted output-log count separately while results files remain the source-record grain. Finding ID, severity, and area are preserved in the trailing marker, and no conditions, scope, or extra work were added."}
+```

@@ -34,12 +34,19 @@ Write each inline comment in plain language about the code at that line. Use
 comments for `critical`, `high`, and `medium` problems; put `low` and `nit`
 items in the summary.
 
-Start every identified inline finding with the parser-supported bold label
-`**<complete-id> [<severity>] <area>**` followed by `— <finding>`.
-The title states the failure, not only its technical category.
-The report row, inline body, reproduction target, and adversarial target use the same complete finding ID unchanged.
-ID reuse produces an inline body only when the finding is otherwise eligible
-for a new inline; ordinary prior-feedback carry-forwards do not create a new inline thread.
+Start each identified inline finding with its natural bold title,
+`**<finding>**`. The title states the failure, not its metadata category. Do not
+show the finding ID, severity, or area in the rendered title.
+End each body with exactly one
+`<!-- review-anvil: id=<complete-id> severity=<severity> area=<area> -->`.
+Use the report row's machine-safe area token: letters, digits, `.`, `_`, `/`,
+or single `-` separators. The report row, hidden inline marker, reproduction
+target, and adversarial target use the same complete finding ID unchanged.
+The finding-metadata marker remains the final line. Put a safe suggestion fence
+and the `prior_feedback=reintroduced` marker before it. Do not put prose after
+it. The marker hides presentation metadata from rendered GitHub Markdown; it is
+still raw comment data and must not contain secrets.
+ID reuse produces an inline body only when the finding is otherwise eligible; ordinary prior-feedback carry-forwards do not create a new inline thread.
 
 Before rewriting, make a private fact lock from the final synthesized finding.
 Record only:
@@ -90,8 +97,8 @@ Classify each source predicate before rendering it:
    the current code without the target behavior, test, or documentation would
    leave the defect, safety boundary, or reviewer-required verification
    unresolved, it is author work.
-4. Split every sentence that mixes author work with a no-change boundary.
-   Classify each predicate separately; do not preserve an unsplit fallback.
+4. Split every source sentence that mixes author work with a no-change boundary
+   into predicates for classification; do not preserve an unsplit fallback.
 
 Source intent outranks modal grammar. `Please`, a direct request, or source
 words such as `must`, `need`, and `required` identify author work. A
@@ -116,13 +123,16 @@ Do not split a list of values governed by one rule into repeated actions.
 Two verbs that establish one invariant on the same record or output remain one obligation.
 
 A no-change boundary is not a separate obligation. Keep it out of
-`**Requested actions**` and with the action it limits. State it as short modal
-prose immediately after that action when combining them would make the request
-dense. Preserve accepted current behavior as standalone modal prose. Preserve
-a standalone optional follow-up as standalone modal prose after the required
-request, or after the consequence when no request exists.
+`**Requested actions**` as a separate bullet. When accepted current behavior
+directly constrains a requested change, keep it in the same sentence using
+`without changing …` or `while keeping … unchanged`. If that sentence would
+be dense, use short modal prose immediately after the action. Preserve other
+accepted current behavior as standalone modal prose. Preserve a standalone
+optional follow-up as standalone modal prose after the required request, or
+after the consequence when no request exists.
 
 For example: `Files containing only intentionally skipped derived rows can remain explicit exclusions; no change is requested for them.`
+For a coupled boundary: `Reject directory-target symlinks without changing file-symlink behavior.`
 
 Make a distinct path separate only when the source requires the author to
 change that path independently. A required source-backed test is author work
@@ -160,12 +170,16 @@ Do not invent why a requested test exists.
 Delete a source clause only when another retained clause states the same fact.
 If an exact phrase is hard to place, keep the whole source sentence.
 
-Write the body in this order:
+Write the visible body in this order:
 
 1. **Problem:** Name the code behavior and trigger.
 2. **Impact:** State the concrete bad result.
 3. **Requested change:** State the exact action or decision. Include a test only
    when the source requests it; do not invent what the test proves.
+The first visible sentence adds a trigger, mechanism, result, or fix boundary that the title does not already state. If the title fully states the problem and consequence, begin with the next new fact or the request.
+
+After the visible body, append the exact finding-metadata marker as the final
+nonblank line.
 
 Each sentence explains one relationship between code concepts. Name the
 function, field, command, or request that acts. Tie each necessary identifier
@@ -190,11 +204,11 @@ Before emitting the body, run this author check:
 - Remove any sentence that repeats the title without adding a trigger, result,
   constraint, or fix boundary.
 
-For an explicitly reintroduced author-resolved finding, put `<!-- review-anvil: prior_feedback=reintroduced -->` immediately after the visible final-report finding row or bullet. Its matching inline item carries helper-only `"prior_feedback": "reintroduced"`; the posting helper strips that JSON field before the GitHub REST request while preserving the hidden marker in the posted inline body for later PR-history handling.
+For an explicitly reintroduced author-resolved finding, put `<!-- review-anvil: prior_feedback=reintroduced -->` immediately after the visible final-report finding row or bullet. Its matching inline item carries helper-only `"prior_feedback": "reintroduced"`; the posting helper strips that JSON field before the GitHub REST request and inserts the hidden prior-feedback marker before the final finding-metadata marker in the posted inline body.
 Use short everyday words. Prefer one clear sentence over a dense explanation.
 
-```
-**RAV-RUN2-R1-F003 [medium] cli** — The module entry point builds the old argument namespace
+```md
+**The module entry point builds the old argument namespace**
 
 The changed handler reads missing fields and fails before conversion.
 
@@ -202,17 +216,21 @@ The changed handler reads missing fields and fails before conversion.
 
 - Use the shared top-level parser in the module entry point.
 - Add one offline entry-point test.
+
+<!-- review-anvil: id=RAV-RUN2-R1-F003 severity=medium area=cli -->
 ```
 
 When one code change has a no-change constraint, keep the constraint in prose:
 
-```
-**RAV-RUN3-R1-F002 [medium] input-validation** — Invalid populated cells become absent values
+```md
+**Invalid populated cells become absent values**
 
 The fallback also accepts invalid or zero denominators.
 
 Please use separate rules for uncertainty, counts, and positive denominators to keep bad rows in the failure report.
 Empty optional cells can remain allowed.
+
+<!-- review-anvil: id=RAV-RUN3-R1-F002 severity=medium area=input-validation -->
 ```
 
 Modal wording does not make requested verification optional:
@@ -230,7 +248,7 @@ even if the source says it “would cover” the path.
 When modal grammar proposes new author work, keep each obligation explicit:
 
 ```md
-**RAV-RUN3-R1-F003 [medium] no-match-order** — Existing output can block an empty sweep
+**Existing output can block an empty sweep**
 
 The command checks existing output before it knows whether any models matched.
 
@@ -240,6 +258,8 @@ The command checks existing output before it knows whether any models matched.
 - Add a no-match check.
 
 It can stop before existing-output discovery or publication.
+
+<!-- review-anvil: id=RAV-RUN3-R1-F003 severity=medium area=no-match-order -->
 ```
 
 Apply the counterfactual to each predicate in a compound modal sentence:
@@ -280,7 +300,7 @@ Voice rules:
 - Address the code, never the author: "the handler swallows the error", not "you swallow the error". No "should have", no "Obviously / Clearly / Simply / Just".
 - Keep requested work calm and specific. Use one concise `Please` sentence for one critical/high/medium obligation and `**Requested actions**` bullets for two or more. Do not use context-free commands, rhetorical questions, review jargon, or filler.
 - Do not add a stock opener or rotate through canned alternatives. Let the problem determine the sentence.
-- Calm and specific beats emphatic. The severity tag carries the urgency; the prose needs no alarm words, bold warnings, exclamation marks, or rhetorical/scolding questions.
+- Calm and specific beats emphatic. Severity determines where the comment appears; the prose needs no alarm words, bold warnings, exclamation marks, or rhetorical/scolding questions.
 - When the PR's approach is sound and that fact changes the fix, say so in one honest clause. Do not add a compliment sandwich.
 - Keep the comment as short as the finding allows. Add detail only when needed to explain the failure or safe outcome.
 - Use a suggestion only for a safe, exact replacement. The comment must still explain the problem. For cross-file or multi-step fixes, describe the behavior to change instead.

@@ -1,0 +1,10 @@
+{
+  "source_count": 47,
+  "rendered_count": 47,
+  "errors": [],
+  "checks": {
+    "ids_in_order": true,
+    "all_json_rows": true,
+    "terminal_marker_and_exact_token_contract": true
+  }
+}

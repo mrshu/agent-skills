@@ -1,0 +1,1 @@
+{"id":"3737044354","winner":"A","dimension_winners":{"defect_clarity":"A","action_recall":"tie","scanability":"A","naturalness":"A","cognitive_ease":"A"},"reason":"A leads with the concrete failure and preserves all technical detail and requested actions, while B adds provenance metadata before the problem and delays comprehension."}

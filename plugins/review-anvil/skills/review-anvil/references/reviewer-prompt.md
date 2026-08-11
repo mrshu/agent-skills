@@ -207,8 +207,8 @@ For each issue, return a structured finding with these keys:
   permission is a no-change boundary only when it describes acceptable
   unchanged behavior, an allowed implementation boundary, or an explicitly
   optional follow-up.
-  Split every sentence that mixes author work with a no-change boundary.
-  Classify each predicate separately; do not keep an unsplit fallback.
+  Split every source sentence that mixes author work with a no-change boundary
+  into predicates for classification; do not keep an unsplit fallback.
   Extract the smallest actor-action-target change without detaching a purpose,
   result, or safety clause that constrains it. Create a separate obligation
   only when the source requires another independently implementable action.
@@ -216,12 +216,14 @@ For each issue, return a structured finding with these keys:
   independently. Do not split values governed by one rule into repeated
   actions. Two verbs that establish one invariant on the same record or output
   remain one obligation.
-  A no-change boundary is not a separate obligation. Keep it with the action
-  it limits, or use short modal prose immediately after that action when one
-  sentence would be dense. Preserve accepted current behavior as standalone
-  modal prose. Preserve a standalone optional follow-up as standalone modal
-  prose after the required request, or after the consequence when no request
-  exists. Separate a distinct path only when the source
+  A no-change boundary is not a separate obligation. When accepted current
+  behavior directly constrains a requested change, keep it in the same
+  sentence using `without changing …` or `while keeping … unchanged`; do not
+  create a separate action bullet for it. If that sentence would be dense,
+  use short modal prose immediately after the action. Preserve other accepted
+  current behavior as standalone modal prose. Preserve a standalone optional
+  follow-up as standalone modal prose after the required request, or after the
+  consequence when no request exists. Separate a distinct path only when the source
   requires independently implementable work there. A required source-backed
   test is a separate obligation when it has its own exact boundary. Reuse
   exact source wording for scope and collection phrases.

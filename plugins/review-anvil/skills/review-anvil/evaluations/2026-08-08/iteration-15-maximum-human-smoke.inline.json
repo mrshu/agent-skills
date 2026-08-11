@@ -1,0 +1,8 @@
+[
+  {
+    "line": 61,
+    "path": "src/publish.py",
+    "body": "**`--replace-existing` can delete prior records before the replacement is ready**\n\nThe old files are deleted before the replacement is validated.\n\nPlease keep the old files recoverable until the replacement completes.\n\n```suggestion\nkeep_recoverable(old_files)\nwrite_replacement()\n```\n\n<!-- review-anvil: prior_feedback=reintroduced -->\n\n<!-- review-anvil: id=RAV-RUN5-R1-F001 severity=high area=publication -->",
+    "side": "RIGHT"
+  }
+]

@@ -1,0 +1,133 @@
+{
+  "decision": "select-maximum-human",
+  "branch": "experiment/review-anvil-readability-15-maximum-human",
+  "base_contract_commit": "b3f2ad2c4c5e872a6e059d8e64c056ad615ab2ca",
+  "corpus": {
+    "accepted_inline_comments": 47,
+    "github_reviews": 16,
+    "repository": "evaleval/every_eval_ever",
+    "historical_comments": "verbatim locally captured review-anvil output from 2026-08-08"
+  },
+  "clean_generator": {
+    "host": "omp",
+    "model": "gpt-5.6-luna",
+    "output_count": 47,
+    "skill_or_repo_access": false
+  },
+  "blind_readability": {
+    "judges": {
+      "gpt-5.6-luna": {
+        "maximum-human": 47,
+        "iteration-14": 0,
+        "tie": 0
+      },
+      "gpt-5.6-sol": {
+        "maximum-human": 47,
+        "iteration-14": 0,
+        "tie": 0
+      },
+      "claude-opus": {
+        "maximum-human": 47,
+        "iteration-14": 0,
+        "tie": 0
+      }
+    },
+    "comment_consensus": {
+      "maximum-human": 47,
+      "iteration-14": 0,
+      "tie": 0
+    },
+    "dimension_consensus": {
+      "defect_clarity": {
+        "maximum-human": 47,
+        "iteration-14": 0,
+        "tie": 0
+      },
+      "action_recall": {
+        "maximum-human": 46,
+        "iteration-14": 0,
+        "tie": 1
+      },
+      "scanability": {
+        "maximum-human": 47,
+        "iteration-14": 0,
+        "tie": 0
+      },
+      "naturalness": {
+        "maximum-human": 47,
+        "iteration-14": 0,
+        "tie": 0
+      },
+      "cognitive_ease": {
+        "maximum-human": 47,
+        "iteration-14": 0,
+        "tie": 0
+      }
+    },
+    "total_preferences": {
+      "maximum-human": 141,
+      "iteration-14": 0,
+      "tie": 0
+    }
+  },
+  "correctness": {
+    "initial_dual_audit": {
+      "gpt-5.6-sol": {
+        "pass": 46,
+        "fail": 1
+      },
+      "claude-opus": {
+        "pass": 46,
+        "fail": 1
+      },
+      "shared_failed_id": "3737266661"
+    },
+    "repaired_body_ids": [
+      "3725853168",
+      "3737044354",
+      "3737266661",
+      "3737291965",
+      "3737383919",
+      "3737449090"
+    ],
+    "final_repaired_body_audits": {
+      "auditors_per_body": 2,
+      "pass": 12,
+      "fail": 0
+    },
+    "structural_validation": {
+      "source_count": 47,
+      "rendered_count": 47,
+      "errors": [],
+      "checks": {
+        "ids_in_order": true,
+        "all_json_rows": true,
+        "terminal_marker_and_exact_token_contract": true
+      }
+    }
+  },
+  "implementation": {
+    "visible_format": "natural title, evidence, explicit request(s)",
+    "hidden_terminal_marker": "<!-- review-anvil: id=<id> severity=<severity> area=<area> -->",
+    "posting_helper": "parses terminal metadata, preserves it after helper-added blocks, strips helper-only JSON keys",
+    "history": "uses hidden identity and severity before legacy visible-label fallback"
+  },
+  "verification": {
+    "full_suite": "passed",
+    "payload_smoke": "passed: helper-only fields stripped; suggestion then prior-feedback marker then terminal finding marker",
+    "independent_code_review": {
+      "findings": 2,
+      "fixed": 2,
+      "regressions": [
+        "report suppression carries canonical identity into history matching",
+        "natural title parser accepts asterisks inside inline code"
+      ]
+    },
+    "final_full_suite": "passed after review fixes"
+  },
+  "limitations": [
+    "Model judges are not a substitute for a timed study with human PR authors.",
+    "The historical baseline is verbatim, but the exact skill commit that generated it was not recorded.",
+    "The evaluation covers accepted inline findings, not top-level review summaries or GitHub email rendering."
+  ]
+}

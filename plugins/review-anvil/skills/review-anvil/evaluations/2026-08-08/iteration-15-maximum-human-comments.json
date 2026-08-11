@@ -1,0 +1,239 @@
+{
+  "comments": [
+    {
+      "id": "3737042592",
+      "body": "**The publisher guard accepts a collection directory with the wrong name**\n\nFor `base_output_dir=data/foo` and selected collection `bar`, the name check is false. Publication then writes `data/foo/bar/<developer>/<model>`, which is still one level too deep.\n\n**Requested actions**\n\n- Reject every publisher base that is an immediate child of canonical `data`.\n- Add mismatched source and `collection_override` tests for this path.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F001 severity=medium area=publisher-validation -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3737044354",
+      "body": "**`--replace-existing` can delete prior records before the replacement is ready**\n\nLines 601\u2013602 remove the old files before `save_evaluation_logs()` validates and writes the new batch. Its rollback covers only files created by that call. A later failure can leave the target without its prior records.\n\n**Requested actions**\n\n- Retain recoverable old files until every new write and route transition succeeds.\n- Add a mid-write failure test across several routes.\n\n<!-- review-anvil: id=RAV-RUN3-R1-F001 severity=high area=publication -->",
+      "severity": "high"
+    },
+    {
+      "id": "3737044361",
+      "body": "**Alias metadata can change the identity of the same source file**\n\n`evaluated_model_repo()` returns the current Hugging Face canonical repository. `make_log()` includes that value in `evaluation_id`. A later redirect change can give the same source result a second logical identity.\n\nPlease use the raw dataset model path as the evaluation identity input. The reconciled repository can still drive model metadata and routing.\n\n<!-- review-anvil: id=RAV-RUN3-R1-F002 severity=high area=evaluation-identity -->",
+      "severity": "high"
+    },
+    {
+      "id": "3737044371",
+      "body": "**Exclusions-only runs do not persist their accounting report**\n\n`failure_report()` includes exclusions, but this condition writes it only when failures exist. The five documented baseline exclusions therefore have no durable record, and an older failure report can remain current.\n\nPlease atomically replace the report after successful publication so it records failures, exclusions, and fully clean runs without losing the last complete ledger.\n\n<!-- review-anvil: id=RAV-RUN3-R1-F004 severity=medium area=source-accounting -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3737053181",
+      "body": "**`avg_length` publishes a directional flag for a neutral measure**\n\n`avg_length` is described as neutral but receives `lower_is_better=False`. Consumers can read that Boolean as higher-is-better.\n\nPlease add a shared representation for neutral measures so `avg_length` does not imply higher-is-better. The adapter approach can remain consistent with the current schema.\n\n<!-- review-anvil: id=RAV-RUN3-R1-F001 severity=medium area=metric-semantics -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3737053197",
+      "body": "**Malformed populated cells become absent values**\n\nPopulated malformed uncertainty and count cells become absent values here. The later denominator fallback also turns invalid or zero `n_total` into 805.\n\nPlease apply separate rules for uncertainty, counts, and positive denominators so bad rows remain in the failure report. Empty optional cells can remain allowed.\n\n<!-- review-anvil: id=RAV-RUN3-R1-F002 severity=medium area=input-validation -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3737053204",
+      "body": "**A failed registry sweep removes confirmed IDs from the rebuilt map**\n\nEvery non-200 response drops the current ID from the rebuilt map. A transient 429 or server error can therefore remove a confirmed rename when the file is overwritten.\n\nPlease leave the existing output unchanged when a sweep is incomplete and return a nonzero result. Expected 401 responses can keep their current handling.\n\n<!-- review-anvil: id=RAV-RUN3-R1-F005 severity=medium area=registry-refresh -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3737181823",
+      "body": "**A schema-invalid developer also produces an identity-path warning**\n\nSemantic checks still receive the raw dictionary after model validation fails. With a flat string ID and a non-string developer, this path passes the raw value to `datastore_path_components()`. The result is both the schema error and a warning about the same field.\n\nPlease defer the flat-ID identity check when `developer` is present but is neither a string nor `None`. Schema-valid blank, unknown, or unsafe strings can keep the current warning path.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F001 severity=medium area=schema-deferral -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3737266652",
+      "body": "**Score parsing can stop every valid row without a source-row failure record**\n\nScore parsing happens before `SourceConversionResult` exists, and later row construction has no row-level error boundary. One malformed source value can stop every valid row without a source-row failure record.\n\nPlease add a narrow boundary around expected parsing and schema errors that records the affected source row in `SourceConversionResult`. Unexpected program or infrastructure errors can remain visible.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F001 severity=high area=failure-accounting -->",
+      "severity": "high"
+    },
+    {
+      "id": "3737266656",
+      "body": "**A symbolic revision can resolve differently across one snapshot fetch**\n\nThe default fetch resolves one SHA, but a supplied symbolic revision bypasses that step. A moving branch can resolve differently across four requests, while metadata records only the symbol.\n\nPlease resolve every supplied reference once so branch and tag support remain available while all file URLs are reproducible.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F002 severity=medium area=snapshot-provenance -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3737266661",
+      "body": "**An exclusions-only run loses its source accounting**\n\nThe report is saved only when `result.failures` is nonempty. An exclusions-only run succeeds but loses each excluded source reference and reason.\n\nThe shared report already supports exclusions. Please save it whenever either collection has entries. The nonzero exit can stay conditional on failures.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F004 severity=medium area=exclusion-accounting -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3737291965",
+      "body": "**Reject explicit directory symlinks during expansion**\n\n`Path.is_dir()` follows the symlink, and `os.walk()` then scans that path as its root. `followlinks=False` blocks directory symlinks discovered below the root but does not block a symlink supplied as the root. The current test covers only the discovered-child case, so expansion can follow an explicit directory-symlink target.\n\n**Requested actions**\n\n- Reject directory-target symlinks for direct and glob-expanded matches while keeping file-symlink behavior unchanged.\n- Add tests for both directory-symlink inputs and an accepted file symlink.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F001 severity=medium area=filesystem-traversal -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3737383919",
+      "body": "**A bare `--models` starts the full source run**\n\nA bare `--models` parses as an empty list, which disables filtering and starts the full source run. A nonempty filter with no matches instead exits successfully with zero logs.\n\n**Requested actions**\n\n- Require one or more values for `--models`.\n- Stop a no-match run before existing-output discovery or publication.\n\n<!-- review-anvil: id=RAV-RUN3-R1-F001 severity=medium area=cli -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3737383922",
+      "body": "**The requested output path can target a different directory**\n\nThe code passes only `args.output_dir.parent` to lookup and publication, then derives `wild` below it. An arbitrary path such as `/tmp/intended` therefore targets `/tmp/wild` while messages name the requested path.\n\nPlease validate the documented `data/wild` shape early so lookup, replacement, and status output use one destination.\n\n<!-- review-anvil: id=RAV-RUN3-R1-F002 severity=medium area=output-path -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3737449039",
+      "body": "**`evaluation_id` changes for every conversion of the same source file**\n\n`evaluation_id` includes the current retrieval time. The same source file therefore gets a different logical identity on every conversion, which allows duplicate evaluations on re-ingest.\n\nPlease build a stable ID from the raw model identity, task key, source timestamp, and a deterministic digest of non-secret run configuration. Retrieval time can remain only in `retrieved_timestamp`.\n\n<!-- review-anvil: id=RAV-RUN1-R1-F001 severity=high area=evaluation-identity -->",
+      "severity": "high"
+    },
+    {
+      "id": "3737449052",
+      "body": "**A file with measured but unconvertible tasks disappears without a failure**\n\nAn input file whose measured tasks all lack finite scores returns an empty list without a failure. A directory made from those files then reports zero converted logs and exits successfully, so automation cannot distinguish total conversion loss.\n\nPlease enter a file with measured but unconvertible tasks in the failure ledger. Files containing only intentionally skipped derived rows can stay explicit exclusions.\n\n<!-- review-anvil: id=RAV-RUN1-R1-F002 severity=high area=source-accounting -->",
+      "severity": "high"
+    },
+    {
+      "id": "3737449059",
+      "body": "**Score coverage is hidden by the dataset count**\n\nCapped or deduplicated runs put `original_num_docs` in `samples_number`, while uncertainty uses `effective_num_docs`. The dataset size is valid source context, but the record does not clearly preserve the smaller population that produced the score.\n\nPlease keep both counts visible, identify the effective count as score coverage, and retain the original count as dataset provenance.\n\n<!-- review-anvil: id=RAV-RUN1-R1-F004 severity=medium area=score-coverage -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3737449070",
+      "body": "**An unknown result key receives an unverified direction and scale**\n\nWhen a result key has no matching metric spec, the converter assumes higher-is-better and publishes no verified scale or bounds. A finite custom key does not prove that direction.\n\n**Requested actions**\n\n- Use source metric specs or an operator-supplied definition to establish semantics for custom keys.\n- Preserve valid metrics and report unresolved keys.\n\n<!-- review-anvil: id=RAV-RUN1-R1-F005 severity=medium area=metric-semantics -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3737449081",
+      "body": "**Metric definitions omit the cross-source join key**\n\nBoth `MetricConfig` branches omit `metric_id`, including common metrics such as accuracy. `metric_name` keeps the source label but does not provide the cross-source join key.\n\nPlease use the same metric-definition mapping for direction and bounds to supply canonical global IDs and stable namespaced IDs for defined lighteval-specific metrics.\n\n<!-- review-anvil: id=RAV-RUN1-R1-F006 severity=medium area=metric-identity -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3737449090",
+      "body": "**Separate output-log counts from file-level coverage totals**\n\nWhen one successful file contributes several task-level output-log counts but one failed file contributes one file-level count, `total_records` mixes source units. The coverage denominator therefore has no consistent source unit.\n\nPlease report converted output-log count separately while keeping results files as the source-record grain.\n\n<!-- review-anvil: id=RAV-RUN1-R1-F007 severity=medium area=coverage-totals -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3737449098",
+      "body": "**Single-file conversion does not save the structured failure report**\n\nThe single-file branch calls `transform_from_file` before it creates a `SourceConversionResult`. Parse or conversion errors exit non-zero, but the structured failure report is never saved. Directory input reports the same failure class correctly.\n\nPlease add a lighteval-local file-result path so both entry modes report failures before raising.\n\n<!-- review-anvil: id=RAV-RUN1-R1-F008 severity=medium area=failure-reporting -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3737449101",
+      "body": "**Nested credential values reach published `additional_details`**\n\nSecret filtering checks only top-level model-config keys before nested values are serialized. Supported v0.13 configurations can carry unrestricted `env_vars`, so a nested token or API key can reach published `additional_details`.\n\n**Requested actions**\n\n- Apply one recursive sanitizer to mappings and lists before serialization.\n- Add tests with provider-prefixed key names without recording secret values.\n\n<!-- review-anvil: id=RAV-RUN1-R1-F009 severity=medium area=credential-filtering -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3725747243",
+      "body": "**`evaluation_id` changes every time the same record is converted**\n\nThe current clock supplies this ID segment. An unchanged source run therefore becomes a new logical evaluation on each conversion.\n\nPlease use a stable source-run timestamp or deterministic token to keep the required ID shape. `retrieved_timestamp` can record retrieval time.\n\n<!-- review-anvil: id=RAV-RUN1-R1-F003 severity=high area=record-identity -->",
+      "severity": "high"
+    },
+    {
+      "id": "3725747244",
+      "body": "**One invalid task discards valid sibling task logs**\n\nThis loop builds logs locally, but any later exception exits the whole file conversion. The directory path then records one file failure and loses logs that were already valid.\n\nPlease add a task-level error boundary that preserves valid logs and accounts for each rejected task.\n\n<!-- review-anvil: id=RAV-RUN1-R1-F005 severity=high area=partial-conversion -->",
+      "severity": "high"
+    },
+    {
+      "id": "3725747245",
+      "body": "**`input_prompt` receives a scoring description instead of the judge prompt**\n\n`LlmScoring.input_prompt` represents the actual prompt template. The fallback also invents prompt text when the record has none.\n\nPlease emit `llm_scoring` only when the real template is available. The sound aggregate conversion can remain intact.\n\n<!-- review-anvil: id=RAV-RUN1-R1-F007 severity=medium area=judge-metadata -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3725776269",
+      "body": "**A nested `data` component can keep the report inside an outer datastore tree**\n\nThe helper selects the nearest ancestor named `data`. For `data/outer/data/collection`, it writes below `data/outer/adapter_reports`, which conflicts with the stated outside-tree guarantee.\n\nPlease document that the nearest `data` ancestor wins, including the repeated-`data` example, so the placement limit is clear.\n\n<!-- review-anvil: id=RAV-RUN1-R1-F002 severity=medium area=report-placement -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3725827216",
+      "body": "**Malformed paths can receive both a path error and an identity warning**\n\nThis guard checks only path depth. A five-component path with a nonportable developer or model component continues into the identity comparison, so both checks report the same bad path.\n\nPlease stop identity comparison whenever `check_path_structure` already owns a path error.\n\n<!-- review-anvil: id=RAV-RUN1-R1-F003 severity=medium area=path-check-ownership -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3725830951",
+      "body": "**The registered warning is missing from the datastore gate guide**\n\nThe repository instructions require contributor guidance with validator changes and name `.claude/skills/eee-dataset-conversion/reference/datastore-gate.md` as the rule location. This PR adds the check but does not update that guide.\n\nPlease add a short section that states the alias trigger, warning-only result, and single-record evidence limit.\n\n<!-- review-anvil: id=RAV-RUN1-R1-F004 severity=medium area=contributor-guidance -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3725853148",
+      "body": "**Branch and tag references can identify different fetched input**\n\nBranch and tag refs are used in stable IDs and provenance URLs without commit resolution. Two network runs can fetch different input under the same identity.\n\nPlease resolve network-mode refs once to a commit SHA. Offline replay can keep the stored immutable ref without network access.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F002 severity=medium area=reproducibility -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3725853152",
+      "body": "**The module entry point builds the old argument namespace**\n\nThis handler now reads missing fields and fails before conversion.\n\n**Requested actions**\n\n- Use the shared parser in the module entry point.\n- Add one offline entry-point test covering its defaults.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F003 severity=medium area=cli -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3725853155",
+      "body": "**Populated invalid `win_rate` values bypass row-level failure handling**\n\nInvalid values can omit the headline metric or abort strict JSON publication.\n\nPlease validate numeric fields as finite values under their metric rules before result construction, and enter invalid rows into `SourceConversionResult`.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F005 severity=medium area=input-validation -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3725853159",
+      "body": "**`GenerationArgs.prompt_template` stores a path instead of prompt content**\n\n`GenerationArgs.prompt_template` contains an upstream path instead of prompt content. Offline records cannot reconstruct the generation prompt.\n\nPlease store pinned prompt content in new snapshots. Legacy snapshots can leave this typed value unset and mark the missing content.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F007 severity=medium area=generation-provenance -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3725853163",
+      "body": "**Live mode skips known registry gaps**\n\nLive mode skips keys whose vendored value is null. A known gap cannot discover a new registry entry until the snapshot refreshes.\n\nPlease query present-null entries in live mode. Offline behavior can remain unchanged.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F009 severity=medium area=registry-resolution -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3725853168",
+      "body": "**Normalized organization collisions can rewrite an exact canonical ID to another canonical organization**\n\nPlease let exact canonical IDs win first. Normalized spellings can resolve only when one organization owns them.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F011 severity=medium area=registry-identity -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3725913004",
+      "body": "**Instance publication can fail after aggregate and sidecar files are written**\n\nInstance mode passes a sidecar basename where the schema requires a canonical datastore path. Construction fails after aggregate and sidecar files are written.\n\n**Requested actions**\n\n- Stage complete output before publication.\n- Reject existing logical output until replacement is atomic; sidecar validation can remain streaming.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F001 severity=high area=instance-publication -->",
+      "severity": "high"
+    },
+    {
+      "id": "3725913007",
+      "body": "**The smoke command passes a directory to a file-only validator**\n\nIts output root also cannot satisfy datastore path checks.\n\n**Requested actions**\n\n- Use the required `data/<collection>` path for smoke output.\n- Pass a quoted fixed-depth file glob to validation.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F002 severity=medium area=documentation -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3725913013",
+      "body": "**Missing score and token data are converted into valid measurements**\n\nMissing scores become incorrect answers and stay in aggregate denominators. Missing token data becomes measured zero instead of being omitted.\n\n**Requested actions**\n\n- Enter invalid scores in the failure report.\n- Omit incomplete token usage and calculate token means only from complete values.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F004 severity=medium area=data-validation -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3725913015",
+      "body": "**Each task receives a different metric ID for canonical accuracy**\n\nEvery result is canonical accuracy, but each task receives a different metric ID. Cross-source joins by metric ID become fragmented.\n\nPlease keep `accuracy` as the metric ID and use `evaluation_name` to distinguish tasks.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F005 severity=medium area=metric-identity -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3725913021",
+      "body": "**A bare `--parquet` flag starts the full remote conversion**\n\nA bare `--parquet` flag yields an empty list. The adapter treats that as no local input and silently starts the full remote 15-shard conversion.\n\nPlease require at least one path for `--parquet`.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F011 severity=medium area=cli -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3725972277",
+      "body": "**The adapter remains outside the active package**\n\nThis adapter remains under the retired `utils` layout. Installed packages include `every_eval_ever*`, so the adapter and its documented command are outside the active package.\n\nPlease integrate current main before moving the adapter and its references under `every_eval_ever/adapters/open_medical_llm`.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F002 severity=medium area=repository-integration -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3725972282",
+      "body": "**The schema assertion rejects the version emitted by current main**\n\nThis assertion requires schema `0.2.2`, while current main emits `0.3.0`. The test fails after integration.\n\nPlease derive the expected value from the imported schema version.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F003 severity=medium area=schema-compatibility -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3725972285",
+      "body": "**Ordinary accuracy receives benchmark-specific metric IDs**\n\nOrdinary accuracy receives nine benchmark-specific metric IDs. This fragments the global accuracy join key.\n\nPlease keep `accuracy` as the metric ID and use task-specific evaluation names to preserve benchmark identity.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F004 severity=medium area=metric-identity -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3725972287",
+      "body": "**Repeat runs publish duplicate files for one logical evaluation**\n\nRepeat runs add a fresh UUID file for each stable evaluation ID. A populated target can hold duplicate logical records.\n\nPlease reject existing output JSON in the collection target before UUID generation or batch publication.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F006 severity=medium area=publication -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3726043665",
+      "body": "**Publication deletes the selected output tree before writing**\n\nThe adapter recursively deletes the selected output tree before publication. Empty batches and later write failures can destroy prior or unrelated data.\n\n**Requested actions**\n\n- Use the batch publisher for new or empty targets.\n- Fail by default for symlinks, roots, and populated targets.\n\nReplacement can remain blocked until it has an explicit ownership manifest.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F001 severity=critical area=publication-safety -->",
+      "severity": "critical"
+    },
+    {
+      "id": "3726043671",
+      "body": "**Conversion can succeed with incomplete output and no accounting**\n\nMalformed metrics, missing dataset references, and resultless rows are silently omitted. The command can exit successfully with incomplete output.\n\nPlease use metric cells as the source unit, count each attempted or rejected cell once, and retain row references for malformed objects and missing datasets.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F002 severity=high area=conversion-accounting -->",
+      "severity": "high"
+    },
+    {
+      "id": "3726043679",
+      "body": "**Scale tolerance allows unproven boundary overruns into publication**\n\nScale tolerance accepts small boundary overruns but emits them unchanged. Current semantic validation rejects those scores.\n\n**Requested actions**\n\n- Use tolerance only for scale classification.\n- Add a strict pre-publication check that rejects unproven overruns.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F004 severity=medium area=score-bounds -->",
+      "severity": "medium"
+    },
+    {
+      "id": "3726043682",
+      "body": "**`metric_unit` can conflict with the converted score**\n\n`metric_unit` stays tied to the PwC source scale after score conversion. It can conflict with the emitted score and canonical bounds.\n\nPlease set a unit only when the canonical contract or an explicit conversion proves it. Otherwise, it can stay unset while `pwc_scale` remains in details.\n\n<!-- review-anvil: id=RAV-RUN2-R1-F005 severity=medium area=metric-metadata -->",
+      "severity": "medium"
+    }
+  ]
+}
