@@ -123,7 +123,7 @@ Do not split a list of values governed by one rule into repeated actions.
 Two verbs that establish one invariant on the same record or output remain one obligation.
 
 A no-change boundary is not a separate obligation. Keep it out of
-`**Requested actions**` as a separate bullet. When accepted current behavior
+`**What to change**` as a separate bullet. When accepted current behavior
 directly constrains a requested change, keep it in the same sentence using
 `without changing …` or `while keeping … unchanged`. If that sentence would
 be dense, use short modal prose immediately after the action. Preserve other
@@ -149,7 +149,7 @@ request sentence beginning with `Please` and a direct action verb.
 For two or more independently implementable obligations, use this form:
 
 ```md
-**Requested actions**
+**What to change**
 
 - <Direct verb, target, and necessary condition or destination.>
 - <Direct verb, target, and a distinct implementation or exact test boundary.>
@@ -158,7 +158,7 @@ For two or more independently implementable obligations, use this form:
 Order required behavior changes before required tests. Keep no-change
 constraints with the action they limit or in the modal prose immediately after
 it.
-Do not repeat `Please` in the bullets; the heading establishes request mode.
+Do not repeat `Please` in the bullets; the heading identifies required changes.
 Avoid repeating a long shared phrase across bullets.
 Keep suggestion grammar for low and nit guidance.
 Never write `the fix`, `in the fix`, or `the corrected path` unless the source
@@ -212,7 +212,7 @@ Use short everyday words. Prefer one clear sentence over a dense explanation.
 
 The changed handler reads missing fields and fails before conversion.
 
-**Requested actions**
+**What to change**
 
 - Use the shared top-level parser in the module entry point.
 - Add one offline entry-point test.
@@ -236,7 +236,7 @@ Empty optional cells can remain allowed.
 Modal wording does not make requested verification optional:
 
 ```md
-**Requested actions**
+**What to change**
 
 - Reject every publisher base that is an immediate child of canonical `data`.
 - Add mismatched source and `collection_override` tests for this path.
@@ -252,7 +252,7 @@ When modal grammar proposes new author work, keep each obligation explicit:
 
 The command checks existing output before it knows whether any models matched.
 
-**Requested actions**
+**What to change**
 
 - Require one or more values for `--models`.
 - Add a no-match check.
@@ -265,7 +265,7 @@ It can stop before existing-output discovery or publication.
 Apply the counterfactual to each predicate in a compound modal sentence:
 
 ```md
-**Requested actions**
+**What to change**
 
 - Validate numeric fields as finite values under their metric rules.
 - Enter invalid rows in `SourceConversionResult`.
@@ -275,7 +275,7 @@ The second action is required because validation still drops invalid rows
 without it. Preserve only a true no-change boundary:
 
 ```md
-**Requested actions**
+**What to change**
 
 - Use the batch publisher for new or empty targets.
 - Fail by default for symlinks, roots, and populated targets.
@@ -298,7 +298,7 @@ removes doubt.
 Voice rules:
 
 - Address the code, never the author: "the handler swallows the error", not "you swallow the error". No "should have", no "Obviously / Clearly / Simply / Just".
-- Keep requested work calm and specific. Use one concise `Please` sentence for one critical/high/medium obligation and `**Requested actions**` bullets for two or more. Do not use context-free commands, rhetorical questions, review jargon, or filler.
+- Keep requested work calm and specific. Use one concise `Please` sentence for one critical/high/medium obligation and `**What to change**` bullets for two or more. Do not use context-free commands, rhetorical questions, review jargon, or filler.
 - Do not add a stock opener or rotate through canned alternatives. Let the problem determine the sentence.
 - Calm and specific beats emphatic. Severity determines where the comment appears; the prose needs no alarm words, bold warnings, exclamation marks, or rhetorical/scolding questions.
 - When the PR's approach is sound and that fact changes the fix, say so in one honest clause. Do not add a compliment sandwich.

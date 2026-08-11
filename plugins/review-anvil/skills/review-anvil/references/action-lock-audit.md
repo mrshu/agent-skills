@@ -156,7 +156,7 @@ Remove any source-free predicate named by `false_actions` or
 `invented_predicates`.
 
 After the semantic repair, reapply the inline-comment form: use one concise
-`Please` sentence for exactly one author obligation, or `**Requested actions**`
+`Please` sentence for exactly one author obligation, or `**What to change**`
 with one bullet per obligation for two or more. Never use a one-item action
 list. Audit the repaired rows once more with two new clean auditors under the
 same validation and union rules.

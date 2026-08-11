@@ -10,7 +10,7 @@ Productive counterpart to `review-anvil-pr`. Where `review-anvil-pr` is read-onl
 ## Generated Language
 
 Apply the [ASD-STE100-inspired language contract](../review-anvil/references/asd-ste100-inspired.md) to this preset.
-Use direct imperatives for internal steps. Use short active declarative sentences in PR comments. Use `**Requested actions**` only for multiple actions the author must perform; keep no-change constraints in prose. Retain suggestion grammar for low/nit guidance.
+Use direct imperatives for internal steps. Use short active declarative sentences in PR comments. Use `**What to change**` only for multiple actions the author must perform; keep no-change constraints in prose. Retain suggestion grammar for low/nit guidance.
 
 The skill orchestrates six steps:
 

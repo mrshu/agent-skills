@@ -232,7 +232,7 @@ For each issue, return a structured finding with these keys:
   explicit request.
   For one critical, high, or medium obligation, write one short request sentence
   beginning with `Please` and a direct action verb. For two or more, return
-  `**Requested actions**` followed by one direct-action Markdown bullet per
+  `**What to change**` followed by one direct-action Markdown bullet per
   obligation. Order required behavior changes before required tests. Do not
   repeat `Please` or a long shared phrase in the bullets. Preserve suggestion
   grammar for low and nit guidance. Never describe requested work as code

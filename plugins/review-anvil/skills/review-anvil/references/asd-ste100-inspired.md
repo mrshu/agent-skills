@@ -39,7 +39,7 @@ current behavior and standalone optional follow-ups as standalone modal prose.
 Treat a required source-backed test or document change as author work unless
 it is explicitly optional.
 Use `Please` plus an action verb for one obligation. For two or more
-independently implementable obligations, use `**Requested actions**` and one
+independently implementable obligations, use `**What to change**` and one
 direct-action bullet per obligation. Preserve suggestion grammar for low and
 nit guidance.
 Prefer a direct verb with a concrete target, condition, or destination.
