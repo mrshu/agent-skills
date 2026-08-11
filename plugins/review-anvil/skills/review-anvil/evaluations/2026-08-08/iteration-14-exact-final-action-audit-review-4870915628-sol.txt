@@ -1,0 +1,74 @@
+{
+  "items": [
+    {
+      "id": "AUDIT:3725853148",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3725853152",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3725853155",
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate \"Invalid rows can enter `SourceConversionResult`.\" is author work, but its rendered counterpart \"Invalid rows can enter `SourceConversionResult`.\" remains modal prose rather than a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Make entry of invalid rows into `SourceConversionResult` a direct request while preserving the exact target and scope."
+      ]
+    },
+    {
+      "id": "AUDIT:3725853159",
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate \"Legacy snapshots can leave this typed value unset\" is author work, but its rendered counterpart in \"Legacy snapshots can leave this typed value unset and mark the missing content.\" remains modal prose rather than a direct request.",
+        "Source predicate \"Legacy snapshots can ... mark the missing content\" is author work, but its rendered counterpart in \"Legacy snapshots can leave this typed value unset and mark the missing content.\" remains modal prose rather than a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Make leaving the typed value unset for legacy snapshots a direct request.",
+        "Make marking the missing prompt content for legacy snapshots a direct request."
+      ]
+    },
+    {
+      "id": "AUDIT:3725853163",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3725853168",
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate \"Normalized spellings can resolve only when one organization owns them.\" is author work and a required safety condition, but its identical rendered counterpart remains modal prose rather than a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Make the single-owning-organization restriction on normalized spelling resolution a direct request, preserving the exact condition."
+      ]
+    }
+  ],
+  "pass_count": 3,
+  "fail_count": 3
+}

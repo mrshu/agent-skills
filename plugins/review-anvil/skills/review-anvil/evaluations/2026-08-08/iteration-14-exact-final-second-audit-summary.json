@@ -1,0 +1,126 @@
+{
+  "contract_commit": "b3f2ad2c4c5e872a6e059d8e64c056ad615ab2ca",
+  "baseline": "verbatim observed prior skill output",
+  "protocol_issues": [],
+  "counts": {
+    "pass": 13,
+    "fallback": 1
+  },
+  "items": [
+    {
+      "id": "AUDIT:3737044371",
+      "review_id": "4884442134",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3737266661",
+      "review_id": "4884743173",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3737383919",
+      "review_id": "4884885250",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3737449070",
+      "review_id": "4884964333",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3737449081",
+      "review_id": "4884964333",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3737449098",
+      "review_id": "4884964333",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3737449101",
+      "review_id": "4884964333",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3725747243",
+      "review_id": "4870784346",
+      "status": "fallback",
+      "unverifiable": [],
+      "failures": [
+        {
+          "auditor": "terra",
+          "id": "AUDIT:3725747243",
+          "status": "fail",
+          "missing_author_work": [
+            "Source author-work predicate: \"`retrieved_timestamp` records retrieval time\" is a required constraint on the stable-ID change, but rendered counterpart \"`retrieved_timestamp` records retrieval time.\" is only modal prose, not a direct request."
+          ],
+          "false_actions": [],
+          "fact_losses": [
+            "Source predicate \"A stable source-run timestamp or deterministic token can keep the required ID shape while `retrieved_timestamp` records retrieval time\" binds retrieval-time preservation to the requested ID change. Rendered counterpart separates it into \"Please use a stable source-run timestamp or deterministic token to keep the required ID shape. `retrieved_timestamp` records retrieval time.\", changing the attached constraint into an assertion."
+          ],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Make preservation of retrieval time in `retrieved_timestamp` part of the direct stable-ID request; retain the source's attached \"while\" constraint."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AUDIT:3725747245",
+      "review_id": "4870784346",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3725853155",
+      "review_id": "4870915628",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3725853159",
+      "review_id": "4870915628",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3725853168",
+      "review_id": "4870915628",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3725913004",
+      "review_id": "4871030385",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3726043665",
+      "review_id": "4871239031",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    }
+  ]
+}

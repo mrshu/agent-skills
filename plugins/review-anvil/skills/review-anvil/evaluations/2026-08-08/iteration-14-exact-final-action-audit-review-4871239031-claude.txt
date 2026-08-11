@@ -1,0 +1,49 @@
+```json
+{
+  "items": [
+    {
+      "id": "AUDIT:3726043665",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [
+        "Source no-change boundary \"Symlinks, roots, and populated targets can fail by default until replacement has an explicit ownership manifest.\" is changed in modality: the draft renders it as the direct request \"- Fail by default for symlinks, roots, and populated targets until replacement has an explicit ownership manifest.\" The source permits failing these targets until replacement carries an explicit ownership manifest; it does not request that failure as author work. The only author-work predicate here is \"New or empty targets can use the batch publisher\", correctly rendered as \"- Use the batch publisher for new or empty targets.\""
+      ],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Remove the action bullet \"Fail by default for symlinks, roots, and populated targets until replacement has an explicit ownership manifest.\" from the requested-actions list and state it as the permitted boundary it is in the source, preserving the condition \"until replacement has an explicit ownership manifest\" exactly.",
+        "Keep \"Use the batch publisher for new or empty targets.\" as the only direct request."
+      ]
+    },
+    {
+      "id": "AUDIT:3726043671",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3726043679",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3726043682",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    }
+  ],
+  "pass_count": 3,
+  "fail_count": 1
+}
+```

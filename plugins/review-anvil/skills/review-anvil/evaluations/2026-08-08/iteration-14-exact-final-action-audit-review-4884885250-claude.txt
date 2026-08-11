@@ -1,0 +1,36 @@
+```json
+{
+  "items": [
+    {
+      "id": "AUDIT:3737383919",
+      "status": "fail",
+      "missing_author_work": [
+        "Source `A no-match check can stop before existing-output discovery or publication.` requests adding a no-match check (author work). The rendered body has no direct request to add the check; the only related bullet, `Stop a no-match run before existing-output discovery or publication.`, requests the permitted stopping point instead of the check."
+      ],
+      "false_actions": [
+        "Rendered bullet `Stop a no-match run before existing-output discovery or publication.` is an action derived only from the source's allowed boundary `can stop before existing-output discovery or publication`, which permits where the check may stop rather than requiring a stop."
+      ],
+      "fact_losses": [
+        "Source predicate `can stop before existing-output discovery or publication` is a permission (modality: may). The draft renders it as a mandate in the bullet `Stop a no-match run before existing-output discovery or publication.`, changing its modality from permitted boundary to required action."
+      ],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Render the source's author work as the direct request: the no-match check itself must be requested, matching source predicate `A no-match check`.",
+        "Do not render `can stop before existing-output discovery or publication` as an action; keep it as the permitted stopping point it is in the source, or omit it from the action list.",
+        "Leave the matched bullet `Require one or more values for `--models`.` unchanged; it correctly maps to source predicate `Requiring one or more values would block the first path.`"
+      ]
+    },
+    {
+      "id": "AUDIT:3737383922",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    }
+  ],
+  "pass_count": 1,
+  "fail_count": 1
+}
+```

@@ -1,0 +1,39 @@
+{
+  "items": [
+    {
+      "id": "AUDIT:3737044354",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3737044361",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3737044371",
+      "status": "fail",
+      "missing_author_work": [
+        "The required source safety predicate “without losing the last complete ledger” has no direct rendered request. Its nearest counterpart, “Please replace the report atomically after successful publication,” requests atomic replacement but does not explicitly require preservation of the last complete ledger."
+      ],
+      "false_actions": [],
+      "fact_losses": [
+        "The source predicate “without losing the last complete ledger” is omitted. The rendered counterpart “Please replace the report atomically after successful publication, including failures, exclusions, and fully clean runs” preserves the mechanism, timing, and report contents but not the explicit safety result."
+      ],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Attach the source requirement to preserve the last complete ledger to the direct atomic-replacement request."
+      ]
+    }
+  ],
+  "pass_count": 2,
+  "fail_count": 1
+}

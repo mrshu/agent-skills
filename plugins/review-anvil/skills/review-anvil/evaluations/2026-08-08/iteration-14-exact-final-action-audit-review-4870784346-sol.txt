@@ -1,0 +1,41 @@
+{
+  "items": [
+    {
+      "id": "AUDIT:3725747243",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [
+        "The source no-change boundary, \"`retrieved_timestamp` records retrieval time,\" is changed by the rendered predicate, \"Please use a stable source-run timestamp or deterministic token to keep the required ID shape, while `retrieved_timestamp` records retrieval time,\" which folds that boundary into the direct request."
+      ],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Keep the source author-work predicate, \"A stable source-run timestamp or deterministic token can keep the required ID shape,\" as the direct request. State the counterpart, \"`retrieved_timestamp` records retrieval time,\" separately as a no-change boundary."
+      ]
+    },
+    {
+      "id": "AUDIT:3725747244",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3725747245",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [
+        "The source conditions the no-change boundary, \"The sound aggregate conversion can remain intact,\" on \"`llm_scoring` is emitted only when the real template is available.\" The rendered counterpart, \"The sound aggregate conversion can remain intact,\" omits that condition and therefore presents the boundary as unconditional."
+      ],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Preserve the direct request, \"Please emit `llm_scoring` only when the real template is available,\" and explicitly retain that predicate as the condition governing the no-change boundary for the sound aggregate conversion."
+      ]
+    }
+  ],
+  "pass_count": 1,
+  "fail_count": 2
+}

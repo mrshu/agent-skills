@@ -1,0 +1,15 @@
+{
+  "items": [
+    {
+      "id": "AUDIT:3726043665",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    }
+  ],
+  "pass_count": 1,
+  "fail_count": 0
+}

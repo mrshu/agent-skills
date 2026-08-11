@@ -1,0 +1,35 @@
+{
+  "items": [
+    {
+      "id": "AUDIT:3737383919",
+      "status": "fail",
+      "missing_author_work": [
+        "Source author-work predicate “A no-match check” has no exact direct-request counterpart. Rendered “Stop a no-match run before existing-output discovery or publication” requests a stopping point instead of directly requesting the no-match check."
+      ],
+      "false_actions": [
+        "Rendered action “Stop a no-match run before existing-output discovery or publication” turns the source no-change boundary “can stop before existing-output discovery or publication” into required author work."
+      ],
+      "fact_losses": [
+        "Source author-work result “Requiring one or more values would block the first path” is reduced to rendered “Require one or more values for `--models`”; the required result of blocking the bare-`--models` full-source-run path is not attached to the action.",
+        "Source boundary “can stop before existing-output discovery or publication” permits that stopping point, while rendered “Stop a no-match run before existing-output discovery or publication” changes the permission into an obligation."
+      ],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Directly request the no-match check and preserve its target behavior.",
+        "Keep “before existing-output discovery or publication” as an allowed implementation boundary, not an action.",
+        "Attach the result of blocking the bare-`--models` full-source-run path to the one-or-more-values action."
+      ]
+    },
+    {
+      "id": "AUDIT:3737383922",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    }
+  ],
+  "pass_count": 1,
+  "fail_count": 1
+}

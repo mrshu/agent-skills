@@ -1,0 +1,454 @@
+{
+  "per_comment": [
+    {
+      "id": "3737042592",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A labels two independently checkable actions and makes both unmistakable requests. B's \"small follow-up could\" makes the necessary correction sound optional."
+    },
+    {
+      "id": "3737044354",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B turns the retention change and regression test into an explicit, easy-to-scan checklist. A leaves both as tentative follow-ups."
+    },
+    {
+      "id": "3737044361",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B directly asks for the raw path as the identity input. A conveys the same solution but frames the required change as merely possible."
+    },
+    {
+      "id": "3737044371",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A clearly requests atomic replacement and explicitly names all three run outcomes that must be recorded. B weakens that correction into a possible implementation."
+    },
+    {
+      "id": "3737053181",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B separates the compatibility observation from the requested shared representation. That makes the one required follow-up more visible."
+    },
+    {
+      "id": "3737053197",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B directly states the validation change and its desired reporting outcome. A has the same content but presents it as an optional design."
+    },
+    {
+      "id": "3737053204",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A makes the failure behavior and the preserved 401 behavior explicit boundaries for the requested change. B describes the remedy more tentatively."
+    },
+    {
+      "id": "3737181823",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B turns the deferral condition into a direct request while preserving the current warning cases as a clear boundary. A is less decisive about the change."
+    },
+    {
+      "id": "3737266652",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A explicitly requests a narrow error boundary and clearly excludes unexpected failures from its scope. B leaves the required boundary sounding discretionary."
+    },
+    {
+      "id": "3737266656",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A directly requests resolving every supplied reference once and states why branch and tag support remain valid. B presents the same behavior as a hypothetical benefit."
+    },
+    {
+      "id": "3737266661",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B isolates the exclusions-only consequence, then gives a direct instruction to save the report. The separation is easier to absorb in an inline pane."
+    },
+    {
+      "id": "3737291965",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A separates the rejection rule from the two boundary tests, so the required implementation and coverage are memorable. B compresses those distinct actions into tentative prose."
+    },
+    {
+      "id": "3737383919",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A makes both distinct CLI failures explicit work items and separately places the no-match check. B makes the no-match behavior easier to overlook."
+    },
+    {
+      "id": "3737383922",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B gives the path mismatch its own paragraph before directly requesting early shape validation. That improves the cause-to-fix flow."
+    },
+    {
+      "id": "3737449039",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A directly specifies the stable-ID inputs and clearly confines retrieval time to its metadata field. B has the same content but does not clearly ask the author to make the change."
+    },
+    {
+      "id": "3737449052",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B breaks before the automation consequence and makes the ledger change a direct request. The exclusion boundary remains concise and clear."
+    },
+    {
+      "id": "3737449059",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B separates the missing-population problem from a complete, direct three-part request. A's proposed treatment is understandable but less clearly assigned."
+    },
+    {
+      "id": "3737449070",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B presents the two substantive actions as bullets and keeps unresolved-key reporting visibly separate. That makes the work easier to retain despite the final qualification."
+    },
+    {
+      "id": "3737449081",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B gives the missing join key its own paragraph and then directly requests the mapping-based IDs. The action is more prominent than in A."
+    },
+    {
+      "id": "3737449090",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A directly requests a consistent source-record grain and a separate output-log count. B softens both requirements into a possible arrangement."
+    },
+    {
+      "id": "3737449098",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A isolates the single-file failure-reporting gap and directly requests the local result path. B compresses the consequence and remedy into less actionable prose."
+    },
+    {
+      "id": "3737449101",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A separates the sanitizer and test requirements into independently checkable actions. B makes both sound like optional coverage and implementation choices."
+    },
+    {
+      "id": "3725747243",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "tie",
+      "reason": "The versions are identical, including the stable-ID remedy and the retrieval-time boundary."
+    },
+    {
+      "id": "3725747244",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A directly requests the task-level boundary and explicitly preserves both valid logs and rejected-task accounting. B's wording is less clearly an instruction."
+    },
+    {
+      "id": "3725747245",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 3, "naturalness": 3, "cognitive_ease": 3},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "A redundantly repeats the same `llm_scoring` condition in its final sentence, which makes the requested behavior harder to parse. B states the condition once and cleanly preserves aggregate conversion."
+    },
+    {
+      "id": "3725776269",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A directly requests documentation and names the repeated-`data` example that must be included. B reduces that concrete documentation work to a suggestion."
+    },
+    {
+      "id": "3725827216",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B directly states the stop condition and identifies `check_path_structure` as its owner. A communicates the same relationship but less decisively."
+    },
+    {
+      "id": "3725830951",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B makes adding the guide section an explicit request and keeps its required contents in one compact list. A's final sentence is less directive."
+    },
+    {
+      "id": "3725853148",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B gives the cross-run identity risk its own paragraph, then directly requests one-time network resolution. The offline boundary remains easy to notice."
+    },
+    {
+      "id": "3725853152",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A lists the parser migration and offline entry-point test as separate work items. B combines them into a tentative sentence."
+    },
+    {
+      "id": "3725853155",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A makes validation-before-construction and failure-result accounting distinct requested actions. B states both as possible behaviors rather than a clear required change."
+    },
+    {
+      "id": "3725853159",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B groups the legacy-snapshot behavior into a compact, readable continuation of the new-snapshot change. A's three-item list gives the same tightly coupled behavior unnecessary checklist weight."
+    },
+    {
+      "id": "3725853163",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B separates the known-gap consequence from the requested live-mode query behavior. The unchanged offline behavior is a clear scope boundary rather than a competing action."
+    },
+    {
+      "id": "3725853168",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B uses bullets for the two independently checkable precedence rules. A conveys them as possibilities, making the intended resolution less forceful."
+    },
+    {
+      "id": "3725913004",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B separates the post-write construction failure from a direct staging request. The remaining replacement and streaming constraints are compact and visible."
+    },
+    {
+      "id": "3725913007",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A lists the output-path and fixed-depth-glob corrections separately, making both command changes easy to verify. B makes them read as optional alternatives."
+    },
+    {
+      "id": "3725913013",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A presents score handling and token handling as two separate corrections, matching the two distinct defects. B compresses the actions into tentative prose."
+    },
+    {
+      "id": "3725913015",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A directly states which field must retain the canonical metric ID and which field distinguishes tasks. B weakens the correction into a possible arrangement."
+    },
+    {
+      "id": "3725913021",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 4, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A directly requests the minimum-path requirement after clearly stating the dangerous bare-flag behavior. B makes the safeguard sound elective."
+    },
+    {
+      "id": "3725972277",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B gives the inactive-package consequence its own paragraph and directly orders integration before relocation. The sequencing is easier to retain."
+    },
+    {
+      "id": "3725972282",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A directly requests deriving the expected value from the imported version. B describes the same repair as an optional source for the value."
+    },
+    {
+      "id": "3725972285",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B isolates the fragmented join-key consequence, then directly assigns `accuracy` and evaluation names their roles. A is less clearly a request."
+    },
+    {
+      "id": "3725972287",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A directly requests rejection before both UUID generation and publication, so the timing constraint is unmistakable. B frames the same constraint as optional."
+    },
+    {
+      "id": "3726043665",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B separates the destructive-failure consequence from a direct target-safety instruction. Its restrictions on symlinks, roots, and populated targets remain easy to scan."
+    },
+    {
+      "id": "3726043671",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B gives the silent-success consequence its own paragraph and directly enumerates the accounting unit, count rule, and retained references. A presents the remedy less explicitly."
+    },
+    {
+      "id": "3726043679",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4},
+        "B": {"defect_clarity": 5, "action_recall": 5, "scanability": 5, "naturalness": 5, "cognitive_ease": 5}
+      },
+      "winner": "B",
+      "reason": "B cleanly separates the rejected-score consequence and directly requests both the classification limit and pre-publication check. A phrases those controls as possibilities."
+    },
+    {
+      "id": "3726043682",
+      "scores": {
+        "A": {"defect_clarity": 5, "action_recall": 5, "scanability": 4, "naturalness": 5, "cognitive_ease": 5},
+        "B": {"defect_clarity": 5, "action_recall": 4, "scanability": 4, "naturalness": 4, "cognitive_ease": 4}
+      },
+      "winner": "A",
+      "reason": "A directly assigns the proof condition for setting a unit and the fallback behavior when proof is absent. B makes those requirements read as optional choices."
+    }
+  ],
+  "winner_counts": {
+    "A": 21,
+    "B": 25,
+    "tie": 1
+  },
+  "mean_scores": {
+    "A": {
+      "defect_clarity": 5,
+      "action_recall": 4.468085106382978,
+      "scanability": 4.23404255319149,
+      "naturalness": 4.25531914893617,
+      "cognitive_ease": 4.468085106382978
+    },
+    "B": {
+      "defect_clarity": 5,
+      "action_recall": 4.48936170212766,
+      "scanability": 4.404255319148936,
+      "naturalness": 4.48936170212766,
+      "cognitive_ease": 4.531914893617022
+    }
+  },
+  "overall_ranking": [
+    "B",
+    "A"
+  ],
+  "recommended_version": "B",
+  "summary": "Both versions explain the failures clearly. B more often improves inline reading by separating consequence from remedy and making the requested change explicit, while A is stronger where its bullets expose genuinely independent implementation and test work. A should avoid repeated or optional-sounding prose; B should retain explicit directives when the correction is mandatory."
+}

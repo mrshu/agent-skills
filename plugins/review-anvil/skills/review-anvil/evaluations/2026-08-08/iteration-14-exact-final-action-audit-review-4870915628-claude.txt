@@ -1,0 +1,64 @@
+{
+  "items": [
+    {
+      "id": "AUDIT:3725853148",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3725853152",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3725853155",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3725853159",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3725853163",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3725853168",
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate \"Normalized spellings can resolve only when one organization owns them.\" is target behavior, not a no-change boundary: the diagnosis states \"Normalized organization collisions can rewrite an exact canonical ID to another canonical organization,\" so normalized spellings currently resolve even when more than one organization owns them. The rendered_body leaves this predicate only as modal prose (\"Normalized spellings can resolve only when one organization owns them.\") alongside the direct request \"Please make exact canonical IDs win first.\", so the required restriction on normalized resolution never appears as a direct request to the author."
+      ],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Render the source predicate \"Normalized spellings can resolve only when one organization owns them.\" as a direct request to the author, alongside the existing direct request derived from \"Exact canonical IDs can win first.\", preserving the exact scope (normalized spellings), the ordering relative to exact canonical ID matching, and the \"only when one organization owns them\" condition without strengthening or weakening it."
+      ]
+    }
+  ],
+  "pass_count": 5,
+  "fail_count": 1
+}

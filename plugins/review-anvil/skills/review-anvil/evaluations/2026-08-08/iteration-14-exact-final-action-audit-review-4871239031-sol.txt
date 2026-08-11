@@ -1,0 +1,48 @@
+{
+  "items": [
+    {
+      "id": "AUDIT:3726043665",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [
+        "Rendered direct request \"Fail by default for symlinks, roots, and populated targets until replacement has an explicit ownership manifest\" incorrectly turns the source no-change boundary \"Symlinks, roots, and populated targets can fail by default until replacement has an explicit ownership manifest\" into author work."
+      ],
+      "fact_losses": [
+        "The source predicate \"Symlinks, roots, and populated targets can fail by default until replacement has an explicit ownership manifest\" is an allowed implementation boundary, but its rendered counterpart \"Fail by default for symlinks, roots, and populated targets until replacement has an explicit ownership manifest\" changes its obligation status to required author work."
+      ],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Remove the direct request derived from the symlink, root, and populated-target no-change boundary. Preserve that predicate only as an allowed boundary; keep \"Use the batch publisher for new or empty targets\" as the requested author work."
+      ]
+    },
+    {
+      "id": "AUDIT:3726043671",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3726043679",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3726043682",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    }
+  ],
+  "pass_count": 3,
+  "fail_count": 1
+}

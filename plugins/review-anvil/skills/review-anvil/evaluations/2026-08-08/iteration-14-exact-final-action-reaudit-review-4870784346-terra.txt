@@ -1,0 +1,30 @@
+{
+  "items": [
+    {
+      "id": "AUDIT:3725747243",
+      "status": "fail",
+      "missing_author_work": [
+        "Source author-work predicate: \"`retrieved_timestamp` records retrieval time\" is a required constraint on the stable-ID change, but rendered counterpart \"`retrieved_timestamp` records retrieval time.\" is only modal prose, not a direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [
+        "Source predicate \"A stable source-run timestamp or deterministic token can keep the required ID shape while `retrieved_timestamp` records retrieval time\" binds retrieval-time preservation to the requested ID change. Rendered counterpart separates it into \"Please use a stable source-run timestamp or deterministic token to keep the required ID shape. `retrieved_timestamp` records retrieval time.\", changing the attached constraint into an assertion."
+      ],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Make preservation of retrieval time in `retrieved_timestamp` part of the direct stable-ID request; retain the source's attached \"while\" constraint."
+      ]
+    },
+    {
+      "id": "AUDIT:3725747245",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    }
+  ],
+  "pass_count": 1,
+  "fail_count": 1
+}

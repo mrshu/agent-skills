@@ -1,0 +1,39 @@
+```json
+{
+  "items": [
+    {
+      "id": "AUDIT:3737266652",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3737266656",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3737266661",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [
+        "Source predicate \"The shared report already supports exclusions.\" has no counterpart anywhere in `rendered_body`. It is accepted current behavior (a no-change boundary) establishing that exclusion support in the shared report needs no new work; the rendered text only states \"Please save the shared report for either collection.\", which requests the save but drops the existing-support fact."
+      ],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Restore the omitted no-change boundary \"The shared report already supports exclusions.\" as a non-action statement alongside the existing request to save the shared report for either collection, and keep \"The nonzero exit can stay conditional on failures.\" as a permitted boundary rather than an action."
+      ]
+    }
+  ],
+  "pass_count": 2,
+  "fail_count": 1
+}
+```

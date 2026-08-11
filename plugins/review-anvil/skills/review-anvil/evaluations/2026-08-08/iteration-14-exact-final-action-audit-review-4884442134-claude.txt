@@ -1,0 +1,39 @@
+```json
+{
+  "items": [
+    {
+      "id": "AUDIT:3737044354",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3737044361",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3737044371",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [
+        "Source predicate \"without losing the last complete ledger\" — the required safety clause constraining the atomic report replacement — has no counterpart in `rendered_body`. The rendered request \"Please replace the report atomically after successful publication, including failures, exclusions, and fully clean runs.\" carries the action, the ordering condition (\"after successful publication\"), and the record scope (\"failures, exclusions, and fully clean runs\"), but drops the no-loss result the source attaches to that same action."
+      ],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Reattach the source safety clause \"without losing the last complete ledger\" to the existing atomic report replacement request, leaving the action, the \"after successful publication\" ordering, and the \"failures, exclusions, and fully clean runs\" scope unchanged."
+      ]
+    }
+  ],
+  "pass_count": 2,
+  "fail_count": 1
+}
+```

@@ -1,0 +1,96 @@
+```json
+{
+  "items": [
+    {
+      "id": "AUDIT:3737449039",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3737449052",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3737449059",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3737449070",
+      "status": "fail",
+      "missing_author_work": [
+        "Source predicate 'Unresolved keys can be reported after the valid metrics are preserved' carries the required preservation of the valid metrics. The rendered body never requests that preservation directly; it survives only as the subordinate clause 'after preserving the valid metrics' inside the reporting bullet."
+      ],
+      "false_actions": [
+        "Rendered bullet 'Report unresolved keys after preserving the valid metrics.' turns the allowed reporting follow-up of 'Unresolved keys can be reported after the valid metrics are preserved' into requested author work."
+      ],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Make the preservation of the valid metrics its own direct request derived from 'Unresolved keys can be reported after the valid metrics are preserved', and drop the requested-action framing of unresolved-key reporting, leaving that follow-up as a permitted option rather than a bullet."
+      ]
+    },
+    {
+      "id": "AUDIT:3737449081",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [
+        "Rendered predicate 'use the same metric-definition mapping for direction and bounds' requests direction-and-bounds work. The source clause 'The same metric-definition mapping used for direction and bounds' only identifies which existing mapping to reuse; the source requests only that it 'supply canonical global IDs and stable namespaced IDs for defined lighteval-specific metrics'."
+      ],
+      "fact_losses": [
+        "The source predicate 'The same metric-definition mapping used for direction and bounds can supply canonical global IDs and stable namespaced IDs for defined lighteval-specific metrics' is changed: 'used for direction and bounds' is an identifying description of the mapping, and the rendered body converts it into a third requested use coordinated with 'canonical global IDs' and 'stable namespaced IDs', losing the supply relation between the mapping and the IDs."
+      ],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Restore 'used for direction and bounds' as an identifier of the existing metric-definition mapping rather than a requested outcome, and keep the request limited to that mapping supplying canonical global IDs and stable namespaced IDs for defined lighteval-specific metrics."
+      ]
+    },
+    {
+      "id": "AUDIT:3737449090",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3737449098",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3737449101",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [
+        "Source predicate 'Tests with provider-prefixed key names would cover the reachable path without recording secret values' loses its required test boundary. Rendered bullet 'Add tests with provider-prefixed key names without recording secret values.' keeps the key-name scope and the no-secret-values constraint but omits 'cover the reachable path', so the tests are no longer tied to the nested path that reaches published `additional_details`."
+      ],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Reattach the required result 'cover the reachable path' to the test request derived from 'Tests with provider-prefixed key names would cover the reachable path without recording secret values', keeping the 'without recording secret values' constraint on the same action."
+      ]
+    }
+  ],
+  "pass_count": 5,
+  "fail_count": 3
+}
+```

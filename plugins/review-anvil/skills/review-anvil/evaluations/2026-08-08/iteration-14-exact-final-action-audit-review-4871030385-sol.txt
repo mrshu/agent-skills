@@ -1,0 +1,56 @@
+{
+  "items": [
+    {
+      "id": "AUDIT:3725913004",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [
+        "Source no-change boundary “Existing logical output can be rejected until replacement is atomic” is changed by rendered direct request “Reject existing logical output until replacement is atomic” into author work.",
+        "Source no-change boundary “with sidecar validation kept streaming” is changed by rendered requested condition “while sidecar validation stays streaming” into author work."
+      ],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Keep “Please stage complete output before publication” as the direct request, but restore the exact no-change boundary: “Existing logical output can be rejected until replacement is atomic, with sidecar validation kept streaming.”"
+      ]
+    },
+    {
+      "id": "AUDIT:3725913007",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3725913013",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3725913015",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3725913021",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    }
+  ],
+  "pass_count": 4,
+  "fail_count": 1
+}

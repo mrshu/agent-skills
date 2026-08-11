@@ -1,0 +1,58 @@
+```json
+{
+  "items": [
+    {
+      "id": "AUDIT:3725913004",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [
+        "Rendered direct request \"Reject existing logical output until replacement is atomic, while sidecar validation stays streaming.\" is author work, but its only source counterpart is the no-change boundary \"Existing logical output can be rejected until replacement is atomic, with sidecar validation kept streaming.\" That source predicate preserves two allowed boundaries (permitted rejection of existing logical output until replacement is atomic, and sidecar validation kept streaming); neither may be rendered as a requested action."
+      ],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Keep the direct request derived from the author-work predicate \"Complete output can stage before publication\" (rendered as \"Please stage complete output before publication.\").",
+        "Remove the imperative form of the boundary predicate and restore it as an allowance, preserving both clauses exactly: existing logical output can be rejected until replacement is atomic, with sidecar validation kept streaming."
+      ]
+    },
+    {
+      "id": "AUDIT:3725913007",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3725913013",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3725913015",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3725913021",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    }
+  ],
+  "pass_count": 4,
+  "fail_count": 1
+}
+```

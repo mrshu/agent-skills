@@ -1,0 +1,712 @@
+{
+  "contract_commit": "b3f2ad2c4c5e872a6e059d8e64c056ad615ab2ca",
+  "baseline": "verbatim observed prior skill output",
+  "review_groups": 16,
+  "protocol_issues": [],
+  "counts": {
+    "pass": 33,
+    "repair": 14,
+    "fallback": 0
+  },
+  "items": [
+    {
+      "id": "AUDIT:3737042592",
+      "review_id": "4884439849",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3737044354",
+      "review_id": "4884442134",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3737044361",
+      "review_id": "4884442134",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3737044371",
+      "review_id": "4884442134",
+      "status": "repair",
+      "unverifiable": [],
+      "failures": [
+        {
+          "auditor": "claude",
+          "id": "AUDIT:3737044371",
+          "status": "fail",
+          "missing_author_work": [],
+          "false_actions": [],
+          "fact_losses": [
+            "Source predicate \"without losing the last complete ledger\" — the required safety clause constraining the atomic report replacement — has no counterpart in `rendered_body`. The rendered request \"Please replace the report atomically after successful publication, including failures, exclusions, and fully clean runs.\" carries the action, the ordering condition (\"after successful publication\"), and the record scope (\"failures, exclusions, and fully clean runs\"), but drops the no-loss result the source attaches to that same action."
+          ],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Reattach the source safety clause \"without losing the last complete ledger\" to the existing atomic report replacement request, leaving the action, the \"after successful publication\" ordering, and the \"failures, exclusions, and fully clean runs\" scope unchanged."
+          ]
+        },
+        {
+          "auditor": "sol",
+          "id": "AUDIT:3737044371",
+          "status": "fail",
+          "missing_author_work": [
+            "The required source safety predicate “without losing the last complete ledger” has no direct rendered request. Its nearest counterpart, “Please replace the report atomically after successful publication,” requests atomic replacement but does not explicitly require preservation of the last complete ledger."
+          ],
+          "false_actions": [],
+          "fact_losses": [
+            "The source predicate “without losing the last complete ledger” is omitted. The rendered counterpart “Please replace the report atomically after successful publication, including failures, exclusions, and fully clean runs” preserves the mechanism, timing, and report contents but not the explicit safety result."
+          ],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Attach the source requirement to preserve the last complete ledger to the direct atomic-replacement request."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AUDIT:3737053181",
+      "review_id": "4884452884",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3737053197",
+      "review_id": "4884452884",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3737053204",
+      "review_id": "4884452884",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3737181823",
+      "review_id": "4884614217",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3737266652",
+      "review_id": "4884743173",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3737266656",
+      "review_id": "4884743173",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3737266661",
+      "review_id": "4884743173",
+      "status": "repair",
+      "unverifiable": [],
+      "failures": [
+        {
+          "auditor": "claude",
+          "id": "AUDIT:3737266661",
+          "status": "fail",
+          "missing_author_work": [],
+          "false_actions": [],
+          "fact_losses": [
+            "Source predicate \"The shared report already supports exclusions.\" has no counterpart anywhere in `rendered_body`. It is accepted current behavior (a no-change boundary) establishing that exclusion support in the shared report needs no new work; the rendered text only states \"Please save the shared report for either collection.\", which requests the save but drops the existing-support fact."
+          ],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Restore the omitted no-change boundary \"The shared report already supports exclusions.\" as a non-action statement alongside the existing request to save the shared report for either collection, and keep \"The nonzero exit can stay conditional on failures.\" as a permitted boundary rather than an action."
+          ]
+        },
+        {
+          "auditor": "sol",
+          "id": "AUDIT:3737266661",
+          "status": "fail",
+          "missing_author_work": [],
+          "false_actions": [],
+          "fact_losses": [
+            "The source no-change predicate \"The shared report already supports exclusions\" has no rendered counterpart. \"Please save the shared report for either collection\" preserves the required save action but does not preserve the accepted current capability."
+          ],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Restore the omitted source predicate \"The shared report already supports exclusions\" as a non-action statement while retaining the existing save request and the no-change boundary that nonzero exit remains conditional on failures."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AUDIT:3737291965",
+      "review_id": "4884776714",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3737383919",
+      "review_id": "4884885250",
+      "status": "repair",
+      "unverifiable": [],
+      "failures": [
+        {
+          "auditor": "claude",
+          "id": "AUDIT:3737383919",
+          "status": "fail",
+          "missing_author_work": [
+            "Source `A no-match check can stop before existing-output discovery or publication.` requests adding a no-match check (author work). The rendered body has no direct request to add the check; the only related bullet, `Stop a no-match run before existing-output discovery or publication.`, requests the permitted stopping point instead of the check."
+          ],
+          "false_actions": [
+            "Rendered bullet `Stop a no-match run before existing-output discovery or publication.` is an action derived only from the source's allowed boundary `can stop before existing-output discovery or publication`, which permits where the check may stop rather than requiring a stop."
+          ],
+          "fact_losses": [
+            "Source predicate `can stop before existing-output discovery or publication` is a permission (modality: may). The draft renders it as a mandate in the bullet `Stop a no-match run before existing-output discovery or publication.`, changing its modality from permitted boundary to required action."
+          ],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Render the source's author work as the direct request: the no-match check itself must be requested, matching source predicate `A no-match check`.",
+            "Do not render `can stop before existing-output discovery or publication` as an action; keep it as the permitted stopping point it is in the source, or omit it from the action list.",
+            "Leave the matched bullet `Require one or more values for `--models`.` unchanged; it correctly maps to source predicate `Requiring one or more values would block the first path.`"
+          ]
+        },
+        {
+          "auditor": "sol",
+          "id": "AUDIT:3737383919",
+          "status": "fail",
+          "missing_author_work": [
+            "Source author-work predicate “A no-match check” has no exact direct-request counterpart. Rendered “Stop a no-match run before existing-output discovery or publication” requests a stopping point instead of directly requesting the no-match check."
+          ],
+          "false_actions": [
+            "Rendered action “Stop a no-match run before existing-output discovery or publication” turns the source no-change boundary “can stop before existing-output discovery or publication” into required author work."
+          ],
+          "fact_losses": [
+            "Source author-work result “Requiring one or more values would block the first path” is reduced to rendered “Require one or more values for `--models`”; the required result of blocking the bare-`--models` full-source-run path is not attached to the action.",
+            "Source boundary “can stop before existing-output discovery or publication” permits that stopping point, while rendered “Stop a no-match run before existing-output discovery or publication” changes the permission into an obligation."
+          ],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Directly request the no-match check and preserve its target behavior.",
+            "Keep “before existing-output discovery or publication” as an allowed implementation boundary, not an action.",
+            "Attach the result of blocking the bare-`--models` full-source-run path to the one-or-more-values action."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AUDIT:3737383922",
+      "review_id": "4884885250",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3737449039",
+      "review_id": "4884964333",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3737449052",
+      "review_id": "4884964333",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3737449059",
+      "review_id": "4884964333",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3737449070",
+      "review_id": "4884964333",
+      "status": "repair",
+      "unverifiable": [],
+      "failures": [
+        {
+          "auditor": "claude",
+          "id": "AUDIT:3737449070",
+          "status": "fail",
+          "missing_author_work": [
+            "Source predicate 'Unresolved keys can be reported after the valid metrics are preserved' carries the required preservation of the valid metrics. The rendered body never requests that preservation directly; it survives only as the subordinate clause 'after preserving the valid metrics' inside the reporting bullet."
+          ],
+          "false_actions": [
+            "Rendered bullet 'Report unresolved keys after preserving the valid metrics.' turns the allowed reporting follow-up of 'Unresolved keys can be reported after the valid metrics are preserved' into requested author work."
+          ],
+          "fact_losses": [],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Make the preservation of the valid metrics its own direct request derived from 'Unresolved keys can be reported after the valid metrics are preserved', and drop the requested-action framing of unresolved-key reporting, leaving that follow-up as a permitted option rather than a bullet."
+          ]
+        },
+        {
+          "auditor": "sol",
+          "id": "AUDIT:3737449070",
+          "status": "fail",
+          "missing_author_work": [],
+          "false_actions": [
+            "The rendered direct request `Report unresolved keys after preserving the valid metrics.` has no source-backed author-work counterpart for reporting. Its source counterpart, `Unresolved keys can be reported after the valid metrics are preserved.`, makes reporting an optional follow-up; only preservation of valid metrics is required author work."
+          ],
+          "fact_losses": [
+            "The source predicate `Unresolved keys can be reported after the valid metrics are preserved.` permits reporting only as an optional follow-up, but the rendered counterpart `Report unresolved keys after preserving the valid metrics.` changes that optional predicate into mandatory author work."
+          ],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Remove unresolved-key reporting from the requested actions while retaining preservation of valid metrics as an explicit direct request."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AUDIT:3737449081",
+      "review_id": "4884964333",
+      "status": "repair",
+      "unverifiable": [],
+      "failures": [
+        {
+          "auditor": "claude",
+          "id": "AUDIT:3737449081",
+          "status": "fail",
+          "missing_author_work": [],
+          "false_actions": [
+            "Rendered predicate 'use the same metric-definition mapping for direction and bounds' requests direction-and-bounds work. The source clause 'The same metric-definition mapping used for direction and bounds' only identifies which existing mapping to reuse; the source requests only that it 'supply canonical global IDs and stable namespaced IDs for defined lighteval-specific metrics'."
+          ],
+          "fact_losses": [
+            "The source predicate 'The same metric-definition mapping used for direction and bounds can supply canonical global IDs and stable namespaced IDs for defined lighteval-specific metrics' is changed: 'used for direction and bounds' is an identifying description of the mapping, and the rendered body converts it into a third requested use coordinated with 'canonical global IDs' and 'stable namespaced IDs', losing the supply relation between the mapping and the IDs."
+          ],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Restore 'used for direction and bounds' as an identifier of the existing metric-definition mapping rather than a requested outcome, and keep the request limited to that mapping supplying canonical global IDs and stable namespaced IDs for defined lighteval-specific metrics."
+          ]
+        },
+        {
+          "auditor": "sol",
+          "id": "AUDIT:3737449081",
+          "status": "fail",
+          "missing_author_work": [],
+          "false_actions": [
+            "The rendered request `Please use the same metric-definition mapping for direction and bounds` turns the mapping's existing direction-and-bounds role into author work. The source counterpart, `The same metric-definition mapping used for direction and bounds`, identifies the existing mapping; the source requests only that it supply canonical global IDs and stable namespaced IDs."
+          ],
+          "fact_losses": [
+            "The source predicate `the same metric-definition mapping used for direction and bounds` is an identifying no-change predicate, but the rendered counterpart `use the same metric-definition mapping for direction and bounds` changes its obligation status into a direct action."
+          ],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Keep the mapping's direction-and-bounds role outside the action scope and request only that the identified mapping supply canonical global IDs and stable namespaced IDs for defined lighteval-specific metrics."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AUDIT:3737449090",
+      "review_id": "4884964333",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3737449098",
+      "review_id": "4884964333",
+      "status": "repair",
+      "unverifiable": [],
+      "failures": [
+        {
+          "auditor": "sol",
+          "id": "AUDIT:3737449098",
+          "status": "fail",
+          "missing_author_work": [
+            "The source author-work predicate `A small lighteval-local file-result path` requires a small implementation path. Its rendered counterpart, `Please add a lighteval-local file-result path`, omits that size boundary from the direct request."
+          ],
+          "false_actions": [],
+          "fact_losses": [
+            "The rendered counterpart `a lighteval-local file-result path` drops the source qualifier `small` from `A small lighteval-local file-result path`, changing the requested implementation boundary."
+          ],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Restore the source's `small` implementation boundary in the direct request for the lighteval-local file-result path."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AUDIT:3737449101",
+      "review_id": "4884964333",
+      "status": "repair",
+      "unverifiable": [],
+      "failures": [
+        {
+          "auditor": "claude",
+          "id": "AUDIT:3737449101",
+          "status": "fail",
+          "missing_author_work": [],
+          "false_actions": [],
+          "fact_losses": [
+            "Source predicate 'Tests with provider-prefixed key names would cover the reachable path without recording secret values' loses its required test boundary. Rendered bullet 'Add tests with provider-prefixed key names without recording secret values.' keeps the key-name scope and the no-secret-values constraint but omits 'cover the reachable path', so the tests are no longer tied to the nested path that reaches published `additional_details`."
+          ],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Reattach the required result 'cover the reachable path' to the test request derived from 'Tests with provider-prefixed key names would cover the reachable path without recording secret values', keeping the 'without recording secret values' constraint on the same action."
+          ]
+        },
+        {
+          "auditor": "sol",
+          "id": "AUDIT:3737449101",
+          "status": "fail",
+          "missing_author_work": [
+            "The source verification predicate `Tests with provider-prefixed key names would cover the reachable path` requires the tests to cover the reachable path. The rendered counterpart, `Add tests with provider-prefixed key names without recording secret values.`, requests the test data and safety boundary but does not directly require coverage of that path."
+          ],
+          "false_actions": [],
+          "fact_losses": [
+            "The rendered test request omits the source result predicate `cover the reachable path`; provider-prefixed key names and the prohibition on recording secret values remain, but the exact required coverage boundary is no longer stated."
+          ],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Make coverage of the reachable nested-value serialization path an explicit part of the direct test request while retaining provider-prefixed key names and the prohibition on recording secret values."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AUDIT:3725747243",
+      "review_id": "4870784346",
+      "status": "repair",
+      "unverifiable": [],
+      "failures": [
+        {
+          "auditor": "sol",
+          "id": "AUDIT:3725747243",
+          "status": "fail",
+          "missing_author_work": [],
+          "false_actions": [],
+          "fact_losses": [
+            "The source no-change boundary, \"`retrieved_timestamp` records retrieval time,\" is changed by the rendered predicate, \"Please use a stable source-run timestamp or deterministic token to keep the required ID shape, while `retrieved_timestamp` records retrieval time,\" which folds that boundary into the direct request."
+          ],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Keep the source author-work predicate, \"A stable source-run timestamp or deterministic token can keep the required ID shape,\" as the direct request. State the counterpart, \"`retrieved_timestamp` records retrieval time,\" separately as a no-change boundary."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AUDIT:3725747244",
+      "review_id": "4870784346",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3725747245",
+      "review_id": "4870784346",
+      "status": "repair",
+      "unverifiable": [],
+      "failures": [
+        {
+          "auditor": "sol",
+          "id": "AUDIT:3725747245",
+          "status": "fail",
+          "missing_author_work": [],
+          "false_actions": [],
+          "fact_losses": [
+            "The source conditions the no-change boundary, \"The sound aggregate conversion can remain intact,\" on \"`llm_scoring` is emitted only when the real template is available.\" The rendered counterpart, \"The sound aggregate conversion can remain intact,\" omits that condition and therefore presents the boundary as unconditional."
+          ],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Preserve the direct request, \"Please emit `llm_scoring` only when the real template is available,\" and explicitly retain that predicate as the condition governing the no-change boundary for the sound aggregate conversion."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AUDIT:3725776269",
+      "review_id": "4870817417",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3725827216",
+      "review_id": "4870878941",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3725830951",
+      "review_id": "4870883842",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3725853148",
+      "review_id": "4870915628",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3725853152",
+      "review_id": "4870915628",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3725853155",
+      "review_id": "4870915628",
+      "status": "repair",
+      "unverifiable": [],
+      "failures": [
+        {
+          "auditor": "sol",
+          "id": "AUDIT:3725853155",
+          "status": "fail",
+          "missing_author_work": [
+            "Source predicate \"Invalid rows can enter `SourceConversionResult`.\" is author work, but its rendered counterpart \"Invalid rows can enter `SourceConversionResult`.\" remains modal prose rather than a direct request."
+          ],
+          "false_actions": [],
+          "fact_losses": [],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Make entry of invalid rows into `SourceConversionResult` a direct request while preserving the exact target and scope."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AUDIT:3725853159",
+      "review_id": "4870915628",
+      "status": "repair",
+      "unverifiable": [],
+      "failures": [
+        {
+          "auditor": "sol",
+          "id": "AUDIT:3725853159",
+          "status": "fail",
+          "missing_author_work": [
+            "Source predicate \"Legacy snapshots can leave this typed value unset\" is author work, but its rendered counterpart in \"Legacy snapshots can leave this typed value unset and mark the missing content.\" remains modal prose rather than a direct request.",
+            "Source predicate \"Legacy snapshots can ... mark the missing content\" is author work, but its rendered counterpart in \"Legacy snapshots can leave this typed value unset and mark the missing content.\" remains modal prose rather than a direct request."
+          ],
+          "false_actions": [],
+          "fact_losses": [],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Make leaving the typed value unset for legacy snapshots a direct request.",
+            "Make marking the missing prompt content for legacy snapshots a direct request."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AUDIT:3725853163",
+      "review_id": "4870915628",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3725853168",
+      "review_id": "4870915628",
+      "status": "repair",
+      "unverifiable": [],
+      "failures": [
+        {
+          "auditor": "claude",
+          "id": "AUDIT:3725853168",
+          "status": "fail",
+          "missing_author_work": [
+            "Source predicate \"Normalized spellings can resolve only when one organization owns them.\" is target behavior, not a no-change boundary: the diagnosis states \"Normalized organization collisions can rewrite an exact canonical ID to another canonical organization,\" so normalized spellings currently resolve even when more than one organization owns them. The rendered_body leaves this predicate only as modal prose (\"Normalized spellings can resolve only when one organization owns them.\") alongside the direct request \"Please make exact canonical IDs win first.\", so the required restriction on normalized resolution never appears as a direct request to the author."
+          ],
+          "false_actions": [],
+          "fact_losses": [],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Render the source predicate \"Normalized spellings can resolve only when one organization owns them.\" as a direct request to the author, alongside the existing direct request derived from \"Exact canonical IDs can win first.\", preserving the exact scope (normalized spellings), the ordering relative to exact canonical ID matching, and the \"only when one organization owns them\" condition without strengthening or weakening it."
+          ]
+        },
+        {
+          "auditor": "sol",
+          "id": "AUDIT:3725853168",
+          "status": "fail",
+          "missing_author_work": [
+            "Source predicate \"Normalized spellings can resolve only when one organization owns them.\" is author work and a required safety condition, but its identical rendered counterpart remains modal prose rather than a direct request."
+          ],
+          "false_actions": [],
+          "fact_losses": [],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Make the single-owning-organization restriction on normalized spelling resolution a direct request, preserving the exact condition."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AUDIT:3725913004",
+      "review_id": "4871030385",
+      "status": "repair",
+      "unverifiable": [],
+      "failures": [
+        {
+          "auditor": "claude",
+          "id": "AUDIT:3725913004",
+          "status": "fail",
+          "missing_author_work": [],
+          "false_actions": [
+            "Rendered direct request \"Reject existing logical output until replacement is atomic, while sidecar validation stays streaming.\" is author work, but its only source counterpart is the no-change boundary \"Existing logical output can be rejected until replacement is atomic, with sidecar validation kept streaming.\" That source predicate preserves two allowed boundaries (permitted rejection of existing logical output until replacement is atomic, and sidecar validation kept streaming); neither may be rendered as a requested action."
+          ],
+          "fact_losses": [],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Keep the direct request derived from the author-work predicate \"Complete output can stage before publication\" (rendered as \"Please stage complete output before publication.\").",
+            "Remove the imperative form of the boundary predicate and restore it as an allowance, preserving both clauses exactly: existing logical output can be rejected until replacement is atomic, with sidecar validation kept streaming."
+          ]
+        },
+        {
+          "auditor": "sol",
+          "id": "AUDIT:3725913004",
+          "status": "fail",
+          "missing_author_work": [],
+          "false_actions": [],
+          "fact_losses": [
+            "Source no-change boundary “Existing logical output can be rejected until replacement is atomic” is changed by rendered direct request “Reject existing logical output until replacement is atomic” into author work.",
+            "Source no-change boundary “with sidecar validation kept streaming” is changed by rendered requested condition “while sidecar validation stays streaming” into author work."
+          ],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Keep “Please stage complete output before publication” as the direct request, but restore the exact no-change boundary: “Existing logical output can be rejected until replacement is atomic, with sidecar validation kept streaming.”"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AUDIT:3725913007",
+      "review_id": "4871030385",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3725913013",
+      "review_id": "4871030385",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3725913015",
+      "review_id": "4871030385",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3725913021",
+      "review_id": "4871030385",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3725972277",
+      "review_id": "4871126847",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3725972282",
+      "review_id": "4871126847",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3725972285",
+      "review_id": "4871126847",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3725972287",
+      "review_id": "4871126847",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3726043665",
+      "review_id": "4871239031",
+      "status": "repair",
+      "unverifiable": [],
+      "failures": [
+        {
+          "auditor": "claude",
+          "id": "AUDIT:3726043665",
+          "status": "fail",
+          "missing_author_work": [],
+          "false_actions": [],
+          "fact_losses": [
+            "Source no-change boundary \"Symlinks, roots, and populated targets can fail by default until replacement has an explicit ownership manifest.\" is changed in modality: the draft renders it as the direct request \"- Fail by default for symlinks, roots, and populated targets until replacement has an explicit ownership manifest.\" The source permits failing these targets until replacement carries an explicit ownership manifest; it does not request that failure as author work. The only author-work predicate here is \"New or empty targets can use the batch publisher\", correctly rendered as \"- Use the batch publisher for new or empty targets.\""
+          ],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Remove the action bullet \"Fail by default for symlinks, roots, and populated targets until replacement has an explicit ownership manifest.\" from the requested-actions list and state it as the permitted boundary it is in the source, preserving the condition \"until replacement has an explicit ownership manifest\" exactly.",
+            "Keep \"Use the batch publisher for new or empty targets.\" as the only direct request."
+          ]
+        },
+        {
+          "auditor": "sol",
+          "id": "AUDIT:3726043665",
+          "status": "fail",
+          "missing_author_work": [],
+          "false_actions": [
+            "Rendered direct request \"Fail by default for symlinks, roots, and populated targets until replacement has an explicit ownership manifest\" incorrectly turns the source no-change boundary \"Symlinks, roots, and populated targets can fail by default until replacement has an explicit ownership manifest\" into author work."
+          ],
+          "fact_losses": [
+            "The source predicate \"Symlinks, roots, and populated targets can fail by default until replacement has an explicit ownership manifest\" is an allowed implementation boundary, but its rendered counterpart \"Fail by default for symlinks, roots, and populated targets until replacement has an explicit ownership manifest\" changes its obligation status to required author work."
+          ],
+          "invented_predicates": [],
+          "repair_instructions": [
+            "Remove the direct request derived from the symlink, root, and populated-target no-change boundary. Preserve that predicate only as an allowed boundary; keep \"Use the batch publisher for new or empty targets\" as the requested author work."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AUDIT:3726043671",
+      "review_id": "4871239031",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3726043679",
+      "review_id": "4871239031",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    },
+    {
+      "id": "AUDIT:3726043682",
+      "review_id": "4871239031",
+      "status": "pass",
+      "unverifiable": [],
+      "failures": []
+    }
+  ]
+}

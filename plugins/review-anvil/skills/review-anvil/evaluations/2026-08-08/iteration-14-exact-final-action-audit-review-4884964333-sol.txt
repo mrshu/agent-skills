@@ -1,0 +1,102 @@
+{
+  "items": [
+    {
+      "id": "AUDIT:3737449039",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3737449052",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3737449059",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3737449070",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [
+        "The rendered direct request `Report unresolved keys after preserving the valid metrics.` has no source-backed author-work counterpart for reporting. Its source counterpart, `Unresolved keys can be reported after the valid metrics are preserved.`, makes reporting an optional follow-up; only preservation of valid metrics is required author work."
+      ],
+      "fact_losses": [
+        "The source predicate `Unresolved keys can be reported after the valid metrics are preserved.` permits reporting only as an optional follow-up, but the rendered counterpart `Report unresolved keys after preserving the valid metrics.` changes that optional predicate into mandatory author work."
+      ],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Remove unresolved-key reporting from the requested actions while retaining preservation of valid metrics as an explicit direct request."
+      ]
+    },
+    {
+      "id": "AUDIT:3737449081",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [
+        "The rendered request `Please use the same metric-definition mapping for direction and bounds` turns the mapping's existing direction-and-bounds role into author work. The source counterpart, `The same metric-definition mapping used for direction and bounds`, identifies the existing mapping; the source requests only that it supply canonical global IDs and stable namespaced IDs."
+      ],
+      "fact_losses": [
+        "The source predicate `the same metric-definition mapping used for direction and bounds` is an identifying no-change predicate, but the rendered counterpart `use the same metric-definition mapping for direction and bounds` changes its obligation status into a direct action."
+      ],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Keep the mapping's direction-and-bounds role outside the action scope and request only that the identified mapping supply canonical global IDs and stable namespaced IDs for defined lighteval-specific metrics."
+      ]
+    },
+    {
+      "id": "AUDIT:3737449090",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "AUDIT:3737449098",
+      "status": "fail",
+      "missing_author_work": [
+        "The source author-work predicate `A small lighteval-local file-result path` requires a small implementation path. Its rendered counterpart, `Please add a lighteval-local file-result path`, omits that size boundary from the direct request."
+      ],
+      "false_actions": [],
+      "fact_losses": [
+        "The rendered counterpart `a lighteval-local file-result path` drops the source qualifier `small` from `A small lighteval-local file-result path`, changing the requested implementation boundary."
+      ],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Restore the source's `small` implementation boundary in the direct request for the lighteval-local file-result path."
+      ]
+    },
+    {
+      "id": "AUDIT:3737449101",
+      "status": "fail",
+      "missing_author_work": [
+        "The source verification predicate `Tests with provider-prefixed key names would cover the reachable path` requires the tests to cover the reachable path. The rendered counterpart, `Add tests with provider-prefixed key names without recording secret values.`, requests the test data and safety boundary but does not directly require coverage of that path."
+      ],
+      "false_actions": [],
+      "fact_losses": [
+        "The rendered test request omits the source result predicate `cover the reachable path`; provider-prefixed key names and the prohibition on recording secret values remain, but the exact required coverage boundary is no longer stated."
+      ],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Make coverage of the reachable nested-value serialization path an explicit part of the direct test request while retaining provider-prefixed key names and the prohibition on recording secret values."
+      ]
+    }
+  ],
+  "pass_count": 4,
+  "fail_count": 4
+}
