@@ -79,6 +79,15 @@ _dir_has_other_artifacts() {
     return 1
 }
 
+
+report_is_infra_failure() {
+    local report_path="$1"
+    # Do not publish transparent infrastructure-failure reports. They are local
+    # diagnostics, not PR feedback. The watchdog should mark the run failed and
+    # retry with a healthy reviewer wave instead of notifying the author.
+    grep -Eqi 'reviewer wave failed|reviewer wave produced no usable|reviewer wave did not (return|produce)|all three (Codex )?reviewers (returned empty|timed out|reached)|all requested reviewers failed|no reviewer produced usable evidence|no usable code review|no code-review result is available|no code-quality decision was made|review did not (complete|produce a reliable result|finish)|review could not (finish|produce a reliable result)|reviewer execution failed|STATUS=empty|returned no final (response|output|review)|no final findings block' "$report_path"
+}
+
 cleanup_post_artifacts() {
     local report_path="$1" dir
     rm -f "$report_path" "${report_path}.inline.json" "${report_path}.approval.json" "${report_path}.followups.json" "${report_path}.full.md"
@@ -1522,6 +1531,9 @@ cmd_post() {
         [[ -n "${!v}" ]] || die "post: missing <$v>"
     done
     [[ -f "$report_path" ]] || die "report file not found: $report_path"
+    if [[ "${REVIEW_ANVIL_POST_INFRA_FAILURES:-0}" != "1" ]] && report_is_infra_failure "$report_path"; then
+        die "review-anvil infrastructure failure report detected; refusing to post PR noise (report left at $report_path; set REVIEW_ANVIL_POST_INFRA_FAILURES=1 only for manual debugging)"
+    fi
 
     export GH_HOST="$host"
 

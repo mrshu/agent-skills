@@ -1822,6 +1822,27 @@ JSON
     jq -e '.event == "COMMENT" and (.comments | length) == 1 and (.comments[0].line == 8) and (.body | contains("Refresh accepts missing state"))' "$tmp/review-payload.json" >/dev/null
 }
 
+test_post_refuses_infra_failure_reports() {
+    local tmp report
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+
+    report="$tmp/report.md"
+    {
+        printf '# ⚒️ review-anvil report\n\n'
+        printf '**Review decision:** COMMENT — The review did not complete because all three requested Codex reviewers returned empty output.\n'
+        printf '**Result:** No findings were synthesized. This result is not a clean review.\n'
+    } >"$report"
+
+    if "$HELPER" post github.com acme widgets 42 marker-123 "$report" >"$tmp/out" 2>"$tmp/err"; then
+        fail "infra-failure reports must not be posted by default"
+    fi
+    grep -Fq "infrastructure failure report detected" "$tmp/err" \
+        || fail "infra-failure refusal should be explicit"
+    [[ -f "$report" ]] || fail "infra-failure report should be left for diagnostics"
+}
+
+
 test_run_ordinal_is_pinned_by_pr_presets() {
     if "$HELPER" check-pins review-anvil-pr \
         "commit_mode,target,report_path,run_ordinal" \
@@ -1893,6 +1914,7 @@ main() {
     test_author_resolved_outranks_equivalent_open_history
     test_author_resolved_does_not_outrank_distinct_open_history
     test_distinct_open_history_is_revalidated_when_author_resolved_comes_first
+    test_post_refuses_infra_failure_reports
     test_run_ordinal_is_pinned_by_pr_presets
     test_engine_template_footer_uses_anchor
     printf 'test-pr-helper: all e2e checks passed\n'
