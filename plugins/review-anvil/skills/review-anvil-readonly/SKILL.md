@@ -30,6 +30,7 @@ Pass-through args the user may specify (non-exhaustive — any engine param not 
 - `agents: 2 codex + 1 claude` — custom reviewer mix
 - `min_fix_severity: <sev>` — drives the would-apply/suggestions split in the read-only report
 - `reproduction: auto|on|off` — default-on confidence gate for uncertain material findings before they become actionable report items
+- `execution_env: host|krunvm` — where project-code runtime checks run; `krunvm` is mainly for PR-locator checks that need dependency install, tests, or runtime reproduction without running the code on the host
 - `adversarial: auto|challenge|targeted|full|strict` — optional adversarial review that attacks false positives and disproportionate/bloated fix plans before the final report
 - `adversarial_rounds: 1|2`, `disagreement_policy: defer|comment` — tune the adversarial gate; it remains read-only and bounded
 - `reviewer_timeout: <seconds>`, `report_path: <file>` — as in the engine

@@ -103,6 +103,16 @@ may pass `reproduction: off` for speed, but unreproduced single-reviewer
 `medium`+ findings, deletion/high-risk findings, and orchestrator-uncertain
 findings must stay Deferred rather than becoming inline/actionable PR comments.
 
+If the user passes `execution_env: krunvm`, the engine must resolve the
+trusted `review-anvil/scripts/pr-sandbox/run_pr_krunvm.sh` helper and run any
+dependency install, runtime reproduction command, deletion execution check, or
+smoke-test command inside that krunvm guest. The helper clones on the host,
+derives the runtime from the base ref, blocks when the PR changes
+execution-controlling files, boots the VM before installing anything, and
+destroys the VM and clone on exit. The helper prints the krunvm network-egress
+warning; keep that limitation in the final Run details when runtime evidence
+comes from the guest.
+
 The default `adversarial: auto` lets the engine choose `off`, `challenge`,
 `targeted`, or `strict` after normal synthesis. The user may also pass
 `adversarial: off|challenge|targeted|full|strict`.
@@ -160,6 +170,7 @@ Surface the URL (or `posted (URL unavailable)`) to the user. If the helper scrip
 - *"Review acme/widgets#42 and use 2 rounds of reviewer redundancy."* — slug locator; `rounds: 2` overrides the preset's `rounds: 1` default.
 - *"Review acme/widgets#42 with adversarial: targeted."* — force targeted adversarial review after normal synthesis.
 - *"Review acme/widgets#42 with adversarial: off."* — skip adversarial review and post COMMENT-only feedback.
+- *"Review acme/widgets#42 with execution_env: krunvm."* — keep the review read-only, but run project-code checks through the krunvm PR sandbox helper instead of on the host.
 
 ## Constraints
 
@@ -177,6 +188,11 @@ Surface the URL (or `posted (URL unavailable)`) to the user. If the helper scrip
   out of GitHub; its effects are folded into dropped findings, deferred
   disproportionate fixes, hardened fix paths, stripped suggestion blocks, and
   approval downgrades.
+- `execution_env: krunvm` isolates project-code execution, not GitHub metadata
+  fetches or reviewer prompt assembly. krunvm currently has unrestricted
+  network egress, so it is a boundary against host filesystem/environment
+  access, not an exfiltration block for code or data reachable inside the
+  guest.
 - Read-only by design — the PR's branch may not be checked out locally, and pushing fix commits to a PR you don't own is rarely the intent. If you want to fix-and-commit on a PR you have checked out, activate `review-anvil` directly with `target: branch` (your checked-out PR branch) and `commit_mode=per_fix` — the local working tree becomes the source of truth and the diff against the merge base is unambiguous.
 - Supports github.com and GitHub Enterprise — the script extracts the host from the URL and sets `GH_HOST` internally for all `gh` invocations.
 - Bare-integer PR locators are rejected — pass a URL or `<owner>/<repo>#<N>` slug to be unambiguous about repo identity.

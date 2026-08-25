@@ -115,6 +115,11 @@ What makes it useful:
 - **Approval control:** `review-anvil-pr` can submit a real GitHub approval when
   review-only checks pass. Use `approve: never` or "comment only" when
   approval should stay human.
+- **Runtime isolation option:** `execution_env: krunvm` runs PR dependency
+  install / lint / test / runtime reproduction commands inside a disposable
+  krunvm guest. The helper clones on the host, blocks PRs that change
+  execution-controlling files unless explicitly allowed, and destroys the VM and
+  clone on exit.
 - **Simplicity lens:** the default focus includes a minimization ladder (need it
   at all? → stdlib → native feature → existing dependency → one line → the
   minimum that works), adapted from [ponytail](https://github.com/DietrichGebert/ponytail).
@@ -125,7 +130,8 @@ Continue, Cline, Gemini CLI, …) can activate them by description match. In
 Claude Code, you can also invoke directly as `Skill review-anvil "<free-form
 args>"`; see `skills/review-anvil/SKILL.md` for the full behavior and advanced
 controls (`rounds`, `max_rounds`, `agents`, `focus`, `target`, `verify_cmd`,
-`reproduction`, `adversarial`, `approve`, `report_path`, and more).
+`execution_env`, `reproduction`, `adversarial`, `approve`, `report_path`, and
+more).
 
 ### overleaf-comment
 
