@@ -792,6 +792,7 @@ test_next_run_counts_distinct_finalized_reports() {
   "reviews":{"nodes":[
     {"state":"COMMENTED","body":"<!-- review-anvil-marker: run-a -->\n# ⚒️ review-anvil report","url":"https://example.invalid/a"},
     {"state":"COMMENTED","body":"# review-anvil report","url":"https://example.invalid/legacy"},
+    {"state":"COMMENTED","body":"<!-- review-anvil-marker: run-c -->\n# Review result","url":"https://example.invalid/c"},
     {"state":"PENDING","body":"<!-- review-anvil-marker: pending -->\n# review-anvil report","url":"https://example.invalid/pending"}
   ],"pageInfo":{"hasNextPage":false,"endCursor":null}},
   "comments":{"nodes":[
@@ -804,7 +805,7 @@ JSON
 
     output="$(GH_MOCK_GRAPHQL_RESPONSE="$fixture" PATH="$bin:$PATH" \
       "$HELPER" next-run github.com acme widgets 42)"
-    [[ "$output" == "4" ]] || fail "expected next run 4, got $output"
+    [[ "$output" == "5" ]] || fail "expected next run 5, got $output"
 }
 
 test_next_run_degrades_gracefully_when_history_is_unavailable() {
@@ -942,6 +943,67 @@ JSON
     ! grep -Fq 'Round zero must not parse' "$output"
     ! grep -Fq 'Finding zero must not parse' "$output"
     ! grep -Fq 'Plan IDs must not parse as findings' "$output"
+}
+
+test_history_parses_clarity_report_findings() {
+    local tmp bin fixture output medium_line low_line deferred_line fixed_line stale_line no_id_line
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+    fixture="$tmp/graphql.json"
+    cat >"$fixture" <<'JSON'
+{
+  "data": {"repository": {"pullRequest": {
+    "reviewThreads": {"nodes": [], "pageInfo": {"hasNextPage": false, "endCursor": null}},
+    "reviews": {
+      "nodes": [
+        {
+          "state": "COMMENTED",
+          "body": "<!-- review-anvil-marker: older-active -->\n# review-anvil report\n\n## Findings\n- **RAV-RUN1-R1-F009 [medium] history** `src/old.ts:4` — Older active text.",
+          "url": "https://example.invalid/older-active"
+        },
+        {
+          "state": "COMMENTED",
+          "body": "<!-- review-anvil-marker: clarity-report -->\n# Review result\n\n**Review decision:** COMMENT — One issue remains.\n\n## Needs attention\n\n- **Refresh creates a session before CSRF validation** `src/auth.ts:12` — An invalid token can create a session. Check the token first. (`RAV-RUN3-R2-F001`) <!-- review-anvil-report: severity=medium area=auth -->\n\n<details>\n<summary>Non-blocking findings (1)</summary>\n\n- **CLI help omits the timeout default** `docs/cli.md:7` — Consider naming the default. (`RAV-RUN3-R2-F002`) <!-- review-anvil-report: severity=low area=docs -->\n\n</details>\n\n<details>\n<summary>Set aside / Outside this change (1)</summary>\n\n- **The runtime path remains unconfirmed** `src/runtime.ts:9` — Set aside because the failing path could not be confirmed. (`RAV-RUN3-R2-F003`) <!-- review-anvil-report: severity=medium area=runtime -->\n\n</details>\n\n<details>\n<summary>Earlier review comments (2)</summary>\n\n- **fixed** — Fixed earlier item. https://example.invalid/fixed (`RAV-RUN1-R1-F009`)\n- **stale** — Stale earlier item. https://example.invalid/stale (`RAVF007`)\n\n</details>",
+          "url": "https://example.invalid/clarity-report"
+        },
+        {
+          "state": "COMMENTED",
+          "body": "<!-- review-anvil-marker: clarity-no-id -->\n# Review result\n\n<details>\n<summary>Earlier review comments (1)</summary>\n\n- **reported** — Unidentified earlier item. https://example.invalid/no-id\n\n</details>",
+          "url": "https://example.invalid/clarity-no-id"
+        }
+      ],
+      "pageInfo": {"hasNextPage": false, "endCursor": null}
+    },
+    "comments": {"nodes": [], "pageInfo": {"hasNextPage": false, "endCursor": null}}
+  }}}
+}
+JSON
+
+    output="$tmp/history.txt"
+    GH_MOCK_GRAPHQL_RESPONSE="$fixture" PATH="$bin:$PATH" \
+      "$HELPER" history github.com acme widgets 42 >"$output"
+
+    medium_line="$(grep -F '[reported] src/auth.ts:12' "$output")"
+    [[ "$medium_line" == *'[medium] auth — Refresh creates a session before CSRF validation'* ]]
+    [[ "$medium_line" == *'; id=RAV-RUN3-R2-F001)'* ]]
+    low_line="$(grep -F '[reported] docs/cli.md:7' "$output")"
+    [[ "$low_line" == *'[low] docs — CLI help omits the timeout default'* ]]
+    [[ "$low_line" == *'; id=RAV-RUN3-R2-F002)'* ]]
+    fixed_line="$(grep -F '[fixed] src/old.ts:4' "$output")"
+    [[ "$fixed_line" == *'Fixed earlier item.'* ]]
+    [[ "$fixed_line" == *'source=https://example.invalid/fixed'* ]]
+    [[ "$fixed_line" == *'; id=RAV-RUN1-R1-F009)'* ]]
+    deferred_line="$(grep -F '[deferred] src/runtime.ts:9' "$output")"
+    [[ "$deferred_line" == *'[medium] runtime — The runtime path remains unconfirmed'* ]]
+    [[ "$deferred_line" == *'; id=RAV-RUN3-R2-F003)'* ]]
+    stale_line="$(grep -F '[stale] (no file anchor)' "$output")"
+    [[ "$stale_line" == *'; legacy=RAVF007)'* ]]
+    no_id_line="$(grep -F 'Unidentified earlier item.' "$output")"
+    [[ "$no_id_line" == *'[reported] (no file anchor)'* ]]
+    [[ "$no_id_line" != *'; id='* && "$no_id_line" != *'; legacy='* ]]
 }
 
 test_history_preserves_engine_generated_inline_and_grouped_ids() {
@@ -1185,14 +1247,14 @@ test_post_suppresses_duplicate_open_thread_but_keeps_status() {
     fixture="$tmp/graphql.json"
     cat >"$fixture" <<'JSON'
 {"data":{"repository":{"pullRequest":{
-  "reviewThreads":{"nodes":[{"isResolved":false,"isOutdated":false,"path":"src/auth.ts","line":12,"comments":{"nodes":[{"body":"**[medium] auth** — Refresh accepts missing state.","url":"https://example.invalid/open"}]}}],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "reviewThreads":{"nodes":[{"isResolved":false,"isOutdated":false,"path":"src/auth.ts","line":9,"comments":{"nodes":[{"body":"**[medium] auth** — Refresh accepts missing state.","url":"https://example.invalid/wrong-line"}]}},{"isResolved":false,"isOutdated":false,"path":"src/auth.ts","line":12,"comments":{"nodes":[{"body":"**[medium] auth** — Refresh accepts missing state.","url":"https://example.invalid/open"}]}}],"pageInfo":{"hasNextPage":false,"endCursor":null}},
   "reviews":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
   "comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}
 }}}}
 JSON
     report="$tmp/report.md"
     inline="$tmp/report.md.inline.json"
-    printf '# review-anvil report\n\n- **RAV-RUN3-R2-F001 [medium] auth** `src/auth.ts:12` — Refresh accepts missing state.\n' >"$report"
+    printf '# Review result\n\n## Needs attention\n- **Refresh accepts missing state** `src/auth.ts:12` — Refresh accepts missing state. (`RAV-RUN3-R2-F001`) <!-- review-anvil-report: severity=medium area=auth -->\n' >"$report"
     printf '[{"path":"src/auth.ts","line":12,"side":"RIGHT","severity":"medium","body":"**[medium] auth** — Refresh accepts missing state."}]\n' >"$inline"
     printf '{"event":"COMMENT","head_sha":"head-sha"}\n' >"$tmp/report.md.approval.json"
 
@@ -1204,6 +1266,7 @@ JSON
 
     grep -Fq 'Earlier review comments' "$tmp/comment.md"
     grep -Fq '(This is still present. Source: https://example.invalid/open; id=RAV-RUN3-R2-F001)' "$tmp/comment.md"
+    ! grep -Fq 'https://example.invalid/wrong-line' "$tmp/comment.md"
     ! grep -Eq 'Prior PR feedback status|still-open|\*\*\(inline\)\*\*' "$tmp/comment.md"
     [[ ! -e "$tmp/review-payload.json" ]] || jq -e '.comments | length == 0' "$tmp/review-payload.json" >/dev/null
 }
@@ -1887,6 +1950,7 @@ main() {
     test_next_run_degrades_gracefully_when_history_is_unavailable
     test_next_run_skips_graphql_in_degraded_mode
     test_history_parses_provenance_ids_and_rejects_malformed_tokens
+    test_history_parses_clarity_report_findings
     test_history_preserves_engine_generated_inline_and_grouped_ids
     test_history_merges_duplicate_identity_into_open_thread
     test_history_preserves_table_finding_identity

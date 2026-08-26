@@ -1,0 +1,364 @@
+{
+  "items": [
+    {
+      "id": "RAV-RUN2-R1-F001",
+      "surface": "report",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN2-R1-F002",
+      "surface": "report",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN2-R1-F003",
+      "surface": "report",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN2-R1-F005",
+      "surface": "report",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN2-R1-F007",
+      "surface": "report",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN2-R1-F009",
+      "surface": "report",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN2-R1-F011",
+      "surface": "report",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN2-R1-F004",
+      "surface": "report",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN2-R1-F006",
+      "surface": "report",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN2-R1-F008",
+      "surface": "report",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN2-R1-F010",
+      "surface": "report",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN2-R1-F001",
+      "surface": "inline",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN2-R1-F002",
+      "surface": "inline",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN2-R1-F003",
+      "surface": "inline",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN2-R1-F005",
+      "surface": "inline",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN2-R1-F007",
+      "surface": "inline",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN2-R1-F009",
+      "surface": "inline",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN2-R1-F011",
+      "surface": "inline",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN3-R1-F001",
+      "surface": "report",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN3-R1-F002",
+      "surface": "report",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [
+        "The source fact-lock predicate \"`make_log()` then includes that value in `evaluation_id`\" has no rendered counterpart: the rendered evidence says only \"`evaluated_model_repo()` returns that current repository\" before the redirect impact, omitting the `make_log()` evidence identifier and inclusion step."
+      ],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Restore the omitted source-backed evidence that `make_log()` includes the repository returned by `evaluated_model_repo()` in `evaluation_id`, while retaining the later-redirect impact."
+      ]
+    },
+    {
+      "id": "RAV-RUN3-R1-F003",
+      "surface": "report",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN3-R1-F004",
+      "surface": "report",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN3-R1-F005",
+      "surface": "report",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN3-R1-F001",
+      "surface": "inline",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN3-R1-F002",
+      "surface": "inline",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [
+        "The source fact-lock predicate \"`make_log()` then includes that value in `evaluation_id`\" has no rendered counterpart: the rendered evidence says only \"`evaluated_model_repo()` returns that current repository\" before the redirect impact, omitting the `make_log()` evidence identifier and inclusion step."
+      ],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Restore the omitted source-backed evidence that `make_log()` includes the repository returned by `evaluated_model_repo()` in `evaluation_id`, while retaining the later-redirect impact."
+      ]
+    },
+    {
+      "id": "RAV-RUN3-R1-F004",
+      "surface": "inline",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN1-R1-F003",
+      "surface": "report",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [
+        "The source fact-lock predicate \"Warning severity leaves the report valid\" has no direct rendered counterpart; \"for valid reports\" does not preserve that warning severity is what leaves this report valid.",
+        "The source fact-lock predicate \"The current rich renderer prints `PASS` and returns before its warning loop\" is reduced to \"The current renderer returns after `PASS` for valid reports,\" omitting the explicit print action and the warning-loop target."
+      ],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Restore that warning severity leaves the report valid and that the current rich renderer prints `PASS` and returns before its warning loop."
+      ]
+    },
+    {
+      "id": "RAV-RUN1-R1-F004",
+      "surface": "report",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN1-R1-F001",
+      "surface": "report",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN1-R1-F002",
+      "surface": "report",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN1-R1-F005",
+      "surface": "report",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN1-R1-F006",
+      "surface": "report",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    },
+    {
+      "id": "RAV-RUN1-R1-F003",
+      "surface": "inline",
+      "status": "fail",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [
+        "The source fact-lock predicate \"Warning severity leaves the report valid\" has no direct rendered counterpart; \"for valid reports\" does not preserve that warning severity is what leaves this report valid.",
+        "The source fact-lock predicate \"The current rich renderer prints `PASS` and returns before its warning loop\" is reduced to \"The current renderer returns after `PASS` for valid reports,\" omitting the explicit print action and the warning-loop target."
+      ],
+      "invented_predicates": [],
+      "repair_instructions": [
+        "Restore that warning severity leaves the report valid and that the current rich renderer prints `PASS` and returns before its warning loop."
+      ]
+    },
+    {
+      "id": "RAV-RUN1-R1-F004",
+      "surface": "inline",
+      "status": "pass",
+      "missing_author_work": [],
+      "false_actions": [],
+      "fact_losses": [],
+      "invented_predicates": [],
+      "repair_instructions": []
+    }
+  ],
+  "pass_count": 30,
+  "fail_count": 4
+}

@@ -481,6 +481,20 @@ FINDING_METADATA_RE = re.compile(
 NATURAL_INLINE_TITLE_RE = re.compile(
     r"^\*\*(?P<title>.+)\*\*$"
 )
+CLARITY_REPORT_RE = re.compile(
+    rf"^\s*[-*]\s+\*\*(?P<title>.+?)\*\*"
+    r"(?:\s+`(?P<location>[^`]+)`)?\s*[-—:]+\s*"
+    rf"(?P<detail>.+?)\s+\(`(?P<finding_id>{FINDING_ID_PATTERN})`\)\s+"
+    r"<!--\s*review-anvil-report:\s*"
+    r"severity=(?P<severity>critical|high|medium|low|nit)\s+"
+    r"area=(?P<area>[A-Za-z0-9][A-Za-z0-9._/-]*)\s*-->\s*$",
+    re.I,
+)
+EARLIER_FEEDBACK_RE = re.compile(
+    rf"^\s*[-*]\s+\*\*(?P<status>open|still-present|fixed|stale|reported|author-resolved)\*\*"
+    rf"\s*[-—:]+\s*(?P<text>.+?)(?:\s+\(`(?P<finding_id>{FINDING_ID_PATTERN})`\))?\s*$",
+    re.I,
+)
 IDENTITY_METADATA_RE = re.compile(
     rf"(?:^|;\s*)(?:id|legacy)=(?P<ids>{FINDING_ID_PATTERN}(?:,{FINDING_ID_PATTERN})*)"
     r"(?=\s*(?:;|$))",
@@ -542,6 +556,9 @@ def severity_from_body(body):
         item = table_finding(line)
         if item:
             return item["severity"]
+        item = clarity_report_finding(line)
+        if item:
+            return item["severity"]
         match = SUMMARY_RE.search(line)
         if match:
             return severity_name(match.group("severity"))
@@ -563,6 +580,35 @@ def table_finding(line):
     return {"id": cells[0], "severity": sev, "area": cells[2],
             "location": cells[3], "finding": finding}
 
+def clarity_report_finding(line):
+    match = CLARITY_REPORT_RE.fullmatch(line or "")
+    if not match or "--" in match.group("area"):
+        return None
+    return {
+        "id": match.group("finding_id"),
+        "severity": severity_name(match.group("severity")),
+        "area": match.group("area"),
+        "location": match.group("location") or "",
+        "finding": match.group("title").strip(),
+        "detail": match.group("detail").strip(),
+    }
+
+def earlier_feedback_finding(line):
+    match = EARLIER_FEEDBACK_RE.fullmatch(line or "")
+    if not match:
+        return None
+    text = match.group("text").strip()
+    url_match = re.search(r"\s+(https?://\S+)$", text)
+    source_url = url_match.group(1) if url_match else None
+    if url_match:
+        text = text[:url_match.start()].rstrip()
+    return {
+        "id": match.group("finding_id"),
+        "status": match.group("status").lower(),
+        "finding": text,
+        "url": source_url,
+    }
+
 def finding_id_from_body(body):
     metadata = terminal_finding_metadata(body)
     if metadata:
@@ -572,6 +618,9 @@ def finding_id_from_body(body):
         if match and match.group("finding_id"):
             return match.group("finding_id")
         item = table_finding(line)
+        if item:
+            return item["id"]
+        item = clarity_report_finding(line)
         if item:
             return item["id"]
         match = SUMMARY_RE.search(line)
@@ -647,6 +696,11 @@ def path_from_block(block):
             path = path_from_location(m.group("location"))
             if path:
                 return path
+        item = clarity_report_finding(line)
+        if item:
+            path = path_from_location(item.get("location"))
+            if path:
+                return path
         item = table_finding(line)
         if item:
             path = path_from_location(item.get("location"))
@@ -655,7 +709,8 @@ def path_from_block(block):
     return ""
 
 def is_finding_line(line: str) -> bool:
-    return bool(FINDING_RE.search(line or "") or table_finding(line))
+    return bool(FINDING_RE.search(line or "") or table_finding(line)
+                or clarity_report_finding(line))
 
 def signature(body: str) -> str:
     body = body or ""
@@ -670,6 +725,9 @@ def signature(body: str) -> str:
         return norm(f'{m.group("area")} {m.group("finding")}')
     for line in body.splitlines():
         item = table_finding(line)
+        if item:
+            return norm(f'{item["area"]} {item["finding"]}')
+        item = clarity_report_finding(line)
         if item:
             return norm(f'{item["area"]} {item["finding"]}')
         m = SUMMARY_RE.search(line)
@@ -693,6 +751,9 @@ def summary(body: str) -> str:
         return f'[{m.group("severity").lower()}] {m.group("area").strip()} — {m.group("finding").strip()}'[:160]
     for line in body.splitlines():
         item = table_finding(line)
+        if item:
+            return f'[{item["severity"]}] {item["area"]} — {item["finding"]}'[:160]
+        item = clarity_report_finding(line)
         if item:
             return f'[{item["severity"]}] {item["area"]} — {item["finding"]}'[:160]
         m = SUMMARY_RE.search(line)
@@ -735,7 +796,8 @@ pr_author, threads, reviews, issue_comments = fetch_history()
 
 if mode == "next-run":
     report_heading = re.compile(
-        r"^#\s+(?:⚒️\s+)?review-anvil report\s*$", re.I | re.M
+        r"^#\s+(?:(?:⚒️\s+)?review-anvil report|review result)\s*$",
+        re.I | re.M,
     )
     marker_pattern = re.compile(
         r"<!--\s*review-anvil-marker:\s*([^\s>]+)\s*-->", re.I
@@ -810,6 +872,20 @@ def report_findings(node):
             last_finding = None
             continue
         last_finding = None
+        if stripped.startswith("<summary>") and stripped.endswith("</summary>"):
+            summary_heading = re.sub(r"<[^>]+>", "", stripped).strip().lower()
+            prior_feedback_section = summary_heading.startswith(
+                "earlier review comments"
+            )
+            if summary_heading.startswith(
+                ("non-blocking", "suggestions", "earlier review comments")
+            ):
+                section_status = "reported"
+            elif summary_heading.startswith("set aside / outside this change"):
+                section_status = "deferred"
+            else:
+                section_status = None
+            continue
         if line.startswith("### "):
             heading = line[4:].strip().lower()
             if heading == "earlier review comments":
@@ -819,7 +895,7 @@ def report_findings(node):
         if line.startswith("## "):
             heading = line[3:].strip().lower()
             prior_feedback_section = False
-            if heading.startswith(("findings", "diagnoses", "what i noticed", "suggestions", "things to try", "non-blocking")):
+            if heading.startswith(("findings", "needs attention", "diagnoses", "what i noticed", "suggestions", "things to try", "non-blocking")):
                 section_status = "reported"
             elif heading.startswith(("deferred / out-of-scope", "set aside / outside this change")):
                 section_status = "deferred"
@@ -832,13 +908,47 @@ def report_findings(node):
             HELPER_STATUS_SUFFIX_RE.sub("", line)
             if prior_feedback_section else line
         )
+        if prior_feedback_section:
+            earlier_item = earlier_feedback_finding(parse_line)
+            if earlier_item:
+                identity = identity_metadata(earlier_item["id"])
+                found.append(
+                    {
+                        "path": "",
+                        "line": None,
+                        "sig": norm(
+                            f'{earlier_item["status"]} {earlier_item["finding"]}'
+                        ),
+                        "summary": (
+                            f'[{earlier_item["status"]}] history — '
+                            f'{earlier_item["finding"]}'
+                        )[:160],
+                        "source": (
+                            earlier_item["url"]
+                            or node.get("url")
+                            or "prior-review-anvil-report"
+                        ),
+                        "status": earlier_item["status"],
+                        "severity": None,
+                        "prior_feedback": None,
+                        "structured_history": True,
+                        "outdated": False,
+                        **identity,
+                    }
+                )
+                last_finding = found[-1]
+                continue
         match = FINDING_RE.search(parse_line)
         item = table_finding(parse_line)
+        clarity_item = clarity_report_finding(parse_line)
         if match:
             location = match.group("location") or ""
             finding_body = parse_line
         elif item:
             location = item.get("location") or ""
+            finding_body = parse_line
+        elif clarity_item:
+            location = clarity_item.get("location") or ""
             finding_body = parse_line
         else:
             continue
@@ -875,6 +985,12 @@ for node in reviews + issue_comments:
         )
         if candidate.get("prior_feedback") == "reintroduced" or previous is None:
             history.append(candidate)
+        elif candidate.get("structured_history"):
+            previous["status"] = candidate["status"]
+            previous["summary"] = candidate["summary"]
+            previous["source"] = candidate["source"]
+            previous["prior_feedback"] = candidate.get("prior_feedback")
+            merge_identity(previous, previous, candidate)
         else:
             merge_identity(previous, previous, candidate)
 
@@ -988,6 +1104,9 @@ def location_range_from_block(block):
         location = match.group("location") if match else None
         if not location:
             item = table_finding(line)
+            location = item.get("location") if item else None
+        if not location:
+            item = clarity_report_finding(line)
             location = item.get("location") if item else None
         line_match = re.search(r":(\d+)(?:-(\d+))?$", (location or "").strip().strip("`"))
         if line_match:

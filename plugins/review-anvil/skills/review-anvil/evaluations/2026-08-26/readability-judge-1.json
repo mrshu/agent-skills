@@ -1,0 +1,319 @@
+{
+  "rows": [
+    {
+      "id": "every_eval_ever-pr-190-review-4870915628:report",
+      "winner": "A",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        }
+      },
+      "rationale": "A keeps each defect, consequence, location, ID, and fix together in one user-focused list. B preserves the facts but separates findings from actions, repeats metadata, and makes the reader cross-reference IDs."
+    },
+    {
+      "id": "every_eval_ever-pr-190-review-4870915628:inline:RAV-RUN2-R1-F001",
+      "winner": "B",
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "rationale": "B leads with the concrete defect and gives a direct, complete requested change. A is accurate but its ID, priority, and topic prefix add visual and cognitive overhead without improving the inline guidance."
+    },
+    {
+      "id": "every_eval_ever-pr-190-review-4870915628:inline:RAV-RUN2-R1-F002",
+      "winner": "B",
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "rationale": "B states the ref-resolution defect as the heading, preserves the reproducibility consequence, and makes the network/offline split an explicit request. A is complete but reads more like ledger output."
+    },
+    {
+      "id": "every_eval_ever-pr-190-review-4870915628:inline:RAV-RUN2-R1-F003",
+      "winner": "B",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "rationale": "B separates the two required changes into a short action list, making the parser migration and offline test easier to recall. No fact or action is lost."
+    },
+    {
+      "id": "every_eval_ever-pr-190-review-4870915628:inline:RAV-RUN2-R1-F005",
+      "winner": "B",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "rationale": "B preserves both failure modes and presents finite-value validation and invalid-row accounting as distinct actions. A is correct but denser and less directive."
+    },
+    {
+      "id": "every_eval_ever-pr-190-review-4870915628:inline:RAV-RUN2-R1-F007",
+      "winner": "A",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "rationale": "A foregrounds the concrete field defect and cleanly separates the new-snapshot and legacy-snapshot actions. B contains the same substance but the ledger prefix and compressed prose make it less immediately actionable."
+    },
+    {
+      "id": "every_eval_ever-pr-190-review-4870915628:inline:RAV-RUN2-R1-F009",
+      "winner": "B",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "rationale": "B is direct and concise: it names the live-mode miss and explicitly requests querying present-null entries while preserving offline behavior. A is equally factual but less natural and directive."
+    },
+    {
+      "id": "every_eval_ever-pr-190-review-4870915628:inline:RAV-RUN2-R1-F011",
+      "winner": "B",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "rationale": "B presents the exact-ID precedence and uniqueness condition as two crisp imperatives. A preserves both actions but its metadata prefix and tentative phrasing add friction."
+    },
+    {
+      "id": "every_eval_ever-pr-204-review-4884442134:report",
+      "winner": "B",
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "rationale": "B co-locates each defect, mechanism, consequence, location, ID, and complete fix path. A is factually complete, but its table and separate plan section force ID-based cross-referencing and substantially increase cognitive load."
+    },
+    {
+      "id": "every_eval_ever-pr-204-review-4884442134:inline:RAV-RUN3-R1-F001",
+      "winner": "A",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 3,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "rationale": "A explicitly retains all three actions: preflight every new record, preserve recoverable old files through writes and route transitions, and test mid-write rollback across routes. B clearly explains the defect but does not explicitly carry forward the preflight-all-records action, which is an action-recall loss."
+    },
+    {
+      "id": "every_eval_ever-pr-204-review-4884442134:inline:RAV-RUN3-R1-F002",
+      "winner": "A",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 5,
+          "cognitive_ease": 4
+        }
+      },
+      "rationale": "A names the unstable identity input precisely and gives a direct instruction distinguishing the raw source path from reconciled metadata and routing. B is natural and accurate, but its ledger prefix and tentative action wording weaken action recall."
+    },
+    {
+      "id": "every_eval_ever-pr-204-review-4884442134:inline:RAV-RUN3-R1-F004",
+      "winner": "A",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "rationale": "A directly requests atomic replacement and explicitly covers failures, exclusions, clean runs, and preservation of the last complete ledger. B preserves those facts but presents the fix tentatively and with extra ledger metadata."
+    },
+    {
+      "id": "every_eval_ever-pr-230-review-4870883842:report",
+      "winner": "B",
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "rationale": "B gives the two merge-readiness defects with locations, IDs, mechanisms, and actions in one compact section, then keeps all four low suggestions complete. A preserves the content but splits findings from plans and adds a table and operational ledger detail that make the report harder to scan."
+    },
+    {
+      "id": "every_eval_ever-pr-230-review-4870883842:inline:RAV-RUN1-R1-F003",
+      "winner": "A",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "rationale": "A clearly explains why the warning is hidden, preserves PR #221 as the prerequisite, and directly requests the default-rich CLI check. B is accurate but the metadata prefix and softer wording reduce immediacy."
+    },
+    {
+      "id": "every_eval_ever-pr-230-review-4870883842:inline:RAV-RUN1-R1-F004",
+      "winner": "A",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "rationale": "A precisely identifies the required guide path and directly asks for the three required content points. B preserves the facts and action but adds ledger metadata and uses tentative phrasing, making the requested change less forceful."
+    }
+  ]
+}

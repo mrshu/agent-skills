@@ -1,0 +1,70 @@
+{
+  "items": [
+    {
+      "case_id": "every_eval_ever-pr-204-review-4884442134",
+      "id": "RAV-RUN3-R1-F002",
+      "surface": "report",
+      "request_mode": "required",
+      "source_context": "Alias reconciliation uses the current Hugging Face canonical repository in `evaluation_id`. The same source file can receive a different identity after alias metadata changes.\n\n**RAV-RUN3-R1-F002 [high] evaluation-identity** \u2014 Alias metadata can change the identity of the same source file\n\n`evaluated_model_repo()` returns the current Hugging Face canonical repository. `make_log()` then includes that value in `evaluation_id`. A later redirect change can give the same source result a second logical identity.\n\nThe raw dataset model path can remain the evaluation identity input. The reconciled repository can still drive model metadata and routing.",
+      "source_fact_lock": [
+        "Alias reconciliation uses the current Hugging Face canonical repository in `evaluation_id`. The same source file can receive a different identity after alias metadata changes.",
+        "Report location: every_eval_ever/adapters/open_medical_llm/adapter.py:397.",
+        "`evaluated_model_repo()` returns the current Hugging Face canonical repository. `make_log()` then includes that value in `evaluation_id`. A later redirect change can give the same source result a second logical identity."
+      ],
+      "source_requested_work": [
+        "The original dataset model path can remain the evaluation identity input. The reconciled repository can continue to drive model metadata and routing.",
+        "The raw dataset model path can remain the evaluation identity input. The reconciled repository can still drive model metadata and routing."
+      ],
+      "rendered_body": "- **Alias reconciliation uses the current Hugging Face canonical repository in `evaluation_id`** `every_eval_ever/adapters/open_medical_llm/adapter.py:397` \u2014 `evaluated_model_repo()` returns the current repository, and `make_log()` includes it in `evaluation_id`. A later redirect can give the same source result a second identity. Use the raw dataset model path\u2014the original source value\u2014as the evaluation identity input while keeping the reconciled repository unchanged for model metadata and routing. (`RAV-RUN3-R1-F002`) <!-- review-anvil-report: severity=high area=evaluation-identity -->"
+    },
+    {
+      "case_id": "every_eval_ever-pr-204-review-4884442134",
+      "id": "RAV-RUN3-R1-F002",
+      "surface": "inline",
+      "request_mode": "required",
+      "source_context": "Alias reconciliation uses the current Hugging Face canonical repository in `evaluation_id`. The same source file can receive a different identity after alias metadata changes.\n\n**RAV-RUN3-R1-F002 [high] evaluation-identity** \u2014 Alias metadata can change the identity of the same source file\n\n`evaluated_model_repo()` returns the current Hugging Face canonical repository. `make_log()` then includes that value in `evaluation_id`. A later redirect change can give the same source result a second logical identity.\n\nThe raw dataset model path can remain the evaluation identity input. The reconciled repository can still drive model metadata and routing.",
+      "source_fact_lock": [
+        "Alias reconciliation uses the current Hugging Face canonical repository in `evaluation_id`. The same source file can receive a different identity after alias metadata changes.",
+        "`evaluated_model_repo()` returns the current Hugging Face canonical repository. `make_log()` then includes that value in `evaluation_id`. A later redirect change can give the same source result a second logical identity."
+      ],
+      "source_requested_work": [
+        "The original dataset model path can remain the evaluation identity input. The reconciled repository can continue to drive model metadata and routing.",
+        "The raw dataset model path can remain the evaluation identity input. The reconciled repository can still drive model metadata and routing."
+      ],
+      "rendered_body": "**Alias reconciliation uses the current Hugging Face canonical repository in `evaluation_id`**\n\n`evaluated_model_repo()` returns the current repository, and `make_log()` includes it in `evaluation_id`. A later redirect can give the same source result a second identity.\n\nPlease use the raw dataset model path\u2014the original source value\u2014as the evaluation identity input while keeping the reconciled repository unchanged for model metadata and routing.\n\n<!-- review-anvil: id=RAV-RUN3-R1-F002 severity=high area=evaluation-identity -->"
+    },
+    {
+      "case_id": "every_eval_ever-pr-230-review-4870883842",
+      "id": "RAV-RUN1-R1-F003",
+      "surface": "report",
+      "request_mode": "required",
+      "source_context": "The new warning stays hidden in the default rich output until PR #221 is included. The current renderer returns after `PASS` for valid reports.\n\n**RAV-RUN1-R1-F003 [medium] warning-visibility** \u2014 The new warning stays hidden in the default rich output without PR #221\n\nWarning severity leaves the report valid. The current rich renderer prints `PASS` and returns before its warning loop.\n\nPR #221 is already listed as a prerequisite. After rebase, one default-rich CLI check for this warning would confirm the complete path.",
+      "source_fact_lock": [
+        "The new warning stays hidden in the default rich output until PR #221 is included. The current renderer returns after `PASS` for valid reports.",
+        "Report location: every_eval_ever/validator/validation_core.py:832.",
+        "Warning severity leaves the report valid. The current rich renderer prints `PASS` and returns before its warning loop."
+      ],
+      "source_requested_work": [
+        "PR #221 can remain the merge prerequisite. After rebase, this warning needs one check through the default rich CLI path.",
+        "PR #221 is already listed as a prerequisite. After rebase, one default-rich CLI check for this warning would confirm the complete path."
+      ],
+      "rendered_body": "- **The new warning stays hidden in the default rich output until PR #221 is included** `every_eval_ever/validator/validation_core.py:832` \u2014 Warning severity leaves the report valid, so the current rich renderer prints `PASS` and returns before its warning loop. PR #221 is already listed and can remain the merge prerequisite. After rebase, add one default-rich CLI check for this warning to confirm the complete path. (`RAV-RUN1-R1-F003`) <!-- review-anvil-report: severity=medium area=warning-visibility -->"
+    },
+    {
+      "case_id": "every_eval_ever-pr-230-review-4870883842",
+      "id": "RAV-RUN1-R1-F003",
+      "surface": "inline",
+      "request_mode": "required",
+      "source_context": "The new warning stays hidden in the default rich output until PR #221 is included. The current renderer returns after `PASS` for valid reports.\n\n**RAV-RUN1-R1-F003 [medium] warning-visibility** \u2014 The new warning stays hidden in the default rich output without PR #221\n\nWarning severity leaves the report valid. The current rich renderer prints `PASS` and returns before its warning loop.\n\nPR #221 is already listed as a prerequisite. After rebase, one default-rich CLI check for this warning would confirm the complete path.",
+      "source_fact_lock": [
+        "The new warning stays hidden in the default rich output until PR #221 is included. The current renderer returns after `PASS` for valid reports.",
+        "Warning severity leaves the report valid. The current rich renderer prints `PASS` and returns before its warning loop."
+      ],
+      "source_requested_work": [
+        "PR #221 can remain the merge prerequisite. After rebase, this warning needs one check through the default rich CLI path.",
+        "PR #221 is already listed as a prerequisite. After rebase, one default-rich CLI check for this warning would confirm the complete path."
+      ],
+      "rendered_body": "**The new warning stays hidden in the default rich output until PR #221 is included**\n\nWarning severity leaves the report valid, so the current rich renderer prints `PASS` and returns before its warning loop.\n\nPR #221 is already listed and can remain the merge prerequisite.\n\nAfter rebase, please add one default-rich CLI check for this warning to confirm the complete path.\n\n<!-- review-anvil: id=RAV-RUN1-R1-F003 severity=medium area=warning-visibility -->"
+    }
+  ]
+}

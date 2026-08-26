@@ -1,6 +1,6 @@
 ---
 name: review-anvil
-description: Iteratively refine code via requested rounds of parallel subagent review and orchestrator-applied fixes, with bounded adaptive continuation enabled by default for productive runs. Use when the user says "let's do three rounds", "fix/review loop", "back-and-forth review", "iterative review", or asks to harden a change with multiple rounds of codex/claude review.
+description: Use when a user requests repeated code-review and fix rounds, an iterative review loop, multiple reviewer passes, or hardening a change through codex/claude review.
 ---
 
 # review-anvil — Iterative Multi-Agent Fix/Review Loop
@@ -486,6 +486,76 @@ the adaptive round summary when one runs. If an adaptive round still has
 `material_findings` and hits `max_rounds`, finish and use the tuning suggestion
 rule; do not keep extending without a larger explicit cap.
 
+
+#### Final clarity pass
+
+Run one clean final clarity pass after the report facts are frozen and before
+emitting any final artifact. First retain a complete pre-clarity report and
+inline-body set for safe fallback. Then build `FROZEN_CLARITY_PACKET` from only
+the final decision, result, scope, checks, complete report ID inventory,
+resolved inline severity threshold, metadata and disposition inventory,
+earlier-feedback dispositions, canonical findings, exact fact locks, exact
+requested-work predicates, verified anchors, safe exact suggestions,
+helper-only `prior_feedback`, set-aside/out-of-scope items, and run details.
+Do not include raw reviewer prose, refuted candidates, superseded plans, or
+repository context.
+
+Read `references/clarity-pass-prompt.md` and dispatch one clean read-only
+renderer under the synthesis-side deadline rule. The clarity pass rewrites both
+the top-level report and eligible inline comments in one bundle. It is a copy
+editor, not another reviewer: it cannot change inventory, priority, decision,
+disposition, facts, author work, anchors, or suggestions.
+
+Write the packet and returned JSON to temporary files under `.review-anvil/`.
+Resolve `scripts/validate-clarity-output.py` from the trusted engine root and
+run:
+
+```bash
+python3 "$ENGINE_ROOT/scripts/validate-clarity-output.py" \
+  "$CLARITY_PACKET" "$CLARITY_BUNDLE"
+```
+
+Do not post or approve an unvalidated clarity bundle. On renderer failure,
+timeout, malformed JSON, or validation failure, fall back to the pre-clarity
+report and inline bodies, force the review event to COMMENT, and record the
+reason in Run details.
+
+Each `report_items[].rendered_body` ends on the same line with
+`<!-- review-anvil-report: severity=<severity> area=<area> -->`. The visible
+finding ID appears once before it; the hidden report marker carries no ID.
+
+Each anchored item also carries the exact report code location from the frozen
+packet as `` `<path>:<line>` `` or `` `<path>:<start>-<line>` `` immediately
+after its natural title.
+
+For a valid bundle, freeze the exact requested-work prose, source fact locks,
+the minimum source context needed to resolve antecedents and
+current-versus-target behavior, and the exact evidence and code fragments used
+by either surface. Run two
+independent post-render action-lock auditors from
+`references/action-lock-audit.md` in one parallel wave. Give each clean
+verifier only that frozen source material, every byte-exact
+`report_items[].rendered_body`, and each exact complete rendered inline body.
+Audit them as the `report` and `inline` surfaces of the same canonical ID.
+For audit rows, derive `request_mode` from severity: low/nit report rows are
+`suggested`; all other rendered surfaces are `required`.
+Validate each auditor's complete per-ID output and combine valid failures from
+either auditor. Repair only surfaces with valid failed verdicts, validate the
+entire repaired bundle again, and run two new clean auditors once. Any
+unverifiable first-wave surface, failed or unverifiable second-wave surface, or
+invalid repaired bundle uses exact-source fallback and forces COMMENT. A
+report-surface fallback restores the complete pre-clarity report; an
+inline-surface fallback restores only that exact source body. For a passed
+rewrite, emit only the byte-identical validated and audited report item or
+inline body. Remove the temporary clarity packet and bundle with the other
+round artifacts.
+
+Use the validated bundle only as an intermediate artifact. Write only the
+validated `report_markdown` string to `report_path`, and write only validated
+`inline_comments` payloads to `.inline.json`. Never post `report_items` or
+`predicate_inventory`; they exist only for byte-identity and action-lock
+validation.
+
 After the final round, emit the **Final Report** (Output Format). If `report_path` is set:
 
 1. Write the rendered PR report there (creating parent dirs).
@@ -515,9 +585,11 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 
    A no-change boundary is not a separate obligation. When accepted current behavior directly constrains a requested change, keep it in the same sentence using `without changing …` or `while keeping … unchanged`; do not create a separate action bullet for it. If that sentence would be dense, use short modal prose immediately after the action. Preserve other accepted current behavior or an explicitly optional follow-up as standalone modal prose. Request the smallest new mechanism needed to resolve the failure, but keep each required purpose, result, or safety clause with the action it constrains. Treat source-backed verification or documentation stated to cover, demonstrate, clarify, or make a required boundary clear as author work unless it is explicitly optional. Do not convert acceptable unchanged behavior, an allowed implementation boundary, or an explicitly optional follow-up into mandatory work.
 
-   Before drafting, freeze the exact requested-work prose, the minimum source context needed to resolve antecedents and current-versus-target behavior, and the exact evidence and code fragments that the body may retain from each accepted synthesized finding. Run two independent post-render action-lock auditors from `references/action-lock-audit.md` in one parallel wave before writing inline JSON. Give each clean verifier only that frozen source material and each exact complete rendered inline body; do not send unrelated repository or report context. For a passed rewrite, write only the byte-identical audited body to `.inline.json`; any later body edit invalidates the verdict and requires a new audit wave. The exact-source fallback in the next step is exempt and forces COMMENT.
-
-   Validate each auditor's complete per-ID output and combine valid failures from either auditor. Repair only inline bodies with a valid failed verdict, then run two new clean auditors once more. For a first-audit row that is missing, duplicate, malformed, timed out, or otherwise unverifiable, restore the exact source requested-work prose without attempting a repair and force the review event to COMMENT. If either second-audit verdict still fails or is unverifiable, use the same exact-source fallback and COMMENT event. Never omit the finding or a requested predicate to make the audit pass.
+   The final clarity pass above owns fact freezing, bundle validation, and both
+   action-lock audit waves. Write only its byte-identical audited inline bodies
+   to `.inline.json`. Any later edit invalidates the verdict and requires a new
+   validation and audit wave. Never omit a finding or requested predicate to
+   make validation pass.
 
 3. Write a sibling `<report_path>.approval.json` so the PR-posting helper can choose the GitHub review event (review-only PR runs; for other runs write `{"event": "COMMENT"}` or omit the file — the helper defaults to COMMENT):
 
@@ -576,73 +648,70 @@ During execution: print `Round 2/3: dispatching 2 codex-exec + 1 claude-exec on 
 
 After the last round, emit a fresh top-level report (a new document, not a replacement for the per-round blocks).
 
-The final report is an external-facing decision summary. It must include every finding, but it should read like a scan-friendly index, not a transcript. Do not paste raw reviewer output, full round transcripts, repeated metadata, or paragraph-sized low-priority notes. Put each finding in exactly one focused row or bullet, grouped by severity/priority. Keep the decision, result, scope, and actionable critical/high/medium findings visible. Use progressive disclosure for supporting detail whenever the destination supports it: GitHub uses collapsed `<details>` blocks; other destinations should use their native disclosure controls. If the destination cannot collapse content, post a concise decision summary and preserve the complete report in an attached artifact or stable link. Never hide blockers only in an expandable section. If the report feels too bulky, rewrite and organize it yourself; do not depend on the posting helper to compact or shorten it.
+The final report is an external-facing decision summary, not a transcript.
+Keep the decision, result, and actionable critical/high/medium findings visible.
+Show every active finding exactly once with its impact and requested change
+together. Collapse run metadata, earlier resolved/stale feedback, low/nit
+items, and set-aside/out-of-scope items. Put scope in Run details unless the
+reader needs it to understand the decision. Do not paste raw reviewer output,
+full round transcripts, repeated metadata, or a second action-plan rendering
+of the same findings.
 
 ```
-# ⚒️ review-anvil report
+# Review result
 
 **Review decision:** APPROVE | COMMENT — <one-sentence reason>   # review-only PR runs
-**Result:** <one sentence: blockers/non-blockers/fixes/verification outcome>
-**Scope:** <For PR targets: one sentence summarizing what this PR is trying to change.>
-**Verification:** <verify_cmd used, or "none detected" / "skipped">   # per_fix only
-**Checks:** off | skipped (no findings needed checking) | <C> concerns checked; <confirmed> confirmed, <refuted> ruled out, <deferred> set aside, <downgraded> lowered in priority
-**Second check:** off | <mode>, <A> reviewers; <upheld> kept, <hardened> clarified, <deferred> set aside, <dropped> removed
+<One short result sentence.>
 
-## Earlier review comments
-<For PR-context runs, list each earlier comment once as open, still present after
-being marked resolved, fixed, no longer relevant, or intentionally skipped.
-For `author-resolved` items, count them separately as skipped but omit their
-individual finding text; retain the original URL and a short plain-language
-status reason. Actionable carry-forwards affect the review decision even when no
-new inline comment is needed; `author-resolved` history does not affect the review decision or approval. Keep 1-3 rows visible; for
-4+ rows use a collapsed block with summary `Earlier review comments (N items)`.
-Preserve the exact internal status in the artifact; write the visible
-explanation in plain language.>
+## Needs attention
+<Use `## Findings` when APPROVE leaves only non-blocking items. Show each
+critical/high/medium finding once. Keep its trigger or mechanism, concrete
+impact, requested behavior, and required verification in the same focused
+bullet. Put the stable finding ID once at the end. Do not create a separate
+action-plan section. If none: "No confirmed problems found.">
 
-## What I noticed
-<Show every confirmed issue once. Critical/high issues go first, then medium,
-then low/nit. Start with the facts: what the code does and what happens because
-of it. Inline comments carry supporting evidence and the source-backed
-requested change. Otherwise, add the smallest supporting fact to what you noticed.
-If none: "No confirmed problems found.">
-
-ID legend: `RUN` is the observed PR review run, `R` is the immutable origin round, `F` is a finding, and `P` is a plan.
-
-| ID | Priority | Topic | Code location | What I noticed |
-|---|---|---|---|---|
-| RAV-RUN3-R2-F001 | high | auth | `src/auth.ts:42` | Refresh creates a session before it checks CSRF validation |
-
-<If the table would be hard to read, use grouped bullets instead:>
-
-- **RAV-RUN3-R2-F001 [high] auth** `src/auth.ts:42` — Refresh creates a session before it checks CSRF validation. (inline)
+- **Refresh creates a session before CSRF validation** `src/auth.ts:42` — The handler rotates the session before it checks the state token, so an invalid token can create a session. Check the token first, reject invalid tokens without creating sessions, and add the missing-token test. (`RAV-RUN3-R2-F001`) <!-- review-anvil-report: severity=high area=auth -->
 
 <details>
-<summary>Non-blocking low/nit findings</summary>
+<summary>Non-blocking findings (N)</summary>
 
-- **RAV-RUN3-R2-F002 [low] docs** — The CLI help could use the same option name.
-- **RAV-RUN3-R2-F003 [nit] tests** — The duplicate fixture setup can be shared.
+<Low/nit findings use the same one-finding/one-action shape. Omit when empty.>
 
 </details>
 
-## Changes made / Things to try
-<For per_fix: focused commit list or "No fixes were made." For review-only:
-include each thing to try as one short, plain-language behavior change. In
-external reports, collapse this section when it contains more than 3 items.>
+<details>
+<summary>Earlier review comments (N)</summary>
 
-- `<sha>` — <subject>                         # per_fix only
-- **[severity] area** — <plain-language behavior change>. (`RAV-RUN3-R2-P001`; covers `RAV-RUN3-R2-F001`)   # commit_mode=none only
+<For PR-context runs, list each earlier comment once as open, still present
+after being marked resolved, fixed, no longer relevant, or intentionally
+skipped. `author-resolved` items keep only the original URL and a short status
+reason. `author-resolved` history does not affect the review decision or approval.
+Omit when no earlier comments exist.>
 
-## Set aside / Outside this change
-<Include each item not addressed here in one line. Collapse this section when
-it contains more than 3 items. Omit it when empty.>
+</details>
 
-- **RAV-RUN3-R2-F004 [medium] runtime** — set aside because the failing path could not be confirmed.
-- **RAV-RUN3-R2-F005 [medium] config** — set aside after the second check: the fix is too large for a one-line default.
-- **[severity] area** — follow-up outside this change: <why separate>.
+<details>
+<summary>Changes made (N commits)</summary>
+
+<For per_fix only, list focused commit subjects. Do not repeat finding
+diagnoses or requested actions. Omit when no fixes were made.>
+
+- `<sha>` — <subject>
+
+</details>
+
+<details>
+<summary>Set aside / Outside this change (N)</summary>
+
+<Include each deferred or out-of-scope item once with its stable ID when it has
+one and the plain-language reason it is not active. Omit when empty.>
+
+</details>
 
 <details>
 <summary>Run details</summary>
 
+- Scope: <reviewed change>
 - Target: <e.g. "PR #42 (feature/auth-rewrite, 12 files, +340/-89)">
 - Run ordinal: <positive observed PR run ordinal | unavailable (local/degraded)>
 - Rounds: <completed> completed (<requested> requested + <adaptive> adaptive, max <max_rounds>); <convergence/adaptive stop note>   # productive adaptive-capable runs
@@ -651,9 +720,9 @@ it contains more than 3 items. Omit it when empty.>
 - Focus: <focus list actually used>
 - Earlier review comments: none | <total> comments; <open>/<still-present>/<fixed>/<not-relevant>/<author-resolved-skipped>/<skipped>
 - Finding counts: <C critical, H high, M medium, L low, N nit; other notes S>
+- Verification: <verify_cmd used, or "none detected" / "skipped">   # per_fix only
 - Checks: off | skipped | concerns=<C>; confirmed=<confirmed>/ruled-out=<refuted>/set-aside=<deferred>/lowered=<downgraded>; elapsed=<duration>
 - Second check: off | <mode>; reviewers=<A>; kept=<kept>/clarified=<clarified>/set-aside=<deferred>/removed=<removed>; approval changed yes/no
-- Set aside: <D> items; reasons=<reasons>
 - Next time: <one line; see rule below>   # omit in review-only
 
 </details>

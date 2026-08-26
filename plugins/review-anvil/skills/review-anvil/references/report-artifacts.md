@@ -18,6 +18,26 @@ If a destination has no disclosure control, send a concise decision summary
 and preserve the full report in an attached artifact or stable link. Never put
 a blocker only in collapsed or linked detail.
 
+
+## Final clarity pass
+
+After synthesis freezes the decision, dispositions, facts, requested work,
+anchors, and safe suggestions, render both external surfaces through
+`clarity-pass-prompt.md`. Show each active finding once, with its impact and
+requested change together. Do not repeat findings in a separate action-plan
+section.
+
+The pass is copy editing, not another review. It cannot change the finding
+inventory, decision, priority, disposition, technical relationships, requested
+work, anchors, or suggestions. Validate its complete JSON bundle with
+`scripts/validate-clarity-output.py` before action-lock auditing or artifact
+emission.
+
+Each top-level finding line ends with
+`<!-- review-anvil-report: severity=<severity> area=<area> -->`. The marker is
+hidden presentation metadata for history parsing. Its visible finding ID
+appears once before the marker; the marker does not repeat the ID.
+
 ## ASD-STE100-Inspired Language
 
 Apply `asd-ste100-inspired.md` to generated reports and comments. Use the

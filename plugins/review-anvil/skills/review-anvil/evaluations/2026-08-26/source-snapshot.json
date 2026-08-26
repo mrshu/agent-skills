@@ -1,0 +1,182 @@
+{
+  "metadata": {
+    "repository": "evaleval/every_eval_ever",
+    "selection": "Three previously captured review-anvil reviews: dense PR #190, high-risk PR #204, and small PR #230. Bodies and inline comments are verbatim from the prior evaluation artifacts and carry SHA-256 checksums.",
+    "source_artifacts": [
+      "iteration-13-top-level-review-artifacts.json",
+      "iteration-14-verbatim-prior-output-corpus.json",
+      "iteration-13-complete-review-supplement.json"
+    ]
+  },
+  "reviews": [
+    {
+      "repository": "evaleval/every_eval_ever",
+      "pr": 190,
+      "review_id": 4870915628,
+      "url": "https://github.com/evaleval/every_eval_ever/pull/190#pullrequestreview-4870915628",
+      "submitted_at": "2026-08-06T04:17:11Z",
+      "body": "<!-- review-anvil-marker: 0e04290a-39be-4dd6-9df2-145f6768b3c3 -->\n# \u2692\ufe0f review-anvil report\n\n**Review decision:** COMMENT \u2014 Seven confirmed medium concerns remain in the consolidated adapter.\n**Result:** The nine earlier concerns are fixed. This head has seven medium concerns and four low suggestions.\n**Scope:** This PR consolidates AlpacaEval conversion with registry resolution, provenance, and publication.\n**Checks:** 11 concerns checked; 10 confirmed and 1 narrowed.\n**Second check:** targeted, 2 reviewers; 11 kept, 9 clarified or lowered, 0 set aside, 0 removed.\n\n## Earlier review comments\n\n- All nine earlier comments are fixed or stale. The duplicate adapter is gone, `NullModel` is excluded, and incomplete conversion exits nonzero.\n\n## What I noticed\n\n- **RAV-RUN2-R1-F001 [medium] model-identity** `every_eval_ever/converters/alpaca_eval/adapter.py:602` \u2014 Developer IDs use the registry, but `model_info.id` uses an adapter-private identity ladder. Canonical model aliases cannot affect the join key. (inline)\n- **RAV-RUN2-R1-F002 [medium] reproducibility** `every_eval_ever/converters/alpaca_eval/adapter.py:838` \u2014 Explicit branch or tag refs are not resolved before use in stable IDs and provenance URLs. Two network runs can fetch different input under the same identity. (inline)\n- **RAV-RUN2-R1-F003 [medium] cli** `every_eval_ever/cli.py:383` \u2014 The module entry point builds the old argument namespace. The changed handler reads missing fields and fails before conversion. (inline)\n- **RAV-RUN2-R1-F005 [medium] input-validation** `every_eval_ever/converters/alpaca_eval/adapter.py:302` \u2014 Populated invalid `win_rate` values bypass row-level failure handling. They can omit the headline metric or abort strict JSON publication. (inline)\n- **RAV-RUN2-R1-F007 [medium] generation-provenance** `every_eval_ever/converters/alpaca_eval/adapter.py:643` \u2014 `GenerationArgs.prompt_template` contains an upstream path instead of prompt content. Offline records cannot reconstruct the generation prompt. (inline)\n- **RAV-RUN2-R1-F009 [medium] registry-resolution** `every_eval_ever/helpers/eval_card_registry.py:245` \u2014 Live mode skips keys whose vendored value is null. A known gap cannot discover a new registry entry until the snapshot refreshes. (inline)\n- **RAV-RUN2-R1-F011 [medium] registry-identity** `every_eval_ever/tools/refresh_eval_card_registry.py:151` \u2014 Normalized organization collisions can rewrite an exact canonical ID to another canonical organization. (inline)\n\nID legend: `RUN` is the observed PR review run, `R` is the immutable origin round, `F` is a finding, and `P` is a plan.\n\n<details>\n<summary>Non-blocking low findings (4 items)</summary>\n\n- **RAV-RUN2-R1-F004 [low] output-lifecycle** `every_eval_ever/cli.py:624` \u2014 The fixed default smoke directory keeps UUID-named output from earlier runs.\n- **RAV-RUN2-R1-F006 [low] metric-semantics** `every_eval_ever/converters/alpaca_eval/adapter.py:438` \u2014 The primary description always says 805 judged instructions, even when `n_total` is smaller.\n- **RAV-RUN2-R1-F008 [low] source-metadata** `every_eval_ever/converters/alpaca_eval/adapter.py:893` \u2014 Every row is marked third-party, including a model developed by the evaluating organization.\n- **RAV-RUN2-R1-F010 [low] registry-provenance** `every_eval_ever/helpers/eval_card_registry.py:267` \u2014 A prior live error causes later successful exact misses to report `registry_unavailable`.\n\n</details>\n\n<details>\n<summary>Things to try (11 items)</summary>\n\n- **[medium] model-identity** \u2014 Only model IDs emitted by this pinned snapshot can receive vendored registry resolution. The source ID can remain a marked fallback. (`RAV-RUN2-R1-P001`; covers `RAV-RUN2-R1-F001`)\n- **[medium] reproducibility** \u2014 Network-mode refs can resolve once to a commit SHA. Offline replay can keep the stored immutable ref without network access. (`RAV-RUN2-R1-P002`; covers `RAV-RUN2-R1-F002`)\n- **[medium] cli** \u2014 The module entry point can use the shared top-level parser and one offline entry-point test. (`RAV-RUN2-R1-P003`; covers `RAV-RUN2-R1-F003`)\n- **[low] output-lifecycle** \u2014 A temporary-directory context can own and remove default smoke output while preserving explicit output paths. (`RAV-RUN2-R1-P004`; covers `RAV-RUN2-R1-F004`)\n- **[medium] input-validation** \u2014 Populated numeric cells can validate as finite values within their metric rules before result construction. Invalid rows can enter `SourceConversionResult`. (`RAV-RUN2-R1-P005`; covers `RAV-RUN2-R1-F005`)\n- **[low] metric-semantics** \u2014 The primary description can use the validated row denominator. (`RAV-RUN2-R1-P006`; covers `RAV-RUN2-R1-F006`)\n- **[medium] generation-provenance** \u2014 New snapshots can store pinned prompt content. Legacy snapshots can leave the typed value unset and mark missing content. (`RAV-RUN2-R1-P007`; covers `RAV-RUN2-R1-F007`)\n- **[low] source-metadata** \u2014 Canonical evaluator and model-developer organizations can determine the relationship. (`RAV-RUN2-R1-P008`; covers `RAV-RUN2-R1-F008`)\n- **[medium] registry-resolution** \u2014 Live mode can query present-null entries while offline behavior stays unchanged. (`RAV-RUN2-R1-P009`; covers `RAV-RUN2-R1-F009`)\n- **[low] registry-provenance** \u2014 Each cached live lookup can carry a hit, miss, or error result. Aggregate errors can remain separate. (`RAV-RUN2-R1-P010`; covers `RAV-RUN2-R1-F010`)\n- **[medium] registry-identity** \u2014 Exact canonical IDs can win first. Normalized spellings can resolve only when one organization owns them. (`RAV-RUN2-R1-P011`; covers `RAV-RUN2-R1-F011`)\n\n</details>\n\n<details>\n<summary>Run details</summary>\n\n- Target: PR #190 at `d081d835d21d582a0e056e0e0fcbd77344fc8abb` (15 files, +6557/-459)\n- Run ordinal: 2\n- Rounds: 1/1 completed; adaptive off; material findings remain\n- Mix: 3 codex-exec\n- Focus: correctness, maintainability, simplicity, production blast-radius, and constructive optional suggestions\n- Earlier review comments: 9 comments; all fixed or stale\n- Finding counts: 0 critical, 0 high, 7 medium, 4 low, 0 nit\n- Checks: concerns=11; confirmed=10/ruled-out=0/set-aside=0/narrowed=1\n- Second check: targeted; reviewers=2; kept=11/clarified-or-lowered=9/set-aside=0/removed=0; approval changed no\n- Fixes applied: 0 (review-only)\n\n</details>\n\n---\n_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._\n",
+      "body_sha256": "c88435914631070d8f4696be1ee72048cd1d46abd51348fc2ea365ae672a9365",
+      "inline_comments": [
+        {
+          "id": 3725853144,
+          "pr": 190,
+          "created_at": "2026-08-06T04:17:11Z",
+          "path": "every_eval_ever/converters/alpaca_eval/adapter.py",
+          "line": 687,
+          "side": "RIGHT",
+          "commit_id": "1983a5f858a9111576dfcd10bd0bc65bd93028c0",
+          "body": "**RAV-RUN2-R1-F001 [medium] model-identity** \u2014 Developer IDs use the registry, but `model_info.id` uses an adapter-private identity ladder. Canonical model aliases cannot affect this join key.\n\nOnly model IDs emitted by the pinned snapshot need vendored resolution. The source-derived ID can remain a marked fallback.",
+          "url": "https://github.com/evaleval/every_eval_ever/pull/190#discussion_r3725853144",
+          "finding_id": "RAV-RUN2-R1-F001",
+          "body_sha256": "f6af551cc27872f75d893ea21264f8e860a6882a0eb022ad7798811a4d856628"
+        },
+        {
+          "id": "3725853148",
+          "pr": 190,
+          "review_id": "4870915628",
+          "path": "every_eval_ever/converters/alpaca_eval/adapter.py",
+          "line": 976,
+          "url": "https://github.com/evaleval/every_eval_ever/pull/190#discussion_r3725853148",
+          "body": "**RAV-RUN2-R1-F002 [medium] reproducibility** \u2014 Branch and tag refs are used in stable IDs and provenance URLs without commit resolution. Two network runs can fetch different input under the same identity.\n\nNetwork-mode refs can resolve once to a commit SHA. Offline replay can keep the stored immutable ref without network access.",
+          "finding_id": "RAV-RUN2-R1-F002",
+          "body_sha256": "36cd90e0674048168ef5d6e4956b17cfd7dba2bcb2c8d6203993a7aea424b30a"
+        },
+        {
+          "id": "3725853152",
+          "pr": 190,
+          "review_id": "4870915628",
+          "path": "every_eval_ever/cli.py",
+          "line": 392,
+          "url": "https://github.com/evaleval/every_eval_ever/pull/190#discussion_r3725853152",
+          "body": "**RAV-RUN2-R1-F003 [medium] cli** \u2014 The module entry point builds the old argument namespace. This handler now reads missing fields and fails before conversion.\n\nThe module entry point can use the shared parser, with one offline entry-point test covering its defaults.",
+          "finding_id": "RAV-RUN2-R1-F003",
+          "body_sha256": "e390ee964182a6f69eb79fb522c168441a846a80ee0c3101d9bea9cd5599730c"
+        },
+        {
+          "id": "3725853155",
+          "pr": 190,
+          "review_id": "4870915628",
+          "path": "every_eval_ever/converters/alpaca_eval/adapter.py",
+          "line": 307,
+          "url": "https://github.com/evaleval/every_eval_ever/pull/190#discussion_r3725853155",
+          "body": "**RAV-RUN2-R1-F005 [medium] input-validation** \u2014 Populated invalid `win_rate` values bypass row-level failure handling. They can omit the headline metric or abort strict JSON publication.\n\nNumeric fields can validate as finite values under their metric rules before result construction. Invalid rows can enter `SourceConversionResult`.",
+          "finding_id": "RAV-RUN2-R1-F005",
+          "body_sha256": "357d73cd1c006bdeedabf6105df71664404c06d9e19228d6937fe810b296e4d9"
+        },
+        {
+          "id": "3725853159",
+          "pr": 190,
+          "review_id": "4870915628",
+          "path": "every_eval_ever/converters/alpaca_eval/adapter.py",
+          "line": 643,
+          "url": "https://github.com/evaleval/every_eval_ever/pull/190#discussion_r3725853159",
+          "body": "**RAV-RUN2-R1-F007 [medium] generation-provenance** \u2014 `GenerationArgs.prompt_template` contains an upstream path instead of prompt content. Offline records cannot reconstruct the generation prompt.\n\nNew snapshots can store pinned prompt content. Legacy snapshots can leave this typed value unset and mark the missing content.",
+          "finding_id": "RAV-RUN2-R1-F007",
+          "body_sha256": "7ab1f022ea613945c7dec2d2c39476b7346b6fa38cd931e0a2f6f6991ae2d7a6"
+        },
+        {
+          "id": "3725853163",
+          "pr": 190,
+          "review_id": "4870915628",
+          "path": "every_eval_ever/helpers/eval_card_registry.py",
+          "line": 251,
+          "url": "https://github.com/evaleval/every_eval_ever/pull/190#discussion_r3725853163",
+          "body": "**RAV-RUN2-R1-F009 [medium] registry-resolution** \u2014 Live mode skips keys whose vendored value is null. A known gap cannot discover a new registry entry until the snapshot refreshes.\n\nLive mode can query present-null entries while offline behavior remains unchanged.",
+          "finding_id": "RAV-RUN2-R1-F009",
+          "body_sha256": "bf6ce555c0435a93e3cf900e5c6e3eee7ddddfb89b1b83d0d544d1e09064ac24"
+        },
+        {
+          "id": "3725853168",
+          "pr": 190,
+          "review_id": "4870915628",
+          "path": "every_eval_ever/tools/refresh_eval_card_registry.py",
+          "line": 151,
+          "url": "https://github.com/evaleval/every_eval_ever/pull/190#discussion_r3725853168",
+          "body": "**RAV-RUN2-R1-F011 [medium] registry-identity** \u2014 Normalized organization collisions can rewrite an exact canonical ID to another canonical organization.\n\nExact canonical IDs can win first. Normalized spellings can resolve only when one organization owns them.",
+          "finding_id": "RAV-RUN2-R1-F011",
+          "body_sha256": "2bf3ac99b74d3316507b560f289cdb5ee9729708490ad8d698328eeba47abfcd"
+        }
+      ]
+    },
+    {
+      "repository": "evaleval/every_eval_ever",
+      "pr": 204,
+      "review_id": 4884442134,
+      "url": "https://github.com/evaleval/every_eval_ever/pull/204#pullrequestreview-4884442134",
+      "submitted_at": "2026-08-07T15:57:05Z",
+      "body": "<!-- review-anvil-marker: ce1ee5f5-4de0-430a-8978-eb17d765a615 -->\n# \u2692\ufe0f review-anvil report\n\n**Review decision:** COMMENT \u2014 The new adapter is well structured, and five focused suggestions can make identity and publication safer.\n**Result:** Two high-priority and two medium-priority concerns remain. One CLI edge case is a low-priority suggestion.\n**Scope:** Add the Open Medical-LLM adapter with stable identities, complete source accounting, isolated failures, and safe publication.\n**Checks:** 5 concerns checked; 4 confirmed and 1 narrowed.\n**Second check:** 2 reviewers checked 5 findings; 4 kept, 1 lowered in priority, and 3 fix paths clarified.\n\n## Earlier review comments\n\n<details>\n<summary>Earlier review comments (22 ledger entries, grouped into 10 topics)</summary>\n\n- The model-attribution mismatch is fixed. Alias reconciliation now rejects unresolved conflicts. The stable evaluation identity concern below is a separate edge of that approach.\n- Partial-failure exit handling, repository placement, schema compatibility, metric identity, pagination, and timestamp precision are fixed.\n- Duplicate detection and empty-result accounting are fixed. The replacement and exclusions-only paths below are separate follow-up suggestions.\n- Record isolation is still incomplete for non-finite numbers. The current path now fails during batch serialization instead of per-source conversion.\n\n</details>\n\n## What I noticed\n\n| ID | Priority | Topic | Code location | What I noticed |\n|---|---|---|---|---|\n| RAV-RUN3-R1-F001 | high | publication | `every_eval_ever/adapters/open_medical_llm/adapter.py:601` | `--replace-existing` deletes prior records before replacement preflight. A later validation or write failure can leave the target without its prior records. |\n| RAV-RUN3-R1-F002 | high | evaluation identity | `every_eval_ever/adapters/open_medical_llm/adapter.py:397` | Alias reconciliation uses the current Hugging Face canonical repository in `evaluation_id`. The same source file can receive a different identity after alias metadata changes. |\n| RAV-RUN3-R1-F003 | medium | record isolation | `every_eval_ever/adapters/open_medical_llm/adapter.py:301` | Non-finite scores pass conversion but fail strict batch serialization after worker accounting. One malformed record can block all valid records. |\n| RAV-RUN3-R1-F004 | medium | source accounting | `every_eval_ever/adapters/open_medical_llm/adapter.py:585` | A run with exclusions but no failures does not persist its accounting report. A report from an earlier failed run also remains unchanged. |\n\n<details>\n<summary>Non-blocking low-priority suggestion (1 item)</summary>\n\n- **RAV-RUN3-R1-F005 [low] CLI** `every_eval_ever/adapters/open_medical_llm/adapter.py:568` \u2014 `--limit 0` processes all models. Negative limits use Python negative slicing.\n\n</details>\n\n## Things to try\n\n<details>\n<summary>Suggested changes (5 items)</summary>\n\n- **[high] publication** \u2014 The replacement path could preflight all new records and retain recoverable old files until every new write succeeds. Failure tests across several model routes would cover the rollback. (`RAV-RUN3-R1-P001`; covers `RAV-RUN3-R1-F001`)\n- **[high] evaluation identity** \u2014 The original dataset model path can remain the evaluation identity input. The reconciled repository can continue to drive model metadata and routing. (`RAV-RUN3-R1-P002`; covers `RAV-RUN3-R1-F002`)\n- **[medium] record isolation** \u2014 The existing `require_finite_number` helper can validate accuracy and uncertainty inside `make_result`. The worker boundary will then account for the selected source file. (`RAV-RUN3-R1-P003`; covers `RAV-RUN3-R1-F003`)\n- **[medium] source accounting** \u2014 An atomic report replacement after successful publication can record failures, exclusions, and fully clean runs without losing the last complete ledger. (`RAV-RUN3-R1-P004`; covers `RAV-RUN3-R1-F004`)\n- **[low] CLI** \u2014 Negative limits can be rejected, and slicing can run whenever the value is not `None`. (`RAV-RUN3-R1-P005`; covers `RAV-RUN3-R1-F005`)\n\n</details>\n\n<details>\n<summary>Run details</summary>\n\n- Target: PR #204 at `d6e7288a56d1976a255b70c42269a48f804508f7` (5 files, +949/-0)\n- Run ordinal: 3\n- Rounds: 1/1 completed; adaptive off; material findings\n- Mix: 3 codex-exec\n- Focus: correctness, maintainability, simplicity, production blast-radius, and constructive optional suggestions\n- Earlier review comments: 22 ledger entries grouped into 10 topics; 1 still present and 9 fixed or replaced by distinct concerns\n- Finding counts: 0 critical, 2 high, 2 medium, 1 low, 0 nit\n- Checks: concerns=5; confirmed=4; narrowed=1; set-aside=0\n- Second check: targeted; reviewers=2; kept=5; clarified=3 plans; lowered=1; removed=0; approval unchanged\n- Set aside: 0 items\n\n</details>\n\n---\n_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._\n",
+      "body_sha256": "35c0216b72ecfd657d43236d3b34ee41dec8fe1ad9a332751d9aac35a70c8558",
+      "inline_comments": [
+        {
+          "id": "3737044354",
+          "pr": 204,
+          "review_id": "4884442134",
+          "path": "every_eval_ever/adapters/open_medical_llm/adapter.py",
+          "line": 601,
+          "url": "https://github.com/evaleval/every_eval_ever/pull/204#discussion_r3737044354",
+          "body": "**RAV-RUN3-R1-F001 [high] publication** \u2014 `--replace-existing` deletes prior records before replacement preflight\n\nLines 601\u2013602 remove the old files before `save_evaluation_logs()` validates and writes the new batch. Its rollback covers only files created by that call, so a later failure can leave the target without its prior records.\n\nThe replacement path could retain recoverable old files until every new write and route transition succeeds. A mid-write failure test across several routes would cover this path.",
+          "finding_id": "RAV-RUN3-R1-F001",
+          "body_sha256": "2552d2439573a0372eb7d7fe346c3a45a9344f8840892c42fb8b64e4077cf330"
+        },
+        {
+          "id": "3737044361",
+          "pr": 204,
+          "review_id": "4884442134",
+          "path": "every_eval_ever/adapters/open_medical_llm/adapter.py",
+          "line": 397,
+          "url": "https://github.com/evaleval/every_eval_ever/pull/204#discussion_r3737044361",
+          "body": "**RAV-RUN3-R1-F002 [high] evaluation-identity** \u2014 Alias metadata can change the identity of the same source file\n\n`evaluated_model_repo()` returns the current Hugging Face canonical repository. `make_log()` then includes that value in `evaluation_id`. A later redirect change can give the same source result a second logical identity.\n\nThe raw dataset model path can remain the evaluation identity input. The reconciled repository can still drive model metadata and routing.",
+          "finding_id": "RAV-RUN3-R1-F002",
+          "body_sha256": "651716d6ea6f9ed41cc7a646c95fc90dc9a719869acec154bae5b7fd55c3356f"
+        },
+        {
+          "id": "3737044371",
+          "pr": 204,
+          "review_id": "4884442134",
+          "path": "every_eval_ever/adapters/open_medical_llm/adapter.py",
+          "line": 585,
+          "url": "https://github.com/evaleval/every_eval_ever/pull/204#discussion_r3737044371",
+          "body": "**RAV-RUN3-R1-F004 [medium] source-accounting** \u2014 Exclusions-only runs do not persist their accounting report\n\n`failure_report()` includes exclusions, but this condition writes it only when failures exist. The five documented baseline exclusions therefore have no durable record, and an older failure report can remain current.\n\nAn atomic report replacement after successful publication can record failures, exclusions, and fully clean runs without losing the last complete ledger.",
+          "finding_id": "RAV-RUN3-R1-F004",
+          "body_sha256": "6284d7677173ddd7636e9782ce0d77de5c6207ac07f1d2db3ac6230a10af26e1"
+        }
+      ]
+    },
+    {
+      "repository": "evaleval/every_eval_ever",
+      "pr": 230,
+      "review_id": 4870883842,
+      "url": "https://github.com/evaleval/every_eval_ever/pull/230#pullrequestreview-4870883842",
+      "submitted_at": "2026-08-06T04:10:25Z",
+      "body": "<!-- review-anvil-marker: 70e25c99-9cdd-45c1-ad9a-40916e660ed1 -->\n# \u2692\ufe0f review-anvil report\n\n**Review decision:** COMMENT \u2014 This run is comment-only and found two focused merge-readiness items.\n**Result:** The offline registry design is thoughtful. The warning needs visible default output and its required contributor guidance before merge.\n**Scope:** This PR adds an offline organization vocabulary, a refresh tool, and a warning-only publisher-alias validator.\n**Checks:** 3 concerns checked; 1 confirmed and 2 narrowed.\n**Second check:** 2 reviewers checked 6 findings and plans; 2 lowered in priority and 4 kept with clearer fix paths.\n\n## Earlier review comments\n\nNone.\n\n## What I noticed\n\n| ID | Priority | Topic | Code location | What I noticed |\n|---|---|---|---|---|\n| RAV-RUN1-R1-F003 | medium | warning visibility | `every_eval_ever/validator/validation_core.py:832` | The new warning stays hidden in the default rich output until PR #221 is included. The current renderer returns after `PASS` for valid reports. (inline) |\n| RAV-RUN1-R1-F004 | medium | contributor guidance | `every_eval_ever/validator/validation_core.py:835` | This adds a registered validator rule, but the required `datastore-gate.md` contributor guidance does not describe it. (inline) |\n\n<details>\n<summary>Non-blocking low-priority findings (4 items)</summary>\n\n- **RAV-RUN1-R1-F001 [low] refresh safety** \u2014 The maintainer refresh tool replaces the tracked snapshot with a direct truncating write. An interrupted refresh can leave invalid JSON for later semantic validation.\n- **RAV-RUN1-R1-F002 [low] diagnostic scope** \u2014 The check proves a registry alias mismatch from one record. It cannot prove that the collection currently uses two directory spellings.\n- **RAV-RUN1-R1-F005 [low] refresh errors** \u2014 Malformed endpoint records can raise `AttributeError` or `KeyError` outside the tool's concise error path.\n- **RAV-RUN1-R1-F006 [low] refresh provenance** \u2014 A custom `--base-url` fetch still records the production URL in `_source`.\n\n</details>\n\n<details>\n<summary>Things to try (6 items)</summary>\n\n- **[low] refresh safety** \u2014 A same-directory temporary file can preserve the live snapshot until replacement. Cleanup and file-mode preservation keep that path tidy. (`RAV-RUN1-R1-P001`; covers `RAV-RUN1-R1-F001`)\n- **[low] diagnostic scope** \u2014 The warning can name the observed alias relation. Directory splitting can stay a conditional result when both spellings are published. (`RAV-RUN1-R1-P002`; covers `RAV-RUN1-R1-F002`)\n- **[medium] warning visibility** \u2014 PR #221 can remain the merge prerequisite. After rebase, this warning needs one check through the default rich CLI path. (`RAV-RUN1-R1-P003`; covers `RAV-RUN1-R1-F003`)\n- **[medium] contributor guidance** \u2014 `datastore-gate.md` can state the alias trigger, warning-only result, and single-record evidence limit. (`RAV-RUN1-R1-P004`; covers `RAV-RUN1-R1-F004`)\n- **[low] refresh errors** \u2014 Small checks for consumed fields can report the endpoint and record index without adding a schema layer. (`RAV-RUN1-R1-P005`; covers `RAV-RUN1-R1-F005`)\n- **[low] refresh provenance** \u2014 `_source` can use the effective URL after removing user information, query parameters, and fragments. (`RAV-RUN1-R1-P006`; covers `RAV-RUN1-R1-F006`)\n\n</details>\n\n<details>\n<summary>Run details</summary>\n\n- Target: PR #230 (`validator-developer-slug-drift`, 8 files, +2073/-0)\n- Run ordinal: 1\n- Rounds: 1/1 completed; adaptive off; material findings\n- Mix: 3 codex-exec\n- Focus: correctness, maintainability, simplicity, production blast-radius, and constructive optional suggestions\n- Earlier review comments: none\n- Finding counts: 0 critical, 0 high, 2 medium, 4 low, 0 nit\n- Checks: concerns=3; confirmed=1; narrowed=2; ruled-out=0; set-aside=0\n- Second check: targeted; reviewers=2; kept=4; lowered=2; clarified=6; set-aside=0; removed=0; approval changed=no\n- Set aside: 0 items\n\n</details>\n\n---\n_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._\n",
+      "body_sha256": "bc8f7112bc04e690e50fcee50573289769a058eb5307a4d59bc54532d8a6d860",
+      "inline_comments": [
+        {
+          "id": 3725830949,
+          "pr": 230,
+          "created_at": "2026-08-06T04:10:25Z",
+          "path": "every_eval_ever/validator/validation_core.py",
+          "line": 792,
+          "side": "RIGHT",
+          "commit_id": "abf080913d7ede5886fb0f2259056850320325e4",
+          "body": "**RAV-RUN1-R1-F003 [medium] warning-visibility** \u2014 The new warning stays hidden in the default rich output without PR #221\n\nWarning severity leaves the report valid. The current rich renderer prints `PASS` and returns before its warning loop.\n\nPR #221 is already listed as a prerequisite. After rebase, one default-rich CLI check for this warning would confirm the complete path.",
+          "url": "https://github.com/evaleval/every_eval_ever/pull/230#discussion_r3725830949",
+          "finding_id": "RAV-RUN1-R1-F003",
+          "body_sha256": "0165e563f1acf1a5c6d32c8f3c3131871fc58886dc9be3a4f945f7861909ee85"
+        },
+        {
+          "id": "3725830951",
+          "pr": 230,
+          "review_id": "4870883842",
+          "path": "every_eval_ever/validator/validation_core.py",
+          "line": 795,
+          "url": "https://github.com/evaleval/every_eval_ever/pull/230#discussion_r3725830951",
+          "body": "**RAV-RUN1-R1-F004 [medium] contributor-guidance** \u2014 The new registered warning is missing from the required datastore gate guide\n\nThe repository instructions require contributor guidance with validator changes and name `.claude/skills/eee-dataset-conversion/reference/datastore-gate.md` as the rule location. This PR adds the check but does not update that guide.\n\nA short section can state the alias trigger, warning-only result, and single-record evidence limit.",
+          "finding_id": "RAV-RUN1-R1-F004",
+          "body_sha256": "4f3b9dee5345b47a9704b835f83351f35c0e5fc2ea988fb6adeda5ffb0338213"
+        }
+      ]
+    }
+  ]
+}

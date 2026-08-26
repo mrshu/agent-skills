@@ -1,0 +1,319 @@
+{
+  "rows": [
+    {
+      "id": "every_eval_ever-pr-190-review-4870915628:report",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        }
+      },
+      "winner": "A",
+      "rationale": "A preserves every finding ID, location, consequence, and remediation while placing each action beside its defect. B contains the same substance but splits findings from fixes and adds substantial ledger metadata, increasing cross-referencing and cognitive load."
+    },
+    {
+      "id": "every_eval_ever-pr-190-review-4870915628:inline:RAV-RUN2-R1-F001",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 3,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "rationale": "B retains the identity mismatch, alias consequence, pinned-snapshot boundary, and marked fallback, but presents the requested change directly and without user-visible classification clutter."
+    },
+    {
+      "id": "every_eval_ever-pr-190-review-4870915628:inline:RAV-RUN2-R1-F002",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "rationale": "B preserves both the mutable-identity failure and the distinct network/offline actions, while the direct request is easier to retain than A's modal phrasing."
+    },
+    {
+      "id": "every_eval_ever-pr-190-review-4870915628:inline:RAV-RUN2-R1-F003",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "rationale": "B keeps the stale-namespace failure and both required actions, and its short change list makes the parser migration and offline default test immediately scannable."
+    },
+    {
+      "id": "every_eval_ever-pr-190-review-4870915628:inline:RAV-RUN2-R1-F005",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "rationale": "B retains both publication failure modes and both remediation steps. The explicit two-item change list is more actionable and easier to recall than A's compressed modal sentences."
+    },
+    {
+      "id": "every_eval_ever-pr-190-review-4870915628:inline:RAV-RUN2-R1-F007",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "rationale": "A preserves the offline-reconstruction defect and the separate new-snapshot and legacy-snapshot treatments, with the two cases exposed as a concise action list."
+    },
+    {
+      "id": "every_eval_ever-pr-190-review-4870915628:inline:RAV-RUN2-R1-F009",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "rationale": "B states the live-mode action directly while retaining the present-null condition, snapshot-refresh consequence, and requirement that offline behavior remain unchanged."
+    },
+    {
+      "id": "every_eval_ever-pr-190-review-4870915628:inline:RAV-RUN2-R1-F011",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "rationale": "B keeps the exact-ID precedence and uniqueness condition intact, but turns both into direct, readily recalled instructions."
+    },
+    {
+      "id": "every_eval_ever-pr-204-review-4884442134:report",
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "rationale": "B preserves all five IDs, locations, severities, earlier-comment facts, and remedies while adding useful mechanism detail at the point of each finding. A requires matching a summary table to a separate plan list and then traversing extensive run metadata."
+    },
+    {
+      "id": "every_eval_ever-pr-204-review-4884442134:inline:RAV-RUN3-R1-F001",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "rationale": "A retains the deletion, rollback, and data-loss mechanism and exposes all three safety actions—including multi-route mid-write testing—as an explicit list rather than tentative prose."
+    },
+    {
+      "id": "every_eval_ever-pr-204-review-4884442134:inline:RAV-RUN3-R1-F002",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 4,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "rationale": "A names the precise canonical-repository input in the heading, retains the redirect-driven duplicate-identity consequence, and clearly separates the raw identity input from reconciled metadata and routing."
+    },
+    {
+      "id": "every_eval_ever-pr-204-review-4884442134:inline:RAV-RUN3-R1-F004",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "rationale": "A preserves the exclusions-only gap, stale-report risk, five baseline exclusions, atomicity, publication ordering, and full-run accounting, while stating the requested change directly."
+    },
+    {
+      "id": "every_eval_ever-pr-230-review-4870883842:report",
+      "scores": {
+        "A": {
+          "defect_clarity": 4,
+          "action_recall": 3,
+          "scanability": 3,
+          "naturalness": 3,
+          "cognitive_ease": 3
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 4,
+          "cognitive_ease": 5
+        }
+      },
+      "winner": "B",
+      "rationale": "B keeps the two merge-readiness IDs and locations, all four suggestion IDs, every consequence, and every remediation. Consolidating each issue with its action removes A's table-to-plan cross-reference and makes the prerequisite and documentation work immediately visible."
+    },
+    {
+      "id": "every_eval_ever-pr-230-review-4870883842:inline:RAV-RUN1-R1-F003",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "rationale": "A retains the valid-report early-return mechanism, the existing PR prerequisite, and the post-rebase default-rich CLI check, while expressing the final action more directly."
+    },
+    {
+      "id": "every_eval_ever-pr-230-review-4870883842:inline:RAV-RUN1-R1-F004",
+      "scores": {
+        "A": {
+          "defect_clarity": 5,
+          "action_recall": 5,
+          "scanability": 5,
+          "naturalness": 5,
+          "cognitive_ease": 5
+        },
+        "B": {
+          "defect_clarity": 5,
+          "action_recall": 4,
+          "scanability": 4,
+          "naturalness": 4,
+          "cognitive_ease": 4
+        }
+      },
+      "winner": "A",
+      "rationale": "A preserves the repository-rule basis, exact guide path, and all three required documentation points, with a direct request that is easier to act on than B's modal closing."
+    }
+  ]
+}
