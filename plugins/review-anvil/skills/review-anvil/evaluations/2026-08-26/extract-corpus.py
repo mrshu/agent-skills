@@ -201,6 +201,7 @@ def main() -> int:
                 "packet": {
                     "decision": decision_match.group("event"),
                     "report_ids": report_ids,
+                    "report_style": "human-summary",
                     "inline_min_severity": "medium",
                     "decision_reason": decision_match.group("reason"),
                     "result": headers.get("Result", ""),

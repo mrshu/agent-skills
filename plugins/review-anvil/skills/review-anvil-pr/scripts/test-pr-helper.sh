@@ -39,6 +39,32 @@ make_report() {
         printf '\n---\n_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._\n'
     } >"$path"
 }
+make_compact_report() {
+    local path="$1"
+    cat >"$path" <<EOF
+A state-validation issue and a write-accounting issue remain.
+
+<details>
+<summary>Issues and fixes</summary>
+
+- Refresh accepts missing state. <!-- review-anvil-report: id=RAV-RUN3-R2-F001 severity=medium area=auth path=src%2Fauth.ts start_line=- line=12 disposition=active -->
+- Write failures are reported as success. <!-- review-anvil-report: id=RAV-R3-F002 severity=high area=db path=src%2Fdb.ts start_line=- line=8 disposition=active -->
+
+</details>
+
+<details>
+<summary>Review context</summary>
+
+$REPRODUCTION_LINE
+
+**Adversarial review:** targeted, 2 agents; 2 upheld, 1 hardened, 0 deferred, 0 dropped.
+
+_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._
+
+</details>
+EOF
+}
+
 
 make_inline() {
     local path="$1"
@@ -90,7 +116,18 @@ case "$1 $2" in
       printf 'mock review failure\n' >&2
       exit 1
     fi
-    cat >"$GH_MOCK_REVIEW_PAYLOAD"
+    payload="$(cat)"
+    if [[ "${GH_MOCK_INLINE_REVIEW_FAIL:-0}" == "1" ]] \
+       && jq -e '.comments | length > 0' <<<"$payload" >/dev/null; then
+      printf 'mock inline review failure\n' >&2
+      exit 1
+    fi
+    if [[ "${GH_MOCK_APPROVE_FAIL:-0}" == "1" ]] \
+       && jq -e '.event == "APPROVE"' <<<"$payload" >/dev/null; then
+      printf 'mock approval failure\n' >&2
+      exit 1
+    fi
+    printf '%s' "$payload" >"$GH_MOCK_REVIEW_PAYLOAD"
     printf '{"html_url":"https://example.invalid/review/1"}\n'
     ;;
   "api repos/acme/widgets/issues/42/comments")
@@ -416,7 +453,7 @@ JSON
     jq -r '.body' "$tmp/review-payload.json" >"$tmp/review-body.md"
     f001_line="$(grep -nF 'RAV-RUN5-R1-F001' "$tmp/review-body.md" | cut -d: -f1)"
     f002_line="$(grep -nF 'RAV-RUN5-R1-F002' "$tmp/review-body.md" | cut -d: -f1)"
-    earlier_line="$(grep -nF '### Earlier review comments' "$tmp/review-body.md" | cut -d: -f1)"
+    earlier_line="$(grep -nF '<summary>Earlier feedback</summary>' "$tmp/review-body.md" | cut -d: -f1)"
     [[ -n "$f001_line" && -n "$f002_line" && -n "$earlier_line" ]]
     (( f002_line < earlier_line && earlier_line < f001_line ))
 }
@@ -463,6 +500,86 @@ test_post_review_success() {
     assert_file_missing "$inline"
     assert_file_missing "$tmp/report.md.approval.json"
 }
+test_post_approval_body_only_retains_inline_details() {
+    local tmp bin report inline
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+
+    report="$tmp/report.md"
+    inline="$tmp/report.md.inline.json"
+    make_report "$report"
+    make_inline "$inline"
+    printf '{"event":"APPROVE","head_sha":"head-sha","adversarial_mode":"targeted","approval_allowed":true}\n' >"$tmp/report.md.approval.json"
+
+    GH_MOCK_INLINE_REVIEW_FAIL=1 \
+    GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
+    GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
+    PATH="$bin:$PATH" \
+      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-body-approval.out
+
+    jq -e '.event == "APPROVE"' "$tmp/review-payload.json" >/dev/null
+    jq -e '.comments | length == 0' "$tmp/review-payload.json" >/dev/null
+    jq -e '.body | contains("<summary>Finding details</summary>")' "$tmp/review-payload.json" >/dev/null
+    jq -e '.body | contains("<summary>Finding details (") | not' "$tmp/review-payload.json" >/dev/null
+    jq -e '.body | contains("Move state validation before session rotation")' "$tmp/review-payload.json" >/dev/null
+    assert_file_missing "$report"
+    assert_file_missing "$inline"
+}
+test_post_head_move_note_stays_collapsed() {
+    local tmp bin report inline
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+
+    report="$tmp/report.md"
+    inline="$tmp/report.md.inline.json"
+    make_report "$report"
+    make_inline "$inline"
+    printf '{"event":"APPROVE","head_sha":"old-sha","adversarial_mode":"targeted","approval_allowed":true}\n' >"$report.approval.json"
+
+    GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
+    GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
+    PATH="$bin:$PATH" \
+      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-head-move.out
+
+    jq -e '.event == "COMMENT"' "$tmp/review-payload.json" >/dev/null
+    jq -e '.body | contains("<summary>Review context</summary>")' "$tmp/review-payload.json" >/dev/null
+    jq -e '.body | contains("The newer commits were not reviewed.")' "$tmp/review-payload.json" >/dev/null
+    jq -e '.body | contains("\n\n---\n\n_review-anvil selected APPROVE") | not' "$tmp/review-payload.json" >/dev/null
+}
+
+test_post_approval_rejection_note_stays_collapsed() {
+    local tmp bin report inline
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+
+    report="$tmp/report.md"
+    inline="$tmp/report.md.inline.json"
+    make_report "$report"
+    make_inline "$inline"
+    printf '{"event":"APPROVE","head_sha":"head-sha","adversarial_mode":"targeted","approval_allowed":true}\n' >"$report.approval.json"
+
+    GH_MOCK_APPROVE_FAIL=1 \
+    GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
+    GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
+    PATH="$bin:$PATH" \
+      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-approval-rejection.out
+
+    jq -e '.event == "COMMENT"' "$tmp/review-payload.json" >/dev/null
+    jq -e '.body | contains("<summary>Review context</summary>")' "$tmp/review-payload.json" >/dev/null
+    jq -e '.body | contains("GitHub rejected the approval")' "$tmp/review-payload.json" >/dev/null
+    jq -e '.body | contains("\n\n---\n\n_review-anvil selected APPROVE") | not' "$tmp/review-payload.json" >/dev/null
+}
+
+
 
 test_post_fallback_comment() {
     local tmp bin report inline
@@ -494,6 +611,9 @@ test_post_fallback_comment() {
     grep -q 'finding 01' "$tmp/comment.md"
     grep -q 'Non-Blocking Notes' "$tmp/comment.md"
     ! grep -q 'Compact GitHub summary' "$tmp/comment.md"
+    grep -q '<summary>Finding details</summary>' "$tmp/comment.md"
+    ! grep -q '<summary>Finding details (' "$tmp/comment.md"
+    grep -q 'Move state validation before session rotation' "$tmp/comment.md"
     assert_file_missing "$report"
     assert_file_missing "$inline"
     assert_file_missing "$tmp/report.md.approval.json"
@@ -530,7 +650,7 @@ test_post_update_success() {
 
     report="$tmp/report.md"
     inline="$tmp/report.md.inline.json"
-    make_report "$report"
+    make_compact_report "$report"
     make_inline "$inline"
     printf '{"event":"COMMENT","head_sha":"head-sha"}\n' >"$tmp/report.md.approval.json"
 
@@ -541,19 +661,51 @@ test_post_update_success() {
     PATH="$bin:$PATH" \
       "$HELPER" post-update github.com acme widgets 42 123 marker-123 "$report" octocat success 2026-06-19T00:00:00Z >/tmp/review-anvil-update.out
 
-    jq -e '.body | contains("review-anvil-improve-pr completed on this PR. cc @octocat.")' "$tmp/patch.json" >/dev/null
+    jq -e '.body | capture("^<!-- review-anvil-marker: marker-123 -->\\n(?<summary>[^\\n]+)") | .summary == "A state-validation issue and a write-accounting issue remain."' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("review-anvil selected APPROVE") | not' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("review-anvil-marker: marker-123")' "$tmp/patch.json" >/dev/null
     jq -e --arg line "$REPRODUCTION_LINE" '.body | split("\n") | index($line)' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("Adversarial review")' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("github.com/mrshu/agent-skills/#review-anvil")' "$tmp/patch.json" >/dev/null
-    jq -e '.body | contains("finding 01 has a long explanation that should post in full")' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("Compact GitHub summary") | not' "$tmp/patch.json" >/dev/null
-    jq -e '.body | contains("Completed:")' "$tmp/patch.json" >/dev/null
+    jq -e '.body | contains("<summary>Finding details</summary>")' "$tmp/patch.json" >/dev/null
+    jq -e '.body | contains("<summary>Finding details (") | not' "$tmp/patch.json" >/dev/null
+    jq -e '.body | contains("Move state validation before session rotation")' "$tmp/patch.json" >/dev/null
+    jq -e '.body | contains("Delivery: review-anvil-improve-pr completed")' "$tmp/patch.json" >/dev/null
+    jq -e '.body | index("<summary>Review context</summary>") < index("Delivery: review-anvil-improve-pr completed")' "$tmp/patch.json" >/dev/null
+    jq -e '.body | contains("Started: 2026-06-19T00:00:00Z; Completed:")' "$tmp/patch.json" >/dev/null
     assert_file_missing "$report"
     assert_file_missing "$inline"
     assert_file_missing "$tmp/report.md.approval.json"
 }
+test_post_update_refresh_failure_omits_inline_details() {
+    local tmp bin report inline
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+
+    report="$tmp/report.md"
+    inline="$tmp/report.md.inline.json"
+    make_report "$report"
+    make_inline "$inline"
+    printf '{"event":"COMMENT","head_sha":"head-sha"}\n' >"$tmp/report.md.approval.json"
+
+    GH_MOCK_GRAPHQL_FAIL=1 \
+    GH_MOCK_PATCH_PAYLOAD="$tmp/patch.json" \
+    PATH="$bin:$PATH" \
+      "$HELPER" post-update github.com acme widgets 42 123 marker-123 "$report" octocat success 2026-06-19T00:00:00Z >/tmp/review-anvil-update-failure.out
+
+    jq -e '.body | contains("review-anvil-improve-pr **failed** on this PR. cc @octocat.")' "$tmp/patch.json" >/dev/null
+    jq -e '.body | contains("prior-feedback refresh failed")' "$tmp/patch.json" >/dev/null
+    jq -e '.body | contains("<summary>Finding details") | not' "$tmp/patch.json" >/dev/null
+    jq -e '.body | contains("Move state validation before session rotation") | not' "$tmp/patch.json" >/dev/null
+    assert_file_missing "$report"
+    assert_file_missing "$inline"
+    assert_file_missing "$tmp/report.md.approval.json"
+}
+
 
 test_post_adversarial_off_downgrades_approval() {
     local tmp bin report inline
@@ -604,7 +756,7 @@ test_post_dismisses_id_prefixed_report_findings() {
     PATH="$bin:$PATH" \
       "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-dismissed-id.out
 
-    grep -q 'Earlier review comments' "$tmp/comment.md"
+    grep -q 'Earlier feedback' "$tmp/comment.md"
     ! grep -Fq 'RAV-RUN3-R2-F001 [medium] auth' "$tmp/comment.md"
     grep -q 'local-test-dismissal' "$tmp/comment.md"
     assert_file_missing "$report"
@@ -728,7 +880,7 @@ JSON
     PATH="$bin:$PATH" \
       "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-dismissed-table.out
 
-    grep -q 'Earlier review comments' "$tmp/comment.md"
+    grep -q 'Earlier feedback' "$tmp/comment.md"
     ! grep -Fq '| RAV-RUN3-R2-F001 | M | auth | `src/auth.ts:12` |' "$tmp/comment.md"
     grep -q 'local-table-dismissal' "$tmp/comment.md"
     assert_file_missing "$report"
@@ -792,12 +944,14 @@ test_next_run_counts_distinct_finalized_reports() {
   "reviews":{"nodes":[
     {"state":"COMMENTED","body":"<!-- review-anvil-marker: run-a -->\n# ⚒️ review-anvil report","url":"https://example.invalid/a"},
     {"state":"COMMENTED","body":"# review-anvil report","url":"https://example.invalid/legacy"},
-    {"state":"COMMENTED","body":"<!-- review-anvil-marker: run-c -->\n# Review result","url":"https://example.invalid/c"},
+    {"state":"COMMENTED","body":"<!-- review-anvil-marker: run-c -->\nThe refresh path can create an invalid session.\n\n<details>\n<summary>Issues and fixes</summary>\n\n- The refresh path can create an invalid session. <!-- review-anvil-report: id=RAV-RUN4-R1-F001 severity=medium area=auth path=src%2Fauth.py start_line=- line=12 disposition=active -->\n\n</details>","url":"https://example.invalid/c"},
+    {"state":"COMMENTED","body":"# Review","url":"https://example.invalid/unrelated"},
     {"state":"PENDING","body":"<!-- review-anvil-marker: pending -->\n# review-anvil report","url":"https://example.invalid/pending"}
   ],"pageInfo":{"hasNextPage":false,"endCursor":null}},
   "comments":{"nodes":[
     {"body":"<!-- review-anvil-marker: run-a -->\n# ⚒️ review-anvil report","url":"https://example.invalid/a-copy"},
     {"body":"<!-- review-anvil-marker: run-b -->\nreview-anvil-improve-pr failed on this PR.\n\n# ⚒️ review-anvil report","url":"https://example.invalid/b"},
+    {"body":"<!-- review-anvil-marker: run-d -->\nThis looks ready to merge.\n\n<details>\n<summary>Review context</summary>\n\n_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._\n\n</details>","url":"https://example.invalid/d"},
     {"body":"<!-- review-anvil-marker: started -->\nreview-anvil-improve-pr started on this PR.","url":"https://example.invalid/started"}
   ],"pageInfo":{"hasNextPage":false,"endCursor":null}}
 }}}}
@@ -805,7 +959,7 @@ JSON
 
     output="$(GH_MOCK_GRAPHQL_RESPONSE="$fixture" PATH="$bin:$PATH" \
       "$HELPER" next-run github.com acme widgets 42)"
-    [[ "$output" == "5" ]] || fail "expected next run 5, got $output"
+    [[ "$output" == "6" ]] || fail "expected next run 6, got $output"
 }
 
 test_next_run_degrades_gracefully_when_history_is_unavailable() {
@@ -946,7 +1100,7 @@ JSON
 }
 
 test_history_parses_clarity_report_findings() {
-    local tmp bin fixture output medium_line low_line deferred_line fixed_line stale_line no_id_line
+    local tmp bin fixture output medium_line low_line deferred_line fixed_line stale_line no_id_line human_line human_optional human_deferred human_outside
     tmp="$(mktemp -d)"
     trap "rm -rf '$tmp'" RETURN
     bin="$tmp/bin"
@@ -973,6 +1127,11 @@ test_history_parses_clarity_report_findings() {
           "state": "COMMENTED",
           "body": "<!-- review-anvil-marker: clarity-no-id -->\n# Review result\n\n<details>\n<summary>Earlier review comments (1)</summary>\n\n- **reported** — Unidentified earlier item. https://example.invalid/no-id\n\n</details>",
           "url": "https://example.invalid/clarity-no-id"
+        },
+        {
+          "state": "COMMENTED",
+          "body": "<!-- review-anvil-marker: human-report -->\nThe CLI entry point still uses the old parser and fails before conversion.\n\n<details>\n<summary>Issues and fixes</summary>\n\n- The CLI entry point still uses the old parser. <!-- review-anvil-report: id=RAV-RUN4-R1-F030 severity=medium area=cli path=every_eval_ever/cli.py start_line=- line=383 disposition=active -->\n\n</details>\n\n<details>\n<summary>Optional suggestions</summary>\n\n- The help could name the default. <!-- review-anvil-report: id=RAV-RUN4-R1-F033 severity=low area=docs path=docs/help.md start_line=- line=5 disposition=active -->\n\n</details>\n\n<details>\n<summary>Set aside</summary>\n\n- I set one runtime concern aside because it needs a reproducible case. <!-- review-anvil-report: id=RAV-RUN4-R1-F031 severity=low area=runtime path=- start_line=- line=- disposition=deferred -->\n\n</details>\n\n<details>\n<summary>Outside this change</summary>\n\n- This documentation concern belongs to another change. <!-- review-anvil-report: id=RAV-RUN4-R1-F032 severity=low area=docs path=docs/other.md start_line=- line=4 disposition=outside -->\n\n</details>\n\n<details>\n<summary>Review context</summary>\n\nThe exact run details remain collapsed.\n\n</details>",
+          "url": "https://example.invalid/human-report"
         }
       ],
       "pageInfo": {"hasNextPage": false, "endCursor": null}
@@ -1004,6 +1163,18 @@ JSON
     no_id_line="$(grep -F 'Unidentified earlier item.' "$output")"
     [[ "$no_id_line" == *'[reported] (no file anchor)'* ]]
     [[ "$no_id_line" != *'; id='* && "$no_id_line" != *'; legacy='* ]]
+    human_line="$(grep -F '[reported] every_eval_ever/cli.py:383' "$output")"
+    [[ "$human_line" == *'[medium] cli — The CLI entry point still uses the old parser.'* ]]
+    [[ "$human_line" == *'; id=RAV-RUN4-R1-F030)'* ]]
+    human_optional="$(grep -F '[reported] docs/help.md:5' "$output")"
+    [[ "$human_optional" == *'[low] docs — The help could name the default.'* ]]
+    [[ "$human_optional" == *'; id=RAV-RUN4-R1-F033)'* ]]
+    human_deferred="$(grep -F '[deferred] (no file anchor)' "$output")"
+    [[ "$human_deferred" == *'[low] runtime — I set one runtime concern aside because it needs a reproducible case.'* ]]
+    [[ "$human_deferred" == *'; id=RAV-RUN4-R1-F031)'* ]]
+    human_outside="$(grep -F '[outside] docs/other.md:4' "$output")"
+    [[ "$human_outside" == *'[low] docs — This documentation concern belongs to another change.'* ]]
+    [[ "$human_outside" == *'; id=RAV-RUN4-R1-F032)'* ]]
 }
 
 test_history_preserves_engine_generated_inline_and_grouped_ids() {
@@ -1135,7 +1306,7 @@ JSON
       "$HELPER" post github.com acme widgets 42 marker-round-trip "$report" \
       >/tmp/review-anvil-identity-round-trip.out
 
-    grep -Fq '### Earlier review comments' "$tmp/posted-comment.md"
+    grep -Fq '<summary>Earlier feedback</summary>' "$tmp/posted-comment.md"
     grep -Fq 'RAV-RUN3-R1-F001' "$tmp/posted-comment.md"
 
     next_fixture="$tmp/next-history.json"
@@ -1264,12 +1435,64 @@ JSON
     PATH="$bin:$PATH" \
       "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-open-history.out
 
-    grep -Fq 'Earlier review comments' "$tmp/comment.md"
+    grep -Fq 'Earlier feedback' "$tmp/comment.md"
     grep -Fq '(This is still present. Source: https://example.invalid/open; id=RAV-RUN3-R2-F001)' "$tmp/comment.md"
     ! grep -Fq 'https://example.invalid/wrong-line' "$tmp/comment.md"
     ! grep -Eq 'Prior PR feedback status|still-open|\*\*\(inline\)\*\*' "$tmp/comment.md"
     [[ ! -e "$tmp/review-payload.json" ]] || jq -e '.comments | length == 0' "$tmp/review-payload.json" >/dev/null
 }
+test_compact_post_fails_closed_when_refresh_changes_inventory() {
+    local tmp bin fixture report inline
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+    fixture="$tmp/graphql.json"
+    cat >"$fixture" <<'JSON'
+{"data":{"repository":{"pullRequest":{
+  "reviewThreads":{"nodes":[{"isResolved":false,"isOutdated":false,"path":"src/auth.ts","line":12,"comments":{"nodes":[{"body":"Refresh accepts missing state.","url":"https://example.invalid/open"}]}}],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "reviews":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}
+}}}}
+JSON
+    report="$tmp/report.md"
+    inline="$tmp/report.md.inline.json"
+    cat >"$report" <<'REPORT'
+Refresh can accept missing state and create an invalid session.
+
+<details>
+<summary>Issues and fixes</summary>
+
+- Refresh accepts missing state. <!-- review-anvil-report: id=RAV-RUN3-R2-F001 severity=medium area=auth path=src%2Fauth.ts start_line=- line=12 disposition=active -->
+
+</details>
+
+<details>
+<summary>Review context</summary>
+
+_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._
+
+</details>
+REPORT
+    printf '[{"path":"src/auth.ts","line":12,"side":"RIGHT","severity":"medium","body":"Refresh accepts missing state.\\n\\nValidate state before refresh.\\n\\n<!-- review-anvil: id=RAV-RUN3-R2-F001 severity=medium area=auth -->"}]\n' >"$inline"
+    printf '{"event":"COMMENT","head_sha":"head-sha"}\n' >"$report.approval.json"
+
+    if GH_MOCK_GRAPHQL_RESPONSE="$fixture" \
+       GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
+       GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
+       PATH="$bin:$PATH" \
+         "$HELPER" post github.com acme widgets 42 marker-123 "$report" \
+         >/tmp/review-anvil-compact-refresh.out 2>/tmp/review-anvil-compact-refresh.err; then
+        fail "compact post must fail when post-time history changes inventory"
+    fi
+
+    grep -Fq 'rerun review-anvil' /tmp/review-anvil-compact-refresh.err
+    grep -Fq 'Refresh can accept missing state' "$report"
+    grep -Fq 'id=RAV-RUN3-R2-F001' "$inline"
+    [[ ! -e "$tmp/review-payload.json" ]]
+}
+
 
 test_history_paginates_without_refetch_duplicates() {
     local tmp bin output
@@ -1356,11 +1579,40 @@ JSON
     jq -e '.event == "COMMENT"' "$tmp/review-payload.json" >/dev/null
 }
 
+test_outside_history_does_not_downgrade_approval() {
+    local tmp bin fixture report
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+    fixture="$tmp/graphql.json"
+    cat >"$fixture" <<'JSON'
+{"data":{"repository":{"pullRequest":{
+  "reviewThreads":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "reviews":{"nodes":[{"state":"COMMENTED","body":"<!-- review-anvil-marker: outside-high -->\n# Review\n\n<details>\n<summary>Outside this change (1)</summary>\n\n- This high-priority migration concern belongs to another change. <!-- review-anvil-report: id=RAV-RUN2-R1-F010 severity=high area=migration path=src%2Fmigration.py start_line=- line=8 disposition=outside -->\n\n</details>","url":"https://example.invalid/outside-high"}],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}
+}}}}
+JSON
+    report="$tmp/report.md"
+    printf '# Review\n\n## Main issues\n- New unrelated finding. <!-- review-anvil-report: id=RAV-RUN3-R2-F001 severity=medium area=db path=src%2Fdb.ts start_line=- line=8 disposition=active -->\n' >"$report"
+    printf '[{"path":"src/db.ts","line":8,"side":"RIGHT","severity":"medium","body":"New unrelated finding.\\n\\nCould you fix it?\\n\\n<!-- review-anvil: id=RAV-RUN3-R2-F001 severity=medium area=db -->"}]\n' >"$report.inline.json"
+    printf '{"event":"APPROVE","head_sha":"head-sha","adversarial_mode":"targeted","approval_allowed":true}\n' >"$report.approval.json"
+
+    GH_MOCK_GRAPHQL_RESPONSE="$fixture" \
+    GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
+    GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
+    PATH="$bin:$PATH" \
+      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-outside-approval.out
+
+    jq -e '.event == "APPROVE"' "$tmp/review-payload.json" >/dev/null
+}
 test_author_resolved_thread_is_not_raised_again() {
     local tmp bin fixture output report
     tmp="$(mktemp -d)"
     trap "rm -rf '$tmp'" RETURN
     bin="$tmp/bin"
+
     mkdir "$bin"
     install_fake_gh "$bin"
     fixture="$tmp/graphql.json"
@@ -1388,8 +1640,8 @@ JSON
     PATH="$bin:$PATH" \
       "$HELPER" post github.com acme widgets 42 marker-123 "$report"
     [[ ! -e "$tmp/review-payload.json" ]] || jq -e '.comments | length == 0' "$tmp/review-payload.json" >/dev/null
-    jq -e '(.body | contains("Refresh accepts missing state") | not) and (.body | contains("Earlier review comments") | not)' "$tmp/review-payload.json" >/dev/null
-    ! grep -Fq 'Earlier review comments' "$tmp/comment.md"
+    jq -e '(.body | contains("Refresh accepts missing state") | not) and (.body | contains("Earlier feedback") | not)' "$tmp/review-payload.json" >/dev/null
+    ! grep -Fq 'Earlier feedback' "$tmp/comment.md"
     ! grep -Fq 'Refresh accepts missing state' "$tmp/comment.md"
     jq -e '.event == "APPROVE"' "$tmp/review-payload.json" >/dev/null
 }
@@ -1784,7 +2036,7 @@ JSON
     GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
     PATH="$bin:$PATH" \
       "$HELPER" post github.com acme widgets 42 marker-123 "$report"
-    grep -Fq 'Earlier review comments' "$tmp/comment.md"
+    grep -Fq 'Earlier feedback' "$tmp/comment.md"
     grep -Fq 'Refresh accepts missing state' "$tmp/comment.md"
 }
 
@@ -1824,7 +2076,7 @@ JSON
     PATH="$bin:$PATH" \
       "$HELPER" post github.com acme widgets 42 marker-123 "$report"
     [[ ! -e "$tmp/review-payload.json" ]] || jq -e '.comments | length == 0' "$tmp/review-payload.json" >/dev/null
-    ! grep -Fq 'Earlier review comments' "$tmp/comment.md"
+    ! grep -Fq 'Earlier feedback' "$tmp/comment.md"
     jq -e '.event == "APPROVE"' "$tmp/review-payload.json" >/dev/null
 }
 
@@ -1936,9 +2188,13 @@ main() {
     test_history_parses_hidden_inline_metadata
     test_hidden_identity_outranks_rewritten_prose
     test_post_review_success
+    test_post_approval_body_only_retains_inline_details
+    test_post_head_move_note_stays_collapsed
+    test_post_approval_rejection_note_stays_collapsed
     test_post_fallback_comment
     test_post_start_uses_short_declarative_comment
     test_post_update_success
+    test_post_update_refresh_failure_omits_inline_details
     test_post_adversarial_off_downgrades_approval
     test_post_dismisses_id_prefixed_report_findings
     test_compact_report_preserves_body_losslessly
@@ -1960,7 +2216,9 @@ main() {
     test_post_suppresses_duplicate_open_thread_but_keeps_status
     test_history_paginates_without_refetch_duplicates
     test_local_suppression_overrides_open_history
+    test_compact_post_fails_closed_when_refresh_changes_inventory
     test_post_time_material_history_downgrades_approval
+    test_outside_history_does_not_downgrade_approval
     test_author_resolved_thread_is_not_raised_again
     test_non_author_resolved_thread_remains_revalidated
     test_reintroduced_author_resolved_finding_is_posted_and_remains_history_actionable

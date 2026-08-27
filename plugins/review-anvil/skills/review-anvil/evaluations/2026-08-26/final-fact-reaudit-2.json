@@ -1,38 +1,8 @@
 {
   "items": [
     {
-      "id": "RAV-RUN3-R1-F002",
+      "id": "RAV-RUN2-R1-F010",
       "surface": "report",
-      "status": "pass",
-      "missing_author_work": [],
-      "false_actions": [],
-      "fact_losses": [],
-      "invented_predicates": [],
-      "repair_instructions": []
-    },
-    {
-      "id": "RAV-RUN3-R1-F002",
-      "surface": "inline",
-      "status": "pass",
-      "missing_author_work": [],
-      "false_actions": [],
-      "fact_losses": [],
-      "invented_predicates": [],
-      "repair_instructions": []
-    },
-    {
-      "id": "RAV-RUN1-R1-F003",
-      "surface": "report",
-      "status": "pass",
-      "missing_author_work": [],
-      "false_actions": [],
-      "fact_losses": [],
-      "invented_predicates": [],
-      "repair_instructions": []
-    },
-    {
-      "id": "RAV-RUN1-R1-F003",
-      "surface": "inline",
       "status": "pass",
       "missing_author_work": [],
       "false_actions": [],
@@ -41,6 +11,6 @@
       "repair_instructions": []
     }
   ],
-  "pass_count": 4,
+  "pass_count": 1,
   "fail_count": 0
 }

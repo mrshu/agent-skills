@@ -186,6 +186,250 @@ class ClarityOutputValidatorTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout, "clarity-output: valid\n")
 
+    def test_accepts_human_summary_with_hidden_metadata(self) -> None:
+        deferred = {
+            "id": "RAV-RUN2-R1-F006",
+            "severity": "low",
+            "area": "runtime",
+            "text": "The runtime path could not be confirmed.",
+            "reason": "The failing path needs a reproducible case.",
+        }
+        canonical = {
+            "decision": "COMMENT",
+            "report_ids": ["RAV-RUN2-R1-F003", deferred["id"]],
+            "report_style": "human-summary",
+            "inline_min_severity": "medium",
+            "decision_reason": "One issue needs attention.",
+            "result": "The CLI entry point fails before conversion.",
+            "scope": "CLI conversion.",
+            "checks": "One concern checked.",
+            "second_check": "off",
+            "earlier_feedback": [],
+            "set_aside": [deferred],
+            "outside_scope": [],
+            "run_details": [],
+            "findings": [
+                {
+                    "id": "RAV-RUN2-R1-F003",
+                    "severity": "medium",
+                    "area": "cli",
+                    "report_path": "every_eval_ever/cli.py",
+                    "report_line": 383,
+                    "path": "every_eval_ever/cli.py",
+                    "line": 392,
+                    "side": "RIGHT",
+                    "requested_work": [
+                        "Use the shared parser in the module entry point.",
+                        "Add one offline test covering parser defaults.",
+                    ],
+                    "suggestion": None,
+                }
+            ],
+        }
+        report_item = (
+            "- The CLI entry point still uses the old parser. "
+            "<!-- review-anvil-report: id=RAV-RUN2-R1-F003 severity=medium "
+            "area=cli path=every_eval_ever%2Fcli.py start_line=- line=383 "
+            "disposition=active -->"
+        )
+        disposition_item = (
+            "- I set one runtime concern aside because it needs a reproducible case. "
+            "<!-- review-anvil-report: id=RAV-RUN2-R1-F006 severity=low "
+            "area=runtime path=- start_line=- line=- disposition=deferred -->"
+        )
+        metadata_inventory = {
+            field: canonical[field]
+            for field in (
+                "decision_reason",
+                "result",
+                "scope",
+                "checks",
+                "second_check",
+                "earlier_feedback",
+                "set_aside",
+                "outside_scope",
+                "run_details",
+            )
+        }
+        rendered = {
+            "decision": "COMMENT",
+            "metadata_inventory": metadata_inventory,
+            "report_markdown": (
+                "The CLI entry point still builds the old arguments and fails "
+                "before conversion.\n\n"
+                "<details>\n<summary>Issues and fixes</summary>\n\n"
+                f"{report_item}\n\n"
+                "</details>\n\n"
+                "<details>\n<summary>Set aside</summary>\n\n"
+                f"{disposition_item}\n\n"
+                "</details>\n\n"
+                "<details>\n<summary>Review context</summary>\n\n"
+                "One issue needs attention.\n"
+                "The CLI entry point fails before conversion.\n"
+                "CLI conversion.\nOne concern checked.\noff\n\n"
+                "_Reviewed with [review-anvil]"
+                "(https://github.com/mrshu/agent-skills/#review-anvil)._\n\n"
+                "</details>"
+            ),
+            "report_items": [
+                {"id": "RAV-RUN2-R1-F003", "rendered_body": report_item}
+            ],
+            "disposition_items": [
+                {"id": deferred["id"], "rendered_body": disposition_item}
+            ],
+            "inline_comments": [
+                {
+                    "path": "every_eval_ever/cli.py",
+                    "line": 392,
+                    "side": "RIGHT",
+                    "severity": "medium",
+                    "body": (
+                        "This entry point still builds the old argument namespace, "
+                        "so the handler reads missing fields and fails before conversion.\n\n"
+                        "Switch it to the shared parser and add one offline "
+                        "test covering the defaults.\n\n"
+                        "<!-- review-anvil: id=RAV-RUN2-R1-F003 "
+                        "severity=medium area=cli -->"
+                    ),
+                }
+            ],
+            "predicate_inventory": [
+                {
+                    "id": "RAV-RUN2-R1-F003",
+                    "requested_work": canonical["findings"][0]["requested_work"],
+                }
+            ],
+        }
+        result = self.validate(rendered, canonical)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        canonical["decision"] = "APPROVE"
+        rendered["decision"] = "APPROVE"
+        result = self.validate(rendered, canonical)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        footerless = copy.deepcopy(rendered)
+        footerless["report_markdown"] = footerless["report_markdown"].replace(
+            "\n_Reviewed with [review-anvil]"
+            "(https://github.com/mrshu/agent-skills/#review-anvil)._\n",
+            "\n",
+        )
+        result = self.validate(footerless, canonical)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("review footer must stay in Review context", result.stderr)
+
+        headed = copy.deepcopy(rendered)
+        headed["report_markdown"] = "# Review\n\n" + headed["report_markdown"]
+        result = self.validate(headed, canonical)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("one headingless visible summary line", result.stderr)
+        legacy_summary = copy.deepcopy(rendered)
+        legacy_summary["report_markdown"] = legacy_summary[
+            "report_markdown"
+        ].replace(
+            "The CLI entry point still builds the old arguments and fails "
+            "before conversion.",
+            "**Changes requested.** I found 3 issues.",
+        )
+        result = self.validate(legacy_summary, canonical)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("must use a natural outcome sentence", result.stderr)
+
+        stray_prose = copy.deepcopy(rendered)
+        stray_prose["report_markdown"] = stray_prose["report_markdown"].replace(
+            "</details>\n\n<details>",
+            "</details>\n\nExtra visible review status.\n\n<details>",
+            1,
+        )
+        result = self.validate(stray_prose, canonical)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("only the summary and collapsed sections", result.stderr)
+        unknown_section = copy.deepcopy(rendered)
+        unknown_section["report_markdown"] = unknown_section[
+            "report_markdown"
+        ].replace(
+            "<details>\n<summary>Review context</summary>",
+            "<details>\n<summary>Review details (3 findings)</summary>\n\n"
+            "Visible count.\n\n</details>\n\n"
+            "<details>\n<summary>Review context</summary>",
+        )
+        result = self.validate(unknown_section, canonical)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("unsupported compact report section", result.stderr)
+        combined_tag = copy.deepcopy(rendered)
+        combined_tag["report_markdown"] = combined_tag["report_markdown"].replace(
+            "<details>\n<summary>Issues and fixes</summary>",
+            "<details><summary>Issues and fixes</summary>",
+        )
+        result = self.validate(combined_tag, canonical)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("details blocks must use separate summary lines", result.stderr)
+
+        misplaced = copy.deepcopy(rendered)
+        misplaced["report_markdown"] = misplaced["report_markdown"].replace(
+            f"{report_item}\n\n</details>",
+            "No report item here.\n\n</details>",
+        )
+        misplaced["report_markdown"] = misplaced["report_markdown"].replace(
+            "\n_Reviewed with [review-anvil]",
+            f"\n{report_item}\n\n_Reviewed with [review-anvil]",
+            1,
+        )
+        result = self.validate(misplaced, canonical)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("must stay in Issues and fixes", result.stderr)
+
+    def test_accepts_headingless_zero_finding_human_summary(self) -> None:
+        canonical = {
+            "decision": "APPROVE",
+            "report_ids": [],
+            "report_style": "human-summary",
+            "inline_min_severity": "medium",
+            "decision_reason": "No material issues remain.",
+            "result": "This looks ready to merge.",
+            "scope": "The reviewed change.",
+            "checks": "Checks passed.",
+            "second_check": "off",
+            "earlier_feedback": [],
+            "set_aside": [],
+            "outside_scope": [],
+            "run_details": [],
+            "findings": [],
+        }
+        rendered = {
+            "decision": "APPROVE",
+            "metadata_inventory": {
+                field: canonical[field]
+                for field in (
+                    "decision_reason",
+                    "result",
+                    "scope",
+                    "checks",
+                    "second_check",
+                    "earlier_feedback",
+                    "set_aside",
+                    "outside_scope",
+                    "run_details",
+                )
+            },
+            "report_markdown": (
+                "This looks ready to merge.\n\n"
+                "<details>\n<summary>Review context</summary>\n\n"
+                "No material issues remain.\n"
+                "This looks ready to merge.\n"
+                "The reviewed change.\n"
+                "Checks passed.\n"
+                "off\n\n"
+                "_Reviewed with [review-anvil]"
+                "(https://github.com/mrshu/agent-skills/#review-anvil)._\n\n"
+                "</details>"
+            ),
+            "report_items": [],
+            "disposition_items": [],
+            "inline_comments": [],
+            "predicate_inventory": [],
+        }
+        result = self.validate(rendered, canonical)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_accepts_known_history_id_outside_finding_inventory(self) -> None:
         canonical = copy.deepcopy(CANONICAL)
         earlier = [

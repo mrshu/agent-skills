@@ -4,43 +4,46 @@
   "judgments": 45,
   "preferences": {
     "all": {
-      "after": 45,
-      "before": 0,
+      "after": 44,
+      "before": 1,
       "tie": 0
     },
-    "report": {
+    "complete": {
       "after": 9,
       "before": 0,
       "tie": 0
     },
     "inline": {
-      "after": 36,
-      "before": 0,
+      "after": 35,
+      "before": 1,
       "tie": 0
     }
   },
   "mean_scores": {
     "after": {
       "defect_clarity": 5,
-      "action_recall": 5,
-      "scanability": 5,
-      "naturalness": 4.844,
-      "cognitive_ease": 5
+      "action_recall": 4.978,
+      "scanability": 4.733,
+      "naturalness": 4.933,
+      "cognitive_ease": 4.867,
+      "plain_language": 4.867
     },
     "before": {
-      "defect_clarity": 4.489,
-      "action_recall": 3.8,
-      "scanability": 3.756,
-      "naturalness": 3.578,
-      "cognitive_ease": 3.733
+      "defect_clarity": 5,
+      "action_recall": 5,
+      "scanability": 4.867,
+      "naturalness": 3.867,
+      "cognitive_ease": 3.822,
+      "plain_language": 4.044
     }
   },
   "delta": {
-    "defect_clarity": 0.511,
-    "action_recall": 1.2,
-    "scanability": 1.244,
-    "naturalness": 1.266,
-    "cognitive_ease": 1.267
+    "defect_clarity": 0,
+    "action_recall": -0.022,
+    "scanability": -0.134,
+    "naturalness": 1.066,
+    "cognitive_ease": 1.045,
+    "plain_language": 0.823
   },
   "after_hard_gate_failures": 0
 }

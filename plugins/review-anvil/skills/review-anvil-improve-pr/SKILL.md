@@ -10,7 +10,7 @@ Productive counterpart to `review-anvil-pr`. Where `review-anvil-pr` is read-onl
 ## Generated Language
 
 Apply the [ASD-STE100-inspired language contract](../review-anvil/references/asd-ste100-inspired.md) to this preset.
-Use direct imperatives for internal steps. Use short active declarative sentences in PR comments. Use `**What to change**` only for multiple actions the author must perform; keep no-change constraints in prose. Retain suggestion grammar for low/nit guidance.
+Use direct imperatives for internal steps. Use short active declarative sentences in PR comments. Use two short human paragraphs for inline comments; default to starting required work with its action verb and use bullets only for three or more independent actions. A deliberate collaborative request may use a courtesy wrapper sparingly when coordination or tone benefits. Never use one as a stock opener throughout the review. Keep no-change constraints in prose, suggestion grammar for low/nit guidance, and questions for genuinely unresolved choices.
 
 The skill orchestrates six steps:
 
@@ -157,15 +157,11 @@ Always run this step, regardless of step 4/5 outcome. Pass `outcome=success` onl
 bash <helper-path> post-update "$HOST" "$OWNER" "$REPO" "$N" "$COMMENT_ID" "$MARKER" "$REPORT_PATH" "$AUTHOR" "$OUTCOME" "$STARTED_AT"
 ```
 
-On a `success` outcome the helper refreshes the full prior-feedback ledger and re-applies duplicate-thread suppression before editing the comment. If that lookup fails, it changes the update to `outcome=failure` and explains why in the comment; it never posts an unfiltered success report, and it still avoids leaving a dangling "starting" comment.
+On a `success` outcome the helper refreshes the full prior-feedback ledger before editing the comment. If lookup fails or the refreshed history changes the compact report's finding inventory, it changes the update to `outcome=failure` and explains why; it never publishes an unfiltered or internally stale success report, and it still avoids leaving a dangling "starting" comment.
 
-The helper posts the report body as written instead of compacting or shortening it. If GitHub rejects an unusually large payload, the update fails loudly and leaves the report artifact in place; the running agent should rewrite the report with the same findings, rationale, and actionable detail in a better organized form, then retry the update.
+The improve workflow cannot publish GitHub inline review comments. On a successful update, after the prior-feedback refresh passes, the helper appends every processed inline body under one collapsed `Finding details` section. The visible report stays one natural summary sentence, while collapsed issue rows and finding details retain the complete diagnoses and requested work. Failure updates never append inline bodies that skipped or failed that refresh. The helper otherwise posts the report body without shortening it. If GitHub rejects an unusually large payload, the update fails loudly and leaves the report artifact in place; the running agent should rewrite the report with the same findings, rationale, and actionable detail in a better organized form, then retry the update.
 
-`$OUTCOME` is `success` or `failure`. The script PATCH-edits the starting comment (identified by `$COMMENT_ID`), replacing its body entirely with:
-
-- A header line: `review-anvil-improve-pr completed on this PR. cc @<author>.` (success) OR `review-anvil-improve-pr **failed** on this PR. cc @<author>.` (failure).
-- A horizontal rule + the full report from `<REPORT_PATH>`.
-- A footer: `Started: $STARTED_AT; Completed: <ISO-8601 UTC> (outcome: <outcome>)`.
+`$OUTCOME` is `success` or `failure`. The script PATCH-edits the starting comment identified by `$COMMENT_ID`. A successful update contains only the hidden marker plus the compact report, so its default view remains the one natural summary sentence. Completion state, author mention, start/completion times, and outcome stay inside collapsed `Review context`. A failure update may keep one visible `review-anvil-improve-pr failed` sentence before its failure report; its delivery metadata remains collapsed.
 
 GitHub does **not** notify on comment edits, so the author isn't pinged again — the original `cc @author` notification from step 3 is the only ping.
 

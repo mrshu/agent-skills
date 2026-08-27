@@ -8,6 +8,7 @@ import re
 import sys
 from collections import Counter
 from pathlib import Path
+from urllib.parse import quote
 from typing import Any
 
 POSITIVE_PADDED_ORDINAL = r"(?:00[1-9]|0[1-9][0-9]|[1-9][0-9]{2,})"
@@ -33,6 +34,15 @@ REPORT_ITEM_RE = re.compile(
     r"severity=(?P<severity>critical|high|medium|low|nit)\s+"
     r"area=(?P<area>[A-Za-z0-9][A-Za-z0-9._/-]*)\s*-->\s*$"
 )
+HUMAN_REPORT_ITEM_RE = re.compile(
+    rf"^[-*]\s+(?P<text>.+?)\s+<!--\s*review-anvil-report:\s*"
+    rf"id=(?P<id>{FINDING_ID_PATTERN}|-)\s+"
+    r"severity=(?P<severity>critical|high|medium|low|nit)\s+"
+    r"area=(?P<area>[A-Za-z0-9][A-Za-z0-9._/-]*)\s+"
+    r"path=(?P<path>\S+)\s+start_line=(?P<start_line>\d+|-)\s+"
+    r"line=(?P<line>\d+|-)\s+"
+    r"disposition=(?P<disposition>active|deferred|outside)\s*-->\s*$"
+)
 ANCHOR_KEYS = ("path", "start_line", "line", "side", "start_side")
 METADATA_FIELDS = (
     "decision_reason",
@@ -44,6 +54,30 @@ METADATA_FIELDS = (
     "set_aside",
     "outside_scope",
     "run_details",
+)
+REVIEW_FOOTER = (
+    "_Reviewed with [review-anvil]"
+    "(https://github.com/mrshu/agent-skills/#review-anvil)._"
+)
+COMPACT_DETAILS_RE = re.compile(
+    r"<details>\n<summary>([^<\n]+)</summary>\n\n"
+    r"([\s\S]*?)\n\n?</details>"
+)
+LEGACY_SUMMARY_RE = re.compile(
+    r"^(?:\*\*(?:Changes requested|Looks good)\.\*\*|"
+    r"\*\*(?:COMMENT|APPROVE)\b)|\bI found\s+\d+\b",
+    re.IGNORECASE,
+)
+COMPACT_SECTION_LABELS = frozenset(
+    {
+        "Issues and fixes",
+        "Optional suggestions",
+        "Earlier feedback",
+        "Changes made",
+        "Set aside",
+        "Outside this change",
+        "Review context",
+    }
 )
 
 
@@ -78,6 +112,30 @@ def indexed_findings(canonical: dict[str, Any]) -> dict[str, dict[str, Any]]:
         indexed[finding_id] = finding
     return indexed
 
+def structured_dispositions(canonical: dict[str, Any]) -> list[dict[str, Any]]:
+    result = []
+    for field, disposition in (
+        ("set_aside", "deferred"),
+        ("outside_scope", "outside"),
+    ):
+        for item in canonical.get(field) or []:
+            if not isinstance(item, dict):
+                continue
+            result.append({**item, "disposition": disposition})
+    return result
+
+
+def report_location_tokens(finding: dict[str, Any]) -> tuple[str, str, str]:
+    path = finding.get("report_path")
+    line = finding.get("report_line")
+    start = finding.get("report_start_line")
+    return (
+        quote(path, safe="._-") if isinstance(path, str) else "-",
+        str(start) if isinstance(start, int) else "-",
+        str(line) if isinstance(line, int) else "-",
+    )
+
+
 def report_id_inventory(
     canonical: dict[str, Any], findings: dict[str, dict[str, Any]]
 ) -> set[str]:
@@ -101,9 +159,14 @@ def report_id_inventory(
         for item in (canonical.get("earlier_feedback") or [])
         if item.get("id")
     }
+    disposition_ids = {
+        item.get("id") for item in structured_dispositions(canonical) if item.get("id")
+    }
     extra_ids = set(report_ids) - set(findings)
-    if extra_ids != history_ids:
-        raise InvalidBundle("report_ids do not match identified earlier feedback")
+    if extra_ids != history_ids | disposition_ids:
+        raise InvalidBundle(
+            "report_ids do not match identified history and dispositions"
+        )
     return set(report_ids)
 
 
@@ -145,8 +208,8 @@ def validate_metadata(
         expected["checks"],
         expected["second_check"],
         *(item.get("text") for item in (expected["earlier_feedback"] or [])),
-        *(expected["set_aside"] or []),
-        *(expected["outside_scope"] or []),
+        *(item for item in (expected["set_aside"] or []) if isinstance(item, str)),
+        *(item for item in (expected["outside_scope"] or []) if isinstance(item, str)),
         *(expected["run_details"] or []),
     ]
     missing = [value for value in visible_values if value and value not in report]
@@ -156,8 +219,123 @@ def validate_metadata(
         if report.splitlines().count(earlier_feedback_line(item)) != 1:
             raise InvalidBundle("earlier-feedback line changed")
 
+def compact_details_blocks(report: str) -> dict[str, str]:
+    blocks = list(COMPACT_DETAILS_RE.finditer(report))
+    if report.count("<details>") != len(blocks):
+        raise InvalidBundle("details blocks must use separate summary lines")
+    result: dict[str, str] = {}
+    for block in blocks:
+        label = block.group(1)
+        if label not in COMPACT_SECTION_LABELS:
+            raise InvalidBundle(f"unsupported compact report section {label}")
+        if label in result:
+            raise InvalidBundle(f"duplicate compact report section {label}")
+        result[label] = block.group(2)
+    return result
+
+
+def validate_human_report_envelope(
+    canonical: dict[str, Any],
+    rendered: dict[str, Any],
+    findings: dict[str, dict[str, Any]],
+    report: str,
+) -> None:
+    visible_report = re.sub(
+        r"^<!--\s*review-anvil-marker:.*?-->\s*\n",
+        "",
+        report,
+        count=1,
+    ).lstrip("\n")
+    blocks = compact_details_blocks(visible_report)
+    summary, separator, _ = visible_report.partition("\n\n<details>\n")
+    if (
+        not separator
+        or not summary.strip()
+        or len(summary.strip().splitlines()) != 1
+        or summary.lstrip().startswith("#")
+    ):
+        raise InvalidBundle(
+            "human-summary report must start with one headingless visible summary line"
+        )
+    if LEGACY_SUMMARY_RE.search(summary.strip()):
+        raise InvalidBundle(
+            "human-summary report must use a natural outcome sentence"
+        )
+    remainder = COMPACT_DETAILS_RE.sub("", visible_report).strip()
+    if remainder != summary.strip():
+        raise InvalidBundle(
+            "human-summary report may contain only the summary and collapsed sections"
+        )
+
+    context = blocks.get("Review context")
+    if context is None:
+        raise InvalidBundle("human-summary report must include Review context")
+    if report.count(REVIEW_FOOTER) != 1 or REVIEW_FOOTER not in context:
+        raise InvalidBundle("review footer must stay in Review context")
+
+    for item in rendered.get("report_items") or []:
+        finding = findings.get(item.get("id"))
+        if finding is None:
+            continue
+        label = (
+            "Optional suggestions"
+            if finding.get("severity") in {"low", "nit"}
+            else "Issues and fixes"
+        )
+        if item.get("rendered_body") not in blocks.get(label, ""):
+            raise InvalidBundle(f"{item.get('id')} must stay in {label}")
+    dispositions = structured_dispositions(canonical)
+    expected_sections = {
+        "Issues and fixes": any(
+            finding.get("severity") not in {"low", "nit"}
+            for finding in findings.values()
+        ),
+        "Optional suggestions": any(
+            finding.get("severity") in {"low", "nit"}
+            for finding in findings.values()
+        ),
+        "Earlier feedback": bool(canonical.get("earlier_feedback")),
+        "Set aside": any(
+            item["disposition"] == "deferred" for item in dispositions
+        ),
+        "Outside this change": any(
+            item["disposition"] == "outside" for item in dispositions
+        ),
+    }
+    for label, needed in expected_sections.items():
+        if needed and label not in blocks:
+            raise InvalidBundle(f"human-summary report must include {label}")
+        if not needed and label in blocks:
+            raise InvalidBundle(f"human-summary report must omit empty {label}")
+
+    for item in rendered.get("disposition_items") or []:
+        body = item.get("rendered_body")
+        shape = HUMAN_REPORT_ITEM_RE.fullmatch(body or "")
+        if shape is None:
+            continue
+        label = (
+            "Set aside"
+            if shape.group("disposition") == "deferred"
+            else "Outside this change"
+        )
+        if body not in blocks.get(label, ""):
+            raise InvalidBundle(f"disposition item must stay in {label}")
+
+    earlier_feedback = canonical.get("earlier_feedback") or []
+    if earlier_feedback:
+        earlier_block = blocks.get("Earlier feedback", "")
+        for item in earlier_feedback:
+            if earlier_feedback_line(item) not in earlier_block:
+                raise InvalidBundle(
+                    "earlier-feedback lines must stay in Earlier feedback"
+                )
+
+
 def validate_report_items(
-    report: str, rendered: dict[str, Any], findings: dict[str, dict[str, Any]]
+    report: str,
+    rendered: dict[str, Any],
+    findings: dict[str, dict[str, Any]],
+    human_style: bool,
 ) -> None:
     items = rendered.get("report_items")
     if not isinstance(items, list):
@@ -193,20 +371,44 @@ def validate_report_items(
             raise InvalidBundle(
                 f"{finding_id} report metadata must stay on the finding line"
             )
-        shape = REPORT_ITEM_RE.fullmatch(body)
-        if shape is None or shape.group("id") != finding_id:
-            raise InvalidBundle(f"{finding_id} report item has invalid visible shape")
-        expected_location = None
-        report_path = finding.get("report_path")
-        report_line = finding.get("report_line")
-        if isinstance(report_path, str) and isinstance(report_line, int):
-            start = finding.get("report_start_line")
-            line_range = (
-                f"{start}-{report_line}" if isinstance(start, int) else report_line
+        if human_style:
+            shape = HUMAN_REPORT_ITEM_RE.fullmatch(body)
+            if (
+                shape is None
+                or shape.group("id") != finding_id
+                or shape.group("disposition") != "active"
+            ):
+                raise InvalidBundle(
+                    f"{finding_id} report item has invalid human-summary shape"
+                )
+            expected_path, expected_start, expected_line = report_location_tokens(
+                finding
             )
-            expected_location = f"{report_path}:{line_range}"
-        if shape.group("location") != expected_location:
-            raise InvalidBundle(f"{finding_id} report location changed")
+            if (
+                shape.group("path"),
+                shape.group("start_line"),
+                shape.group("line"),
+            ) != (expected_path, expected_start, expected_line):
+                raise InvalidBundle(f"{finding_id} report location changed")
+        else:
+            shape = REPORT_ITEM_RE.fullmatch(body)
+            if shape is None or shape.group("id") != finding_id:
+                raise InvalidBundle(
+                    f"{finding_id} report item has invalid visible shape"
+                )
+            expected_location = None
+            report_path = finding.get("report_path")
+            report_line = finding.get("report_line")
+            if isinstance(report_path, str) and isinstance(report_line, int):
+                start = finding.get("report_start_line")
+                line_range = (
+                    f"{start}-{report_line}"
+                    if isinstance(start, int)
+                    else report_line
+                )
+                expected_location = f"{report_path}:{line_range}"
+            if shape.group("location") != expected_location:
+                raise InvalidBundle(f"{finding_id} report location changed")
         metadata = shape
         if prior_feedback == "reintroduced":
             reintroduced = body + "\n<!-- review-anvil: prior_feedback=reintroduced -->"
@@ -220,6 +422,45 @@ def validate_report_items(
     if seen != set(findings):
         missing = sorted(set(findings) - seen)
         raise InvalidBundle("report item inventory mismatch; missing " + ", ".join(missing))
+
+def validate_disposition_items(
+    report: str,
+    rendered: dict[str, Any],
+    canonical: dict[str, Any],
+    human_style: bool,
+) -> None:
+    if not human_style:
+        return
+    expected_items = structured_dispositions(canonical)
+    items = rendered.get("disposition_items")
+    if not isinstance(items, list) or len(items) != len(expected_items):
+        raise InvalidBundle("disposition item inventory changed")
+    for item, expected in zip(items, expected_items, strict=True):
+        if not isinstance(item, dict) or item.get("id") != expected.get("id"):
+            raise InvalidBundle("disposition item identity changed")
+        body = item.get("rendered_body")
+        if (
+            not isinstance(body, str)
+            or report.splitlines().count(body) != 1
+            or "\n" in body
+        ):
+            raise InvalidBundle("disposition item is not a complete report line")
+        shape = HUMAN_REPORT_ITEM_RE.fullmatch(body)
+        expected_id = expected.get("id") or "-"
+        if (
+            shape is None
+            or shape.group("id") != expected_id
+            or shape.group("disposition") != expected["disposition"]
+            or shape.group("severity") != expected.get("severity")
+            or shape.group("area") != expected.get("area")
+        ):
+            raise InvalidBundle("disposition item metadata changed")
+        if (
+            shape.group("path"),
+            shape.group("start_line"),
+            shape.group("line"),
+        ) != report_location_tokens(expected):
+            raise InvalidBundle("disposition item location changed")
 
 
 def marker_from_body(body: Any) -> re.Match[str]:
@@ -316,6 +557,10 @@ def validate_predicates(
 def validate(canonical: dict[str, Any], rendered: dict[str, Any]) -> None:
     findings = indexed_findings(canonical)
     expected_report_ids = report_id_inventory(canonical, findings)
+    report_style = canonical.get("report_style")
+    if report_style not in {None, "human-summary"}:
+        raise InvalidBundle(f"invalid report_style {report_style}")
+    human_style = report_style == "human-summary"
     expected_decision = canonical.get("decision")
     actual_decision = rendered.get("decision")
     if actual_decision != expected_decision:
@@ -325,8 +570,15 @@ def validate(canonical: dict[str, Any], rendered: dict[str, Any]) -> None:
     report = rendered.get("report_markdown")
     validate_metadata(canonical, rendered, report)
     validate_report(report, expected_report_ids)
-    validate_report_items(report, rendered, findings)
-    validate_inline(rendered, findings, canonical.get("inline_min_severity"))
+    validate_report_items(report, rendered, findings, human_style)
+    validate_disposition_items(report, rendered, canonical, human_style)
+    if human_style:
+        validate_human_report_envelope(canonical, rendered, findings, report)
+    validate_inline(
+        rendered,
+        findings,
+        canonical.get("inline_min_severity"),
+    )
     validate_predicates(rendered, findings)
 
 

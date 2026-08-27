@@ -1,76 +1,124 @@
-# Final clarity-pass assessment
+# Human-summary clarity assessment
 
 ## Decision
 
-Keep the final clarity pass. It makes the complete historical reviews easier to scan and act on while preserving the frozen facts, actions, dispositions, identities, suggestions, and report/inline coordinates.
+Keep the human-summary revision. It simplifies the actual language as well as
+the Markdown: the top-level report becomes a short issue map, and the full
+reasoning and requested work move to conversational inline comments.
 
-The production change runs one clean renderer after synthesis, reproduction, and adversarial review have frozen the report packet. It validates the rendered bundle deterministically, then action-lock audits report and inline surfaces independently. Invalid output restores the pre-clarity artifacts and forces `COMMENT`.
+Machine IDs, priority, area, report coordinates, and disposition now live in
+hidden markers. The validator checks those fields structurally. Surface-specific
+fact/action auditors still protect the visible prose.
 
-## Historical comparison
+## Comparison corpus
 
-The frozen sample contains three prior `evaleval/every_eval_ever` review-anvil reviews:
+The frozen sample contains the same three prior `evaleval/every_eval_ever`
+reviews used by the first clarity experiment:
 
-- PR #190 review `4870915628`: 11 findings, 7 inline comments;
-- PR #204 review `4884442134`: 5 findings, 3 inline comments;
-- PR #230 review `4870883842`: 6 findings, 2 inline comments.
+- PR #190 review `4870915628`: 11 findings and 7 inline comments;
+- PR #204 review `4884442134`: 5 findings and 3 inline comments;
+- PR #230 review `4870883842`: 6 findings and 2 inline comments.
 
-`source-snapshot.json` contains the verbatim source reports and comments with per-body SHA-256 checksums. `extract-corpus.py` verifies those checksums and regenerates `corpus.json` without the earlier external-worktree dependency.
+`clarity-v1-bundles.json` is the before side. `rendered-bundles.json` is the new
+human-summary side. `before-after.md` renders both complete outputs.
 
-The top-level reports became shorter while retaining every location and requested boundary:
+`source-snapshot.json` contains the verbatim historical reports and comments
+with per-body SHA-256 checksums. `extract-corpus.py` verifies those checksums
+before regenerating `corpus.json`.
 
-| Review | Before | After | Reduction |
-|---|---:|---:|---:|
-| PR #190 | 736 words | 646 words | 12.2% |
-| PR #204 | 616 words | 594 words | 3.6% |
-| PR #230 | 518 words | 453 words | 12.5% |
+## Size reduction
 
-The larger gain is structural: each active finding now keeps its defect, consequence, code location, and requested change together. Run mechanics, earlier feedback, low/nit suggestions, and deferred items remain collapsed.
+| Review | Current report | Human report | Report reduction | Current inline | Human inline | Inline reduction |
+|---|---:|---:|---:|---:|---:|---:|
+| PR #190 | 591 words | 432 words | 26.9% | 280 words | 254 words | 9.3% |
+| PR #204 | 569 words | 428 words | 24.8% | 200 words | 151 words | 24.5% |
+| PR #230 | 423 words | 370 words | 12.5% | 116 words | 82 words | 29.3% |
 
-The complete rendered comparison is `before-after.md`.
+Raw Markdown retains lossless collapsed rows for history and fallback delivery.
+The default visible prose is one sentence: PR #190 uses 21 words, PR #204 uses
+26, and PR #230 uses 17. Issue rows, IDs, severity, areas, paths, and repeated
+inline actions stay collapsed.
+
+## Direct request voice
+
+The first human-summary draft opened all 12 inline action paragraphs with
+`Could you`. The final draft opens none that way. A deliberate collaborative
+request may still use a courtesy wrapper sparingly; the rule targets stock
+repetition, not the phrase itself. Required work defaults to its action verb,
+optional low/nit work uses `Consider …`, and only a genuinely unresolved choice
+uses question grammar.
+
+This is renderer guidance, not a runtime English-grammar gate. The deterministic
+validator intentionally does not parse prose style. Semantic auditors protect
+facts, requiredness, optionality, and boundaries; blind judges evaluate voice.
 
 ## Blind readability result
 
-Three clean judges evaluated 15 randomized pairs: 3 complete reports and 12 inline comments. Hidden machine metadata was removed before judging; visible report IDs and code locations remained.
+Three clean judges evaluated 15 randomized pairs: 3 complete reviews and 12
+individual inline comments. Complete-review pairs contained the report and all
+of its inline comments, so action completeness was judged across the artifact
+rather than against the summary alone.
 
-| Surface | After wins | Before wins | Ties |
+| Surface | Human wins | Current wins | Ties |
 |---|---:|---:|---:|
-| Top-level reports | 9 | 0 | 0 |
-| Inline comments | 36 | 0 | 0 |
-| **Total** | **45** | **0** | **0** |
+| Complete reviews | 9 | 0 | 0 |
+| Inline comments | 35 | 1 | 0 |
+| **Total** | **44** | **1** | **0** |
 
-Mean scores:
+No final human output received a hard fact/action failure.
 
-| Dimension | Before | After | Delta |
+Mean scores across all 45 judgments:
+
+| Dimension | Current | Human | Delta |
 |---|---:|---:|---:|
-| Defect clarity | 4.489 | 5.000 | +0.511 |
-| Action recall | 3.800 | 5.000 | +1.200 |
-| Scanability | 3.756 | 5.000 | +1.244 |
-| Naturalness | 3.578 | 4.844 | +1.266 |
-| Cognitive ease | 3.733 | 5.000 | +1.267 |
+| Defect clarity | 5.000 | 5.000 | 0.000 |
+| Action recall | 5.000 | 4.978 | -0.022 |
+| Scanability | 4.867 | 4.733 | -0.134 |
+| Naturalness | 3.867 | 4.933 | +1.066 |
+| Cognitive ease | 3.822 | 4.867 | +1.045 |
+| Plain language | 4.044 | 4.867 | +0.823 |
 
-No final after-version received a hard fact/action failure. Earlier judgment rounds did expose four missing evidence predicates; those predicates were restored before this final run.
+All nine complete-review judgments preferred the compact human report and
+marked it fact-safe. The blind text extraction expands collapsed content, so
+its 4.000 scanability score does not model GitHub's default one-sentence view;
+the expanded current baseline scored 4.333.
 
 ## Safety gates
 
-The deterministic validator covers:
+The deterministic validator checks:
 
-- exact decision, metadata/disposition ledger, and visible metadata rows;
+- exact decision and metadata/disposition inventories;
 - complete modern and legacy report-ID inventory;
-- one complete report line per current finding, with exact report-specific location, priority, area, and terminal marker;
-- configurable inline severity eligibility, exact inline anchors, severity, suggestions, and reintroduction state;
-- exact requested-work inventory and no unknown, missing, or duplicate items.
+- hidden ID, priority, area, encoded report location, and disposition markers;
+- active and deferred/outside item counts;
+- configured inline-severity eligibility and exact inline anchors;
+- one headingless visible summary line, canonical count-free collapsed labels,
+  full envelope consumption, footer placement, and report-item section
+  placement;
+- post-time history refresh fails closed when it would stale the compact
+  summary;
+- count-free fallback details and delivery metadata stay collapsed, including
+  improve-PR success edits;
+- suggestions, reintroduction state, and requested-work ledgers.
 
-The action-lock experiment then used explicit surface-specific fact locks. Initial strict audits exposed remaining evidence and no-change-boundary losses. The affected rows were repaired and passed two clean re-auditors. The final report-location pass covered all 22 report items and passed both 22/22 audits.
+It does not judge prose semantics. Two bidirectional auditors check each
+surface with an explicit mode:
 
-## Micro-test
+- `summary` for report lines backed by emitted inline comments;
+- `required` for inline comments and material report lines without one;
+- `suggested` for low/nit guidance;
+- `boundary` for deferred and outside-scope items.
 
-Five stateless control samples used the previous split finding/action template; all five repeated issues across separate sections. Five final-recipe samples kept every ID once and avoided a second action section. An intermediate wording variant invented test outcomes in four of five samples; the final prompt now permits only supplied verification, and all five final samples avoided that failure.
-
-See `microtest-results.json`.
+`fact-lock-audit-1.json` and `fact-lock-audit-2.json` each contain all 34
+`(id, surface)` verdicts for the exact retained `action-audit-corpus.json` and
+`action-audit-prompt.md`; both pass every row. The focused re-audit files retain
+the categorical exact-miss check. The blind run uses that same final output.
 
 ## Limits
 
-- Three historical reviews from one repository are not cross-repository generalization evidence.
-- The judges are clean sessions but not a human PR-author timing study.
-- Prompt-following and LLM audits are probabilistic; deterministic inventory and metadata checks therefore remain mandatory.
-- The final renderer adds one model call plus the two-auditor wave and any single repair wave.
+- The sample contains three historical reviews from one repository.
+- The judges are clean model sessions, not a human PR-author timing study.
+- Natural paragraph-style inline comments scored lower on narrow scanability
+  than checklists, although the complete review became easier to scan.
+- Prompt-following remains probabilistic; structural validation and the
+  two-auditor fallback remain mandatory.

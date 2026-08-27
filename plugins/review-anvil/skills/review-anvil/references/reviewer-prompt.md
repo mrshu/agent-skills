@@ -230,15 +230,17 @@ For each issue, return a structured finding with these keys:
   Privately map every source predicate to author work or a no-change boundary.
   Do not return the finding until every author-work predicate appears as an
   explicit request.
-  For one critical, high, or medium obligation, write one short request sentence
-  beginning with `Please` and a direct action verb. For two or more, return
-  `**What to change**` followed by one direct-action Markdown bullet per
-  obligation. Order required behavior changes before required tests. Do not
-  repeat `Please` or a long shared phrase in the bullets. Preserve suggestion
-  grammar for low and nit guidance. Never describe requested work as code
-  already present. Mention a test only when the code, existing tests, or task
-  establishes its boundary. Include replacement code only when it safely fixes
-  the selected lines.
+  Default to starting required work with its action verb. Keep one or two
+  cohesive obligations in one short prose paragraph. For three or more
+  independently implementable obligations, use one direct-action Markdown
+  bullet per obligation. Order required behavior changes before required tests.
+  A deliberate collaborative request may use a courtesy wrapper sparingly when
+  coordination or tone benefits. Never use one as a stock opener throughout a
+  review. Use question grammar only for a genuinely unresolved choice. Preserve
+  suggestion grammar for low and nit guidance. Never describe requested work as
+  code already present. Mention a test only when the code, existing tests, or
+  task establishes its boundary. Include replacement code only when it safely
+  fixes the selected lines.
 - suggested_change: (OPTIONAL) exact replacement text for the cited
   line/range, only when the fix is narrow, mechanical, and directly
   applicable as a GitHub suggested change. Omit for design concerns,

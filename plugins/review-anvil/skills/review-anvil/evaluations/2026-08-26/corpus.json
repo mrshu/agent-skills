@@ -106,6 +106,7 @@
           "RAV-RUN2-R1-F008",
           "RAV-RUN2-R1-F010"
         ],
+        "report_style": "human-summary",
         "inline_min_severity": "medium",
         "decision_reason": "Seven confirmed medium concerns remain in the consolidated adapter.",
         "result": "The nine earlier concerns are fixed. This head has seven medium concerns and four low suggestions.",
@@ -403,6 +404,7 @@
           "RAV-RUN3-R1-F004",
           "RAV-RUN3-R1-F005"
         ],
+        "report_style": "human-summary",
         "inline_min_severity": "medium",
         "decision_reason": "The new adapter is well structured, and five focused suggestions can make identity and publication safer.",
         "result": "Two high-priority and two medium-priority concerns remain. One CLI edge case is a low-priority suggestion.",
@@ -591,6 +593,7 @@
           "RAV-RUN1-R1-F005",
           "RAV-RUN1-R1-F006"
         ],
+        "report_style": "human-summary",
         "inline_min_severity": "medium",
         "decision_reason": "This run is comment-only and found two focused merge-readiness items.",
         "result": "The offline registry design is thoughtful. The warning needs visible default output and its required contributor guidance before merge.",

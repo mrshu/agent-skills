@@ -311,6 +311,97 @@ if filtered or suggested:
     )
 PY
 }
+append_inline_details_to_report() {
+    local report_path="${1:-}" inline_json="${2:-}"
+    [[ -f "$report_path" && -f "$inline_json" ]] || return 0
+
+    _py - "$report_path" "$inline_json" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+report_path = Path(sys.argv[1])
+inline_path = Path(sys.argv[2])
+section_marker = "<!-- review-anvil: appended-inline-details -->"
+report = report_path.read_text()
+if section_marker in report:
+    raise SystemExit(0)
+
+raw = inline_path.read_text().strip()
+if not raw or raw == "[]":
+    raise SystemExit(0)
+items = json.loads(raw)
+if not isinstance(items, list):
+    raise SystemExit(f"pr-helper: {inline_path} is not a JSON array")
+items = [item for item in items if isinstance(item, dict) and item.get("body")]
+if not items:
+    raise SystemExit(0)
+
+parts = [
+    "",
+    "<details>",
+    "<summary>Finding details</summary>",
+    "",
+]
+for index, item in enumerate(items, 1):
+    path = item.get("path")
+    start_line = item.get("start_line")
+    line = item.get("line")
+    if path and start_line and line and start_line != line:
+        location = f"{path}:{start_line}-{line}"
+    elif path and line:
+        location = f"{path}:{line}"
+    elif path:
+        location = str(path)
+    else:
+        location = f"Finding {index}"
+    parts.extend((f"### `{location}`", "", str(item["body"]).strip(), ""))
+parts.extend(("</details>", section_marker, ""))
+report_path.write_text(report.rstrip() + "\n" + "\n".join(parts))
+PY
+}
+append_review_context_note() {
+    local report_path="${1:-}" note="${2:-}"
+    [[ -f "$report_path" && -n "$note" ]] || return 0
+
+    _py - "$report_path" "$note" <<'PY'
+import re
+import sys
+from pathlib import Path
+
+report_path = Path(sys.argv[1])
+note = sys.argv[2]
+report = report_path.read_text()
+if note in report:
+    raise SystemExit(0)
+
+pattern = re.compile(
+    r"(<details>\n<summary>Review context</summary>\n\n)"
+    r"([\s\S]*?)(\n\n?</details>)"
+)
+match = pattern.search(report)
+if match:
+    body = match.group(2).rstrip()
+    footer = "_Reviewed with [review-anvil]"
+    footer_at = body.find(footer)
+    if footer_at >= 0:
+        before = body[:footer_at].rstrip()
+        after = body[footer_at:]
+        body = "\n\n".join(part for part in (before, note, after) if part)
+    else:
+        body = "\n\n".join(part for part in (body, note) if part)
+    report = report[:match.start()] + match.group(1) + body + match.group(3) + report[match.end():]
+else:
+    report = (
+        report.rstrip()
+        + "\n\n<details>\n<summary>Review context</summary>\n\n"
+        + note
+        + "\n\n</details>\n"
+    )
+report_path.write_text(report)
+PY
+}
+
 
 # Shared PR-feedback-history engine. Modes:
 #   history <owner> <repo> <n>
@@ -346,6 +437,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+from urllib.parse import unquote
 
 mode, owner, repo, n = sys.argv[1:5]
 
@@ -490,6 +582,16 @@ CLARITY_REPORT_RE = re.compile(
     r"area=(?P<area>[A-Za-z0-9][A-Za-z0-9._/-]*)\s*-->\s*$",
     re.I,
 )
+HUMAN_REPORT_RE = re.compile(
+    rf"^\s*[-*]\s+(?P<text>.+?)\s+<!--\s*review-anvil-report:\s*"
+    rf"id=(?P<finding_id>{FINDING_ID_PATTERN}|-)\s+"
+    r"severity=(?P<severity>critical|high|medium|low|nit)\s+"
+    r"area=(?P<area>[A-Za-z0-9][A-Za-z0-9._/-]*)\s+"
+    r"path=(?P<path>\S+)\s+start_line=(?P<start_line>\d+|-)\s+"
+    r"line=(?P<line>\d+|-)\s+"
+    r"disposition=(?P<disposition>active|deferred|outside)\s*-->\s*$",
+    re.I,
+)
 EARLIER_FEEDBACK_RE = re.compile(
     rf"^\s*[-*]\s+\*\*(?P<status>open|still-present|fixed|stale|reported|author-resolved)\*\*"
     rf"\s*[-—:]+\s*(?P<text>.+?)(?:\s+\(`(?P<finding_id>{FINDING_ID_PATTERN})`\))?\s*$",
@@ -582,15 +684,37 @@ def table_finding(line):
 
 def clarity_report_finding(line):
     match = CLARITY_REPORT_RE.fullmatch(line or "")
+    if match and "--" not in match.group("area"):
+        return {
+            "id": match.group("finding_id"),
+            "severity": severity_name(match.group("severity")),
+            "area": match.group("area"),
+            "location": match.group("location") or "",
+            "finding": match.group("title").strip(),
+            "detail": match.group("detail").strip(),
+            "disposition": "active",
+        }
+    match = HUMAN_REPORT_RE.fullmatch(line or "")
     if not match or "--" in match.group("area"):
         return None
+    path = "" if match.group("path") == "-" else unquote(match.group("path"))
+    line_number = match.group("line")
+    start_line = match.group("start_line")
+    location = ""
+    if path and line_number != "-":
+        location = (
+            f"{path}:{start_line}-{line_number}"
+            if start_line != "-"
+            else f"{path}:{line_number}"
+        )
     return {
-        "id": match.group("finding_id"),
+        "id": None if match.group("finding_id") == "-" else match.group("finding_id"),
         "severity": severity_name(match.group("severity")),
         "area": match.group("area"),
-        "location": match.group("location") or "",
-        "finding": match.group("title").strip(),
-        "detail": match.group("detail").strip(),
+        "location": location,
+        "finding": match.group("text").strip(),
+        "detail": "",
+        "disposition": match.group("disposition").lower(),
     }
 
 def earlier_feedback_finding(line):
@@ -795,10 +919,11 @@ def same_finding(cand, previous, require_path):
 pr_author, threads, reviews, issue_comments = fetch_history()
 
 if mode == "next-run":
-    report_heading = re.compile(
+    legacy_heading = re.compile(
         r"^#\s+(?:(?:⚒️\s+)?review-anvil report|review result)\s*$",
         re.I | re.M,
     )
+    human_heading = re.compile(r"^#\s+review\s*$", re.I | re.M)
     marker_pattern = re.compile(
         r"<!--\s*review-anvil-marker:\s*([^\s>]+)\s*-->", re.I
     )
@@ -807,9 +932,23 @@ if mode == "next-run":
         if (node.get("state") or "").upper() == "PENDING":
             continue
         body = node.get("body") or ""
-        if not report_heading.search(body):
-            continue
         marker = marker_pattern.search(body)
+        has_human_report_item = any(
+            HUMAN_REPORT_RE.fullmatch(line) is not None
+            for line in body.splitlines()
+        )
+        has_review_footer = (
+            "_Reviewed with [review-anvil]" in body
+        )
+        if not legacy_heading.search(body) and not (
+            marker
+            and (
+                human_heading.search(body)
+                or has_human_report_item
+                or has_review_footer
+            )
+        ):
+            continue
         key = (
             f"marker:{marker.group(1).lower()}"
             if marker
@@ -875,14 +1014,23 @@ def report_findings(node):
         if stripped.startswith("<summary>") and stripped.endswith("</summary>"):
             summary_heading = re.sub(r"<[^>]+>", "", stripped).strip().lower()
             prior_feedback_section = summary_heading.startswith(
-                "earlier review comments"
+                ("earlier review comments", "earlier feedback")
             )
             if summary_heading.startswith(
-                ("non-blocking", "suggestions", "earlier review comments")
+                (
+                    "non-blocking",
+                    "suggestions",
+                    "optional suggestions",
+                    "issues and fixes",
+                    "earlier review comments",
+                    "earlier feedback",
+                )
             ):
                 section_status = "reported"
-            elif summary_heading.startswith("set aside / outside this change"):
+            elif summary_heading.startswith("set aside"):
                 section_status = "deferred"
+            elif summary_heading.startswith("outside this change"):
+                section_status = "outside"
             else:
                 section_status = None
             continue
@@ -895,7 +1043,7 @@ def report_findings(node):
         if line.startswith("## "):
             heading = line[3:].strip().lower()
             prior_feedback_section = False
-            if heading.startswith(("findings", "needs attention", "diagnoses", "what i noticed", "suggestions", "things to try", "non-blocking")):
+            if heading.startswith(("findings", "main issues", "needs attention", "diagnoses", "what i noticed", "suggestions", "things to try", "non-blocking")):
                 section_status = "reported"
             elif heading.startswith(("deferred / out-of-scope", "set aside / outside this change")):
                 section_status = "deferred"
@@ -960,7 +1108,15 @@ def report_findings(node):
                 parsed_line = loc_match.group(2)
                 if loc_match.group(3):
                     parsed_line += f'-{loc_match.group(3)}'
-            status = "review-dismissed" if (node.get("state") or "").upper() == "DISMISSED" else section_status
+            if (node.get("state") or "").upper() == "DISMISSED":
+                status = "review-dismissed"
+            elif clarity_item and clarity_item.get("disposition") in {
+                "deferred",
+                "outside",
+            }:
+                status = clarity_item["disposition"]
+            else:
+                status = section_status
             identity = identity_from_body(line)
             found.append({"path": path_from_location(location), "line": parsed_line,
                           "sig": sig, "summary": summary(finding_body),
@@ -1084,6 +1240,7 @@ def display_status(item):
         "resolved": "This is still present after the thread was closed.",
         "reported": "This was mentioned earlier and is still present.",
         "deferred": "This was set aside earlier and is still present.",
+        "outside": "This was outside this change and remains outside it.",
         "review-dismissed": "This was dismissed earlier and is still present.",
     }.get(item["status"], "This was mentioned earlier.")
     if item.get("outdated"):
@@ -1096,7 +1253,7 @@ categorically_removed = 0
 explicit_suppressions = []
 
 def does_not_reraise(item):
-    return item["status"] in {"suppressed", "author-resolved"}
+    return item["status"] in {"suppressed", "author-resolved", "outside"}
 
 def location_range_from_block(block):
     for line in block:
@@ -1224,6 +1381,7 @@ def matching_history(cand, require_path):
                 return exact
     return matches[0]
 
+inline_rewrite = None
 if inline_items is not None:
     items = inline_items
     kept = []
@@ -1265,7 +1423,7 @@ if inline_items is not None:
                 if reintroduced else item
             )
     if len(kept) != len(items) or inline_reintroduced:
-        inline.write_text(json.dumps(kept, indent=2) + "\n")
+        inline_rewrite = json.dumps(kept, indent=2) + "\n"
 
 # Move matching findings in the report body to a prior-feedback status section.
 # This avoids creating duplicate inline threads while keeping open or resolved-
@@ -1360,25 +1518,83 @@ if report.exists():
                 continue
         out.append(line)
         i += 1
+    compact_envelope = (
+        report.exists()
+        and "<summary>Review context</summary>" in report.read_text()
+    )
+    inventory_changed = bool(
+        demoted or suppressed or explicit_suppressions or categorically_removed
+    )
+    if compact_envelope and inventory_changed:
+        raise SystemExit(
+            "pr-helper: post-time prior-feedback refresh changed the finding "
+            "inventory; rerun review-anvil so the visible summary can be "
+            "rendered from the refreshed inventory"
+        )
+    if inline_rewrite is not None:
+        inline.write_text(inline_rewrite)
     if demoted or suppressed or explicit_suppressions or categorically_removed or report_reintroduced:
         rewritten = "\n".join(out).rstrip() + "\n"
         if demoted or suppressed or explicit_suppressions:
             demoted_sigs = {d["sig"] for d in demoted}
-            tail = ["", "---", "", "### Earlier review comments", ""]
+            feedback_rows = []
             for d in demoted:
                 identity_fields = rendered_identity_fields(d)
                 identity_suffix = (
                     f'; {"; ".join(identity_fields)}' if identity_fields else ""
                 )
-                tail.append(
+                feedback_rows.append(
                     f'{d["line"]} _({d["status"]} Source: {d["source"]}'
                     f'{identity_suffix})_'
                 )
-            tail += [f'- **Earlier inline comment** {s["path"]} — {s["summary"]} _({s["status"]} Source: {s["source"]})_'
-                     for s in suppressed if s["sig"] not in demoted_sigs]
-            tail += [f'- **Not raised again** {s["path"] or "(no file anchor)"} — {s["summary"]} _(It was intentionally set aside. Source: {s["source"]})_'
-                     for s in {item["sig"]: item for item in explicit_suppressions}.values()]
-            rewritten += "\n".join(tail) + "\n"
+            feedback_rows += [
+                f'- **Earlier inline comment** {s["path"]} — {s["summary"]} '
+                f'_({s["status"]} Source: {s["source"]})_'
+                for s in suppressed if s["sig"] not in demoted_sigs
+            ]
+            feedback_rows += [
+                f'- **Not raised again** {s["path"] or "(no file anchor)"} — '
+                f'{s["summary"]} _(It was intentionally set aside. '
+                f'Source: {s["source"]})_'
+                for s in {
+                    item["sig"]: item for item in explicit_suppressions
+                }.values()
+            ]
+            feedback = "\n".join(feedback_rows)
+            pattern = re.compile(
+                r"(<details>\n<summary>Earlier feedback</summary>\n\n)"
+                r"([\s\S]*?)(\n\n?</details>)"
+            )
+            existing = pattern.search(rewritten)
+            if existing:
+                content = existing.group(2).rstrip()
+                content = "\n".join(
+                    part for part in (content, feedback) if part
+                )
+                rewritten = (
+                    rewritten[:existing.start()]
+                    + existing.group(1)
+                    + content
+                    + existing.group(3)
+                    + rewritten[existing.end():]
+                )
+            else:
+                section = (
+                    "<details>\n<summary>Earlier feedback</summary>\n\n"
+                    + feedback
+                    + "\n\n</details>\n\n"
+                )
+                context_marker = (
+                    "<details>\n<summary>Review context</summary>"
+                )
+                if context_marker in rewritten:
+                    rewritten = rewritten.replace(
+                        context_marker,
+                        section + context_marker,
+                        1,
+                    )
+                else:
+                    rewritten = rewritten.rstrip() + "\n\n" + section
         report.write_text(rewritten)
 
 # A material item discovered during the post-time refresh must not race with a
@@ -1723,9 +1939,8 @@ cmd_post() {
             if [[ -n "$current_sha" && "$current_sha" != "$reviewed_sha" ]]; then
                 printf 'warning: PR head moved since review (%s -> %s); downgrading APPROVE to COMMENT\n' \
                     "${reviewed_sha:0:8}" "${current_sha:0:8}" >&2
-                # shellcheck disable=SC2016  # backticks are markdown, not expansion
-                printf '\n\n---\n\n_review-anvil selected APPROVE for head `%s`. The PR now has head `%s`. review-anvil posted a comment instead. The newer commits were not reviewed._\n' \
-                    "${reviewed_sha:0:8}" "${current_sha:0:8}" >> "$report_path"
+                append_review_context_note "$report_path" \
+                    "Delivery: review-anvil selected APPROVE for head \`${reviewed_sha:0:8}\`. The PR now has head \`${current_sha:0:8}\`, so review-anvil posted a comment instead. The newer commits were not reviewed."
                 review_event="COMMENT"
             fi
         else
@@ -1771,13 +1986,26 @@ cmd_post() {
     fi
 
     if [[ "$review_event" == "APPROVE" ]]; then
+        local original_report_path="$report_path"
+        local approval_report_path=""
+        if [[ "$has_inline" -eq 1 ]]; then
+            approval_report_path=$(mktemp -t review-anvil-approval.XXXXXX)
+            cat "$report_path" >"$approval_report_path"
+            append_inline_details_to_report "$approval_report_path" "$inline_json"
+            report_path="$approval_report_path"
+        fi
         if url=$(_submit_review APPROVE ""); then
+            report_path="$original_report_path"
+            [[ -z "$approval_report_path" ]] || rm -f "$approval_report_path"
             _emit_post_result APPROVE "$url"
             return 0
         fi
+        report_path="$original_report_path"
+        [[ -z "$approval_report_path" ]] || rm -f "$approval_report_path"
         review_event="COMMENT"
         printf 'warning: approval could not be submitted (common cause: GitHub rejects approving your own PR); downgrading to a comment review\n' >&2
-        printf '\n\n---\n\n_review-anvil selected APPROVE. GitHub rejected the approval. review-anvil posted a comment instead._\n' >> "$report_path"
+        append_review_context_note "$report_path" \
+            "Delivery: review-anvil selected APPROVE, but GitHub rejected the approval, so review-anvil posted a comment instead."
         compact_report_for_github "$report_path" "$inline_json"
         if [[ "$has_inline" -eq 1 ]]; then
             if url=$(_submit_review COMMENT "$inline_json"); then
@@ -1801,6 +2029,7 @@ cmd_post() {
         return 0
     fi
 
+    append_inline_details_to_report "$report_path" "$inline_json"
     # Fallback path: top-level comment + marker URL recovery.
     if ! gh pr comment "$n" -R "$owner/$repo" --body-file "$report_path" >/dev/null 2>&1; then
         die "gh pr comment failed for $owner/$repo#$n on host=$host"
@@ -2060,23 +2289,30 @@ cmd_post_update() {
 
     process_inline_comments_for_github "${report_path}.inline.json"
     compact_report_for_github "$report_path" "${report_path}.inline.json"
+    if [[ "$outcome" == "success" ]]; then
+        append_inline_details_to_report "$report_path" "${report_path}.inline.json"
+    fi
 
-    local completed_at
+    local completed_at delivery_note
     completed_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+    if [[ "$outcome" == "success" ]]; then
+        delivery_note="Delivery: review-anvil-improve-pr completed on this PR$(_cc_tail "$author")."
+    else
+        delivery_note="Delivery: review-anvil-improve-pr failed on this PR$(_cc_tail "$author")."
+    fi
+    [[ -n "$started_at" ]] \
+        && delivery_note+=" Started: $started_at;"
+    delivery_note+=" Completed: $completed_at (outcome: $outcome)."
+    append_review_context_note "$report_path" "$delivery_note"
 
     local tmp
     tmp=$(mktemp -t review-anvil-update.XXXXXX)
     {
         printf '<!-- review-anvil-marker: %s -->\n' "$marker"
-        if [[ "$outcome" == "success" ]]; then
-            printf 'review-anvil-improve-pr completed on this PR%s.\n\n---\n\n' "$(_cc_tail "$author")"
-        else
+        if [[ "$outcome" == "failure" ]]; then
             printf 'review-anvil-improve-pr **failed** on this PR%s.\n\n---\n\n' "$(_cc_tail "$author")"
         fi
         cat "$report_path"
-        printf '\n\n---\n\n'
-        [[ -n "$started_at" ]] && printf 'Started: %s; ' "$started_at"
-        printf 'Completed: %s (outcome: %s)\n' "$completed_at" "$outcome"
     } > "$tmp"
 
     # PATCH the existing comment. Use jq --rawfile to build the JSON

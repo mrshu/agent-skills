@@ -23,7 +23,7 @@ it with `AUDIT:`. A finding can have both a `report` and an `inline` row; the
 {
   "id": "RAV-RUN3-R1-F001",
   "surface": "report | inline",
-  "request_mode": "required | suggested",
+  "request_mode": "required | suggested | summary | boundary",
   "source_context": "<exact source material used by this rendered surface>",
   "source_fact_lock": ["<exact actor/action/target, condition, impact, or evidence predicate>"],
   "source_requested_work": "<exact frozen source prose>",
@@ -31,8 +31,11 @@ it with `AUDIT:`. A finding can have both a `report` and an `inline` row; the
 }
 ```
 
-Derive `request_mode` from the frozen severity and surface. Low and nit report
-rows use `suggested`; all other rendered surfaces use `required`.
+Derive `request_mode` from the frozen severity, disposition, emitted inline
+inventory, and surface. Inline rows and material report rows without an emitted
+inline comment use `required`. Low/nit suggestions use `suggested`. Report rows
+backed by emitted inline comments use `summary`. Deferred and outside-scope rows
+use `boundary`.
 
 Do not extract or summarize a request-only subset.
 The auditors need the whole rendered body.
@@ -73,18 +76,31 @@ For each source predicate:
    with suggestion grammar. Reject an omission or a rewrite that makes the
    suggestion mandatory. Do not fail suggestion grammar merely because it is
    not imperative.
-7. Reject every action bullet or direct request derived only from a no-change
+7. For `summary`, require only the supplied summary fact lock. Its empty
+   `source_requested_work` is intentional; do not demand inline actions on the
+   report surface.
+8. For `boundary`, preserve the issue and disposition reason without turning
+   either into new author work.
+9. Reject every action bullet or direct request derived only from a no-change
    boundary.
+10. Map every semantic predicate in the complete `rendered_body` back to a
+    source predicate, regardless of grammar. This includes requested work,
+    author-facing questions, permissions, exceptions, no-change boundaries,
+    accepted behavior, optional follow-ups, evidence, and code-sketch behavior.
+    Required Markdown and hidden metadata are not semantic predicates.
+11. Reject every unmatched rendered predicate. Record unmatched author work in
+    `false_actions` and every other source-free predicate in
+    `invented_predicates`. Keep `fact_losses` for source predicates that the
+    draft omits or changes.
 
 When accepted current behavior directly constrains a required action, keep the
 constraint coupled using `without changing …` or `while keeping … unchanged`.
 Coupling a no-change boundary to its action does not turn that boundary into
 author work.
 
-Audit report and inline surfaces independently. Every required source predicate
-must appear on each supplied surface unless the frozen packet explicitly marks
-that predicate as surface-specific. A fact present only on the other surface
-does not satisfy the ledger.
+Audit report and inline surfaces independently. Every predicate supplied to an
+audit row must appear on that row's surface. A fact present only on another
+surface does not satisfy the ledger.
 
 Fact locks are surface-specific. Put report-location predicates only in
 `report` rows. Inline anchors are validated by the clarity bundle validator and
@@ -94,17 +110,6 @@ Every `source_fact_lock` predicate must appear semantically unchanged on that
 row's surface. It can be shorter only when every actor, action, target,
 condition, qualifier, concrete impact, evidence identifier, and path remains.
 
-8. Map every semantic predicate in the complete `rendered_body` back to a
-   source predicate, regardless of grammar. This includes requested work,
-   author-facing questions, permissions, exceptions, no-change boundaries,
-   accepted behavior, optional follow-ups, evidence, and code-sketch behavior.
-   The required label and Markdown structure are not semantic predicates.
-9. Reject every unmatched rendered predicate. Record unmatched author work in
-   `false_actions` and every other source-free predicate in
-   `invented_predicates`. Keep `fact_losses` for source predicates that the
-   draft omits or changes. Preserve each matched action target, condition,
-   scope, quantifier, order, modality, exact test boundary, path, and
-   identifier.
 
 Before returning a verdict, build source-to-rendered and rendered-to-source
 predicate ledgers for each item. Quote and classify every predicate in each
@@ -184,17 +189,26 @@ COMMENT.
 ## Repair and fail-safe
 
 The renderer repairs only surfaces with a valid failed verdict.
-Apply each audit instruction without changing source-backed title, diagnosis,
-evidence, severity, complete ID, anchor, suggestion, or already passing
-requested-work predicates. Remove any source-free predicate named by
+Apply each audit instruction without changing the surface-specific fact lock,
+evidence, severity, complete ID, anchor, suggestion, disposition, or already
+passing requested-work predicates. Remove source-free predicates named by
 `false_actions` or `invented_predicates`.
 
-For an inline repair, reapply the inline-comment form: use one concise `Please`
-sentence for exactly one author obligation, or `**What to change**` with one
-bullet per obligation for two or more. Never use a one-item action list. For a
-report repair, keep the complete finding in one bullet with its impact and
-requested change together. Audit the repaired rows once more with two new clean
-auditors under the same validation and union rules.
+For an inline repair, restore the two-paragraph human form: problem/result,
+then requested work. Prefer the renderer's direct-by-default voice, keep
+optional work optional, and use a question only for a source-level unresolved
+choice. Voice is generation guidance, not an audit verdict. Pass or fail only
+on source facts, required work, optionality, permissions, and no-change
+boundaries.
+
+Use bullets only for three or more independent obligations. For a `summary`
+report repair, keep one short diagnosis sentence and do not add inline requested
+work. For a `required` report row without an emitted inline comment, keep the
+problem, result, and request self-contained. A `boundary` repair keeps the issue
+and disposition reason without creating author work.
+
+Audit repaired rows once more with two new clean auditors under the same
+validation and union rules.
 
 If either second-audit verdict fails or is unverifiable, restore the exact
 source requested-work prose for that surface and force the review event to

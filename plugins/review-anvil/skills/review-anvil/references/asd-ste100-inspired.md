@@ -38,10 +38,13 @@ after the action if one sentence would be dense. Preserve other accepted
 current behavior and standalone optional follow-ups as standalone modal prose.
 Treat a required source-backed test or document change as author work unless
 it is explicitly optional.
-Use `Please` plus an action verb for one obligation. For two or more
-independently implementable obligations, use `**What to change**` and one
-direct-action bullet per obligation. Preserve suggestion grammar for low and
-nit guidance.
+Default to starting required work with its action verb. Keep one or two
+cohesive obligations in one short prose paragraph. For three or more
+independently implementable obligations, use one direct-action bullet per
+obligation. A deliberate collaborative request may use a courtesy wrapper
+sparingly when coordination or tone benefits. Never use one as a stock opener
+throughout a review. Use question grammar only for a genuinely unresolved
+choice. Preserve suggestion grammar for low and nit guidance.
 Prefer a direct verb with a concrete target, condition, or destination.
 Do not give a context-free command.
 

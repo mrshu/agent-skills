@@ -117,7 +117,7 @@ Capture the target's state at round start so all reviewers see the same input:
 - Non-PR targets (branch, uncommitted, path): materialize the diff with the appropriate `git diff …`.
 - PR targets (always `commit_mode=none`): fetch the PR's diff via `gh pr diff <N> -R <owner>/<repo>` (or equivalent MCP/REST). The local worktree is irrelevant — reviewers see the PR as it exists on GitHub.
 - Whenever PR context is available — a PR-locator target, or a preset that supplies it (`review-anvil-improve-pr` does, after `verify-checkout`) — fetch the PR title/body/base branch/file list too, then infer the PR's intended scope in one sentence (e.g. "performance optimization in annotation seeding", "left-sidebar UX reorganization"). Put that scope in every reviewer prompt. A finding is actionable only if the PR introduces/regresses it or if it directly undermines the PR's stated purpose. Obvious, high-confidence pre-existing defects may be mentioned, but only under a separate "Out-of-scope follow-ups" section — never as blockers or inline actionable review comments for the current PR.
-- Likewise gather the complete **PR review history** before dispatch: when a preset supplied the ledger (improve-pr captures it at verify-checkout time), use that; for PR-locator targets fetch it via `pr-helper.sh history <host> <owner> <repo> <n>` (ships with `review-anvil-pr`; threads, review bodies, and fallback comments are paginated and retried once). Include the status-tagged ledger in every reviewer prompt (PR REVIEW HISTORY block): `open` threads, `resolved` threads, `outdated` anchors, summary-only `reported` findings, prior `deferred`/`review-dismissed` items, and explicit local `suppressed` findings. Pending reviews are not shown to the author and are excluded. Before dispatch, semantically coalesce entries with the same root cause (summary wording often differs from its inline comment), retaining every source URL and state; explicit suppression wins, otherwise preserve all observed states. If lookup fails after retry, abort rather than review without prior feedback — unless the user opted into degraded mode (`REVIEW_ANVIL_SKIP_DISMISSED=1`), which also forces the review decision to COMMENT.
+- Likewise gather the complete **PR review history** before dispatch: when a preset supplied the ledger (improve-pr captures it at verify-checkout time), use that; for PR-locator targets fetch it via `pr-helper.sh history <host> <owner> <repo> <n>` (ships with `review-anvil-pr`; threads, review bodies, and fallback comments are paginated and retried once). Include the status-tagged ledger in every reviewer prompt (PR REVIEW HISTORY block): `open` threads, `resolved` threads, `outdated` anchors, summary-only `reported` findings, prior `deferred`/`outside`/`review-dismissed` items, and explicit local `suppressed` findings. Pending reviews are not shown to the author and are excluded. Before dispatch, semantically coalesce entries with the same root cause (summary wording changes do not create a second item) while retaining every source URL and strongest status. If history lookup fails after one retry, do not dispatch or post/approve a review that could ignore or duplicate prior feedback; for the read-only preset, `REVIEW_ANVIL_SKIP_DISMISSED=1` is the explicit degraded escape hatch and mechanically forces COMMENT.
 - Note `git rev-parse HEAD` so the round summary can reference the exact baseline (informational-only for PR targets).
 
 ### 2. Dispatch reviewers in parallel
@@ -492,11 +492,11 @@ rule; do not keep extending without a larger explicit cap.
 Run one clean final clarity pass after the report facts are frozen and before
 emitting any final artifact. First retain a complete pre-clarity report and
 inline-body set for safe fallback. Then build `FROZEN_CLARITY_PACKET` from only
-the final decision, result, scope, checks, complete report ID inventory,
-resolved inline severity threshold, metadata and disposition inventory,
-earlier-feedback dispositions, canonical findings, exact fact locks, exact
-requested-work predicates, verified anchors, safe exact suggestions,
-helper-only `prior_feedback`, set-aside/out-of-scope items, and run details.
+the `human-summary` report style, final decision, result, scope, checks,
+complete report ID inventory, resolved inline severity threshold, metadata and
+structured disposition inventory, earlier-feedback dispositions, canonical
+findings, exact fact locks, exact requested-work predicates, verified anchors,
+safe exact suggestions, helper-only `prior_feedback`, and run details.
 Do not include raw reviewer prose, refuted candidates, superseded plans, or
 repository context.
 
@@ -520,25 +520,33 @@ timeout, malformed JSON, or validation failure, fall back to the pre-clarity
 report and inline bodies, force the review event to COMMENT, and record the
 reason in Run details.
 
-Each `report_items[].rendered_body` ends on the same line with
-`<!-- review-anvil-report: severity=<severity> area=<area> -->`. The visible
-finding ID appears once before it; the hidden report marker carries no ID.
-
-Each anchored item also carries the exact report code location from the frozen
-packet as `` `<path>:<line>` `` or `` `<path>:<start>-<line>` `` immediately
-after its natural title.
+Each active or disposition report line ends with:
+`<!-- review-anvil-report: id=<complete-id> severity=<severity> area=<area> path=<encoded-path> start_line=<number-or-dash> line=<number-or-dash> disposition=<active|deferred|outside> -->`.
+The renderer uses dashes for missing IDs and locations. No machine metadata or
+code location remains visible in the report.
 
 For a valid bundle, freeze the exact requested-work prose, source fact locks,
 the minimum source context needed to resolve antecedents and
-current-versus-target behavior, and the exact evidence and code fragments used
-by either surface. Run two
-independent post-render action-lock auditors from
-`references/action-lock-audit.md` in one parallel wave. Give each clean
-verifier only that frozen source material, every byte-exact
-`report_items[].rendered_body`, and each exact complete rendered inline body.
-Audit them as the `report` and `inline` surfaces of the same canonical ID.
-For audit rows, derive `request_mode` from severity: low/nit report rows are
-`suggested`; all other rendered surfaces are `required`.
+current-versus-target behavior, and the exact evidence used by either surface.
+Run two independent post-render action-lock auditors from
+`references/action-lock-audit.md` in one parallel wave. Audit every byte-exact
+`report_items[].rendered_body`, `disposition_items[].rendered_body`, and
+complete inline body.
+
+Fact locks are surface-specific:
+
+- An active finding whose ID is present in the emitted inline inventory gives
+  the report row only its short summary fact lock and no requested-work
+  predicates. The inline row keeps the complete diagnostic and requested work.
+- A material finding without an emitted inline comment gives the report row
+  its complete diagnostic and requested work, even when it has a verified
+  anchor below the configured inline threshold.
+- Low/nit report rows and disposition rows use suggestion/boundary mode.
+- Inline anchors remain structural validator fields, not prose fact locks.
+
+For each audit row, derive `request_mode` from surface eligibility and
+disposition: `required`, `suggested`, `summary`, or `boundary`.
+
 Validate each auditor's complete per-ID output and combine valid failures from
 either auditor. Repair only surfaces with valid failed verdicts, validate the
 entire repaired bundle again, and run two new clean auditors once. Any
@@ -552,9 +560,9 @@ round artifacts.
 
 Use the validated bundle only as an intermediate artifact. Write only the
 validated `report_markdown` string to `report_path`, and write only validated
-`inline_comments` payloads to `.inline.json`. Never post `report_items` or
-`predicate_inventory`; they exist only for byte-identity and action-lock
-validation.
+`inline_comments` payloads to `.inline.json`. Never post `report_items`,
+`disposition_items`, or `predicate_inventory`; they exist only for
+byte-identity and action-lock validation.
 
 After the final round, emit the **Final Report** (Output Format). If `report_path` is set:
 
@@ -563,27 +571,30 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 
    ```json
    [
-     {"path": "src/auth.ts", "line": 50, "side": "RIGHT", "severity": "high", "body": "**Refresh creates a session before CSRF validation**\n\nThe handler rotates the session before it checks the state token. A stale tab can create a new session with an invalid token.\n\n**What to change**\n\n- Check the state token before rotating the session.\n- Reject invalid tokens without creating sessions.\n- Add a missing-state-token test.\n\n<!-- review-anvil: id=RAV-RUN3-R2-F001 severity=high area=auth -->"},
-     {"path": "src/db.ts", "start_line": 100, "line": 110, "side": "RIGHT", "start_side": "RIGHT", "severity": "medium", "body": "**Retry accounting records success before the write succeeds**\n\nThe retry block increments `attempts_succeeded` before `insert_event` returns. A timeout records success even when no row was written.\n\n**What to change**\n\n- Increment `attempts_succeeded` only after `insert_event` returns.\n- Keep timed-out attempts eligible for retry.\n- Add a timeout test.\n\n<!-- review-anvil: id=RAV-RUN3-R2-F002 severity=medium area=db -->", "suggestion": "result = insert_event(payload)\nattempts_succeeded += 1\nreturn result"}
+     {"path": "src/auth.ts", "line": 50, "side": "RIGHT", "severity": "high", "body": "The handler creates a session before it checks the state token, so an invalid token can still create a session.\n\nCheck the token first, reject invalid tokens without creating a session, and add the missing-token test.\n\n<!-- review-anvil: id=RAV-RUN3-R2-F001 severity=high area=auth -->"},
+     {"path": "src/db.ts", "start_line": 100, "line": 110, "side": "RIGHT", "start_side": "RIGHT", "severity": "medium", "body": "The retry block counts the attempt as successful before `insert_event` returns, so a timeout can record a write that never happened.\n\nIncrement `attempts_succeeded` only after the write returns, keep timed-out attempts retryable, and add the timeout test.\n\n<!-- review-anvil: id=RAV-RUN3-R2-F002 severity=medium area=db -->", "suggestion": "result = insert_event(payload)\nattempts_succeeded += 1\nreturn result"}
    ]
    ```
 
-   Single line → `{"line": N, "side": "RIGHT"}`; range `<N>-<M>` → `{"start_line": N, "line": M, "side": "RIGHT", "start_side": "RIGHT"}`. Findings without anchors stay in the markdown body only; no anchored findings → `[]`. Start each identified inline body with the natural bold title `**<finding>**`. End it with exactly one `<!-- review-anvil: id=<complete-id> severity=<severity> area=<area> -->` marker on its own final line. The marker area is the same machine-safe area token used by the report row: letters, digits, `.`, `_`, `/`, or single `-` separators. No visible ID, severity tag, or area label belongs in the title. A reader must be able to create the fix from each visible `body` alone.
+   Single line → `{"line": N, "side": "RIGHT"}`; range `<N>-<M>` → `{"start_line": N, "line": M, "side": "RIGHT", "start_side": "RIGHT"}`. Findings not emitted inline stay in the markdown report only; no eligible anchored findings → `[]`. Each visible body uses a short problem/result paragraph followed by an action paragraph when work is required. Default to starting required work with its action verb. A deliberate collaborative request may use a courtesy wrapper sparingly when coordination or tone benefits. Never use one as a stock opener throughout the review. End a direct imperative as a statement rather than a question. Keep optional low/nit work as `Consider …`; ask a real question only for a source-level unresolved choice. End the body with exactly one `<!-- review-anvil: id=<complete-id> severity=<severity> area=<area> -->` marker on its own final line. Do not show ID, severity, area, or a synthetic title in visible prose.
 
-   Include helper-only `"severity"` for every inline item. The posting helper strips it before calling GitHub and uses it to keep low/nit findings summary-only by default. Include helper-only `"suggestion"` only when the fix is an exact replacement for the commented line/range; the helper turns it into a GitHub suggestion fenced block, inserts that block before the final finding-metadata marker, and strips the extra key before posting. Preserve an exact source suggestion only when it satisfies every safety exclusion in the next sentence and still matches the verified anchor and replacement. Do not include suggestions for design fixes, cross-file edits, deleted lines, anything that requires judgment, or any suggestion whose anchor/replacement/blast-radius was disputed by adversarial review.
+   Include helper-only `"severity"` for every inline item. The posting helper strips it before calling GitHub and filters low/nit items out of inline comments by default; their complete suggestion stays in the report. Include helper-only `"suggestion"` only when the fix is an exact replacement for the commented line/range; the helper turns it into a GitHub suggestion fenced block, inserts that block before the final finding-metadata marker, and strips the extra key before posting. Preserve an exact source suggestion only when it satisfies every safety exclusion in the next sentence and still matches the verified anchor and replacement. Do not include suggestions for design fixes, cross-file edits, deleted lines, anything that requires judgment, or any suggestion whose anchor/replacement/blast-radius was not independently verified after the final rewrite.
 
    The helper-only `"severity"` must match the terminal marker severity exactly; the helper aborts before filtering or posting when they disagree.
    A present but unrecognized helper severity also aborts; an absent helper field may use the terminal marker during migration.
 
    For an explicitly reintroduced `author-resolved` finding, place `<!-- review-anvil: prior_feedback=reintroduced -->` immediately after its visible final-report finding row or bullet. Its matching inline item must carry helper-only `"prior_feedback": "reintroduced"`; the posting helper uses it before author-resolved suppression, strips the JSON field before the GitHub REST request, and inserts the hidden prior-feedback marker before the final finding-metadata marker so later history retains the disposition.
 
-   Each eligible new `body` puts the same complete finding ID as its report row, reproduction target, and adversarial target inside the final finding-metadata marker, then follows the **inline-comment voice** in `references/report-artifacts.md` — read it before composing bodies. Keep it short and plain: say what the code does, what happens because of it, and every source-backed requested obligation. Treat remediation as a request, not as code already present. Group work by cohesive implementation obligation, not by grammar; do not split values governed by one rule. Only work the author must perform belongs under `**What to change**`. Keep each permission, exception, carve-out, or already-correct behavior with the action it limits or in short modal prose immediately after that action. Keep exact source scope wording. Treat a required source-backed test as author work. For one `critical`/`high`/`medium` obligation, use one concise `Please` sentence. For two or more independently implementable obligations, use `**What to change**` and one direct-action bullet per obligation. A reader must be able to act without reopening the diff. Include a safe exact `"suggestion"` or a short code sketch only when it removes doubt. The finding-metadata marker is the last nonblank line: no prose, suggestion fence, or prior-feedback marker may follow it. By default, inline comments are for `critical`/`high`/`medium` anchored findings; `low`/`nit` findings remain in the top-level summary unless the user or environment lowers `REVIEW_ANVIL_INLINE_MIN_SEVERITY`. Ordinary prior-feedback carry-forwards do not produce new inline payloads.
+   Each eligible new `body` puts the same complete finding ID as its report marker, reproduction target, and adversarial target inside the final inline metadata marker, then follows the **inline-comment voice** in `references/report-artifacts.md`. Keep it short and plain: say what goes wrong, what happens, and the smallest source-backed request. Group work by cohesive implementation obligation, not by grammar; do not split values governed by one rule.
 
    Classify every source predicate before rendering it. Target behavior and required verification or documentation are author work. Accepted current behavior, allowed implementation boundaries, and explicitly optional follow-ups are no-change boundaries. Source intent outranks modal grammar: `can`, `could`, and `would` do not make target behavior optional.
+   Treat source-backed verification or documentation stated to cover, demonstrate, clarify, or make a required boundary clear as author work unless it is explicitly optional.
 
    Apply the omission counterfactual only after that classification. Split every source sentence that mixes author work with a no-change boundary into predicates for classification; do not keep an unsplit fallback. If leaving the current code without a target behavior, test, or document change leaves the defect, safety boundary, or reviewer-required verification unresolved, treat that predicate as author work.
 
-   A no-change boundary is not a separate obligation. When accepted current behavior directly constrains a requested change, keep it in the same sentence using `without changing …` or `while keeping … unchanged`; do not create a separate action bullet for it. If that sentence would be dense, use short modal prose immediately after the action. Preserve other accepted current behavior or an explicitly optional follow-up as standalone modal prose. Request the smallest new mechanism needed to resolve the failure, but keep each required purpose, result, or safety clause with the action it constrains. Treat source-backed verification or documentation stated to cover, demonstrate, clarify, or make a required boundary clear as author work unless it is explicitly optional. Do not convert acceptable unchanged behavior, an allowed implementation boundary, or an explicitly optional follow-up into mandatory work.
+   A no-change boundary is not a separate obligation. When accepted current behavior directly constrains a requested change, keep it in the same request sentence using `without changing …` or `while keeping … unchanged`. If that would be dense, use one short boundary sentence after the request. Preserve other accepted current behavior or explicitly optional follow-ups as natural modal prose.
+   Keep each required purpose, result, or safety clause with the action it
+   constrains.
 
    The final clarity pass above owns fact freezing, bundle validation, and both
    action-lock audit waves. Write only its byte-identical audited inline bodies
@@ -648,87 +659,78 @@ During execution: print `Round 2/3: dispatching 2 codex-exec + 1 claude-exec on 
 
 After the last round, emit a fresh top-level report (a new document, not a replacement for the per-round blocks).
 
-The final report is an external-facing decision summary, not a transcript.
-Keep the decision, result, and actionable critical/high/medium findings visible.
-Show every active finding exactly once with its impact and requested change
-together. Collapse run metadata, earlier resolved/stale feedback, low/nit
-items, and set-aside/out-of-scope items. Put scope in Run details unless the
-reader needs it to understand the decision. Do not paste raw reviewer output,
-full round transcripts, repeated metadata, or a second action-plan rendering
-of the same findings.
+`author-resolved` history does not affect the review decision or approval.
+
+The final report is an external-facing human summary, not a transcript or a
+second copy of inline comments. The final report has no Markdown heading. Keep
+one natural visible summary sentence that names the most important concrete
+result or risk. Do not show a decision label, finding count, or review mechanic
+in that sentence.
+
+All active report rows stay collapsed. Anchor-backed requested work stays
+inline. A material finding without an emitted inline comment stays
+self-contained inside `Issues and fixes`. Collapse optional suggestions,
+earlier feedback, changes made, dispositions, review context, and the
+review-anvil footer.
 
 ```
-# Review result
-
-**Review decision:** APPROVE | COMMENT — <one-sentence reason>   # review-only PR runs
-<One short result sentence.>
-
-## Needs attention
-<Use `## Findings` when APPROVE leaves only non-blocking items. Show each
-critical/high/medium finding once. Keep its trigger or mechanism, concrete
-impact, requested behavior, and required verification in the same focused
-bullet. Put the stable finding ID once at the end. Do not create a separate
-action-plan section. If none: "No confirmed problems found.">
-
-- **Refresh creates a session before CSRF validation** `src/auth.ts:42` — The handler rotates the session before it checks the state token, so an invalid token can create a session. Check the token first, reject invalid tokens without creating sessions, and add the missing-token test. (`RAV-RUN3-R2-F001`) <!-- review-anvil-report: severity=high area=auth -->
+The refresh path can create a session from invalid state, and timed-out writes can still be counted as successful.
 
 <details>
-<summary>Non-blocking findings (N)</summary>
+<summary>Issues and fixes</summary>
 
-<Low/nit findings use the same one-finding/one-action shape. Omit when empty.>
+- The refresh handler creates a session before it validates the token. <!-- review-anvil-report: id=RAV-RUN3-R2-F001 severity=high area=auth path=src/auth.ts start_line=- line=42 disposition=active -->
+- Timed-out writes are counted as successful. <!-- review-anvil-report: id=RAV-RUN3-R2-F002 severity=medium area=db path=src/db.ts start_line=100 line=110 disposition=active -->
+- Non-finite scores can block the whole batch. Validate accuracy and uncertainty before serialization. <!-- review-anvil-report: id=RAV-RUN3-R2-F005 severity=medium area=serialization path=- start_line=- line=- disposition=active -->
 
 </details>
 
 <details>
-<summary>Earlier review comments (N)</summary>
+<summary>Optional suggestions</summary>
 
-<For PR-context runs, list each earlier comment once as open, still present
-after being marked resolved, fixed, no longer relevant, or intentionally
-skipped. `author-resolved` items keep only the original URL and a short status
-reason. `author-resolved` history does not affect the review decision or approval.
-Omit when no earlier comments exist.>
+- The CLI help could use the same option name. <!-- review-anvil-report: id=RAV-RUN3-R2-F003 severity=low area=docs path=docs/cli.md start_line=- line=7 disposition=active -->
 
 </details>
 
 <details>
-<summary>Changes made (N commits)</summary>
+<summary>Earlier feedback</summary>
 
-<For per_fix only, list focused commit subjects. Do not repeat finding
-diagnoses or requested actions. Omit when no fixes were made.>
+- **<status>** — <exact text> <exact URL> (`<finding ID>`)
+
+</details>
+
+<details>
+<summary>Changes made</summary>
+
+<For per_fix only, list focused commit subjects. Omit when empty.>
 
 - `<sha>` — <subject>
 
 </details>
 
 <details>
-<summary>Set aside / Outside this change (N)</summary>
+<summary>Set aside</summary>
 
-<Include each deferred or out-of-scope item once with its stable ID when it has
-one and the plain-language reason it is not active. Omit when empty.>
+- I set this aside because the failing path still needs a reproducible case. <!-- review-anvil-report: id=RAV-RUN3-R2-F004 severity=medium area=runtime path=- start_line=- line=- disposition=deferred -->
 
 </details>
 
 <details>
-<summary>Run details</summary>
+<summary>Review context</summary>
 
+- Decision reason: <exact frozen decision reason>
+- Result: <exact frozen result>
 - Scope: <reviewed change>
 - Target: <e.g. "PR #42 (feature/auth-rewrite, 12 files, +340/-89)">
 - Run ordinal: <positive observed PR run ordinal | unavailable (local/degraded)>
-- Rounds: <completed> completed (<requested> requested + <adaptive> adaptive, max <max_rounds>); <convergence/adaptive stop note>   # productive adaptive-capable runs
-- Rounds: <completed>/<requested> completed; adaptive off; <convergence note>   # review-only/exact/no-extra runs
-- Mix: <e.g. "2 codex-exec + 1 claude-exec">
-- Focus: <focus list actually used>
-- Earlier review comments: none | <total> comments; <open>/<still-present>/<fixed>/<not-relevant>/<author-resolved-skipped>/<skipped>
-- Finding counts: <C critical, H high, M medium, L low, N nit; other notes S>
-- Verification: <verify_cmd used, or "none detected" / "skipped">   # per_fix only
-- Checks: off | skipped | concerns=<C>; confirmed=<confirmed>/ruled-out=<refuted>/set-aside=<deferred>/lowered=<downgraded>; elapsed=<duration>
-- Second check: off | <mode>; reviewers=<A>; kept=<kept>/clarified=<clarified>/set-aside=<deferred>/removed=<removed>; approval changed yes/no
-- Next time: <one line; see rule below>   # omit in review-only
+- Rounds: <completed>/<requested>; <convergence note>
+- Reviewers: <mix>
+- Checks: <exact frozen check result>
+- Second check: <exact frozen adversarial result>
+
+_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._
 
 </details>
-
----
-_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._
 ```
 
 `Findings addressed` = post-dedup count of unique findings auto-applied across all rounds.

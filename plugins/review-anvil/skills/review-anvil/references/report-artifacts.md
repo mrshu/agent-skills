@@ -22,21 +22,25 @@ a blocker only in collapsed or linked detail.
 ## Final clarity pass
 
 After synthesis freezes the decision, dispositions, facts, requested work,
-anchors, and safe suggestions, render both external surfaces through
-`clarity-pass-prompt.md`. Show each active finding once, with its impact and
-requested change together. Do not repeat findings in a separate action-plan
-section.
+anchors, and safe suggestions, render both external surfaces through the final
+clarity pass.
+The top-level report is a short human summary: one natural visible sentence
+followed by collapsed sections. Every report-item row stays inside `Issues and
+fixes` or `Optional suggestions`. Findings with emitted inline comments keep
+their full facts and requested work inline. Material findings without an
+emitted inline comment remain self-contained in the collapsed report.
 
-The pass is copy editing, not another review. It cannot change the finding
-inventory, decision, priority, disposition, technical relationships, requested
-work, anchors, or suggestions. Validate its complete JSON bundle with
-`scripts/validate-clarity-output.py` before action-lock auditing or artifact
-emission.
+The pass rewrites the language as well as the layout. Prefer short ordinary
+sentences and concrete outcomes over internal mechanics. It cannot change the
+finding inventory, decision, priority, disposition, technical relationships,
+requested work, anchors, or suggestions. Validate its complete JSON bundle with
+`scripts/validate-clarity-output.py` before action-lock auditing or emission.
 
-Each top-level finding line ends with
-`<!-- review-anvil-report: severity=<severity> area=<area> -->`. The marker is
-hidden presentation metadata for history parsing. Its visible finding ID
-appears once before the marker; the marker does not repeat the ID.
+Each top-level finding or disposition line ends with:
+`<!-- review-anvil-report: id=<complete-id> severity=<severity> area=<area> path=<encoded-path> start_line=<number-or-dash> line=<number-or-dash> disposition=<active|deferred|outside> -->`.
+The marker hides machine metadata from the rendered report.
+The hidden report marker, inline marker, reproduction target, and adversarial
+target use the same complete finding ID unchanged.
 
 ## ASD-STE100-Inspired Language
 
@@ -50,23 +54,31 @@ in `action-lock-audit.md`; every rewritten draft body must pass that gate before
 it enters `.inline.json`. The exact-source fallback is exempt and
 forces COMMENT.
 
-Write each inline comment in plain language about the code at that line. Use
-comments for `critical`, `high`, and `medium` problems; put `low` and `nit`
-items in the summary.
+Write each inline comment in plain language about the code at that line. Emit
+comments at or above the configured inline threshold; lower-priority findings
+remain in the summary.
 
-Start each identified inline finding with its natural bold title,
-`**<finding>**`. The title states the failure, not its metadata category. Do not
-show the finding ID, severity, or area in the rendered title.
-End each body with exactly one
+Do not add a synthetic title or visible metadata. Use two short human paragraphs
+when requested work exists:
+
+1. State what goes wrong and the concrete result.
+2. Start the smallest required change with its action verb.
+
+Default to starting required work with its action verb. A deliberate
+collaborative request may use a courtesy wrapper sparingly when coordination or
+tone benefits. Never use `Could you`, `Can you`, `Would you`, `Will you`, or
+`Please` as a stock opener throughout the review. End a direct imperative as a
+statement, not a question. Optional low/nit work starts with `Consider …`. Ask
+a real question only when the source leaves a decision unresolved. Do not
+mechanically rotate equivalent request openers.
+
+Use a short list only for three or more independent obligations. End each body
+with exactly one
 `<!-- review-anvil: id=<complete-id> severity=<severity> area=<area> -->`.
-Use the report row's machine-safe area token: letters, digits, `.`, `_`, `/`,
-or single `-` separators. The report row, hidden inline marker, reproduction
-target, and adversarial target use the same complete finding ID unchanged.
-The finding-metadata marker remains the final line. Put a safe suggestion fence
-and the `prior_feedback=reintroduced` marker before it. Do not put prose after
-it. The marker hides presentation metadata from rendered GitHub Markdown; it is
-still raw comment data and must not contain secrets.
-ID reuse produces an inline body only when the finding is otherwise eligible; ordinary prior-feedback carry-forwards do not create a new inline thread.
+The marker remains the final line. Put a safe suggestion fence and the
+`prior_feedback=reintroduced` marker before it. Do not put prose after it.
+ID reuse produces an inline body only when the finding is otherwise eligible;
+ordinary prior-feedback carry-forwards do not create a new inline thread.
 
 Before rewriting, make a private fact lock from the final synthesized finding.
 Record only:
@@ -142,190 +154,99 @@ the failure, request that mechanism and keep only its permitted behavior as moda
 Do not split a list of values governed by one rule into repeated actions.
 Two verbs that establish one invariant on the same record or output remain one obligation.
 
-A no-change boundary is not a separate obligation. Keep it out of
-`**What to change**` as a separate bullet. When accepted current behavior
-directly constrains a requested change, keep it in the same sentence using
-`without changing …` or `while keeping … unchanged`. If that sentence would
-be dense, use short modal prose immediately after the action. Preserve other
-accepted current behavior as standalone modal prose. Preserve a standalone
-optional follow-up as standalone modal prose after the required request, or
-after the consequence when no request exists.
+A no-change boundary is not a separate obligation. Keep it in the request
+sentence with `without changing …` or `while keeping … unchanged`. If that is
+too dense, state the accepted behavior in one short sentence after the request.
+Keep optional follow-ups as optional prose.
 
-For example: `Files containing only intentionally skipped derived rows can remain explicit exclusions; no change is requested for them.`
-For a coupled boundary: `Reject directory-target symlinks without changing file-symlink behavior.`
+For example: `Reject directory symlinks while keeping file symlinks
+unchanged.`
 
-Make a distinct path separate only when the source requires the author to
-change that path independently. A required source-backed test is author work
-and is separate when it has its own exact boundary.
-Reuse exact source wording for scope and collection phrases; do not replace
-them with inferred member names.
+Make a distinct path separate only when the source requires another independent
+change. A required source-backed test remains author work when it has its own
+boundary. Reuse exact source wording for scope and collection phrases.
 
 Before writing, map every source predicate to author work or a no-change
-boundary. Do not emit until every author-work predicate appears as an explicit
-request.
-For each source-backed obligation in a critical, high, or medium finding, make
-its requested status explicit. For exactly one obligation, write one short
-request sentence beginning with `Please` and a direct action verb.
-For two or more independently implementable obligations, use this form:
+boundary. Every author-work predicate must remain an explicit request. Combine
+actions that implement one invariant; do not split values governed by one rule.
 
-```md
-**What to change**
+Use one short direct-action paragraph for one or two obligations. Start with
+the action verb. Use a real question such as `Should …?` only when the source
+leaves a choice unresolved. Use a short bullet list only for three or more
+independently implementable obligations.
 
-- <Direct verb, target, and necessary condition or destination.>
-- <Direct verb, target, and a distinct implementation or exact test boundary.>
-```
-
-Order required behavior changes before required tests. Keep no-change
-constraints with the action they limit or in the modal prose immediately after
-it.
-Do not repeat `Please` in the bullets; the heading identifies required changes.
-Avoid repeating a long shared phrase across bullets.
-Keep suggestion grammar for low and nit guidance.
-Never write `the fix`, `in the fix`, or `the corrected path` unless the source
-explicitly discusses an existing patch under review.
-Apply the actor-action-target check to requested-change sentences as well as titles.
-If a requested change shifts the target, restore the source plan sentence verbatim.
-If no source-backed requested change exists, stop after the consequence.
-Do not invent why a requested test exists.
-Delete a source clause only when another retained clause states the same fact.
-If an exact phrase is hard to place, keep the whole source sentence.
+Order required behavior before required tests. Keep suggestion grammar for low
+and nit guidance. Never write `the fix`, `in the fix`, or `the corrected path`
+unless the source discusses an existing patch. If no source-backed request
+exists, stop after the consequence. Do not invent why a test exists.
 
 Write the visible body in this order:
 
-1. **Problem:** Name the code behavior and trigger.
-2. **Impact:** State the concrete bad result.
-3. **Requested change:** State the exact action or decision. Include a test only
-   when the source requests it; do not invent what the test proves.
-The first visible sentence adds a trigger, mechanism, result, or fix boundary that the title does not already state. If the title fully states the problem and consequence, begin with the next new fact or the request.
+1. One or two short sentences stating the failure and concrete result.
+2. One short direct-action paragraph when author work exists.
+3. Optional accepted behavior only when it constrains the request.
 
 After the visible body, append the exact finding-metadata marker as the final
 nonblank line.
 
-Each sentence explains one relationship between code concepts. Name the
-function, field, command, or request that acts. Tie each necessary identifier
-to its role in the failure. Use a pronoun only when its antecedent is the
-immediately preceding subject and cannot be confused with another identifier.
-Use one minimal example only when it makes a path, count, or state change easier
-to see. Do not show the Problem, Impact, or Requested change labels in the final
-comment.
+Use one idea per sentence. Name a function, field, or command only when the
+reader needs it to understand or make the change. Prefer the concrete result
+over a chain of internal calls. Use one minimal example only when it prevents
+the reader from having to simulate a path, count, or state change.
 
 Before emitting the body, run this author check:
 
-- The title and first sentence answer: what breaks, and when?
-- Replace an abstract label with the code actor and a direct verb.
-- The title names the actor that produces the concrete bad result.
-- Do not attribute an aggregate run's result to one file or record inside it.
-- Rewrite the title only when every fact-lock item in it still matches.
-- Preserve title qualifiers and ownership, including diagnostic modals and scope words.
-- If the title changes the actor, action, target, condition, scope, or certainty,
-  restore the synthesized finding sentence verbatim.
-- When a path, count, or state change is hard to picture, give one minimal example instead of making the reader simulate it.
-- Remove a test sentence only when the source does not request it. Keep every source-backed required verification with its exact boundary.
-- Remove any sentence that repeats the title without adding a trigger, result,
-  constraint, or fix boundary.
+- The first sentence says what breaks and when.
+- The concrete bad result appears before internal implementation detail.
+- Every required action and verification boundary appears in the request.
+- Accepted behavior remains a boundary, not a separate action.
+- No sentence repeats a fact without adding a condition, result, or boundary.
+- A reader does not need to simulate a path or helper chain.
 
-For an explicitly reintroduced author-resolved finding, put `<!-- review-anvil: prior_feedback=reintroduced -->` immediately after the visible final-report finding row or bullet. Its matching inline item carries helper-only `"prior_feedback": "reintroduced"`; the posting helper strips that JSON field before the GitHub REST request and inserts the hidden prior-feedback marker before the final finding-metadata marker in the posted inline body.
+For an explicitly reintroduced author-resolved finding, put
+`<!-- review-anvil: prior_feedback=reintroduced -->` before the final inline
+metadata marker. Its inline item carries helper-only
+`"prior_feedback": "reintroduced"`.
+
 Use short everyday words. Prefer one clear sentence over a dense explanation.
 
 ```md
-**The module entry point builds the old argument namespace**
+This entry point still builds the old argument namespace, so the handler reads
+missing fields and fails before conversion.
 
-The changed handler reads missing fields and fails before conversion.
-
-**What to change**
-
-- Use the shared top-level parser in the module entry point.
-- Add one offline entry-point test.
+Switch it to the shared parser and add one offline test covering the defaults.
 
 <!-- review-anvil: id=RAV-RUN2-R1-F003 severity=medium area=cli -->
 ```
 
-When one code change has a no-change constraint, keep the constraint in prose:
+When one change has an accepted boundary, keep it in natural prose:
 
 ```md
-**Invalid populated cells become absent values**
+Invalid populated cells currently disappear, and invalid denominators fall
+back to 805.
 
-The fallback also accepts invalid or zero denominators.
-
-Please use separate rules for uncertainty, counts, and positive denominators to keep bad rows in the failure report.
-Empty optional cells can remain allowed.
+Validate uncertainty, counts, and positive denominators separately while
+keeping empty optional cells allowed.
 
 <!-- review-anvil: id=RAV-RUN3-R1-F002 severity=medium area=input-validation -->
 ```
 
-Modal wording does not make requested verification optional:
-
-```md
-**What to change**
-
-- Reject every publisher base that is an immediate child of canonical `data`.
-- Add mismatched source and `collection_override` tests for this path.
-```
-
-The test remains author work because the reviewer presents it as verification,
-even if the source says it “would cover” the path.
-
-When modal grammar proposes new author work, keep each obligation explicit:
-
-```md
-**Existing output can block an empty sweep**
-
-The command checks existing output before it knows whether any models matched.
-
-**What to change**
-
-- Require one or more values for `--models`.
-- Add a no-match check.
-
-It can stop before existing-output discovery or publication.
-
-<!-- review-anvil: id=RAV-RUN3-R1-F003 severity=medium area=no-match-order -->
-```
-
-Apply the counterfactual to each predicate in a compound modal sentence:
-
-```md
-**What to change**
-
-- Validate numeric fields as finite values under their metric rules.
-- Enter invalid rows in `SourceConversionResult`.
-```
-
-The second action is required because validation still drops invalid rows
-without it. Preserve only a true no-change boundary:
-
-```md
-**What to change**
-
-- Use the batch publisher for new or empty targets.
-- Fail by default for symlinks, roots, and populated targets.
-
-Replacement can remain blocked until it has an explicit ownership manifest.
-```
-
-A mixed permission sentence must expose its required predicate:
-
-```md
-Please preserve valid metrics while using source metric specs or an operator-supplied definition to establish their semantics.
-After valid metrics are preserved, unresolved keys can be reported.
-```
-
 Keep only evidence that helps the author trust or fix the finding. Do not
-narrate the investigation, repeat the title, or list code terms without saying
-what they do here. Use a short code sketch or exact replacement only when it
-removes doubt.
+narrate the investigation or list code terms without saying what they do here.
+Use a short code sketch or exact replacement only when it removes doubt.
 
 Voice rules:
 
-- Address the code, never the author: "the handler swallows the error", not "you swallow the error". No "should have", no "Obviously / Clearly / Simply / Just".
-- Keep requested work calm and specific. Use one concise `Please` sentence for one critical/high/medium obligation and `**What to change**` bullets for two or more. Do not use context-free commands, rhetorical questions, review jargon, or filler.
-- Do not add a stock opener or rotate through canned alternatives. Let the problem determine the sentence.
-- Calm and specific beats emphatic. Severity determines where the comment appears; the prose needs no alarm words, bold warnings, exclamation marks, or rhetorical/scolding questions.
-- When the PR's approach is sound and that fact changes the fix, say so in one honest clause. Do not add a compliment sandwich.
-- Keep the comment as short as the finding allows. Add detail only when needed to explain the failure or safe outcome.
-- Use a suggestion only for a safe, exact replacement. The comment must still explain the problem. For cross-file or multi-step fixes, describe the behavior to change instead.
+- Address the code, never the author.
+- Keep requested work calm, direct, and conversational.
+- Do not use stock openers, review jargon, field labels, or compliment
+  sandwiches.
+- Severity determines placement; prose needs no alarm words or bold warnings.
+- Keep the comment as short as the finding allows.
+- Use a suggestion only for a safe, exact replacement; still explain the
+  problem.
 
-The same voice applies to the report body's Things to try, Set aside, and Outside this change prose.
+The same voice applies to visible top-level summaries and disposition prose.
 
 ## Checking uncertain findings
 
