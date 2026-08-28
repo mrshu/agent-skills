@@ -60,6 +60,16 @@ This is renderer guidance, not a runtime English-grammar gate. The deterministic
 validator intentionally does not parse prose style. Semantic auditors protect
 facts, requiredness, optionality, and boundaries; blind judges evaluate voice.
 
+## Reader-facing summary voice
+
+Visible summaries describe the changed code rather than the review process.
+Reviewer counts, rounds, candidates, confirmation mechanics, “survived review,”
+and internal disposition vocabulary stay in collapsed context or disappear.
+The renderer translates those outcomes into affected behavior, detected issue
+areas, optional suggestions, or unreproduced uncertainty. It has no fixed
+replacement phrase and no English phrase regex; semantic judges evaluate the
+result.
+
 ## Blind readability result
 
 Three clean judges evaluated 15 randomized pairs: 3 complete reviews and 12

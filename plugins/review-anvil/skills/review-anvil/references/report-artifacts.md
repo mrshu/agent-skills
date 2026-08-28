@@ -32,6 +32,11 @@ four-column row inside `Issues and fixes` or `Optional suggestions`:
 impact, and requested or suggested change; inline comments retain the same
 anchor-backed detail in GitHub's native UI.
 
+Do not narrate the review pipeline in the visible summary. Translate internal
+review outcomes into observations about the changed code. Do not require a fixed
+replacement phrase. Choose a natural statement about affected behavior,
+detected issue areas, optional suggestions, or unreproduced uncertainty.
+
 The pass rewrites the language as well as the layout. Prefer short ordinary
 sentences and concrete outcomes over internal mechanics. It cannot change the
 finding inventory, decision, priority, disposition, technical relationships,
@@ -257,42 +262,27 @@ The same voice applies to visible top-level summaries and disposition prose.
 
 ## Checking uncertain findings
 
-When a finding needs a second check, tell the reader only what was checked and
-what remains. Do not paste the investigation.
+When a finding needs another check, keep reviewer counts, rounds, and
+dispositions out of the visible summary. Describe only the code-facing outcome:
+the affected behavior when confirmed, or the remaining runtime concern and
+missing proof when uncertainty matters to the author.
 
-Use one line near the top of the report:
-
-```md
-**Checks:** 4 concerns checked; 2 confirmed, 1 lowered in priority, 1 set aside because it could not be confirmed.
-```
-
-Then use plain language in the normal sections:
-
-- Confirmed findings appear in `## Findings`.
-- Ruled-out findings disappear unless a short note helps explain the result.
-- Unclear findings move to `## Set aside / Outside this change` with what proof
-  is missing.
-- Lower-priority findings follow the normal priority rules.
+Put exact check results and disposition accounting in collapsed
+`Review context`. Confirmed findings appear in `Issues and fixes`; ruled-out
+findings disappear; uncertain or outside-scope findings remain context rather
+than active findings.
 
 ## Second check
 
-When a second review runs, show only its result. Do not paste reviewer
-disagreement or rejected-finding essays into the PR timeline.
+When a second review runs, show only the final code-facing result. Do not expose
+reviewer votes, rejected candidates, or kept/clarified/removed counts in the
+visible summary. Fold confirmed corrections into the issue tables, omit removed
+findings, and keep any useful explanation of changed or set-aside dispositions
+inside collapsed `Review context`.
 
-Use one line near the top of the report:
-
-```md
-**Second check:** 2 reviewers checked 7 findings; 5 kept, 1 clarified, 1 set aside, 1 removed.
-```
-
-Then fold the result into the normal sections:
-
-- Removed findings disappear unless a short note helps explain the result.
-- Fixes that are too large or unsafe move to `## Set aside / Outside this change`
-  with one short reason.
-- Clearer fixes replace the old wording.
-- Inline comments contain only the final wording.
-- Omit GitHub suggestion blocks when the exact replacement is not safe.
+Keep reviewer counts, rounds, and dispositions out of the visible summary.
+Inline comments contain only the final wording. Omit GitHub suggestion blocks
+when the exact replacement is not safe.
 
 ## `.followups.json` schema
 

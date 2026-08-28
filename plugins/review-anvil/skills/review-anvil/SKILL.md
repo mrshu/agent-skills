@@ -666,6 +666,12 @@ recommend whether to merge, approve, or reject the change. Use one or two
 natural sentences. Do not require a fixed subject or opening phrase. Start with
 the affected area, finding count, or detected outcome—whichever is clearest. Do
 not vary wording mechanically or invent praise about the rest of the change.
+Do not narrate the review pipeline in the visible summary. Avoid reviewer
+counts, rounds, candidates, findings that “survived,” confirmation mechanics,
+or internal disposition vocabulary. Translate internal review outcomes into
+observations about the changed code. Do not require a fixed replacement phrase.
+Choose a natural code-facing statement that fits the detected issues,
+suggestions, or uncertainty.
 
 All active findings stay collapsed in fixed four-column tables. Each row shows
 severity, frozen report location, the complete issue or suggestion, and the

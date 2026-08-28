@@ -180,6 +180,27 @@ when it helps the reader understand the detection result. Do not invent praise,
 readiness, or an `otherwise looks good` claim. When no material issue is
 detected, state that plainly and mention optional suggestions if present.
 
+Do not narrate the review pipeline in the visible summary. Avoid internal
+phrases such as:
+
+- `No new finding survived review.`
+- `Three candidates were confirmed.`
+- `Two reviewers upheld the issue.`
+- `One finding was narrowed.`
+
+Translate internal review outcomes into observations about the changed code.
+Describe the affected behavior, detected issue areas, optional suggestions, or
+unreproduced uncertainty. Do not require a fixed replacement phrase. Choose
+wording from the code facts rather than mechanically substituting synonyms.
+
+Examples of code-facing outcomes, not templates:
+
+- `Nothing material stood out in the changed code.`
+- `Nothing material stood out, though there are two optional cleanup suggestions below.`
+- `The main issues are around replacement safety and identity handling. There is also one smaller CLI edge case.`
+- `One runtime concern remains uncertain because the failing path could not be reproduced.`
+- `The warning is still hidden in the default output, and the contributor guide does not cover the new rule.`
+
 An inline problem paragraph is at most two short sentences. The request
 paragraph is at most two short sentences unless several independent obligations
 require bullets.
