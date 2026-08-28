@@ -26,18 +26,26 @@ human-summary side. `before-after.md` renders both complete outputs.
 with per-body SHA-256 checksums. `extract-corpus.py` verifies those checksums
 before regenerating `corpus.json`.
 
-## Size reduction
+## Artifact size and default view
 
-| Review | Current report | Human report | Report reduction | Current inline | Human inline | Inline reduction |
+| Review | Current report | Human report | Raw report change | Current inline | Human inline | Inline reduction |
 |---|---:|---:|---:|---:|---:|---:|
-| PR #190 | 591 words | 432 words | 26.9% | 280 words | 254 words | 9.3% |
-| PR #204 | 569 words | 428 words | 24.8% | 200 words | 151 words | 24.5% |
-| PR #230 | 423 words | 370 words | 12.5% | 116 words | 82 words | 29.3% |
+| PR #190 | 591 words | 665 words | +12.5% | 280 words | 261 words | 6.8% |
+| PR #204 | 569 words | 576 words | +1.2% | 200 words | 159 words | 20.5% |
+| PR #230 | 423 words | 493 words | +16.5% | 116 words | 83 words | 28.4% |
 
-Raw Markdown retains lossless collapsed rows for history and fallback delivery.
-The default visible prose is one sentence: PR #190 uses 21 words, PR #204 uses
-26, and PR #230 uses 17. Issue rows, IDs, severity, areas, paths, and repeated
-inline actions stay collapsed.
+Raw Markdown is larger where the collapsed tables now retain complete issue and
+action detail. The default visible prose remains short: PR #190 uses 21 words,
+PR #204 uses 20, and PR #230 uses 28. IDs and areas remain hidden; severity,
+location, issue, and suggested change appear only after expansion.
+
+## Full-detail tables
+
+`Issues and fixes` and `Optional suggestions` use fixed four-column tables.
+Every row stays on one source line, ends with its hidden identity marker, and
+escapes literal pipes as `\|`. The validator checks exact headers, severity,
+location, row inventory, marker metadata, and section placement. The history
+helper parses the fixed columns and marker instead of generic pipe splitting.
 
 ## Direct request voice
 
@@ -62,8 +70,8 @@ rather than against the summary alone.
 | Surface | Human wins | Current wins | Ties |
 |---|---:|---:|---:|
 | Complete reviews | 9 | 0 | 0 |
-| Inline comments | 35 | 1 | 0 |
-| **Total** | **44** | **1** | **0** |
+| Inline comments | 22 | 8 | 6 |
+| **Total** | **31** | **8** | **6** |
 
 No final human output received a hard fact/action failure.
 
@@ -71,17 +79,17 @@ Mean scores across all 45 judgments:
 
 | Dimension | Current | Human | Delta |
 |---|---:|---:|---:|
-| Defect clarity | 5.000 | 5.000 | 0.000 |
-| Action recall | 5.000 | 4.978 | -0.022 |
-| Scanability | 4.867 | 4.733 | -0.134 |
-| Naturalness | 3.867 | 4.933 | +1.066 |
-| Cognitive ease | 3.822 | 4.867 | +1.045 |
-| Plain language | 4.044 | 4.867 | +0.823 |
+| Defect clarity | 5.000 | 4.978 | -0.022 |
+| Action recall | 4.911 | 4.844 | -0.067 |
+| Scanability | 4.867 | 4.133 | -0.734 |
+| Naturalness | 3.867 | 4.911 | +1.044 |
+| Cognitive ease | 4.267 | 4.778 | +0.511 |
+| Plain language | 4.200 | 4.800 | +0.600 |
 
-All nine complete-review judgments preferred the compact human report and
-marked it fact-safe. The blind text extraction expands collapsed content, so
-its 4.000 scanability score does not model GitHub's default one-sentence view;
-the expanded current baseline scored 4.333.
+All nine complete-review judgments preferred the table-based human report and
+marked it fact-safe. Complete-review scanability scored 4.667 versus 4.333.
+The aggregate includes separately judged inline comments, where the current
+heading/list format sometimes won on local scanability.
 
 ## Safety gates
 
@@ -93,21 +101,21 @@ The deterministic validator checks:
 - active and deferred/outside item counts;
 - configured inline-severity eligibility and exact inline anchors;
 - one headingless visible summary line, canonical count-free collapsed labels,
-  full envelope consumption, footer placement, and report-item section
-  placement;
+  fixed full-detail table headers and columns, escaped single-line cells,
+  terminal marker identity, footer placement, and complete envelope
+  consumption;
 - post-time history refresh fails closed when it would stale the compact
   summary;
 - count-free fallback details and delivery metadata stay collapsed, including
   improve-PR success edits;
 - suggestions, reintroduction state, and requested-work ledgers.
 
-It does not judge prose semantics. Two bidirectional auditors check each
+It does not judge prose style. Two bidirectional semantic auditors check each
 surface with an explicit mode:
 
-- `summary` for report lines backed by emitted inline comments;
-- `required` for inline comments and material report lines without one;
-- `suggested` for low/nit guidance;
-- `boundary` for deferred and outside-scope items.
+- `required` for critical/high/medium report-table and inline rows;
+- `suggested` for low/nit report-table rows;
+- `boundary` for deferred and outside-scope rows.
 
 `fact-lock-audit-1.json` and `fact-lock-audit-2.json` each contain all 34
 `(id, surface)` verdicts for the exact retained `action-audit-corpus.json` and

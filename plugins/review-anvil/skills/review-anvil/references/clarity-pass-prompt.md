@@ -27,7 +27,7 @@ profile in `asd-ste100-inspired.md` while preserving every frozen predicate.
 
 | Surface | Human-visible content | Hidden or structural content |
 |---|---|---|
-| Top-level report | One natural outcome sentence; collapsed issue/context labels | ID, severity, area, report location, disposition |
+| Top-level report | One or two neutral detection sentences; collapsed full-detail tables | Hidden ID, area, disposition; visible severity and location |
 | Inline comment | Problem/impact paragraph and direct action paragraph | ID, severity, area, anchor JSON |
 | Unanchored material finding | Short self-contained problem and request | Finding marker |
 | Deferred/outside item | One plain reason in a collapsed section | Optional ID and disposition marker |
@@ -168,36 +168,47 @@ Avoid:
 - explaining the entire implementation before naming the failure;
 - preserving sentence structure merely because the source used it.
 
-A top-level summary is one natural sentence, normally 15–30 words. An inline
-problem paragraph is at most two short sentences. The request paragraph is at
-most two short sentences unless several independent obligations require
-bullets.
+A top-level summary is one or two natural sentences, normally 15–45 words.
+Describe only what the review detected; do not recommend whether to merge,
+approve, or reject the change. Do not require a fixed subject or opening phrase.
+Start with the affected area, finding count, or detected outcome—whichever is
+clearest. `There are …`, `One issue showed up …`, and `I found …` are available
+forms, not templates. Do not vary wording mechanically.
+
+Mention severity, scope, optional suggestions, or set-aside uncertainty only
+when it helps the reader understand the detection result. Do not invent praise,
+readiness, or an `otherwise looks good` claim. When no material issue is
+detected, state that plainly and mention optional suggestions if present.
+
+An inline problem paragraph is at most two short sentences. The request
+paragraph is at most two short sentences unless several independent obligations
+require bullets.
 
 ## Top-level report recipe
 
-The top-level report has no Markdown heading. Write one natural visible summary
-sentence that explains the most important concrete result or risk. Do not use a
-decision label, finding count, review mechanic, invented praise, or generic
-`worth addressing` language. Combine related outcomes only when the sentence
-stays clear. Use `This looks ready to merge.` when no material issue remains.
+The top-level report has no Markdown heading. Write one or two natural visible
+summary sentences under the neutral detection guidance above.
 
 Use this shape:
 
 ```md
-<One natural visible summary sentence.>
+<One or two neutral detection sentences.>
 
 <details>
 <summary>Issues and fixes</summary>
 
-- <One short diagnosis for an anchor-backed issue.> <!-- hidden marker -->
-- <Self-contained problem, impact, and action for an issue without an emitted inline comment.> <!-- hidden marker -->
+| Severity | Location | Issue | Suggested change |
+|---|---|---|---|
+| High | `src/auth.ts:42` | <Complete problem and concrete impact.> | <Complete requested change.> <!-- review-anvil-report: ... --> |
 
 </details>
 
 <details>
 <summary>Optional suggestions</summary>
 
-- <One short optional suggestion.> <!-- hidden marker -->
+| Severity | Location | Suggestion | Suggested change |
+|---|---|---|---|
+| Low | `docs/cli.md:7` | <Complete optional observation.> | Consider <optional change>. <!-- review-anvil-report: ... --> |
 
 </details>
 
@@ -211,12 +222,17 @@ _Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvi
 </details>
 ```
 
-Every active report item stays inside `Issues and fixes` or `Optional
-suggestions`; none stays visible under the summary sentence. Anchor-backed
-requested work stays inline. For a critical/high/medium finding without an
-emitted inline comment, keep its collapsed report line self-contained even when
-it has a verified anchor: state the problem, concrete impact, and direct request
-in no more than two short sentences.
+Every active finding becomes one row in `Issues and fixes` or `Optional
+suggestions`. Keep the complete diagnosis, impact, and requested or suggested
+change in that collapsed row even when an inline comment exists. Inline comments
+still carry the same anchored detail in GitHub's native review UI.
+
+Use exactly four columns. Each table row stays on one source line and ends with
+its hidden `review-anvil-report` marker in the final cell. Escape every literal
+`|` inside a cell as `\|`; do not add multiline cells or rely on generic
+pipe-splitting. Show severity as `Critical`, `High`, `Medium`, `Low`, or `Nit`.
+Show the frozen report location as `` `path:line` ``, a line range, or `—`.
+Keep IDs, area, encoded location, and disposition in the hidden terminal marker.
 
 Keep earlier feedback, changes made, set-aside/outside items, and exact review
 metadata in separate collapsed sections with natural labels. Each identified
@@ -267,14 +283,15 @@ prose. Keep every safe exact `suggestion` byte-identical.
 
 ## Fact and action lock
 
-Build a semantic union of `requested_work` entries. Render each distinct action,
-verification boundary, and no-change boundary once. Equivalent source phrasings
-can map to one rendered predicate only when every qualifier remains.
+Build a semantic union of `requested_work` entries per finding. Preserve every
+distinct action, verification boundary, and no-change boundary in the collapsed
+report-table row and, when emitted, in the inline comment. Equivalent source
+phrasings can map to one predicate per surface only when every qualifier
+remains.
 
-For findings with inline comments, the report surface needs only the frozen
-summary fact lock. The inline surface retains the complete diagnostic fact lock
-and every requested-work predicate. For every material finding without an
-emitted inline comment, the report surface retains both.
+Every active report-table row retains the complete diagnostic fact lock and
+every requested-work predicate. The inline surface retains the same complete
+diagnostic and requested work for anchor-backed findings.
 
 Do not make requested behavior sound already implemented. Do not promote an
 allowed boundary or optional follow-up into required work. A finding with no
@@ -285,10 +302,12 @@ success condition.
 
 Restore frozen wording when any of these occurs:
 
-- The summary becomes a compressed technical paragraph instead of a sentence.
-- IDs, priorities, areas, paths, audit counts, or run mechanics become visible.
-- Requested work is repeated in both the report and inline comment.
+- The neutral summary becomes a compressed technical paragraph.
+- IDs, areas, audit counts, or run mechanics become visible.
+- A table omits visible severity, frozen location, complete detail, or the
+  requested/suggested change.
 - A required fact, action, condition, exception, or suggestion disappears.
 - A desired state reads as current behavior.
-- Equivalent source requests are repeated instead of combined.
-- The report and inline comment contradict each other.
+- Equivalent source requests repeat within one surface instead of being
+  combined.
+- The report table and inline comment contradict each other.

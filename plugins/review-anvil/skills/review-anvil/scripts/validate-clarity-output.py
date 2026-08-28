@@ -43,6 +43,23 @@ HUMAN_REPORT_ITEM_RE = re.compile(
     r"line=(?P<line>\d+|-)\s+"
     r"disposition=(?P<disposition>active|deferred|outside)\s*-->\s*$"
 )
+HUMAN_REPORT_TABLE_ROW_RE = re.compile(
+    r"^\|\s*(?P<visible_severity>Critical|High|Medium|Low|Nit)\s*\|\s*"
+    r"(?P<location>(?:\\\||[^|\n])+?)\s*\|\s*"
+    r"(?P<issue>(?:\\\||[^|\n])+?)\s*\|\s*"
+    r"(?P<action>(?:\\\||[^|\n])+?)\s+"
+    rf"<!--\s*review-anvil-report:\s*id=(?P<id>{FINDING_ID_PATTERN})\s+"
+    r"severity=(?P<severity>critical|high|medium|low|nit)\s+"
+    r"area=(?P<area>[A-Za-z0-9][A-Za-z0-9._/-]*)\s+"
+    r"path=(?P<path>\S+)\s+start_line=(?P<start_line>\d+|-)\s+"
+    r"line=(?P<line>\d+|-)\s+disposition=(?P<disposition>active)\s*-->"
+    r"\s*\|\s*$"
+)
+ISSUES_TABLE_HEADER = "| Severity | Location | Issue | Suggested change |"
+SUGGESTIONS_TABLE_HEADER = (
+    "| Severity | Location | Suggestion | Suggested change |"
+)
+TABLE_SEPARATOR = "|---|---|---|---|"
 ANCHOR_KEYS = ("path", "start_line", "line", "side", "start_side")
 METADATA_FIELDS = (
     "decision_reason",
@@ -65,7 +82,7 @@ COMPACT_DETAILS_RE = re.compile(
 )
 LEGACY_SUMMARY_RE = re.compile(
     r"^(?:\*\*(?:Changes requested|Looks good)\.\*\*|"
-    r"\*\*(?:COMMENT|APPROVE)\b)|\bI found\s+\d+\b",
+    r"\*\*(?:COMMENT|APPROVE)\b)",
     re.IGNORECASE,
 )
 COMPACT_SECTION_LABELS = frozenset(
@@ -134,6 +151,22 @@ def report_location_tokens(finding: dict[str, Any]) -> tuple[str, str, str]:
         str(start) if isinstance(start, int) else "-",
         str(line) if isinstance(line, int) else "-",
     )
+def escape_table_cell(value: str) -> str:
+    return value.replace("|", r"\|")
+
+
+def report_location_text(finding: dict[str, Any]) -> str:
+    path = finding.get("report_path")
+    line = finding.get("report_line")
+    if not isinstance(path, str) or not isinstance(line, int):
+        return "—"
+    start = finding.get("report_start_line")
+    line_range = (
+        f"{start}-{line}" if isinstance(start, int) else str(line)
+    )
+    return f"`{escape_table_cell(path)}:{line_range}`"
+
+
 
 
 def report_id_inventory(
@@ -273,17 +306,6 @@ def validate_human_report_envelope(
     if report.count(REVIEW_FOOTER) != 1 or REVIEW_FOOTER not in context:
         raise InvalidBundle("review footer must stay in Review context")
 
-    for item in rendered.get("report_items") or []:
-        finding = findings.get(item.get("id"))
-        if finding is None:
-            continue
-        label = (
-            "Optional suggestions"
-            if finding.get("severity") in {"low", "nit"}
-            else "Issues and fixes"
-        )
-        if item.get("rendered_body") not in blocks.get(label, ""):
-            raise InvalidBundle(f"{item.get('id')} must stay in {label}")
     dispositions = structured_dispositions(canonical)
     expected_sections = {
         "Issues and fixes": any(
@@ -307,6 +329,35 @@ def validate_human_report_envelope(
             raise InvalidBundle(f"human-summary report must include {label}")
         if not needed and label in blocks:
             raise InvalidBundle(f"human-summary report must omit empty {label}")
+    rows_by_section = {
+        "Issues and fixes": [],
+        "Optional suggestions": [],
+    }
+    for item in rendered.get("report_items") or []:
+        finding = findings.get(item.get("id"))
+        if finding is None:
+            continue
+        label = (
+            "Optional suggestions"
+            if finding.get("severity") in {"low", "nit"}
+            else "Issues and fixes"
+        )
+        rows_by_section[label].append(item.get("rendered_body"))
+    for label, rows in rows_by_section.items():
+        if not rows:
+            continue
+        header = (
+            SUGGESTIONS_TABLE_HEADER
+            if label == "Optional suggestions"
+            else ISSUES_TABLE_HEADER
+        )
+        lines = blocks[label].splitlines()
+        if lines[:2] != [header, TABLE_SEPARATOR]:
+            raise InvalidBundle(
+                f"human-summary report must use fixed {label} table header"
+            )
+        if lines[2:] != rows:
+            raise InvalidBundle(f"{label} table rows changed")
 
     for item in rendered.get("disposition_items") or []:
         body = item.get("rendered_body")
@@ -372,15 +423,21 @@ def validate_report_items(
                 f"{finding_id} report metadata must stay on the finding line"
             )
         if human_style:
-            shape = HUMAN_REPORT_ITEM_RE.fullmatch(body)
+            shape = HUMAN_REPORT_TABLE_ROW_RE.fullmatch(body)
             if (
                 shape is None
                 or shape.group("id") != finding_id
                 or shape.group("disposition") != "active"
             ):
                 raise InvalidBundle(
-                    f"{finding_id} report item has invalid human-summary shape"
+                    f"{finding_id} has invalid human-summary table row"
                 )
+            if shape.group("visible_severity").lower() != finding.get("severity"):
+                raise InvalidBundle(f"{finding_id} visible severity changed")
+            if shape.group("location").strip() != report_location_text(finding):
+                raise InvalidBundle(f"{finding_id} visible report location changed")
+            if not shape.group("issue").strip() or not shape.group("action").strip():
+                raise InvalidBundle(f"{finding_id} table detail is empty")
             expected_path, expected_start, expected_line = report_location_tokens(
                 finding
             )

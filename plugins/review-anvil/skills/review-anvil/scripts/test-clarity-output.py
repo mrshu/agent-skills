@@ -227,10 +227,13 @@ class ClarityOutputValidatorTests(unittest.TestCase):
             ],
         }
         report_item = (
-            "- The CLI entry point still uses the old parser. "
+            "| Medium | `every_eval_ever/cli.py:383` | "
+            "The CLI entry point still uses the old parser. | "
+            "Use the shared parser in the module entry point and add one offline "
+            "test covering parser defaults. "
             "<!-- review-anvil-report: id=RAV-RUN2-R1-F003 severity=medium "
             "area=cli path=every_eval_ever%2Fcli.py start_line=- line=383 "
-            "disposition=active -->"
+            "disposition=active --> |"
         )
         disposition_item = (
             "- I set one runtime concern aside because it needs a reproducible case. "
@@ -258,6 +261,8 @@ class ClarityOutputValidatorTests(unittest.TestCase):
                 "The CLI entry point still builds the old arguments and fails "
                 "before conversion.\n\n"
                 "<details>\n<summary>Issues and fixes</summary>\n\n"
+                "| Severity | Location | Issue | Suggested change |\n"
+                "|---|---|---|---|\n"
                 f"{report_item}\n\n"
                 "</details>\n\n"
                 "<details>\n<summary>Set aside</summary>\n\n"
@@ -307,6 +312,40 @@ class ClarityOutputValidatorTests(unittest.TestCase):
         result = self.validate(rendered, canonical)
         self.assertEqual(result.returncode, 0, result.stderr)
         footerless = copy.deepcopy(rendered)
+        wrong_header = copy.deepcopy(rendered)
+        wrong_header["report_markdown"] = wrong_header["report_markdown"].replace(
+            "| Severity | Location | Issue | Suggested change |",
+            "| Priority | File | Problem | Fix |",
+        )
+        result = self.validate(wrong_header, canonical)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("fixed Issues and fixes table header", result.stderr)
+
+        unescaped_pipe = copy.deepcopy(rendered)
+        unescaped_row = report_item.replace(
+            "still uses the old parser.",
+            "still uses the old | parser.",
+        )
+        unescaped_pipe["report_items"][0]["rendered_body"] = unescaped_row
+        unescaped_pipe["report_markdown"] = unescaped_pipe[
+            "report_markdown"
+        ].replace(report_item, unescaped_row)
+        result = self.validate(unescaped_pipe, canonical)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("invalid human-summary table row", result.stderr)
+
+        escaped_pipe = copy.deepcopy(rendered)
+        escaped_row = report_item.replace(
+            "still uses the old parser.",
+            r"still uses the old left\|right parser.",
+        )
+        escaped_pipe["report_items"][0]["rendered_body"] = escaped_row
+        escaped_pipe["report_markdown"] = escaped_pipe["report_markdown"].replace(
+            report_item,
+            escaped_row,
+        )
+        result = self.validate(escaped_pipe, canonical)
+        self.assertEqual(result.returncode, 0, result.stderr)
         footerless["report_markdown"] = footerless["report_markdown"].replace(
             "\n_Reviewed with [review-anvil]"
             "(https://github.com/mrshu/agent-skills/#review-anvil)._\n",
@@ -375,7 +414,7 @@ class ClarityOutputValidatorTests(unittest.TestCase):
         )
         result = self.validate(misplaced, canonical)
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("must stay in Issues and fixes", result.stderr)
+        self.assertIn("Issues and fixes table rows changed", result.stderr)
 
     def test_accepts_headingless_zero_finding_human_summary(self) -> None:
         canonical = {
@@ -384,7 +423,7 @@ class ClarityOutputValidatorTests(unittest.TestCase):
             "report_style": "human-summary",
             "inline_min_severity": "medium",
             "decision_reason": "No material issues remain.",
-            "result": "This looks ready to merge.",
+            "result": "No material issues surfaced.",
             "scope": "The reviewed change.",
             "checks": "Checks passed.",
             "second_check": "off",
@@ -411,10 +450,10 @@ class ClarityOutputValidatorTests(unittest.TestCase):
                 )
             },
             "report_markdown": (
-                "This looks ready to merge.\n\n"
+                "No material issues surfaced.\n\n"
                 "<details>\n<summary>Review context</summary>\n\n"
                 "No material issues remain.\n"
-                "This looks ready to merge.\n"
+                "No material issues surfaced.\n"
                 "The reviewed change.\n"
                 "Checks passed.\n"
                 "off\n\n"

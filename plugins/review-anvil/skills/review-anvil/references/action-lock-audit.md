@@ -23,7 +23,7 @@ it with `AUDIT:`. A finding can have both a `report` and an `inline` row; the
 {
   "id": "RAV-RUN3-R1-F001",
   "surface": "report | inline",
-  "request_mode": "required | suggested | summary | boundary",
+  "request_mode": "required | suggested | boundary",
   "source_context": "<exact source material used by this rendered surface>",
   "source_fact_lock": ["<exact actor/action/target, condition, impact, or evidence predicate>"],
   "source_requested_work": "<exact frozen source prose>",
@@ -31,11 +31,9 @@ it with `AUDIT:`. A finding can have both a `report` and an `inline` row; the
 }
 ```
 
-Derive `request_mode` from the frozen severity, disposition, emitted inline
-inventory, and surface. Inline rows and material report rows without an emitted
-inline comment use `required`. Low/nit suggestions use `suggested`. Report rows
-backed by emitted inline comments use `summary`. Deferred and outside-scope rows
-use `boundary`.
+Derive `request_mode` from severity, disposition, and surface. Inline rows and
+critical/high/medium report-table rows use `required`. Low/nit report-table rows
+use `suggested`. Deferred and outside-scope rows use `boundary`.
 
 Do not extract or summarize a request-only subset.
 The auditors need the whole rendered body.
@@ -76,19 +74,16 @@ For each source predicate:
    with suggestion grammar. Reject an omission or a rewrite that makes the
    suggestion mandatory. Do not fail suggestion grammar merely because it is
    not imperative.
-7. For `summary`, require only the supplied summary fact lock. Its empty
-   `source_requested_work` is intentional; do not demand inline actions on the
-   report surface.
-8. For `boundary`, preserve the issue and disposition reason without turning
+7. For `boundary`, preserve the issue and disposition reason without turning
    either into new author work.
-9. Reject every action bullet or direct request derived only from a no-change
+8. Reject every action bullet or direct request derived only from a no-change
    boundary.
-10. Map every semantic predicate in the complete `rendered_body` back to a
-    source predicate, regardless of grammar. This includes requested work,
-    author-facing questions, permissions, exceptions, no-change boundaries,
-    accepted behavior, optional follow-ups, evidence, and code-sketch behavior.
-    Required Markdown and hidden metadata are not semantic predicates.
-11. Reject every unmatched rendered predicate. Record unmatched author work in
+9. Map every semantic predicate in the complete `rendered_body` back to a
+   source predicate, regardless of grammar. This includes requested work,
+   author-facing questions, permissions, exceptions, no-change boundaries,
+   accepted behavior, optional follow-ups, evidence, and code-sketch behavior.
+   Required Markdown and hidden metadata are not semantic predicates.
+10. Reject every unmatched rendered predicate. Record unmatched author work in
     `false_actions` and every other source-free predicate in
     `invented_predicates`. Keep `fact_losses` for source predicates that the
     draft omits or changes.
@@ -201,11 +196,10 @@ choice. Voice is generation guidance, not an audit verdict. Pass or fail only
 on source facts, required work, optionality, permissions, and no-change
 boundaries.
 
-Use bullets only for three or more independent obligations. For a `summary`
-report repair, keep one short diagnosis sentence and do not add inline requested
-work. For a `required` report row without an emitted inline comment, keep the
-problem, result, and request self-contained. A `boundary` repair keeps the issue
-and disposition reason without creating author work.
+Use bullets only for three or more independent inline obligations. A report
+repair keeps the fixed one-line table shape and restores the complete issue,
+impact, and requested or suggested change in its cells. A `boundary` repair
+keeps the issue and disposition reason without creating author work.
 
 Audit repaired rows once more with two new clean auditors under the same
 validation and union rules.

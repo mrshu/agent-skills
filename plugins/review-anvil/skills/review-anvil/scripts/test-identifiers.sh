@@ -64,7 +64,7 @@ require "$ADVERSARIAL" 'target: RAV-RUN3-R2-F001 | RAV-RUN3-R2-P001 | report | a
 require "$ADVERSARIAL" 'Return each supplied complete canonical ID unchanged.'
 require "$ENGINE" '"body": "The handler creates a session before it checks the state token'
 require "$ENGINE" '<!-- review-anvil: id=RAV-RUN3-R2-F001 severity=high area=auth -->'
-require "$ENGINE" '- The refresh handler creates a session before it validates the token.'
+require "$ENGINE" '| High | `src/auth.ts:42` | The refresh handler creates a session before it validates the token.'
 require "$ENGINE" 'Already-assigned in-scope low/nit and set-aside findings keep their complete canonical F IDs.'
 require "$ENGINE" 'Low/nit report rows and disposition rows use suggestion/boundary mode.'
 require "$ENGINE" '<summary>Optional suggestions</summary>'

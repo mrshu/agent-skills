@@ -24,11 +24,13 @@ a blocker only in collapsed or linked detail.
 After synthesis freezes the decision, dispositions, facts, requested work,
 anchors, and safe suggestions, render both external surfaces through the final
 clarity pass.
-The top-level report is a short human summary: one natural visible sentence
-followed by collapsed sections. Every report-item row stays inside `Issues and
-fixes` or `Optional suggestions`. Findings with emitted inline comments keep
-their full facts and requested work inline. Material findings without an
-emitted inline comment remain self-contained in the collapsed report.
+The top-level report is a short human summary: one or two natural detection
+sentences followed by collapsed sections. Every active finding becomes a
+four-column row inside `Issues and fixes` or `Optional suggestions`:
+`| Severity | Location | Issue | Suggested change |`. The optional table uses
+`Suggestion` for the third column. Each collapsed row keeps the full diagnosis,
+impact, and requested or suggested change; inline comments retain the same
+anchor-backed detail in GitHub's native UI.
 
 The pass rewrites the language as well as the layout. Prefer short ordinary
 sentences and concrete outcomes over internal mechanics. It cannot change the
@@ -41,6 +43,9 @@ Each top-level finding or disposition line ends with:
 The marker hides machine metadata from the rendered report.
 The hidden report marker, inline marker, reproduction target, and adversarial
 target use the same complete finding ID unchanged.
+Each table row stays on one source line and ends with its hidden report marker
+in the final cell. Escape every literal `|` inside a cell as `\|`. Parse the
+fixed columns and terminal marker; never use generic `split('|')` parsing.
 
 ## ASD-STE100-Inspired Language
 

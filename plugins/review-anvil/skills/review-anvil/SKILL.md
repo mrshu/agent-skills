@@ -535,17 +535,16 @@ complete inline body.
 
 Fact locks are surface-specific:
 
-- An active finding whose ID is present in the emitted inline inventory gives
-  the report row only its short summary fact lock and no requested-work
-  predicates. The inline row keeps the complete diagnostic and requested work.
-- A material finding without an emitted inline comment gives the report row
-  its complete diagnostic and requested work, even when it has a verified
-  anchor below the configured inline threshold.
+- Every active report-table row keeps its complete diagnosis and requested or
+  suggested change, even when an inline comment carries the same anchored
+  detail.
+- Inline rows keep the complete diagnosis and requested work.
+- Critical/high/medium report and inline rows use required mode.
 - Low/nit report rows and disposition rows use suggestion/boundary mode.
 - Inline anchors remain structural validator fields, not prose fact locks.
 
-For each audit row, derive `request_mode` from surface eligibility and
-disposition: `required`, `suggested`, `summary`, or `boundary`.
+For each audit row, derive `request_mode` from severity, surface, and
+disposition: `required`, `suggested`, or `boundary`.
 
 Validate each auditor's complete per-ID output and combine valid failures from
 either auditor. Repair only surfaces with valid failed verdicts, validate the
@@ -661,34 +660,44 @@ After the last round, emit a fresh top-level report (a new document, not a repla
 
 `author-resolved` history does not affect the review decision or approval.
 
-The final report is an external-facing human summary, not a transcript or a
-second copy of inline comments. The final report has no Markdown heading. Keep
-one natural visible summary sentence that names the most important concrete
-result or risk. Do not show a decision label, finding count, or review mechanic
-in that sentence.
+The final report is an external-facing human summary, not a visible transcript.
+It has no Markdown heading. Describe only what the review detected; do not
+recommend whether to merge, approve, or reject the change. Use one or two
+natural sentences. Do not require a fixed subject or opening phrase. Start with
+the affected area, finding count, or detected outcome—whichever is clearest. Do
+not vary wording mechanically or invent praise about the rest of the change.
 
-All active report rows stay collapsed. Anchor-backed requested work stays
-inline. A material finding without an emitted inline comment stays
-self-contained inside `Issues and fixes`. Collapse optional suggestions,
-earlier feedback, changes made, dispositions, review context, and the
-review-anvil footer.
+All active findings stay collapsed in fixed four-column tables. Each row shows
+severity, frozen report location, the complete issue or suggestion, and the
+complete requested or suggested change. This full collapsed detail is
+intentionally repeated in inline comments for GitHub's native anchored review
+UI. Collapse earlier feedback, changes made, dispositions, review context, and
+the review-anvil footer.
+
+Each table row stays on one source line and ends with its hidden
+`review-anvil-report` marker in the final cell. Escape every literal `|` inside a
+cell as `\|`. Keep IDs, area, encoded location, and disposition in the hidden
+marker.
 
 ```
-The refresh path can create a session from invalid state, and timed-out writes can still be counted as successful.
+Two issues showed up in session validation and write accounting. One lower-priority CLI naming suggestion is listed separately.
 
 <details>
 <summary>Issues and fixes</summary>
 
-- The refresh handler creates a session before it validates the token. <!-- review-anvil-report: id=RAV-RUN3-R2-F001 severity=high area=auth path=src/auth.ts start_line=- line=42 disposition=active -->
-- Timed-out writes are counted as successful. <!-- review-anvil-report: id=RAV-RUN3-R2-F002 severity=medium area=db path=src/db.ts start_line=100 line=110 disposition=active -->
-- Non-finite scores can block the whole batch. Validate accuracy and uncertainty before serialization. <!-- review-anvil-report: id=RAV-RUN3-R2-F005 severity=medium area=serialization path=- start_line=- line=- disposition=active -->
+| Severity | Location | Issue | Suggested change |
+|---|---|---|---|
+| High | `src/auth.ts:42` | The refresh handler creates a session before it validates the token. | Validate the token before creating the session. <!-- review-anvil-report: id=RAV-RUN3-R2-F001 severity=high area=auth path=src%2Fauth.ts start_line=- line=42 disposition=active --> |
+| Medium | `src/db.ts:100-110` | Timed-out writes are counted as successful. | Count a write only after it returns successfully. <!-- review-anvil-report: id=RAV-RUN3-R2-F002 severity=medium area=db path=src%2Fdb.ts start_line=100 line=110 disposition=active --> |
 
 </details>
 
 <details>
 <summary>Optional suggestions</summary>
 
-- The CLI help could use the same option name. <!-- review-anvil-report: id=RAV-RUN3-R2-F003 severity=low area=docs path=docs/cli.md start_line=- line=7 disposition=active -->
+| Severity | Location | Suggestion | Suggested change |
+|---|---|---|---|
+| Low | `docs/cli.md:7` | The CLI help uses a different option name. | Consider using the public option name consistently. <!-- review-anvil-report: id=RAV-RUN3-R2-F003 severity=low area=docs path=docs%2Fcli.md start_line=- line=7 disposition=active --> |
 
 </details>
 

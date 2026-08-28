@@ -592,6 +592,19 @@ HUMAN_REPORT_RE = re.compile(
     r"disposition=(?P<disposition>active|deferred|outside)\s*-->\s*$",
     re.I,
 )
+HUMAN_REPORT_TABLE_RE = re.compile(
+    r"^\|\s*(?P<visible_severity>Critical|High|Medium|Low|Nit)\s*\|\s*"
+    r"(?P<location>(?:\\\||[^|\n])+?)\s*\|\s*"
+    r"(?P<issue>(?:\\\||[^|\n])+?)\s*\|\s*"
+    r"(?P<action>(?:\\\||[^|\n])+?)\s+"
+    rf"<!--\s*review-anvil-report:\s*id=(?P<finding_id>{FINDING_ID_PATTERN})\s+"
+    r"severity=(?P<severity>critical|high|medium|low|nit)\s+"
+    r"area=(?P<area>[A-Za-z0-9][A-Za-z0-9._/-]*)\s+"
+    r"path=(?P<path>\S+)\s+start_line=(?P<start_line>\d+|-)\s+"
+    r"line=(?P<line>\d+|-)\s+disposition=(?P<disposition>active)\s*-->"
+    r"\s*\|\s*$",
+    re.I,
+)
 EARLIER_FEEDBACK_RE = re.compile(
     rf"^\s*[-*]\s+\*\*(?P<status>open|still-present|fixed|stale|reported|author-resolved)\*\*"
     rf"\s*[-—:]+\s*(?P<text>.+?)(?:\s+\(`(?P<finding_id>{FINDING_ID_PATTERN})`\))?\s*$",
@@ -681,6 +694,10 @@ def table_finding(line):
         return None
     return {"id": cells[0], "severity": sev, "area": cells[2],
             "location": cells[3], "finding": finding}
+def unescape_table_cell(value):
+    return (value or "").replace(r"\|", "|").strip()
+
+
 
 def clarity_report_finding(line):
     match = CLARITY_REPORT_RE.fullmatch(line or "")
@@ -692,6 +709,27 @@ def clarity_report_finding(line):
             "location": match.group("location") or "",
             "finding": match.group("title").strip(),
             "detail": match.group("detail").strip(),
+            "disposition": "active",
+        }
+    match = HUMAN_REPORT_TABLE_RE.fullmatch(line or "")
+    if match and "--" not in match.group("area"):
+        path = "" if match.group("path") == "-" else unquote(match.group("path"))
+        line_number = match.group("line")
+        start_line = match.group("start_line")
+        location = ""
+        if path and line_number != "-":
+            location = (
+                f"{path}:{start_line}-{line_number}"
+                if start_line != "-"
+                else f"{path}:{line_number}"
+            )
+        return {
+            "id": match.group("finding_id"),
+            "severity": severity_name(match.group("severity")),
+            "area": match.group("area"),
+            "location": location,
+            "finding": unescape_table_cell(match.group("issue")),
+            "detail": unescape_table_cell(match.group("action")),
             "disposition": "active",
         }
     match = HUMAN_REPORT_RE.fullmatch(line or "")
@@ -935,6 +973,7 @@ if mode == "next-run":
         marker = marker_pattern.search(body)
         has_human_report_item = any(
             HUMAN_REPORT_RE.fullmatch(line) is not None
+            or HUMAN_REPORT_TABLE_RE.fullmatch(line) is not None
             for line in body.splitlines()
         )
         has_review_footer = (
