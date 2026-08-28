@@ -4,46 +4,46 @@
   "judgments": 45,
   "preferences": {
     "all": {
-      "after": 31,
+      "after": 36,
       "before": 8,
-      "tie": 6
+      "tie": 1
     },
     "complete": {
-      "after": 9,
-      "before": 0,
+      "after": 6,
+      "before": 3,
       "tie": 0
     },
     "inline": {
-      "after": 22,
-      "before": 8,
-      "tie": 6
+      "after": 30,
+      "before": 5,
+      "tie": 1
     }
   },
   "mean_scores": {
     "after": {
-      "defect_clarity": 4.978,
-      "action_recall": 4.844,
-      "scanability": 4.133,
-      "naturalness": 4.911,
-      "cognitive_ease": 4.778,
-      "plain_language": 4.8
+      "defect_clarity": 4.933,
+      "action_recall": 4.911,
+      "scanability": 4,
+      "naturalness": 4.933,
+      "cognitive_ease": 4.822,
+      "plain_language": 4.844
     },
     "before": {
-      "defect_clarity": 5,
-      "action_recall": 4.911,
-      "scanability": 4.867,
-      "naturalness": 3.867,
-      "cognitive_ease": 4.267,
-      "plain_language": 4.2
+      "defect_clarity": 4.978,
+      "action_recall": 5,
+      "scanability": 4.911,
+      "naturalness": 3.889,
+      "cognitive_ease": 4.067,
+      "plain_language": 4.044
     }
   },
   "delta": {
-    "defect_clarity": -0.022,
-    "action_recall": -0.067,
-    "scanability": -0.734,
+    "defect_clarity": -0.045,
+    "action_recall": -0.089,
+    "scanability": -0.911,
     "naturalness": 1.044,
-    "cognitive_ease": 0.511,
-    "plain_language": 0.6
+    "cognitive_ease": 0.755,
+    "plain_language": 0.8
   },
   "after_hard_gate_failures": 0
 }

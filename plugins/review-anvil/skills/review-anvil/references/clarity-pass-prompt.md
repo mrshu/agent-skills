@@ -217,9 +217,9 @@ Use this shape:
 
 <exact frozen metadata>
 
-_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._
-
 </details>
+
+_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._
 ```
 
 Every active finding becomes one row in `Issues and fixes` or `Optional
@@ -233,6 +233,9 @@ its hidden `review-anvil-report` marker in the final cell. Escape every literal
 pipe-splitting. Show severity as `Critical`, `High`, `Medium`, `Low`, or `Nit`.
 Show the frozen report location as `` `path:line` ``, a line range, or `—`.
 Keep IDs, area, encoded location, and disposition in the hidden terminal marker.
+The review-anvil footer appears exactly once as the absolute final nonblank
+line. Every collapsed section and helper-only idempotency marker must come
+before it.
 
 Keep earlier feedback, changes made, set-aside/outside items, and exact review
 metadata in separate collapsed sections with natural labels. Each identified

@@ -357,7 +357,23 @@ for index, item in enumerate(items, 1):
         location = f"Finding {index}"
     parts.extend((f"### `{location}`", "", str(item["body"]).strip(), ""))
 parts.extend(("</details>", section_marker, ""))
-report_path.write_text(report.rstrip() + "\n" + "\n".join(parts))
+section = "\n".join(parts).strip()
+footer = (
+    "_Reviewed with [review-anvil]"
+    "(https://github.com/mrshu/agent-skills/#review-anvil)._"
+)
+rendered = report.rstrip()
+if rendered.endswith(footer):
+    rendered = (
+        rendered[: -len(footer)].rstrip()
+        + "\n\n"
+        + section
+        + "\n\n"
+        + footer
+    )
+else:
+    rendered = rendered + "\n\n" + section
+report_path.write_text(rendered + "\n")
 PY
 }
 append_review_context_note() {
@@ -392,12 +408,27 @@ if match:
         body = "\n\n".join(part for part in (body, note) if part)
     report = report[:match.start()] + match.group(1) + body + match.group(3) + report[match.end():]
 else:
-    report = (
-        report.rstrip()
-        + "\n\n<details>\n<summary>Review context</summary>\n\n"
+    section = (
+        "<details>\n<summary>Review context</summary>\n\n"
         + note
-        + "\n\n</details>\n"
+        + "\n\n</details>"
     )
+    footer = (
+        "_Reviewed with [review-anvil]"
+        "(https://github.com/mrshu/agent-skills/#review-anvil)._"
+    )
+    rendered = report.rstrip()
+    if rendered.endswith(footer):
+        report = (
+            rendered[: -len(footer)].rstrip()
+            + "\n\n"
+            + section
+            + "\n\n"
+            + footer
+            + "\n"
+        )
+    else:
+        report = rendered + "\n\n" + section + "\n"
 report_path.write_text(report)
 PY
 }
@@ -2318,10 +2349,8 @@ cmd_post_update() {
     if [[ "$outcome" == "success" ]]; then
         if ! suppress_prior_feedback "$host" "$owner" "$repo" "$n" "$report_path" "${report_path}.inline.json"; then
             outcome="failure"
-            {
-                printf '\n\n## Failure\n\n'
-                printf 'The prior-feedback refresh failed. review-anvil did not publish the success report because it can repeat earlier feedback.\n'
-            } >>"$report_path"
+            append_review_context_note "$report_path" \
+                "Failure: The prior-feedback refresh failed. review-anvil did not publish the success report because it can repeat earlier feedback."
             printf 'pr-helper: warning: prior-feedback refresh failed; updating comment with outcome=failure\n' >&2
         fi
     fi

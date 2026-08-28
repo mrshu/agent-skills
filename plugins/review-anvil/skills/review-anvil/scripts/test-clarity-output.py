@@ -272,9 +272,9 @@ class ClarityOutputValidatorTests(unittest.TestCase):
                 "One issue needs attention.\n"
                 "The CLI entry point fails before conversion.\n"
                 "CLI conversion.\nOne concern checked.\noff\n\n"
+                "</details>\n\n"
                 "_Reviewed with [review-anvil]"
-                "(https://github.com/mrshu/agent-skills/#review-anvil)._\n\n"
-                "</details>"
+                "(https://github.com/mrshu/agent-skills/#review-anvil)._"
             ),
             "report_items": [
                 {"id": "RAV-RUN2-R1-F003", "rendered_body": report_item}
@@ -311,6 +311,13 @@ class ClarityOutputValidatorTests(unittest.TestCase):
         rendered["decision"] = "APPROVE"
         result = self.validate(rendered, canonical)
         self.assertEqual(result.returncode, 0, result.stderr)
+        after_footer = copy.deepcopy(rendered)
+        after_footer["report_markdown"] += (
+            "\n<!-- review-anvil: appended-inline-details -->"
+        )
+        result = self.validate(after_footer, canonical)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("review footer must be the final nonblank line", result.stderr)
         footerless = copy.deepcopy(rendered)
         wrong_header = copy.deepcopy(rendered)
         wrong_header["report_markdown"] = wrong_header["report_markdown"].replace(
@@ -348,12 +355,12 @@ class ClarityOutputValidatorTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         footerless["report_markdown"] = footerless["report_markdown"].replace(
             "\n_Reviewed with [review-anvil]"
-            "(https://github.com/mrshu/agent-skills/#review-anvil)._\n",
-            "\n",
+            "(https://github.com/mrshu/agent-skills/#review-anvil)._",
+            "",
         )
         result = self.validate(footerless, canonical)
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("review footer must stay in Review context", result.stderr)
+        self.assertIn("review footer must be the final nonblank line", result.stderr)
 
         headed = copy.deepcopy(rendered)
         headed["report_markdown"] = "# Review\n\n" + headed["report_markdown"]
@@ -408,8 +415,8 @@ class ClarityOutputValidatorTests(unittest.TestCase):
             "No report item here.\n\n</details>",
         )
         misplaced["report_markdown"] = misplaced["report_markdown"].replace(
-            "\n_Reviewed with [review-anvil]",
-            f"\n{report_item}\n\n_Reviewed with [review-anvil]",
+            "\n</details>\n\n_Reviewed with [review-anvil]",
+            f"\n{report_item}\n\n</details>\n\n_Reviewed with [review-anvil]",
             1,
         )
         result = self.validate(misplaced, canonical)
@@ -457,9 +464,9 @@ class ClarityOutputValidatorTests(unittest.TestCase):
                 "The reviewed change.\n"
                 "Checks passed.\n"
                 "off\n\n"
+                "</details>\n\n"
                 "_Reviewed with [review-anvil]"
-                "(https://github.com/mrshu/agent-skills/#review-anvil)._\n\n"
-                "</details>"
+                "(https://github.com/mrshu/agent-skills/#review-anvil)._"
             ),
             "report_items": [],
             "disposition_items": [],

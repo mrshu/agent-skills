@@ -671,13 +671,13 @@ All active findings stay collapsed in fixed four-column tables. Each row shows
 severity, frozen report location, the complete issue or suggestion, and the
 complete requested or suggested change. This full collapsed detail is
 intentionally repeated in inline comments for GitHub's native anchored review
-UI. Collapse earlier feedback, changes made, dispositions, review context, and
-the review-anvil footer.
+UI. Collapse earlier feedback, changes made, dispositions, and review context.
 
 Each table row stays on one source line and ends with its hidden
 `review-anvil-report` marker in the final cell. Escape every literal `|` inside a
 cell as `\|`. Keep IDs, area, encoded location, and disposition in the hidden
-marker.
+marker. Put every collapsed section and helper-only idempotency marker before
+the review-anvil footer, which is the absolute final nonblank line.
 
 ```
 Two issues showed up in session validation and write accounting. One lower-priority CLI naming suggestion is listed separately.
@@ -736,10 +736,9 @@ Two issues showed up in session validation and write accounting. One lower-prior
 - Reviewers: <mix>
 - Checks: <exact frozen check result>
 - Second check: <exact frozen adversarial result>
+</details>
 
 _Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._
-
-</details>
 ```
 
 `Findings addressed` = post-dedup count of unique findings auto-applied across all rounds.

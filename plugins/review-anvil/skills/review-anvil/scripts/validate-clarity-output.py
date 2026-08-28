@@ -273,10 +273,18 @@ def validate_human_report_envelope(
     findings: dict[str, dict[str, Any]],
     report: str,
 ) -> None:
+    stripped_report = report.rstrip()
+    if (
+        report.count(REVIEW_FOOTER) != 1
+        or not stripped_report.endswith(REVIEW_FOOTER)
+        or stripped_report.splitlines()[-1] != REVIEW_FOOTER
+    ):
+        raise InvalidBundle("review footer must be the final nonblank line")
+    report_body = stripped_report[: -len(REVIEW_FOOTER)].rstrip()
     visible_report = re.sub(
         r"^<!--\s*review-anvil-marker:.*?-->\s*\n",
         "",
-        report,
+        report_body,
         count=1,
     ).lstrip("\n")
     blocks = compact_details_blocks(visible_report)
@@ -303,8 +311,6 @@ def validate_human_report_envelope(
     context = blocks.get("Review context")
     if context is None:
         raise InvalidBundle("human-summary report must include Review context")
-    if report.count(REVIEW_FOOTER) != 1 or REVIEW_FOOTER not in context:
-        raise InvalidBundle("review footer must stay in Review context")
 
     dispositions = structured_dispositions(canonical)
     expected_sections = {

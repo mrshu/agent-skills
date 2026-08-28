@@ -4,11 +4,11 @@
       "id": "every_eval_ever-pr-190-review-4870915628:complete",
       "A": {
         "fact_safe": true,
-        "defect_clarity": 5,
+        "defect_clarity": 4,
         "action_recall": 5,
-        "scanability": 4,
-        "naturalness": 5,
-        "cognitive_ease": 4,
+        "scanability": 3,
+        "naturalness": 4,
+        "cognitive_ease": 3,
         "plain_language": 4
       },
       "B": {
@@ -16,42 +16,19 @@
         "defect_clarity": 5,
         "action_recall": 5,
         "scanability": 5,
-        "naturalness": 3,
+        "naturalness": 4,
         "cognitive_ease": 4,
         "plain_language": 4
       },
-      "choice": "A",
-      "evidence": "Both versions retain all seven concerns, four suggestions, locations, conditions, and requested verification, including explicit refs, alias handling, legacy typed values, UUID-named output, and per-lookup cache results. A's neutral summary and compact issue/action tables read more naturally than B's mechanized COMMENT framing and repeated finding IDs, despite B surfacing the action list more immediately."
+      "choice": "B",
+      "evidence": "Both preserve all seven concerns, four suggestions, conditions, and actions. B surfaces the defects instead of hiding the working list in a dense collapsed table, so it is easier to scan and retain; the attribution footer is neutral."
     },
     {
       "id": "every_eval_ever-pr-190-review-4870915628:inline:RAV-RUN2-R1-F001",
       "A": {
         "fact_safe": true,
         "defect_clarity": 5,
-        "action_recall": 4,
-        "scanability": 5,
-        "naturalness": 4,
-        "cognitive_ease": 4,
-        "plain_language": 4
-      },
-      "B": {
-        "fact_safe": true,
-        "defect_clarity": 5,
-        "action_recall": 4,
-        "scanability": 4,
-        "naturalness": 5,
-        "cognitive_ease": 5,
-        "plain_language": 5
-      },
-      "choice": "B",
-      "evidence": "Both preserve the canonical-model-alias defect and the pinned-snapshot/source-derived-fallback boundary. B connects cause and effect in one natural sentence and gives the same complete action without extra presentation scaffolding."
-    },
-    {
-      "id": "every_eval_ever-pr-190-review-4870915628:inline:RAV-RUN2-R1-F002",
-      "A": {
-        "fact_safe": true,
-        "defect_clarity": 5,
-        "action_recall": 4,
+        "action_recall": 5,
         "scanability": 5,
         "naturalness": 4,
         "cognitive_ease": 4,
@@ -67,7 +44,30 @@
         "plain_language": 5
       },
       "choice": "B",
-      "evidence": "Both retain explicit branch and tag refs, the commit-SHA requirement, and the no-network offline-replay boundary. B's direct “Pin” instruction and compact causal wording are easier to absorb and remember."
+      "evidence": "Both keep the identity mismatch, alias consequence, pinned-snapshot boundary, and marked fallback. B reads as one compact causal explanation and direct action, while A mainly gains heading-level scanability."
+    },
+    {
+      "id": "every_eval_ever-pr-190-review-4870915628:inline:RAV-RUN2-R1-F002",
+      "A": {
+        "fact_safe": true,
+        "defect_clarity": 5,
+        "action_recall": 5,
+        "scanability": 5,
+        "naturalness": 4,
+        "cognitive_ease": 4,
+        "plain_language": 4
+      },
+      "B": {
+        "fact_safe": true,
+        "defect_clarity": 5,
+        "action_recall": 5,
+        "scanability": 4,
+        "naturalness": 5,
+        "cognitive_ease": 5,
+        "plain_language": 5
+      },
+      "choice": "B",
+      "evidence": "Both retain network-only resolution to one commit SHA and offline use of the stored immutable ref without network access. B is shorter and more natural without weakening the boundary."
     },
     {
       "id": "every_eval_ever-pr-190-review-4870915628:inline:RAV-RUN2-R1-F003",
@@ -89,8 +89,8 @@
         "cognitive_ease": 5,
         "plain_language": 5
       },
-      "choice": "tie",
-      "evidence": "Both fully identify the stale argument namespace, pre-conversion failure, parser change, and offline defaults test. A makes the two actions easier to scan; B is more conversational and compact, with no substantive readability advantage overall."
+      "choice": "A",
+      "evidence": "Both preserve the pre-conversion failure, parser change, and offline defaults test. A separates the two required actions into bullets, making them easier to find and remember."
     },
     {
       "id": "every_eval_ever-pr-190-review-4870915628:inline:RAV-RUN2-R1-F005",
@@ -112,8 +112,8 @@
         "cognitive_ease": 5,
         "plain_language": 5
       },
-      "choice": "tie",
-      "evidence": "Both preserve the populated-value condition, finite metric-rule validation, publication consequence, and routing of invalid rows to SourceConversionResult. A separates the two fixes for recall; B expresses them more naturally in one sentence."
+      "choice": "A",
+      "evidence": "Both retain finite/rule validation before result construction and routing invalid rows to SourceConversionResult. A makes the two-part remediation materially easier to scan and recall."
     },
     {
       "id": "every_eval_ever-pr-190-review-4870915628:inline:RAV-RUN2-R1-F007",
@@ -132,21 +132,21 @@
         "action_recall": 5,
         "scanability": 5,
         "naturalness": 4,
-        "cognitive_ease": 4,
-        "plain_language": 4
+        "cognitive_ease": 5,
+        "plain_language": 5
       },
-      "choice": "A",
-      "evidence": "Both retain the new-snapshot pinned-content action and the strict legacy behavior: leave the typed value unset and mark missing content. A states the complete defect and two-era remedy plainly without unnecessary headings."
+      "choice": "B",
+      "evidence": "Both preserve new-snapshot prompt storage and the legacy unset-plus-marker behavior. B gives the defect a useful heading and separates the two temporal cases into bullets."
     },
     {
       "id": "every_eval_ever-pr-190-review-4870915628:inline:RAV-RUN2-R1-F009",
       "A": {
         "fact_safe": true,
         "defect_clarity": 5,
-        "action_recall": 4,
+        "action_recall": 5,
         "scanability": 5,
         "naturalness": 4,
-        "cognitive_ease": 4,
+        "cognitive_ease": 5,
         "plain_language": 4
       },
       "B": {
@@ -159,14 +159,14 @@
         "plain_language": 5
       },
       "choice": "B",
-      "evidence": "Both identify locally present missing/null entries as the skipped live-lookup case and preserve unchanged offline behavior. B explains the skip and resulting inability to discover a newly available value in one smoother sentence."
+      "evidence": "Both keep the present-but-missing snapshot condition, live-mode lookup, snapshot-refresh consequence, and unchanged offline behavior. B expresses the same rule more plainly and naturally."
     },
     {
       "id": "every_eval_ever-pr-190-review-4870915628:inline:RAV-RUN2-R1-F011",
       "A": {
         "fact_safe": true,
         "defect_clarity": 5,
-        "action_recall": 4,
+        "action_recall": 5,
         "scanability": 5,
         "naturalness": 4,
         "cognitive_ease": 4,
@@ -182,7 +182,7 @@
         "plain_language": 5
       },
       "choice": "B",
-      "evidence": "Both preserve exact-canonical-ID precedence and the unique-owner restriction on normalized resolution. B is shorter and more direct while retaining the collision consequence."
+      "evidence": "Both preserve exact-canonical precedence and the unique-owner condition for normalized resolution. B is more concise and natural; A only has the scanability advantage of a bold heading."
     },
     {
       "id": "every_eval_ever-pr-204-review-4884442134:complete",
@@ -191,28 +191,28 @@
         "defect_clarity": 5,
         "action_recall": 5,
         "scanability": 5,
-        "naturalness": 3,
+        "naturalness": 4,
         "cognitive_ease": 4,
         "plain_language": 4
       },
       "B": {
         "fact_safe": true,
-        "defect_clarity": 5,
+        "defect_clarity": 4,
         "action_recall": 5,
-        "scanability": 4,
-        "naturalness": 5,
-        "cognitive_ease": 5,
-        "plain_language": 5
+        "scanability": 3,
+        "naturalness": 4,
+        "cognitive_ease": 3,
+        "plain_language": 4
       },
-      "choice": "B",
-      "evidence": "Both retain every concern, boundary, and test purpose: preflight and recoverable old files through successful writes and route transitions, multi-route mid-write rollback tests, raw-source identity, finite-number worker accounting, atomic report publication, and limit semantics. B's neutral overview and full-detail tables are calmer and less repetitive than A's generated-result framing and ID-heavy bullets."
+      "choice": "A",
+      "evidence": "Both preserve all four concerns, the CLI suggestion, rollback tests, identity boundary, finite-number validation, and atomic reporting action. A exposes the actionable list and clearer inline structure; B buries it in a dense collapsed table. The footer does not affect the judgment."
     },
     {
       "id": "every_eval_ever-pr-204-review-4884442134:inline:RAV-RUN3-R1-F001",
       "A": {
         "fact_safe": true,
         "defect_clarity": 5,
-        "action_recall": 4,
+        "action_recall": 5,
         "scanability": 4,
         "naturalness": 5,
         "cognitive_ease": 4,
@@ -225,20 +225,20 @@
         "scanability": 5,
         "naturalness": 4,
         "cognitive_ease": 5,
-        "plain_language": 5
+        "plain_language": 4
       },
       "choice": "B",
-      "evidence": "Both preserve the deletion timing, rollback boundary, recoverable-old-file requirement through every successful write and route transition, and the multi-route mid-write test's rollback purpose. B's three-item action list is materially easier to scan and recall."
+      "evidence": "Both retain preflight, recoverable-old-file retention through writes and route transitions, and multi-route mid-write rollback tests. B turns the three required steps into a readily scannable checklist."
     },
     {
       "id": "every_eval_ever-pr-204-review-4884442134:inline:RAV-RUN3-R1-F002",
       "A": {
         "fact_safe": true,
         "defect_clarity": 5,
-        "action_recall": 4,
+        "action_recall": 5,
         "scanability": 4,
         "naturalness": 5,
-        "cognitive_ease": 4,
+        "cognitive_ease": 5,
         "plain_language": 4
       },
       "B": {
@@ -247,11 +247,11 @@
         "action_recall": 5,
         "scanability": 5,
         "naturalness": 4,
-        "cognitive_ease": 5,
+        "cognitive_ease": 4,
         "plain_language": 4
       },
-      "choice": "B",
-      "evidence": "Both preserve the alias-redirect identity instability and the metadata/routing boundary. B more explicitly labels the raw dataset path as the original source value and says the reconciled repository remains unchanged, making the requested split harder to misread."
+      "choice": "A",
+      "evidence": "Both keep raw source identity separate from reconciled metadata and routing. A states the defect and remedy more smoothly and economically; B is easier to spot but its parenthetical em-dash wording is heavier."
     },
     {
       "id": "every_eval_ever-pr-204-review-4884442134:inline:RAV-RUN3-R1-F004",
@@ -261,7 +261,7 @@
         "action_recall": 5,
         "scanability": 4,
         "naturalness": 5,
-        "cognitive_ease": 4,
+        "cognitive_ease": 5,
         "plain_language": 4
       },
       "B": {
@@ -270,34 +270,34 @@
         "action_recall": 5,
         "scanability": 5,
         "naturalness": 4,
-        "cognitive_ease": 5,
+        "cognitive_ease": 4,
         "plain_language": 4
       },
-      "choice": "B",
-      "evidence": "Both retain exclusions-only accounting, stale-report risk, post-publication atomic replacement, clean-run coverage, and preservation of the last complete report. B's heading exposes the triggering run state immediately and its action clearly names fully clean runs."
+      "choice": "A",
+      "evidence": "Both preserve exclusions-only and stale-report consequences plus atomic replacement after successful publication. A is tighter and more natural, while B adds a heading but also heavier ledger wording."
     },
     {
       "id": "every_eval_ever-pr-230-review-4870883842:complete",
       "A": {
         "fact_safe": true,
-        "defect_clarity": 5,
+        "defect_clarity": 4,
         "action_recall": 5,
-        "scanability": 4,
-        "naturalness": 5,
-        "cognitive_ease": 5,
-        "plain_language": 5
+        "scanability": 3,
+        "naturalness": 4,
+        "cognitive_ease": 3,
+        "plain_language": 4
       },
       "B": {
         "fact_safe": true,
         "defect_clarity": 5,
         "action_recall": 5,
         "scanability": 5,
-        "naturalness": 3,
+        "naturalness": 4,
         "cognitive_ease": 4,
         "plain_language": 4
       },
-      "choice": "A",
-      "evidence": "Both preserve the PR #221/rebase condition, default-rich CLI verification, exact guide path and its three required topics, plus all four qualified suggestions. A's neutral summary and issue/action tables are simpler and more human than B's COMMENT/merge-readiness framing and generated finding IDs; no credit is given for B's merge judgment."
+      "choice": "B",
+      "evidence": "Both preserve the two merge-readiness issues, four optional suggestions, PR #221 condition, verification, and guide content. B exposes the actionable findings rather than placing them in a collapsed table; the footer is neutral."
     },
     {
       "id": "every_eval_ever-pr-230-review-4870883842:inline:RAV-RUN1-R1-F003",
@@ -317,10 +317,10 @@
         "scanability": 5,
         "naturalness": 4,
         "cognitive_ease": 4,
-        "plain_language": 4
+        "plain_language": 5
       },
       "choice": "A",
-      "evidence": "Both preserve why PASS hides the warning, PR #221 as the prerequisite, rebase timing, and the default-rich CLI check of the complete path. A presents the causal chain and follow-up as two natural paragraphs without fragmenting them into four blocks."
+      "evidence": "Both retain the valid-report early return, PR #221 prerequisite, post-rebase timing, and default-rich CLI check. A is more compact and flows naturally; B repeats the prerequisite across extra paragraphs."
     },
     {
       "id": "every_eval_ever-pr-230-review-4870883842:inline:RAV-RUN1-R1-F004",
@@ -343,7 +343,7 @@
         "plain_language": 4
       },
       "choice": "A",
-      "evidence": "Both retain the exact required guide, the missing update, and all three documentation requirements: alias trigger, warning-only result, and single-record evidence limit. A is complete in two concise, natural paragraphs; B repeats the repository-rule setup with little added clarity."
+      "evidence": "Both retain the required guide path and the alias-trigger, warning-only, and single-record-limit documentation. A delivers the same complete request with less repetition and lower cognitive load."
     }
   ]
 }

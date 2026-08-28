@@ -46,6 +46,8 @@ target use the same complete finding ID unchanged.
 Each table row stays on one source line and ends with its hidden report marker
 in the final cell. Escape every literal `|` inside a cell as `\|`. Parse the
 fixed columns and terminal marker; never use generic `split('|')` parsing.
+Place the review-anvil footer exactly once as the absolute final nonblank line.
+Every collapsed block and helper-only idempotency marker comes before it.
 
 ## ASD-STE100-Inspired Language
 

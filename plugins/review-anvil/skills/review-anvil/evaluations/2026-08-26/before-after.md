@@ -131,10 +131,10 @@ Source: https://github.com/evaleval/every_eval_ever/pull/190#pullrequestreview-4
 > - Fixes applied: 0 (review-only)
 >
 >
-> _Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._
->
 >
 > </details>
+>
+> _Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._
 
 ### Inline comments
 
@@ -406,10 +406,10 @@ Source: https://github.com/evaleval/every_eval_ever/pull/204#pullrequestreview-4
 > - Set aside: 0 items
 >
 >
-> _Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._
->
 >
 > </details>
+>
+> _Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._
 
 ### Inline comments
 
@@ -584,10 +584,10 @@ Source: https://github.com/evaleval/every_eval_ever/pull/230#pullrequestreview-4
 > - Set aside: 0 items
 >
 >
-> _Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._
->
 >
 > </details>
+>
+> _Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._
 
 ### Inline comments
 

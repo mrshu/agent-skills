@@ -59,9 +59,9 @@ $REPRODUCTION_LINE
 
 **Adversarial review:** targeted, 2 agents; 2 upheld, 1 hardened, 0 deferred, 0 dropped.
 
-_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._
-
 </details>
+
+_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._
 EOF
 }
 
@@ -674,6 +674,8 @@ test_post_update_success() {
     jq -e '.body | contains("Delivery: review-anvil-improve-pr completed")' "$tmp/patch.json" >/dev/null
     jq -e '.body | index("<summary>Review context</summary>") < index("Delivery: review-anvil-improve-pr completed")' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("Started: 2026-06-19T00:00:00Z; Completed:")' "$tmp/patch.json" >/dev/null
+    jq -e '.body | rtrimstr("\n") | endswith("_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._")' "$tmp/patch.json" >/dev/null
+    jq -e '.body | index("review-anvil: appended-inline-details") < index("_Reviewed with [review-anvil]")' "$tmp/patch.json" >/dev/null
     assert_file_missing "$report"
     assert_file_missing "$inline"
     assert_file_missing "$tmp/report.md.approval.json"
@@ -701,6 +703,8 @@ test_post_update_refresh_failure_omits_inline_details() {
     jq -e '.body | contains("prior-feedback refresh failed")' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("<summary>Finding details") | not' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("Move state validation before session rotation") | not' "$tmp/patch.json" >/dev/null
+    jq -e '.body | rtrimstr("\n") | endswith("_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._")' "$tmp/patch.json" >/dev/null
+    jq -e '.body | index("<summary>Review context</summary>") < index("prior-feedback refresh failed")' "$tmp/patch.json" >/dev/null
     assert_file_missing "$report"
     assert_file_missing "$inline"
     assert_file_missing "$tmp/report.md.approval.json"

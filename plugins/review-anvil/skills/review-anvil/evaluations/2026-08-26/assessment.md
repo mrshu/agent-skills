@@ -69,9 +69,9 @@ rather than against the summary alone.
 
 | Surface | Human wins | Current wins | Ties |
 |---|---:|---:|---:|
-| Complete reviews | 9 | 0 | 0 |
-| Inline comments | 22 | 8 | 6 |
-| **Total** | **31** | **8** | **6** |
+| Complete reviews | 6 | 3 | 0 |
+| Inline comments | 30 | 5 | 1 |
+| **Total** | **36** | **8** | **1** |
 
 No final human output received a hard fact/action failure.
 
@@ -79,17 +79,17 @@ Mean scores across all 45 judgments:
 
 | Dimension | Current | Human | Delta |
 |---|---:|---:|---:|
-| Defect clarity | 5.000 | 4.978 | -0.022 |
-| Action recall | 4.911 | 4.844 | -0.067 |
-| Scanability | 4.867 | 4.133 | -0.734 |
-| Naturalness | 3.867 | 4.911 | +1.044 |
-| Cognitive ease | 4.267 | 4.778 | +0.511 |
-| Plain language | 4.200 | 4.800 | +0.600 |
+| Defect clarity | 4.978 | 4.933 | -0.045 |
+| Action recall | 5.000 | 4.911 | -0.089 |
+| Scanability | 4.911 | 4.000 | -0.911 |
+| Naturalness | 3.889 | 4.933 | +1.044 |
+| Cognitive ease | 4.067 | 4.822 | +0.755 |
+| Plain language | 4.044 | 4.844 | +0.800 |
 
-All nine complete-review judgments preferred the table-based human report and
-marked it fact-safe. Complete-review scanability scored 4.667 versus 4.333.
-The aggregate includes separately judged inline comments, where the current
-heading/list format sometimes won on local scanability.
+Six of nine complete-review judgments preferred the table-based human report;
+all nine marked it fact-safe. The blind text extraction expands collapsed
+tables, so its scanability score does not model GitHub's default compact view.
+The aggregate also includes separately judged inline comments.
 
 ## Safety gates
 
@@ -102,8 +102,8 @@ The deterministic validator checks:
 - configured inline-severity eligibility and exact inline anchors;
 - one headingless visible summary line, canonical count-free collapsed labels,
   fixed full-detail table headers and columns, escaped single-line cells,
-  terminal marker identity, footer placement, and complete envelope
-  consumption;
+  terminal marker identity, complete envelope consumption, and the footer as
+  the absolute final nonblank line after every helper marker;
 - post-time history refresh fails closed when it would stale the compact
   summary;
 - count-free fallback details and delivery metadata stay collapsed, including
