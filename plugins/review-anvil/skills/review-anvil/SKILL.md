@@ -673,6 +673,13 @@ observations about the changed code. Do not require a fixed replacement phrase.
 Choose a natural code-facing statement that fits the detected issues,
 suggestions, or uncertainty.
 
+Use the review history only when it changes what the author needs to understand
+about the current code. A first review stays focused on current findings. On a
+follow-up, mention a fixed, still-present, reintroduced, or newly introduced
+concern only when that delta is useful; otherwise use the ordinary current-code
+summary. Refer to earlier concerns or the latest changes, not run ordinals,
+rounds, or review mechanics.
+
 All active findings stay collapsed in fixed four-column tables. Each row shows
 severity, frozen report location, the complete issue or suggestion, and the
 complete requested or suggested change. This full collapsed detail is

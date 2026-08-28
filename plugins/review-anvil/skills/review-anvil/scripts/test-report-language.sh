@@ -30,12 +30,41 @@ require() {
     grep -Fq -- "$text" "$file" || fail "missing $text in $file"
 }
 
+prose_occurs_once() {
+    local file="$1" prose="$2"
+    python3 - "$file" "$prose" <<'PY'
+import pathlib
+import re
+import sys
+
+path = pathlib.Path(sys.argv[1])
+expected = " ".join(sys.argv[2].split())
+blocks = re.split(r"\n[ \t]*\n", path.read_text())
+matches = sum(" ".join(block.split()).count(expected) for block in blocks)
+raise SystemExit(0 if matches == 1 else 1)
+PY
+}
+
+require_prose() {
+    local file="$1" prose="$2"
+    prose_occurs_once "$file" "$prose" ||
+        fail "expected exactly one normalized occurrence of $prose in $file"
+}
+
 reject() {
     local file="$1" text="$2"
     if grep -Fq -- "$text" "$file"; then
         fail "retired $text remains in $file"
     fi
 }
+
+PROSE_BOUNDARY_FIXTURE=$(mktemp)
+trap 'rm -f "$PROSE_BOUNDARY_FIXTURE"' EXIT
+printf '%s\n' 'This sentence stops here' '' 'and this starts another paragraph.' >"$PROSE_BOUNDARY_FIXTURE"
+if prose_occurs_once "$PROSE_BOUNDARY_FIXTURE" \
+    'This sentence stops here and this starts another paragraph.'; then
+    fail 'require_prose joined separate Markdown paragraphs'
+fi
 require "$ENGINE" 'description: Use when'
 reject "$ENGINE" 'description: Iteratively refine'
 
@@ -65,13 +94,18 @@ require "$CLARITY" 'footer appears exactly once as the absolute final nonblank'
 require "$PR_SKILL" 'footer is the absolute final nonblank line.'
 require "$IMPROVE_PRESET" 'review-anvil footer remains last.'
 for guide in "$ENGINE" "$CLARITY" "$ARTIFACTS"; do
-    require "$guide" 'Do not narrate the review pipeline in the visible summary.'
-    require "$guide" 'Translate internal'
-    require "$guide" 'review outcomes'
-    require "$guide" 'observations about the changed code.'
-    require "$guide" 'Do not require a fixed'
-    require "$guide" 'replacement phrase.'
+    require_prose "$guide" 'Do not narrate the review pipeline in the visible summary.'
+    require_prose "$guide" 'Translate internal review outcomes into observations about the changed code.'
+    require_prose "$guide" 'Do not require a fixed replacement phrase.'
+    require_prose "$guide" 'Use the review history only when it changes what the author needs to understand about the current code.'
 done
+require_prose "$CLARITY" 'For a first review, summarize only the current code outcome; do not announce that it is the first review.'
+require_prose "$CLARITY" 'For a follow-up review, mention earlier feedback only when a fixed, still-present, reintroduced, or newly introduced concern creates a meaningful delta.'
+require_prose "$CLARITY" 'If history adds no useful information, write the same current-code summary you would use without it.'
+require "$CLARITY" '`The earlier replacement-safety issue is resolved, but identity handling still conflates distinct evaluations.`'
+require "$CLARITY" '`The warning is still hidden after the latest changes.`'
+require "$CLARITY" '`The earlier CLI issue is fixed, but the latest update introduces a path-resolution failure.`'
+require "$CLARITY" '`The earlier concerns are resolved; nothing material stood out in the latest changes.`'
 require "$CLARITY" '`No new finding survived review.`'
 require "$CLARITY" '`Three candidates were confirmed.`'
 require "$CLARITY" '`Nothing material stood out in the changed code.`'

@@ -37,6 +37,13 @@ review outcomes into observations about the changed code. Do not require a fixed
 replacement phrase. Choose a natural statement about affected behavior,
 detected issue areas, optional suggestions, or unreproduced uncertainty.
 
+Use the review history only when it changes what the author needs to understand
+about the current code. Keep a first-review summary focused on current findings.
+For a follow-up, describe a meaningful code delta—fixed, still present,
+reintroduced, or newly introduced—without showing run ordinals or review
+mechanics. If no historical delta helps the author, use the ordinary current-code
+summary.
+
 The pass rewrites the language as well as the layout. Prefer short ordinary
 sentences and concrete outcomes over internal mechanics. It cannot change the
 finding inventory, decision, priority, disposition, technical relationships,

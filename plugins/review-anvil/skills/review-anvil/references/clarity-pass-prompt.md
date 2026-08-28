@@ -193,7 +193,23 @@ Describe the affected behavior, detected issue areas, optional suggestions, or
 unreproduced uncertainty. Do not require a fixed replacement phrase. Choose
 wording from the code facts rather than mechanically substituting synonyms.
 
-Examples of code-facing outcomes, not templates:
+Use the review history only when it changes what the author needs to understand
+about the current code. For a first review, summarize only the current code
+outcome; do not announce that it is the first review. For a follow-up review,
+mention earlier feedback only when a fixed, still-present, reintroduced, or
+newly introduced concern creates a meaningful delta. If history adds no useful
+information, write the same current-code summary you would use without it.
+
+Infer the lifecycle from the frozen `Run ordinal` in `run_details` and the
+status-tagged `earlier_feedback`; do not expose those mechanics. Meaningful
+follow-up examples, not templates:
+
+- `The earlier replacement-safety issue is resolved, but identity handling still conflates distinct evaluations.`
+- `The warning is still hidden after the latest changes.`
+- `The earlier CLI issue is fixed, but the latest update introduces a path-resolution failure.`
+- `The earlier concerns are resolved; nothing material stood out in the latest changes.`
+
+History-neutral examples, not templates:
 
 - `Nothing material stood out in the changed code.`
 - `Nothing material stood out, though there are two optional cleanup suggestions below.`

@@ -70,6 +70,12 @@ areas, optional suggestions, or unreproduced uncertainty. It has no fixed
 replacement phrase and no English phrase regex; semantic judges evaluate the
 result.
 
+The contract now treats review lifecycle as context rather than visible process
+metadata. First reviews stay focused on the current code; follow-ups mention
+earlier concerns only when a fixed, still-present, reintroduced, or new concern
+creates a meaningful author-facing delta. Otherwise the same history-neutral
+summary rules apply.
+
 ## Blind readability result
 
 Three clean judges evaluated 15 randomized pairs: 3 complete reviews and 12
