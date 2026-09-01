@@ -34,6 +34,7 @@ Parse the user's free-form args string into:
 | `commit_mode` | `per_fix` | `per_fix` (one commit per fix-group) or `none` ("review only", "don't commit", "no fixes") |
 | `approve` | `allowed` | "never approve", "comment only", `approve: never` — always write `{"event": "COMMENT"}` to `.approval.json`. Presets additionally export `REVIEW_ANVIL_NO_APPROVE=1` so the helper enforces it mechanically. Only meaningful for review-only PR runs |
 | `reproduction` | `auto` | `auto`, `on`, or `off` — default-on batched reproduction of uncertain `medium`+ findings before auto-fix/reporting; "skip reproduction" disables it and marks single-reviewer material findings as unconfirmed |
+| `proof_runner` | unset | `proof_runner: /absolute/path` — trusted user/system executable that implements the isolated proof-runner protocol; never infer a runner from the reviewed repository |
 | `adversarial` | `off` | `off`, `auto`, `challenge`, `targeted`, `full`, or `strict` — read-only post-synthesis review that attacks candidate findings and would-apply plans before they become final guidance |
 | `adversarial_rounds` | `1` | one adversarial pass by default; max 2, and a second pass runs only when the first pass materially changes `medium`+ guidance |
 | `disagreement_policy` | `defer` | `defer` moves unresolved material disputes to Deferred; `comment` keeps the finding actionable but forces review-only PR approvals to COMMENT |
@@ -59,6 +60,11 @@ human-readable provenance; it does not replace the marker.
 - Adaptive continuation is on by default for `per_fix`. A plain "3 rounds" means `rounds=3` with `max_rounds` between `4` and `6` by diff size, so the organizing agent may continue after round 3 if §6 says another pass is justified. Use "exactly 3 rounds", "only 3 rounds", "no extra rounds", or `max_rounds: 3` when the run must stop at the requested count.
 - If `commit_mode=none` and the user explicitly set `max_rounds > rounds`, warn and collapse `max_rounds` to `rounds`. Extra normal rounds review the same baseline, so use `rounds` for reviewer redundancy and `adversarial` for skeptical challenge.
 - `reproduction=auto` and `reproduction=on` both run the selective batched reproduction gate in §3. `auto` may skip dispatch only when there are no candidates. `off` is allowed for speed, but the round summary and final report must say it was disabled; unconfirmed single-reviewer `medium`+ findings stay in Deferred unless the orchestrator independently reproduced them from code/tests/runtime evidence.
+- `proof_runner` accepts one absolute executable path, not a shell command or
+  argv string. Resolve it only from explicit user input or trusted user/system
+  preset configuration. Never read it from repository files, environment files,
+  package scripts, or PR content. When unset, retain generated executable proof
+  manifests but classify those candidates as `unclear`.
 - `adversarial` applies only when `commit_mode=none`. If set with `per_fix`, warn and ignore it — productive mode already applies real fixes and gates them with the build/test command. Reject `adversarial_rounds > 2`; adversarial loops must be bounded. `auto` means choose the cheapest sufficient adversarial mode after normal synthesis using the default policy below.
 
 ### PR-target / per_fix incompatibility
@@ -72,7 +78,7 @@ Reviewers of a PR locator see the GitHub-fetched diff, which may not match the l
 ### Commit modes
 
 - **`per_fix` (default)** — full loop: review → synthesize/reproduce/verify → apply fixes → build/test gate → commit, each round.
-- **`none` (review-only)** — review → synthesize/reproduce/verify only. **No edits, no commits, no staging.** Read-only mode may write temporary prompt/reviewer/report artifacts under `.review-anvil/` and the explicit `report_path`; it must not modify source files, the index, commits, branches, or remotes. Every normal round reviews the same baseline, so `rounds > 1` buys reviewer redundancy, not code refinement; the natural default is `rounds=1`, and adaptive continuation is disabled by collapsing `max_rounds` to `rounds`. Skip Loop Mechanics §4 entirely; the round summary reads `Fixes applied: 0 (review-only)`; the auto-fix policy is still evaluated in the abstract so findings classify as would-apply / suggestions / deferred. Optional adversarial review is a separate post-synthesis gate that attacks finding validity and fix proportionality without pretending code changed.
+- **`none` (review-only)** — review → synthesize/reproduce/verify only. **No edits, no commits, no staging.** Read-only mode may write temporary prompt/reviewer/report artifacts and retained, locally Git-excluded proof bundles under `.review-anvil/`, plus the explicit `report_path`; it must not modify source files, tracked ignore files, the index, commits, branches, or remotes. Every normal round reviews the same baseline, so `rounds > 1` buys reviewer redundancy, not code refinement; the natural default is `rounds=1`, and adaptive continuation is disabled by collapsing `max_rounds` to `rounds`. Skip Loop Mechanics §4 entirely; the round summary reads `Fixes applied: 0 (review-only)`; the auto-fix policy is still evaluated in the abstract so findings classify as would-apply / suggestions / deferred. Optional adversarial review is a separate post-synthesis gate that attacks finding validity and fix proportionality without pretending code changed.
 
 ### Posting reports externally
 
@@ -127,7 +133,7 @@ Capture the target's state at round start so all reviewers see the same input:
 **Use the Agent tool for `claude-exec` reviewers. Do NOT use `claude -p` via Bash — that path is for non-Claude hosts only.**
 
 - **`claude-exec`**: Agent tool, `subagent_type: "general-purpose"`, the assembled Reviewer Prompt as `prompt`, `run_in_background: true`. The Agent tool streams natively, has no `--max-turns` ceiling, and inherits the session environment.
-- **`codex-exec`**: Bash through the wrapper: `REVIEW_ANVIL_REQUIRE_FINDINGS=1 bash <wrapper> .review-anvil/round<N>-<label>.md <reviewer_timeout> -- codex exec --ephemeral --sandbox read-only -C <project-dir> '<prompt>' < /dev/null`, with `run_in_background: true`. The validation flag makes the wrapper reject confirmation-only, plan-only, or otherwise incomplete responses that do not end with the required fenced findings block. `--ephemeral` prevents reviewer sessions from leaking into later dispatches. The `< /dev/null` is load-bearing: codex takes its prompt as argv and must not inherit an open stdin — the wrapper passes its stdin through (`<&0`, which the claude fallback needs), and codex blocking on a never-closing fd 0 is a known hang class from real runs.
+- **`codex-exec`**: Bash through the wrapper: `REVIEW_ANVIL_REQUIRE_FINDINGS=1 bash <wrapper> .review-anvil/round<N>-<label>.md <reviewer_timeout> -- codex exec -m gpt-5.6-luna -c 'model_reasoning_effort="max"' --ephemeral --sandbox read-only -C <project-dir> '<prompt>' < /dev/null`, with `run_in_background: true`. The validation flag makes the wrapper reject confirmation-only, plan-only, or otherwise incomplete responses that do not end with the required fenced findings block. `--ephemeral` prevents reviewer sessions from leaking into later dispatches. The `< /dev/null` is load-bearing: codex takes its prompt as argv and must not inherit an open stdin — the wrapper passes its stdin through (`<&0`, which the claude fallback needs), and codex blocking on a never-closing fd 0 is a known hang class from real runs.
 - Send all M reviewers in a *single message* with multiple tool calls. The harness notifies you on completion; do not poll.
 
 #### In Codex CLI or other hosts without the Agent tool
@@ -145,7 +151,7 @@ Capture the target's state at round start so all reviewers see the same input:
 
   `--tools` restricts the built-in tool set; `--allowedTools` auto-approves the listed safe tool uses and is variadic, so the prompt MUST arrive via stdin (the wrapper passes its stdin through). `--permission-mode dontAsk` keeps the fallback non-interactive by denying anything outside the allowed/read-only path. **Do not size `--max-turns` to the task** — task-sized caps keep biting (20 was hit in production), and a reviewer that hits the cap loses its entire output. The wrapper's wall-clock timeout is the real bound; `100` is a runaway backstop that should never bind.
 
-- **`codex-exec`**: same validation-enabled wrapper around `codex exec --ephemeral --sandbox read-only -C <project-dir> '<prompt>' < /dev/null` — stdin from `/dev/null` here too.
+- **`codex-exec`**: same validation-enabled wrapper around `codex exec -m gpt-5.6-luna -c 'model_reasoning_effort="max"' --ephemeral --sandbox read-only -C <project-dir> '<prompt>' < /dev/null` — stdin from `/dev/null` here too.
 - Launch all M wrapper invocations as background shell processes and `wait`.
 
 #### Bash-dispatched reviewers MUST go through `run-reviewer.sh`
@@ -160,14 +166,15 @@ run-reviewer.sh <out_file> <timeout_seconds> -- <command> [args...]
 - Captures exit status; stderr goes to `<out_file>.err` (kept for diagnosis).
 - Prints one classification: `STATUS=ok` | `timeout` | `empty` (exit 0, nothing written) | `protocol` (normal-review output did not end with a complete fenced findings block) | `failed` (+ `EXIT_CODE=<n>`).
 
-Treat any STATUS other than `ok` as a failed reviewer (see Failure handling), with the tail of `.err` as the reason. `protocol` gets the one corrective retry defined there before it becomes a failure. Set `REVIEW_ANVIL_REQUIRE_FINDINGS=1` only for normal reviewer waves; reproduction and adversarial prompts have different output schemas. Reviewer output/prompt files live under `.review-anvil/`; clean them up after the round's synthesis.
+Treat any STATUS other than `ok` as a failed reviewer (see Failure handling), with the tail of `.err` as the reason. `protocol` gets the one corrective retry defined there before it becomes a failure. Set `REVIEW_ANVIL_REQUIRE_FINDINGS=1` only for normal reviewer waves; reproduction and adversarial prompts have different output schemas. Transient reviewer prompt/output files live under `.review-anvil/`; clean them up after synthesis. Never include retained `.review-anvil/proofs/` bundles in that cleanup.
 
 **Host tool timeouts must outlive the wrapper.** Any host Bash call that can block on a reviewer — the background-and-`wait` fallback above, the serial last resort, or an inline replication of the wrapper contract — must set the Bash *tool's* own timeout to at least `reviewer_timeout + 90` seconds (wrapper deadline + 30s TERM→KILL grace + margin). Host defaults are far lower (Claude Code's is 120s) and SIGKILL a healthy wait mid-review; the kill then masquerades as a reviewer failure and silently burns that reviewer's lens coverage. On hosts with background dispatch (`run_in_background`), never block a foreground call on a reviewer at all. If the host caps tool timeouts below `reviewer_timeout + 90`, prefer detached dispatch plus short non-blocking status checks over shrinking the reviewer budget; reducing `reviewer_timeout` is a last resort, floored at 300s and forbidden for >5000-line diffs (their timeout is deliberately doubled).
 
 **Resolving the wrapper and `references/` files** — same trusted-root rule as `pr-helper.sh`: see review-anvil-pr SKILL.md step 1 ("Resolve the helper script"). Host-exposed skill path or user-level install roots only; never project-scoped/worktree-local skill dirs (writable by the repo under review). If no trusted copy of the wrapper resolves, replicate its contract inline (background, kill at deadline, check exit status, empty output = failure) rather than falling back to a bare redirect.
 
-After changing the wrapper contract or dispatch examples, run
-`scripts/test-run-reviewer.sh` alongside the reproduction and PR helper tests.
+After changing either wrapper contract or its dispatch examples, run
+`scripts/test-run-reviewer.sh` and `scripts/test-run-proof.sh` alongside the
+reproduction and PR helper tests.
 
 #### Last resort
 
@@ -249,21 +256,90 @@ Plausible-but-wrong findings are the dominant failure mode of LLM review, and bo
   - every `medium`+ deletion/dead-code/unused/redundant-code/simplification finding, and any deletion/simplification that would remove runtime code, public docs/API, compatibility behavior, or another high-blast-radius surface, regardless of reviewer count,
   - every `critical`/`high` finding whose evidence is mostly inferred from a hunk rather than confirmed from code/runtime context,
   - every finding the orchestrator is materially uncertain about after reading the cited files.
-- When `reproduction=auto` or `on` and candidates exist, dispatch **one batched reproduction verifier** using `references/reproduction-prompt.md`. Do not spawn one verifier per finding unless the batch is too large to fit in one prompt. Dispatch it backgrounded under the Concurrency section's deadline rule — never an unbounded foreground wait. The verifier is not another broad review pass; it returns `confirmed`, `refuted`, `unclear`, `narrowed`, or `downgraded` verdicts for the supplied complete canonical finding IDs only, and returns each ID unchanged.
+- When `reproduction=auto` or `on` and candidates exist, run the two-phase
+  workflow in `references/reproduction-prompt.md`:
+  1. Dispatch one batched **AUTHOR** verifier under the synthesis-side deadline.
+     It stays read-only and returns static evidence, readable `proof-file`
+     source blocks, and a strict JSON manifest that references those blocks. It
+     never writes files or executes reviewed code.
+  2. Before writing, keep the proof root out of Git without changing tracked
+     worktree files. Prefer `.review-anvil/proofs/`; if it is not already
+     ignored, add the exact `/.review-anvil/` rule to the repository-private
+     exclude file returned by `git rev-parse --git-path info/exclude`. Never
+     create or edit a worktree `.gitignore` for proof infrastructure. If a
+     private exclude cannot be used safely, retain the bundle under a trusted
+     user cache outside the worktree and record that path. Preserve the complete
+     AUTHOR response under `<proof-root>/<run-identity>/<finding-id>/`. Validate
+     unique block IDs, relative paths, and reserved artifact names; write each
+     source block verbatim as its ordinary proof file and write the source-free
+     metadata as `manifest.json`. Never materialize proof files in the
+     disposable reviewed snapshot.
+  3. For executable manifests, use a clean disposable Git checkout containing
+     the exact snapshot normal reviewers saw. PR targets use the captured head
+     SHA. Local dirty targets apply the already-captured diff and create a
+     synthetic snapshot commit without repository hooks.
+  4. If `proof_runner` is configured, resolve `scripts/run-proof.sh` from the
+     trusted engine root and invoke it once per executable finding:
+
+     ```text
+     run-proof.sh <proof-dir>/result.env <reviewer_timeout> \
+       <absolute-source-snapshot> <absolute-proof-dir> -- <proof_runner>
+     ```
+
+     The runner path must be the explicit absolute configured executable.
+     Never run a repository script as the proof runner. `run-proof.sh` accepts
+     only the exact capability record for network-off execution, read-only
+     source and author-supplied proof inputs, filesystem reads limited to
+     source/proof/runtime inputs, proof-runtime-only writes, runner-authored
+     execution results, a sanitized environment, and bounded resources. The
+     wrapper runs each phase in a bounded process group, caps each captured
+     stream at 1 MiB, hashes proof inputs, checks the source tree, publishes
+     host-owned captures with atomic no-follow replacement, and removes the
+     untrusted runtime before returning. Any changed source or proof input,
+     contradictory capability, surviving timeout, runtime-cleanup failure, or
+     malformed/missing `execution.json` fails closed. Accept executable evidence
+     only when `RUNTIME_REMOVED=yes`. Run the wrapper backgrounded under the
+     synthesis-side deadline; any host call that waits on it must outlive
+     `reviewer_timeout` plus the wrapper's 5-second kill grace and a 30-second
+     margin.
+  5. Dispatch one batched **VERDICT** verifier with the manifests, static
+     evidence, retained bundle paths, and any `result.env`, `execution.json`,
+     bounded stdout/stderr, and capability output. It returns the final
+     `confirmed`, `refuted`, `unclear`, `narrowed`, or `downgraded` verdicts.
+- A successful runner process means the isolated runner completed; it does not
+  mean the probe passed. The VERDICT pass interprets the probe exit and
+  observations recorded in `execution.json` against the manifest's
+  `confirmed_when` and `refuted_when` conditions.
+- Runtime/behavior findings use executable proof when a focused probe can
+  represent the contract. Static docs/config/type/API/call-site findings may
+  use concrete static evidence. When an executable proof has no configured
+  runner or returns any non-`ok` wrapper status, its final verdict is
+  `unclear`; never promote generated-but-unexecuted code to evidence.
 - Apply reproduction verdicts before auto-fix/reporting:
   - `confirmed` and `narrowed` findings may remain actionable, with narrowed wording when supplied.
   - `downgraded` findings re-enter the normal severity gates after changing severity.
   - `refuted` findings are dropped from final Findings (or, if useful for transparency, one-line Deferred notes).
   - `unclear` findings move to Deferred with `We set this aside because <plain-language description of the missing proof>.` Rewrite the verifier's reason; do not copy it.
+- Keep each proof bundle after synthesis and successful PR posting. Retain the
+  manifest, readable proof source/fixtures, command metadata, snapshot identity,
+  exact capability record, result files, bounded output, final verdict, and
+  only a validated regular runner-authored `execution.json`. The runner-writable
+  `runtime/` tree is untrusted and ephemeral: `run-proof.sh` deletes it after
+  every outcome. Never retain, traverse, or add that tree to Review context.
+  Add only the sanitized proof bundle path to collapsed Review context. Proof
+  bundles stay locally excluded from Git and are never staged, committed,
+  pushed, uploaded, or posted automatically. Never change a tracked ignore file
+  for proof infrastructure. Remove their disposable source checkouts.
 - Findings raised independently by **2+ reviewers** and not listed as reproduction candidates may skip batched reproduction; consensus is the signal (this is why dedup records who raised what). Still open enough code/context before destructive action to ensure the fix path is coherent.
-- **Deletions ("delete this"/dead/unused/redundant) require reproduction plus execution when `per_fix` applies the cut** — the highest-blast-radius, highest-false-positive class. In `per_fix`, after reproduction confirms the cut, apply it and run the full test suite: a **red gate means keep it**. A green gate is necessary but not sufficient (it only proves *test-covered* behavior), so the reproduction/skeptic pass must also look for a concrete reason the code must stay, visible in the diff (trust boundary, aliasing copy, ordering, back-compat, dedup, edge semantics — or another specific contract). The two cover different blind spots: the gate catches callers the skeptic can't see; the skeptic catches behavior no test exercises. Block **only** on a red gate or a specific skeptic refutation — not on generic "there might be an unseen caller" (that's what the gate tests). Read-only mode has only the skeptic. Blocked → **Deferred** (`We set this aside because the code is still needed — <what>`).
+- **Deletions ("delete this"/dead/unused/redundant) require reproduction plus execution when `per_fix` applies the cut** — the highest-blast-radius, highest-false-positive class. In `per_fix`, after reproduction confirms the cut, apply it and run the full test suite: a **red gate means keep it**. A green gate is necessary but not sufficient (it only proves *test-covered* behavior), so the reproduction/skeptic pass must also look for a concrete reason the code must stay, visible in the diff (trust boundary, aliasing copy, ordering, back-compat, dedup, edge semantics — or another specific contract). The two cover different blind spots: the gate catches callers the skeptic can't see; the skeptic catches behavior no test exercises. Block **only** on a red gate or concrete evidence the code must stay; "might be needed" is not evidence.
 - If `reproduction=off`, say so in the round summary and final report. Required reproduction candidates — including single-reviewer `medium`+ findings, deletion/high-risk findings, and orchestrator-uncertain findings — cannot become actionable unless the orchestrator independently reproduces them from code/tests/runtime evidence; otherwise move them to Deferred with `We set this aside because the needed check was not run.`
 - `low`/`nit` findings skip verification: they're below the auto-fix gate and surface as suggestions either way.
 
 Canonical examples for where reproduction helps and where it must stay out of
 the way live in `references/reproduction-examples.md`. After changing this
-policy or the reproduction prompt, run `scripts/test-reproduction-policy.sh`
-alongside the PR helper tests.
+policy, the reproduction prompt, or the proof wrapper, run
+`scripts/test-reproduction-policy.sh`, `scripts/test-run-proof.sh`, and the PR
+helper tests.
 
 #### Approving out-of-scope follow-ups
 
@@ -435,6 +511,7 @@ Append to running output:
 - Fixes applied: K commits (<sha1>..<shaN>)   # or "0 (review-only)"
 - Verification: <cmd> — passed | failed → round reverted | pre-existing failures (no new) | none detected | skipped   # per_fix only
 - Checks: off | skipped (no findings needed checking) | <C> concerns checked, <confirmed> confirmed, <refuted> ruled out, <deferred> set aside, <downgraded> lowered in priority; <elapsed>
+- Proof bundles: none | <retained local proof root>
 - Things to try: W items                         # commit_mode=none only
 - Second check: off | <mode>, <A> reviewers, <upheld> kept, <hardened> clarified, <deferred> set aside, <dropped> removed
 - Other notes: S items (low-priority items; not applied)
@@ -748,6 +825,7 @@ Two issues showed up in session validation and write accounting. One lower-prior
 - Rounds: <completed>/<requested>; <convergence note>
 - Reviewers: <mix>
 - Checks: <exact frozen check result>
+- Proof bundles: none | <retained local proof root>
 - Second check: <exact frozen adversarial result>
 </details>
 
@@ -790,6 +868,10 @@ re-run with max_rounds: 5 to continue`.
 | `adversarial` with `per_fix` | Warn and ignore — productive mode verifies real fixes with the build/test gate. |
 | `adversarial_rounds > 2` | Reject before dispatch — adversarial review is bounded critique, not an open-ended debate. |
 | Reproduction verifier failure | Keep consensus findings that did not require reproduction, but move required single-reviewer `medium`+ and deletion/high-risk candidates to Deferred with `We set this aside because the verification check could not be completed.`; never silently promote them. |
+| Proof runner unavailable or rejected | Retain generated manifests. Mark executable candidates `unclear`, move required findings to Deferred, and record the missing capability or failed status. Never fall back to direct execution. |
+| Proof runner changes the snapshot | `run-proof.sh` returns `STATUS=source-mutated`; discard its evidence, retain the bundle for diagnosis, defer the candidate, and stop using that runner for the current run. |
+| Proof runner changes proof inputs | `run-proof.sh` returns `STATUS=proof-mutated`; discard its evidence, retain the bundle for diagnosis, defer the candidate, and stop using that runner for the current run. |
+| Proof runtime cleanup fails | `run-proof.sh` returns `STATUS=runtime-cleanup-failed` with exit 7; discard execution evidence, do not add that bundle to Review context, defer the candidate, report the runtime path, and verify or remove it manually if it remains. |
 | Adversary failure | Continue with the normal synthesized report and note the failure in Run Details; in `strict`, any required adversary failure forces `COMMENT`. |
 | Unparseable findings block | Confirmation/plan-only output follows the one protocol retry above. Otherwise, in requested rounds use substantive review prose as free-form findings with no retry and note `<agent>: unstructured findings (parse failed)`; in adaptive rounds, abort before fixes from that round are applied. |
 | Reviewers contradict each other | Surface both under the same area with reviewers tagged; orchestrator judgment decides the fix; mention the disagreement in the round summary. |

@@ -74,7 +74,7 @@ so the caller gets timeout, empty-output, and stderr classification:
 
 ```bash
 bash <review-anvil-wrapper> out.md 600 -- \
-  codex exec --ephemeral --sandbox read-only -C <project-dir> '<prompt>'
+  codex exec -m gpt-5.6-luna -c 'model_reasoning_effort="max"' --ephemeral --sandbox read-only -C <project-dir> '<prompt>'
 ```
 
 `<review-anvil-wrapper>` is
@@ -86,7 +86,7 @@ For normal review-anvil reviewer prompts, enable output-contract validation:
 
 ```bash
 REVIEW_ANVIL_REQUIRE_FINDINGS=1 bash <review-anvil-wrapper> out.md 600 -- \
-  codex exec --ephemeral --sandbox read-only -C <project-dir> '<prompt>'
+  codex exec -m gpt-5.6-luna -c 'model_reasoning_effort="max"' --ephemeral --sandbox read-only -C <project-dir> '<prompt>'
 ```
 
 This additionally returns `STATUS=protocol` when the final response is only a
