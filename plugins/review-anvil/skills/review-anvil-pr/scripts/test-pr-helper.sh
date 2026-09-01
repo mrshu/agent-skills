@@ -2149,8 +2149,9 @@ test_post_refuses_infra_failure_reports() {
     report="$tmp/report.md"
     {
         printf '# ⚒️ review-anvil report\n\n'
-        printf '**Review decision:** COMMENT — The review did not complete because all three requested Codex reviewers returned empty output.\n'
-        printf '**Result:** No findings were synthesized. This result is not a clean review.\n'
+        printf 'The review could not produce a code assessment because every reviewer process ended without a completed findings block.\n\n'
+        printf '## Failure\n\n'
+        printf 'Round 1 stopped after all three Codex reviewers failed. The default Codex shim pointed to a missing binary. The alternate installed CLI started each review, but all three processes reached the 420-second wrapper deadline without final output.\n'
     } >"$report"
 
     if "$HELPER" post github.com acme widgets 42 marker-123 "$report" >"$tmp/out" 2>"$tmp/err"; then

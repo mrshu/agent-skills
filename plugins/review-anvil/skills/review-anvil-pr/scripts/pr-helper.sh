@@ -85,7 +85,7 @@ report_is_infra_failure() {
     # Do not publish transparent infrastructure-failure reports. They are local
     # diagnostics, not PR feedback. The watchdog should mark the run failed and
     # retry with a healthy reviewer wave instead of notifying the author.
-    grep -Eqi 'reviewer wave failed|reviewer wave produced no usable|reviewer wave did not (return|produce)|all three (Codex )?reviewers (returned empty|timed out|reached)|all requested reviewers failed|no reviewer produced usable evidence|no usable code review|no code-review result is available|no code-quality decision was made|review did not (complete|produce a reliable result|finish)|review could not (finish|produce a reliable result)|reviewer execution failed|STATUS=empty|returned no final (response|output|review)|no final findings block' "$report_path"
+    grep -Eqi 'reviewer wave failed|reviewer wave produced no usable|reviewer wave did not (return|produce)|all three (Codex )?reviewers (returned empty|timed out|reached|failed)|all requested reviewers failed|every reviewer process ended without|without a completed findings block|could not produce a code assessment|no valid reviewer output to synthesize|no candidate findings were available|no completed reviewer findings were available|no reviewer produced usable evidence|no usable code review|no code-review result is available|no code-quality decision was made|review did not (complete|produce a reliable result|finish)|review could not (finish|produce a reliable result)|reviewer execution failed|STATUS=empty|returned no final (response|output|review)|no final findings block' "$report_path"
 }
 
 cleanup_post_artifacts() {
