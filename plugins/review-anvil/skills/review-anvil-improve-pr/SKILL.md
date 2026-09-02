@@ -1,6 +1,6 @@
 ---
 name: review-anvil-improve-pr
-description: Multi-agent review-and-improve loop for a GitHub PR you have checked out — posts a "starting" PR comment cc'ing the original author, runs requested rounds plus any adaptive continuation, applies fix commits to the local branch after each round, pushes everything back to the PR, then edits the starting comment in-place with the synthesized report (or a failure summary). Auto-detects the PR from the currently checked-out branch when no locator is supplied. Use when the user wants to "improve a PR", "review and commit fixes", "iterate on my PR", or "review and push back" against a checked-out PR branch. Requires `gh`, `uuidgen`, `jq`, and `uv` or `python3` on PATH. Activates the `review-anvil` engine in per_fix mode.
+description: Multi-agent review-and-improve loop for a GitHub PR you have checked out: applies fix commits to the local branch, pushes them to the PR, and reports back in a PR comment. Use when the user wants to "improve a PR", "review and commit fixes", "iterate on my PR", or "review and push back" against a checked-out PR branch; the PR is auto-detected when no locator is supplied. Activates the `review-anvil` engine in per_fix mode.
 ---
 
 # review-anvil-improve-pr
@@ -133,7 +133,7 @@ Supply the ledger captured in step 2 as the engine's `PR REVIEW HISTORY` reviewe
 
 Note: do **not** pin a PR locator as `target` — the engine's "PR-target / per_fix incompatibility" rule would force `commit_mode=none` and defeat the point of this preset. Targeting the branch directly is the intended escape hatch.
 
-The user may override `rounds:` or `max_rounds:` (defaults are the engine's `rounds: 3` and its diff-size-scaled `max_rounds` cap — `rounds` plus 1–3 adaptive rounds, never above the legacy `max(6, rounds)`). They cannot override `run_ordinal`, `commit_mode`, `target`, or `report_path`; these are pinned for safety, and the step-0 segment-rejection above blocks override attempts.
+The user may override `rounds:` or `max_rounds:` (defaults are the engine's `rounds: 3` and its diff-size-scaled `max_rounds` cap — `rounds` plus 1–3 adaptive rounds, never above `max(6, rounds)`). They cannot override `run_ordinal`, `commit_mode`, `target`, or `report_path`; these are pinned for safety, and the step-0 segment-rejection above blocks override attempts.
 
 The engine runs the multi-round loop, committing fix-groups along the way and writing the final synthesized report to `<REPORT_PATH>` when it's done. The engine's default reproduction pass confirms uncertain material findings before they can become fix commits, and the build/test gate (`verify_cmd`, auto-detected unless the user passes one) runs after each round's fixes. Together, the report's Reproduction and Verification lines are the evidence the PR author needs to trust the pushed commits — if the engine recorded `Verification: none detected`, that caveat travels to the PR in the posted report. If reproduction fails for required candidates, those candidates are Deferred and the loop may still finish with other verified fixes. If any round fails (reviewer-all-fail, git-commit error, build/test gate newly red after the revert path), the engine stops the loop and surfaces the failure — **skip the push (step 5) and call `post-update` with `outcome=failure`** (step 6) so the starting comment gets replaced with a failure summary rather than dangling.
 
@@ -191,7 +191,7 @@ Surface the engine's final report inline. Echo a two-line summary:
 
 ## Recovery: dangling "starting" comment
 
-The two-step `post-start` / `post-update` flow has one failure mode the previous one-shot didn't: if the orchestrator crashes (or the agent host loses context, or the user interrupts) **between step 3 and step 6**, the PR is left with a "starting" comment that promises an edit-that-never-comes. The fix commits may or may not have been pushed depending on where the crash happened.
+If the orchestrator crashes (or the agent host loses context, or the user interrupts) **between step 3 and step 6**, the PR is left with a "starting" comment that promises an edit-that-never-comes. The fix commits may or may not have been pushed depending on where the crash happened.
 
 This is rare but recoverable. If you find a dangling starting comment:
 
