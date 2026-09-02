@@ -203,15 +203,3 @@ uvx dblpcli venue pubs conf/nips --year 2023 --format json
 | `OPENALEX_EMAIL` | OpenAlex polite pool (faster responses) | No |
 
 Both tools work without these but may hit rate limits on heavy use.
-
-## When to Use
-
-Use this skill when the user asks about:
-- Finding academic papers or research on a topic
-- Citations, references, or bibliography
-- BibTeX entries or .bib files
-- Paper recommendations or related work
-- Author publication lists
-- Literature reviews or surveys
-- DOI, arXiv, or paper lookups
-- Browsing recent arXiv submissions in a category

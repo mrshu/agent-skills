@@ -83,7 +83,7 @@ This post-processes the default pipeline's extracted math expressions for better
 | Math-heavy paper | `uvx paper-siphon --vlm paper.pdf` |
 | Math-heavy, staying on the fast path | `uvx paper-siphon --enrich-formula paper.pdf` |
 
-**Rule of thumb:** try the default pipeline first. Escalate to `--vlm` if the output is garbled or incomplete, **or if the paper is math-heavy** — the default pipeline tends to drop display equations, and the VLM path reads them off the page far more reliably.
+**Rule of thumb:** try the default pipeline first. Escalate to `--vlm` if the output is garbled or incomplete, or if the paper is math-heavy.
 
 ## CLI Reference
 
@@ -133,12 +133,3 @@ for f in papers/*.pdf; do uvx paper-siphon "$f"; done
    ```bash
    uvx paper-siphon https://arxiv.org/pdf/<id>.pdf -o paper.md
    ```
-
-## When to Use
-
-Use this skill when:
-- You encounter a PDF of a paper (local or URL) and need to read its contents
-- A user shares a PDF link and asks about its content
-- You need to extract text from an academic paper for summarization, analysis, or reference
-- A user asks you to "download", "read", "extract", or "convert" a paper PDF
-- You need to work with paper content that is only available as PDF
