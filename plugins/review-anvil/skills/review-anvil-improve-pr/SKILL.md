@@ -10,7 +10,7 @@ Productive counterpart to `review-anvil-pr`. Where `review-anvil-pr` is read-onl
 ## Generated Language
 
 Apply the [ASD-STE100-inspired language contract](../review-anvil/references/asd-ste100-inspired.md) to this preset.
-Use direct imperatives for internal steps. Use short active declarative sentences in PR comments. Keep inline diagnoses unlabeled and put requested work under `Suggestions:`, with one bullet per independently implementable change. Default to starting required work with its action verb. A deliberate collaborative request may use a courtesy wrapper sparingly when coordination or tone benefits. Never use one as a stock opener throughout the review. Keep no-change constraints in prose, suggestion grammar for low/nit guidance, and questions for genuinely unresolved choices.
+Use direct imperatives for internal steps. Use short active declarative sentences in PR comments. Keep inline diagnoses unlabeled and put requested work under `Suggestions:`, with one bullet per independently implementable change. Default to starting required work with its action verb. Keep no-change constraints in prose, suggestion grammar for low/nit guidance, and questions for genuinely unresolved choices.
 
 The skill orchestrates six steps:
 

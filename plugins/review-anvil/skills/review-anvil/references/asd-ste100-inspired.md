@@ -41,10 +41,10 @@ it is explicitly optional.
 Keep inline diagnoses unlabeled and label requested work `Suggestions:`. Use one
 direct-action bullet per independently implementable obligation. Default to
 starting required work with its action verb.
-A deliberate collaborative request may use a courtesy wrapper sparingly when
-coordination or tone benefits. Never use one as a stock opener
-throughout a review. Use question grammar only for a genuinely unresolved
-choice. Preserve suggestion grammar for low and nit guidance.
+A courtesy phrase such as `Could you` fits only a specific
+coordination request, so most requests start with the verb itself. Use
+question grammar only for a genuinely unresolved choice. Preserve suggestion
+grammar for low and nit guidance.
 Prefer a direct verb with a concrete target, condition, or destination.
 Do not give a context-free command.
 

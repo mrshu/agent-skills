@@ -10,7 +10,7 @@ Preset that reviews a GitHub PR with the multi-agent loop and posts the result b
 ## Generated Language
 
 Apply the [ASD-STE100-inspired language contract](../review-anvil/references/asd-ste100-inspired.md) to this preset.
-Use direct imperatives for internal steps. Use short active declarative sentences in PR comments. Keep inline diagnoses unlabeled and put requested work under `Suggestions:`, with one bullet per independently implementable change. Default to starting required work with its action verb. A deliberate collaborative request may use a courtesy wrapper sparingly when coordination or tone benefits. Never use one as a stock opener throughout the review. Keep no-change constraints in prose, suggestion grammar for low/nit guidance, and questions for genuinely unresolved choices.
+Use direct imperatives for internal steps. Use short active declarative sentences in PR comments. Keep inline diagnoses unlabeled and put requested work under `Suggestions:`, with one bullet per independently implementable change. Default to starting required work with its action verb. Keep no-change constraints in prose, suggestion grammar for low/nit guidance, and questions for genuinely unresolved choices.
 
 1. `scripts/pr-helper.sh init [<locator>]` — locator parsing or auto-detect from the current branch, `gh` preflight (auth + PR reachability), marker UUID + report path setup
 2. The [`review-anvil`](../review-anvil/SKILL.md) engine in read-only mode (`commit_mode=none`)

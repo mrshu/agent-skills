@@ -114,13 +114,10 @@ Suggestions:
 Use one bullet per independently implementable obligation. Prefer separate
 bullets whenever actions remain clear on their own.
 
-Default to starting required work with its action verb. A deliberate
-collaborative request may use a courtesy wrapper sparingly when coordination or
-tone benefits. Never use `Could you`, `Can you`, `Would you`, `Will you`, or
-`Please` as a stock opener throughout the review. End a direct imperative as a
-statement, not a question. Optional low/nit work starts with `Consider …`. Ask
-a real question only when the source leaves a decision unresolved. Do not
-mechanically rotate equivalent request openers.
+Default to starting required work with its action verb.
+End a direct imperative as a statement, not a question. Optional low/nit work
+starts with `Consider …`. Ask a real question only when the source leaves a
+decision unresolved.
 
 End each body
 with exactly one
@@ -147,13 +144,10 @@ Clarity does not permit a stronger, broader, or different claim.
 If shorter wording changes a fact, restore the fact and simplify a different
 part of the sentence.
 
-Edit structure before vocabulary.
-Keep an exact supporting phrase for every fact-lock item.
-Privately map every fact-lock item to its exact supporting phrase in the draft.
-Do not emit until every fact-lock item has a supporting phrase.
+Keep an exact supporting phrase for every fact-lock item, and trace every
+draft relationship and boundary back to one fact-lock item.
 Preserve a verified exact source suggestion only when it satisfies every
 safety exclusion in the engine `SKILL.md`; otherwise omit it.
-Privately map every draft relationship and boundary back to one fact-lock item.
 Delete any draft claim that has no source fact.
 If deletion would break the meaning, restore the source sentence.
 You may reorder clauses and split sentences to show problem, impact, and the
@@ -216,8 +210,7 @@ Make a distinct path separate only when the source requires another independent
 change. A required source-backed test remains author work when it has its own
 boundary. Reuse exact source wording for scope and collection phrases.
 
-Before writing, map every source predicate to author work or a no-change
-boundary. Every author-work predicate must remain an explicit request. Combine
+Every author-work predicate must remain an explicit request. Combine
 actions that implement one invariant; do not split values governed by one rule.
 
 Put requested work under `Suggestions:`. Use one direct-action bullet per

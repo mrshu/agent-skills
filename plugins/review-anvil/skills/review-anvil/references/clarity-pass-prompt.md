@@ -178,7 +178,7 @@ Avoid:
 - explaining the entire implementation before naming the failure;
 - preserving sentence structure merely because the source used it.
 
-A top-level summary is one or two natural sentences, normally 15–45 words.
+A top-level summary is one or two natural sentences.
 Describe only what the review detected; do not recommend whether to merge,
 approve, or reject the change. Do not require a fixed subject or opening phrase.
 Start with the affected area, finding count, or detected outcome—whichever is
@@ -234,8 +234,9 @@ History-neutral examples, not templates:
 - `One runtime concern remains uncertain because the failing path could not be reproduced.`
 - `The warning is still hidden in the default output, and the contributor guide does not cover the new rule.`
 
-An inline problem is at most two short sentences. Put each independently
-implementable requested change in one short bullet.
+An inline problem paragraph states what breaks and the concrete result, and
+nothing more. Put each independently implementable requested change in one
+short bullet.
 
 ## Top-level report recipe
 
@@ -341,13 +342,10 @@ Suggestions:
 The example illustrates a single precedence obligation, not a fixed wording
 template. Keep any additional source-backed condition or required test.
 
-Default to starting required work with its action verb. A deliberate
-collaborative request may use a courtesy wrapper sparingly when coordination or
-tone benefits. Never use `Could you`, `Can you`, `Would you`, `Will you`, or
-`Please` as a stock opener throughout the review. End a direct imperative as a
-statement, not a question. Use `Consider …` for optional low/nit guidance. Use
-a real question such as `Should …?` only when the source leaves a decision
-unresolved; do not rotate courtesy phrases to create artificial variety.
+Default to starting required work with its action verb.
+End a direct imperative as a statement, not a question. Use `Consider …` for
+optional low/nit guidance. Use a real question such as `Should …?` only when
+the source leaves a decision unresolved.
 
 Do not add a synthetic title, another field label, action heading, or checklist.
 
