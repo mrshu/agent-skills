@@ -501,7 +501,10 @@ Do not include raw reviewer prose, refuted candidates, superseded plans, or
 repository context.
 
 Read `references/clarity-pass-prompt.md` and dispatch one clean read-only
-renderer under the synthesis-side deadline rule. The clarity pass rewrites both
+renderer under the synthesis-side deadline rule. When using Codex for this
+renderer or for any action-lock auditor/repair pass, invoke Codex explicitly as
+`codex exec -m gpt-5.6-luna -c 'model_reasoning_effort="max"'`; do not use
+`--ignore-user-config`, `gpt-5.6-sol`, or a lower reasoning effort. The clarity pass rewrites both
 the top-level report and eligible inline comments in one bundle. It is a copy
 editor, not another reviewer: it cannot change inventory, priority, decision,
 disposition, facts, author work, anchors, or suggestions.
