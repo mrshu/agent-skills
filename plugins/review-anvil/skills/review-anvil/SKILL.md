@@ -189,7 +189,7 @@ The `codex-exec` and `claude-exec` skills document the same recipes from the rev
 
 When all reviewers return:
 
-- **Dedup** on `(file, line, root cause)` when present, else `(area, root cause)`. Keep the highest-severity instance, record which reviewers raised it, and keep divergent anchors as `file_alternates: [...]`.
+- **Dedup** on `(file, line, root cause)` when present, else `(area, root cause)`. Keep the highest-severity instance, record which reviewers raised it, and keep divergent anchors as `file_alternates: [...]`. Merge the instances' `context` lists: drop repeats of the same `(repo, ref, file, line)` or `(repo, pr)` and the finding's own anchor, and keep the first reviewer's order. Reproduction and verdict passes may append locations that confirmed the finding. Before the final report, drop every entry whose file or line does not exist at the reviewed revision (or at its `ref`), and every entry whose lines do not show what its label says; never invent entries. An entry in another repository must carry the full 40-character SHA of the commit that was read: fill it in with `git -C <that checkout> rev-parse HEAD` when the reviewer omitted it, and drop the entry when that checkout is unknown. Paths are always relative to their repository's root.
 - **Group** by severity (`critical` → `nit`), then topic.
 - Unparseable reviewer output: pass the prose through as "unstructured" findings in a separate section; no retry.
 
@@ -606,6 +606,8 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
    A present but unrecognized helper severity also aborts; an absent helper field may use the terminal marker during migration.
 
    For an explicitly reintroduced `author-resolved` finding, place `<!-- review-anvil: prior_feedback=reintroduced -->` immediately after its visible final-report finding row or bullet. Its matching inline item must carry helper-only `"prior_feedback": "reintroduced"`; the posting helper uses it before author-resolved suppression, strips the JSON field before the GitHub REST request, and inserts the hidden prior-feedback marker before the final finding-metadata marker so later history retains the disposition.
+
+   Include helper-only `"context"` when the synthesized finding has a non-empty `context` list: copy it verbatim, in the reviewer's schema (`label`, `file`, `line`, `focus`, `repo`, `ref`, `pr`). Attach it after the clarity and action-lock passes, from the synthesized finding; never send it through those passes, since it is data, not prose. The posting helper validates and converts the entries, drops invalid ones and repeats, strips the JSON field before the GitHub REST request, and inserts one hidden `<!-- review-anvil: context={"v":1,"items":[…]} -->` line before the final finding-metadata marker. Viewers such as `review-anvil-context` read it from there.
 
    Each eligible new `body` puts the same complete finding ID as its report marker, reproduction target, and adversarial target inside the final inline metadata marker, then follows the **inline-comment voice** in `references/report-artifacts.md`. Keep it short and plain: say what goes wrong, what happens, and the smallest source-backed request. Group work by cohesive implementation obligation, not by grammar; do not split values governed by one rule.
 

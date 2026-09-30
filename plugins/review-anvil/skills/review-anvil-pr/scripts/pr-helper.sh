@@ -309,9 +309,101 @@ def append_suggestion(body, item):
     block = "```suggestion\n" + suggestion + "\n```"
     return append_before_finding_metadata(body, block)
 
+context_marker_prefix = "<!-- review-anvil: context="
+context_repo_re = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")
+context_ref_re = re.compile(r"[0-9a-fA-F]{7,40}")
+context_full_sha_re = re.compile(r"[0-9a-fA-F]{40}")
+context_lines_re = re.compile(r"[1-9][0-9]*(?:-[1-9][0-9]*|(?:,[1-9][0-9]*)*)")
+control_chars_re = re.compile(r"[\x00-\x1f\x7f]")
+
+def context_entry(entry):
+    """Reviewer-schema context entry -> viewer item, or (None, reason).
+
+    Keep the rules in step with sanitize_context in
+    review-anvil-context/scripts/context-helper.sh, which reads them.
+    """
+    if not isinstance(entry, dict):
+        return None, "not an object"
+    label = entry.get("label")
+    if not isinstance(label, str) or not control_chars_re.sub("", label).strip():
+        return None, "missing label"
+    out = {"label": control_chars_re.sub("", label).strip()[:80]}
+    repo = entry.get("repo")
+    if repo is not None:
+        # Becomes part of a GitHub API URL in viewers: "." or ".." would
+        # address another endpoint.
+        if (not isinstance(repo, str) or not context_repo_re.fullmatch(repo)
+                or any(part in (".", "..") for part in repo.split("/"))):
+            return None, f"invalid repo {repo!r}"
+        out["repo"] = repo
+    pr = entry.get("pr")
+    if pr is not None:
+        if isinstance(pr, bool) or not isinstance(pr, int) or pr < 1:
+            return None, f"invalid pr {pr!r}"
+        return {"kind": "pr", **out, "number": pr}, None
+    path = entry.get("file")
+    if (not isinstance(path, str) or not path or control_chars_re.search(path)
+            or path.startswith(("/", "-")) or ".." in path.split("/")):
+        return None, f"invalid file {path!r}"
+    out["path"] = path
+    ref = entry.get("ref")
+    if ref is not None:
+        if not isinstance(ref, str) or not context_ref_re.fullmatch(ref):
+            return None, f"invalid ref {ref!r}"
+        out["ref"] = ref
+    # A file in another repository is fetched from GitHub at an exact commit;
+    # a short or missing SHA would make that lookup ambiguous or moving.
+    if "repo" in out and not context_full_sha_re.fullmatch(out.get("ref", "")):
+        return None, f"file in {out['repo']} needs a full 40-character ref"
+    line = entry.get("line")
+    if line is not None:
+        spec = str(line).replace(" ", "")
+        if isinstance(line, bool) or not context_lines_re.fullmatch(spec):
+            return None, f"invalid line {line!r}"
+        if "-" in spec:
+            start, end = (int(n) for n in spec.split("-"))
+            if end < start:
+                return None, f"invalid line {line!r}"
+            out["range"] = [start, end]
+        else:
+            out["lines"] = [int(n) for n in spec.split(",")]
+    focus = entry.get("focus")
+    if focus is not None:
+        if isinstance(focus, bool) or not isinstance(focus, int) or focus < 1:
+            return None, f"invalid focus {focus!r}"
+        out["focus"] = focus
+    return out, None
+
+def context_marker(item):
+    """Hidden context line for an inline item, or None.
+
+    JSON with every "-" written as \\u002d: nothing can then form "--", so the
+    HTML comment cannot end early, and the payload stays plain JSON.
+    """
+    entries = item.get("context")
+    if entries is None:
+        return None
+    label = item.get("path") or "inline item"
+    if not isinstance(entries, list):
+        print(f"pr-helper: {label}: context is not a list; ignored", file=sys.stderr)
+        return None
+    items = []
+    for entry in entries:
+        converted, reason = context_entry(entry)
+        if converted is None:
+            print(f"pr-helper: {label}: context entry dropped ({reason})", file=sys.stderr)
+            continue
+        if converted not in items:
+            items.append(converted)
+    if not items:
+        return None
+    payload = json.dumps({"v": 1, "items": items}, ensure_ascii=True, separators=(",", ":"))
+    return context_marker_prefix + payload.replace("-", "\\u002d") + " -->"
+
 kept = []
 filtered = 0
 suggested = 0
+with_context = 0
 
 for item in items:
     if not isinstance(item, dict):
@@ -327,15 +419,22 @@ for item in items:
         suggested += 1
     if item.get("prior_feedback") == "reintroduced" and reintroduced_marker not in body:
         body = append_before_finding_metadata(body, reintroduced_marker)
+    marker = context_marker(item)
+    # Only a line that starts with the prefix is a context line; prose may
+    # quote the marker text.
+    if marker and not any(line.startswith(context_marker_prefix) for line in body.splitlines()):
+        body = append_before_finding_metadata(body, marker)
+        with_context += 1
     clean = {key: item[key] for key in allowed if key in item}
     clean["body"] = body
     kept.append(clean)
 
 inline.write_text(json.dumps(kept, indent=2) + "\n")
-if filtered or suggested:
+if filtered or suggested or with_context:
     print(
         "pr-helper: inline comments processed "
-        f"({filtered} summary-only, {suggested} suggestion block(s) added)",
+        f"({filtered} summary-only, {suggested} suggestion block(s) added, "
+        f"{with_context} with context)",
         file=sys.stderr,
     )
 PY
