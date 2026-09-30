@@ -24,7 +24,7 @@ decision ladder. Stop at the first rung that holds and flag the gap:
 2. Does the standard library / language already do this? → use it.
 3. Is there a native platform/framework feature for it? → use it.
 4. Does an already-installed dependency cover it? → use it; don't add a new one.
-5. Is it a one-liner? → keep it a one-liner.
+5. Can the rule fit in one line **without hiding precedence or side effects**? → keep it on one line. Otherwise use named, sequential steps that a reader can check without mentally executing nested expressions.
 6. Only then: the minimum code that works.
 
 **Guardrail:** simplifications must *preserve* trust-boundary validation,
@@ -102,6 +102,9 @@ result. Finally state the exact behavior to change without designing the whole
 patch. Phrase that behavior as a request, not as code already present. Prefer
 direct verbs with concrete targets, conditions, and source-backed destinations.
 Each sentence explains one relationship between code concepts.
+For a precedence bug, state which explicit value loses to which fallback.
+Request the intended order once; do not propose a nested one-liner when
+readable sequential steps make that order easier to verify.
 Put proof in `evidence`; do not narrate the investigation or add a code dump
 unless it is needed.
 

@@ -137,8 +137,12 @@ Every report or disposition line ends with one hidden marker:
 <!-- review-anvil-report: id=<complete-id> severity=<severity> area=<area> path=<encoded-path> start_line=<number-or-dash> line=<number-or-dash> disposition=<active|deferred|outside> -->
 ```
 
-Use `id=-` and location dashes when absent. Do not show these fields in visible
-prose. `report_items` and `disposition_items` contain the complete byte-identical
+Use `id=-` and location dashes when absent. Encode the marker's `path` token
+from `report_path` as UTF-8 percent encoding, leaving only letters, digits,
+`.`, `_`, and `-` literal. In particular, `src/auth.ts` becomes
+`src%2Fauth.ts`; never put raw `/` in that token. The visible Location column
+still shows the unencoded path. Do not show hidden fields in visible prose.
+`report_items` and `disposition_items` contain the complete byte-identical
 line, including the marker.
 
 For a reintroduced finding, copy `"prior_feedback": "reintroduced"` into the
@@ -153,6 +157,12 @@ to understand or make the change.
 Lead with what goes wrong. Add only the smallest mechanism needed to make that
 result credible. A reader should not have to simulate a path, state transition,
 or chain of helper calls.
+
+For a precedence bug, name which explicit value is set, which fallback wins
+instead, and the resulting failure. Request the intended order once; do not
+turn each input in the same rule into another action bullet. Do not offer a
+compact replacement expression when readable sequential steps make the order
+easier to verify. Preserve an exact safe `suggestion` if one is frozen.
 
 Prefer:
 
@@ -290,7 +300,9 @@ Emit inline comments only at or above the frozen threshold.
 
 Inline comments keep the diagnosis as unlabeled prose and use `Suggestions:`
 for requested work. Use one bullet for each independently implementable change.
-Prefer separate bullets whenever actions remain clear on their own.
+Prefer separate bullets whenever actions remain clear on their own. An explicit
+value and its fallback are one precedence rule, not two independent changes;
+combine them into one request even if frozen `requested_work` lists both.
 
 Example:
 
@@ -304,6 +316,23 @@ Suggestions:
 
 <!-- review-anvil: id=RAV-RUN2-R1-F003 severity=medium area=cli -->
 ```
+
+For a branch-selection finding, a compact comment can say:
+
+```md
+When `.env` specifies a branch but the shell does not, Docker uses the worktree
+branch instead. Playwright does not override that value, so visual tests can
+target the wrong deployment.
+
+Suggestions:
+- Use an explicit branch from the shell, `.env`, or Playwright settings; fall
+  back to the worktree branch only when none is set.
+
+<!-- review-anvil: id=RAV-RUN2-R1-F001 severity=high area=branch-selection -->
+```
+
+The example illustrates a single precedence obligation, not a fixed wording
+template. Keep any additional source-backed condition or required test.
 
 Default to starting required work with its action verb. A deliberate
 collaborative request may use a courtesy wrapper sparingly when coordination or
