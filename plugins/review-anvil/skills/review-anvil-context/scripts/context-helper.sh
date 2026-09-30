@@ -54,11 +54,19 @@ bat_bin() { command -v bat || command -v batcat || die "bat not found"; }
 
 # --- comment lookup (CTX_COMMENTS: cached `pulls/N/comments` array) ---
 
+# jq `marker`: a comment's finding marker {f: id, s: severity, a: area}, or
+# null. Only the last non-empty body line counts, and only when the whole
+# line is a marker: the rule of terminal_finding_metadata in pr-helper.sh.
+# Prose, evidence or suggestion blocks may quote markers earlier in a body.
+jq_marker='def marker:
+  [.body // "" | split("\n")[] | sub("\\s+$"; "") | select(. != "")] | last // ""
+  | [capture("^<!--\\s*review-anvil:\\s*id=(?<f>[A-Za-z0-9-]+)\\s+severity=(?<s>critical|high|medium|low|nit)\\s+area=(?<a>[A-Za-z0-9][A-Za-z0-9._/-]*)\\s*-->$"; "i")
+     | select(.a | contains("--") | not)] | first // null;'
+
 # Finding ID from a comment's terminal review-anvil marker, or empty.
 finding_of() {
-  jq -r --argjson id "$1" '.[] | select(.id == $id)
-    | first(.body | capture("<!--\\s*review-anvil:\\s*id=(?<f>[A-Za-z0-9-]+)") | .f) // empty' \
-    "$CTX_COMMENTS"
+  jq -r --argjson id "$1" "$jq_marker"'
+    .[] | select(.id == $id) | marker.f // empty' "$CTX_COMMENTS"
 }
 
 comment_json() { jq --argjson id "$1" '.[] | select(.id == $id)' "$CTX_COMMENTS"; }
@@ -71,8 +79,9 @@ resolve_finding() {
     [[ -n $(comment_json "$q") ]] || die "no review comment $q on PR #$CTX_PR"
     echo "$q"; return
   fi
-  hits=$(jq -r --arg q "${q^^}" '.[] | select(.in_reply_to_id == null)
-    | (first(.body | capture("<!--\\s*review-anvil:\\s*id=(?<f>[A-Za-z0-9-]+)") | .f) // empty) as $f
+  hits=$(jq -r --arg q "${q^^}" "$jq_marker"'
+    .[] | select(.in_reply_to_id == null)
+    | (marker.f // empty) as $f
     | ($f | ascii_upcase) as $u
     | select($u == $q or ($u | endswith("-" + $q)))
     | "\(.id)\t\($f)"' "$CTX_COMMENTS")
@@ -123,7 +132,7 @@ sanitize_context() {
     {items: [(.items // [])[] |
       if type != "object" or (.label | type) != "string" or (.label | clean | test("^\\s*$"))
         then bad("label")
-      elif (.repo // "" | type != "string" or (test("^([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)?$") | not)
+      elif .repo != null and (.repo | type != "string" or (test("^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$") | not)
             or (split("/") | any(. == "." or . == ".."))) then bad("repo")
       elif (.kind // "file") == "pr" then
         if (.number | posint) then {kind, label: (.label | clean), number} + (if .repo then {repo} else {} end)
@@ -369,11 +378,11 @@ ui_context() {
 ui_comments() {
   local id=${1:-} tsv rows pos
   # Row: id <TAB> finding  severity  author  location  context  replies  first line.
-  tsv=$(jq -r '
+  tsv=$(jq -r "$jq_marker"'
     . as $all | map(select(.in_reply_to_id == null)) | sort_by(.path, (.line // .original_line))[]
     | . as $c
     | ([$all[] | select(.in_reply_to_id == $c.id)] | length) as $n
-    | (first(.body | capture("<!--\\s*review-anvil:\\s*id=(?:RAV-)?(?<f>[A-Za-z0-9-]+)\\s+severity=(?<s>[a-z]+)")) // {f: "-", s: "-"}) as $m
+    | (marker // {f: "-", s: "-"} | .f |= sub("^RAV-"; "")) as $m
     | (.path | split("/") | if length > 4 then (.[:2] + ["…"] + .[-2:]) else . end | join("/")) as $p
     | ([.body | split("\n")[] | sub("\r$"; "") | select(startswith("<!-- review-anvil: context="))
         | sub("^<!-- review-anvil: context="; "") | sub("\\s*-->\\s*$"; "")
