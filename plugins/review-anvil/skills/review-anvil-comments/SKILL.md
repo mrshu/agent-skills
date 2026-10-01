@@ -1,6 +1,6 @@
 ---
 name: review-anvil-comments
-description: Browse the review comments of a PR in a tmux side pane — one row per comment with finding ID, severity, author, and location, the full comment as a preview — and open any comment's code context. Use when the user runs `/review-anvil-comments [<finding>]` or asks to browse or pick from a PR's review-anvil comments. Requires tmux, `fzf` >= 0.45, `jq`, `gh`, `git`, `less`, `bat` (or `batcat`), and util-linux `column` on PATH.
+description: Browse the review comments of a PR (or the findings of a local review) in a tmux side pane — one row per comment with finding ID, severity, author, and location, the full comment as a preview — and open any comment's code context. Use when the user runs `/review-anvil-comments [<finding>]` or asks to browse or pick from a PR's review-anvil comments. Requires tmux, `fzf` >= 0.45, `jq`, `gh`, `git`, `less`, `bat` (or `batcat`), and util-linux `column` on PATH.
 ---
 
 # review-anvil-comments
@@ -15,12 +15,12 @@ Keys in the pane:
 ## Usage
 
 ```
-/review-anvil-comments [<finding>] [--pr <N>]
+/review-anvil-comments [<finding>] [--pr <N> | --local]
 ```
 
 Installed as the `review-anvil` plugin, the command is `/review-anvil:review-anvil-comments`.
 
-With `<finding>`, the list opens with the cursor on that comment. `<finding>` and `--pr` work as in `/review-anvil-context`.
+With `<finding>`, the list opens with the cursor on that comment. `<finding>`, `--pr` and `--local` work as in `/review-anvil-context`: without a PR, or with `--local`, the list shows the findings of the newest local review report.
 
 ## Workflow
 
@@ -31,7 +31,7 @@ The helper lives at `../review-anvil-context/scripts/context-helper.sh` relative
 ### 2. Launch
 
 ```bash
-bash <helper-path> comments [<finding>] [--pr <N>]
+bash <helper-path> comments [<finding>] [--pr <N> | --local]
 ```
 
 Pass the user's arguments through unchanged. Output and errors are the same as in `review-anvil-context` SKILL.md steps 2–3; report success in one line, e.g. `Opened the comment list for PR #365 in pane %39 (Enter: context, Esc: close).`

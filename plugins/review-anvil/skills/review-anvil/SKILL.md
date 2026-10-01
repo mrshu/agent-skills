@@ -657,6 +657,18 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 5. Print the report path as the last output line; the `.inline.json`, `.resolutions.json`, and `.approval.json` files are implied by convention.
 6. For out-of-scope follow-ups, write the sibling `<report_path>.followups.json` once, after the final round, using the follow-ups schema from §3 "Approving out-of-scope follow-ups" (NOT the `.approval.json` schema above). The posting helper deletes it after a successful post, so any consumer (surfacing follow-ups to the user, filing issues for `auto_approved` entries after duplicate search) must read it **before** the post/post-update step — the presets do this.
 
+**Context block (every run, every `commit_mode`).** The report carries each finding's context, so a viewer such as `review-anvil-context` can show it before the report is posted, after it is posted (it is part of the top-level PR comment), or when nothing is ever posted. When `report_path` is unset, also write the report to `.review-anvil/report-<UTC timestamp, YYYYMMDDTHHMMSSZ>.md` (create `.review-anvil/` with a `.gitignore` containing `*` when missing; keep only the five newest `report-*.md`). At the very end of the report, after all visible content and before the footer, separated by a blank line, write one hidden line per finding that has a `review-anvil-report` marker, in report order:
+
+```
+<!-- review-anvil: context id=RAV-R1-F001 {"v":1,"commit":"<40-hex SHA or null>","context":[{"label":"Required vars","file":"src/env.ts","line":"59,75"}]} -->
+```
+
+- `id` = the finding's complete ID, as in its report marker. One line per finding, also when its context is empty (`"context":[]`), so the line still records the commit.
+- `commit` = the commit that finding's round reviewed: for a PR target the PR head SHA (`HEAD_SHA` from the preset; the local worktree is irrelevant there), otherwise `git rev-parse HEAD` when the round was dispatched; `null` when the reviewed change was not committed (a working-tree diff), so viewers read the files from disk. Under `per_fix`, later fix commits move lines, which is why each finding keeps its own round's commit.
+- `context` = the synthesized finding's list in the reviewer schema, unchanged; the JSON stays on one line.
+- Add the block after the clarity and action-lock passes, like the inline `context` field: it is data, not prose. Never put it inside a table or list, and never on a finding's own line: the report parsers match each finding line whole.
+- The posting helper validates every line, drops invalid entries with a warning, and re-encodes the JSON (every `-` escaped, so the HTML comment cannot close early) before anything reaches GitHub.
+
 ### Failure handling
 
 - A reviewer fails or times out in a requested round → log `<agent>: failed (<reason>)` in the round summary and proceed; no retries except the protocol-only case below. For Bash-dispatched reviewers, failure = wrapper STATUS `timeout`/`empty`/`failed`, reason = tail of `.err`; `protocol` follows the next rule. In an adaptive round, any reviewer failure is an abort before fixes from that round are applied.

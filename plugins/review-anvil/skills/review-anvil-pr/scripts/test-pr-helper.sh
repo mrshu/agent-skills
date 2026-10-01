@@ -361,6 +361,61 @@ JSON
     grep -q "context entry dropped (invalid repo 'acme/..')" "$stderr" || fail "dot repo not reported"
 }
 
+test_process_inline_normalizes_report_context_block() {
+    local tmp report stderr row sha line1 line2 line3 payload
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    report="$tmp/report.md"
+    stderr="$tmp/stderr"
+    sha="3f545a5c2b1d4e6f8a9b0c1d2e3f4a5b6c7d8e9f"
+    row='| Medium | `src/db.ts:100-110` | Timed-out writes are counted as successful. | Count a write only after it returns successfully. <!-- review-anvil-report: id=RAV-RUN3-R2-F002 severity=medium area=db path=src%2Fdb.ts start_line=100 line=110 disposition=active --> |'
+    cat >"$report" <<EOF
+## Findings
+
+| Severity | Location | Issue | Requested change |
+|---|---|---|---|
+$row
+
+<!-- review-anvil: context id=RAV-RUN3-R2-F002 {"v":1,"commit":"$sha","context":[{"label":"Retry -- loop -->","file":"src/retry.ts","line":"10-20"},{"label":"Escapes","file":"../etc/passwd"},{"label":"Writer","repo":"acme/app-backend","ref":"$sha","file":"src/w.ts","line":3}]} -->
+<!-- review-anvil: context id=RAV-RUN3-R2-F003 {"v":1,"commit":"main","context":[]} -->
+<!-- review-anvil: context id=RAV-RUN3-R2-F004 {"v":1,"commit":null,"items":[{"label":"kept","path":"a.ts"}]} -->
+<!-- review-anvil: context id=RAV-RUN3-R2-F005 {"v":1,"commit":"main","items":[{"label":"a --> **visible** <!--","path":"b.ts"}]} -->
+
+_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._
+EOF
+
+    "$HELPER" process-inline "" "$report" >/dev/null 2>"$stderr"
+
+    grep -qxF -- "$row" "$report" || fail "finding row must stay byte for byte"
+    line1="$(grep '^<!-- review-anvil: context id=RAV-RUN3-R2-F002 ' "$report")"
+    line2="$(grep '^<!-- review-anvil: context id=RAV-RUN3-R2-F003 ' "$report")"
+    line3="$(grep '^<!-- review-anvil: context id=RAV-RUN3-R2-F004 ' "$report")"
+    payload="${line1#<!-- review-anvil: context id=RAV-RUN3-R2-F002 }"
+    payload="${payload% -->}"
+    [[ "$payload" != *--* ]] || fail "re-encoded payload must not contain --"
+    jq -e --arg sha "$sha" '
+      .v == 1 and .commit == $sha and (.items | length) == 2
+      and .items[0] == {"label":"Retry -- loop -->","path":"src/retry.ts","range":[10,20]}
+      and .items[1].repo == "acme/app-backend"
+    ' <<<"$(sed 's/^<!-- review-anvil: context id=[^ ]* //; s/ -->$//' <<<"$line1")" >/dev/null \
+        || fail "context block did not round-trip: $line1"
+    jq -e '.commit == null and .items == []' <<<"$(sed 's/^<!-- review-anvil: context id=[^ ]* //; s/ -->$//' <<<"$line2")" >/dev/null \
+        || fail "invalid commit must become null: $line2"
+    [[ "$line3" == '<!-- review-anvil: context id=RAV-RUN3-R2-F004 {"v":1,"commit":null,"items":[{"label":"kept","path":"a.ts"}]} -->' ]] \
+        || fail "already re-encoded line must stay unchanged: $line3"
+    line3="$(grep '^<!-- review-anvil: context id=RAV-RUN3-R2-F005 ' "$report")"
+    payload="${line3#<!-- review-anvil: context id=RAV-RUN3-R2-F005 }"
+    payload="${payload% -->}"
+    [[ "$payload" != *--* ]] || fail "an items line must be re-encoded too: $line3"
+    jq -e '.commit == null and .items[0].label == "a --> **visible** <!--"' <<<"$payload" >/dev/null \
+        || fail "items line did not round-trip: $line3"
+    cp "$report" "$tmp/once.md"
+    "$HELPER" process-inline "" "$report" >/dev/null 2>&1
+    cmp -s "$report" "$tmp/once.md" || fail "a second run must leave the report unchanged"
+    grep -q "RAV-RUN3-R2-F002: context entry dropped (invalid file '../etc/passwd')" "$stderr" || fail "path escape not reported"
+    grep -q "invalid commit 'main' dropped" "$stderr" || fail "invalid commit not reported"
+}
+
 test_process_inline_rejects_severity_mismatch() {
     local tmp inline original stderr
     tmp="$(mktemp -d)"
@@ -2572,6 +2627,7 @@ main() {
     test_process_inline_infers_id_prefixed_severity
     test_process_inline_preserves_terminal_finding_metadata
     test_process_inline_embeds_context_marker
+    test_process_inline_normalizes_report_context_block
     test_process_inline_rejects_severity_mismatch
     test_process_inline_rejects_invalid_marker_severity_field
     test_history_parses_hidden_inline_metadata
