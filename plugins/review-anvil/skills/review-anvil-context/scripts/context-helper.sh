@@ -5,16 +5,18 @@
 #
 # Subcommands:
 #
-#   context <finding> [--pr N] [--inline]
+#   context <finding> [--pr N | --local] [--inline]
 #                           — open the pane on <finding>'s context items.
-#   comments [<finding>] [--pr N] [--inline]
+#   comments [<finding>] [--pr N | --local] [--inline]
 #                           — open the pane on the PR's comment list, cursor
 #                             on <finding> when given.
 #
 # <finding> is a review-anvil finding ID (F001, R1-F001, RAV-R1-F001; any
 # unambiguous suffix) or a numeric GitHub review-comment ID. Run inside the
-# PR's checkout; --pr defaults to the current branch's PR. Prints KEY=VALUE
-# lines (PANE, COMMENT_ID, FINDING_ID) on success.
+# reviewed checkout; --pr defaults to the current branch's PR, whose inline
+# comments and review-anvil reports are read. --local (or a branch without a
+# PR) reads the newest report a local review left in .review-anvil/ instead. Prints KEY=VALUE lines (SOURCE,
+# PANE, COMMENT_ID, FINDING_ID) on success.
 #
 # Keys in the pane:
 #   context view — Enter: open item in $EDITOR · Backspace (empty query):
@@ -76,7 +78,7 @@ comment_json() { jq --argjson id "$1" '.[] | select(.id == $id)' "$CTX_COMMENTS"
 resolve_finding() {
   local q=$1 hits
   if [[ $q =~ ^[0-9]+$ ]]; then
-    [[ -n $(comment_json "$q") ]] || die "no review comment $q on PR #$CTX_PR"
+    [[ -n $(comment_json "$q") ]] || die "no review comment $q in $CTX_LABEL"
     echo "$q"; return
   fi
   hits=$(jq -r --arg q "${q^^}" "$jq_marker"'
@@ -85,9 +87,87 @@ resolve_finding() {
     | ($f | ascii_upcase) as $u
     | select($u == $q or ($u | endswith("-" + $q)))
     | "\(.id)\t\($f)"' "$CTX_COMMENTS")
-  [[ -n $hits ]] || die "no review-anvil finding $q on PR #$CTX_PR"
+  [[ -n $hits ]] || die "no review-anvil finding $q in $CTX_LABEL"
   (( $(wc -l <<<"$hits") == 1 )) || die "ambiguous finding $q: $(cut -f2 <<<"$hits" | paste -sd' ')"
   cut -f1 <<<"$hits"
+}
+
+# --- findings from review-anvil reports ---
+
+# Newest local report: one the engine wrote (.review-anvil/report-*.md), or a
+# PR run's final-report-*.md that was not posted. Files tracked by git are
+# skipped: the engine never commits one, so a tracked file came from the
+# reviewed repository itself.
+local_report_file() {
+  local f
+  while IFS= read -r f; do
+    git -C "$CTX_DIR" ls-files --error-unmatch -- "${f#"$CTX_DIR"/}" >/dev/null 2>&1 && continue
+    echo "$f"
+    return 0
+  done < <(ls -t "$CTX_DIR"/.review-anvil/report-*.md "$CTX_DIR"/.review-anvil/final-report-*.md 2>/dev/null)
+  return 1
+}
+
+# jq `report_rows($login; $head)` on a report body: one comment-shaped object
+# per finding line (its `review-anvil-report` marker), its context and commit
+# from the report's hidden block (`<!-- review-anvil: context id=<ID> {...} -->`).
+# Raw reviewer-schema `context` (a local report) is converted to viewer items;
+# a posted report carries `items` re-encoded by pr-helper.sh. Untrusted like
+# any comment: values that do not fit become null or an item sanitize_context
+# rejects.
+jq_report='
+def unhex: ascii_downcase | explode | map(if . >= 97 then . - 87 else . - 48 end) | .[0] * 16 + .[1];
+def pdecode: gsub("%(?<h>[0-9A-Fa-f]{2})"; [.h | unhex] | implode);
+def num: if . == "-" then null else tonumber end;
+def citem: if type != "object" then {label: null}
+  else {label} + (if .repo != null then {repo} else {} end)
+  + (if .pr != null then {kind: "pr", number: .pr}
+     else {path: .file} + (if .ref != null then {ref} else {} end)
+       + (.line | if . == null then {}
+                  else (tostring | gsub(" "; "")) as $l
+                  | if $l | test("^[0-9]+-[0-9]+$") then {range: ($l | split("-") | map(tonumber))}
+                    elif $l | test("^[0-9]+(,[0-9]+)*$") then {lines: ($l | split(",") | map(tonumber))}
+                    else {lines: [$l]} end end)
+       + (if .focus != null then {focus} else {} end) end) end;
+def sha: strings | select(test("^[0-9a-f]{40}$"));
+def report_rows($login; $fallback):
+  [split("\n")[] | sub("\\s+$"; "")] as $ls
+  | ([$ls[] | capture("^<!--\\s*review-anvil:\\s*context\\s+id=(?<id>[A-Za-z0-9-]+)\\s+(?<j>\\{.*\\})\\s*-->$")
+      | {key: .id, value: (.j | try fromjson catch {invalid: true})}] | from_entries) as $ctx
+  | [$ls[] | capture("^(?<pre>.*?)\\s*<!--\\s*review-anvil-report:\\s*id=(?<id>[A-Za-z0-9-]+)\\s+severity=(?<s>[a-z]+)\\s+area=(?<a>[A-Za-z0-9][A-Za-z0-9._/-]*)\\s+path=(?<p>\\S+)\\s+start_line=(?<sl>[0-9]+|-)\\s+line=(?<l>[0-9]+|-)\\s+disposition=(?<d>[a-z]+)\\s*-->")
+     | select(.id != "-")
+     | ($ctx[.id] // {}) as $c
+     | (($c.commit | sha) // ($fallback | sha) // null) as $commit
+     | (.pre | if startswith("|") then ([splits("(?<!\\\\)\\|")] | .[3] // "" | gsub("\\\\\\|"; "|") | gsub("^\\s+|\\s+$"; ""))
+               else sub("^\\s*[-*]\\s+"; "") end) as $text
+     # No known commit (a report written before the context block, posted as
+     # a plain comment): its line numbers may belong to any older commit, so
+     # the anchor shows the whole file instead of a possibly wrong line.
+     | (if $commit == null then null else (.l | num) end) as $line
+     | {finding: .id, in_reply_to_id: null, user: {login: $login},
+        path: (.p | if . == "-" then null else pdecode end), line: $line, original_line: $line,
+        start_line: (if $commit == null then null else (.sl | num) end),
+        commit_id: ($commit // $head), original_commit_id: ($commit // $head),
+        body: ($text + "\n\n<!-- review-anvil: id=\(.id) severity=\(.s) area=\(.a) -->"),
+        ctx_items: (if $c.invalid then [{kind: "invalid", label: "invalid context block"}]
+                    elif ($c.items | type) == "array" then $c.items
+                    elif ($c.context | type) == "array" then [$c.context[] | citem]
+                    else [] end)}];'
+
+# Comments the UI reads: the inline comments (stdin, may be []), then the
+# findings of the reports in $1 (JSON [{body, login, commit}], newest first)
+# that no inline comment already carries. `commit` = the report's own commit
+# when known (a review's commit_id, a local report's HEAD), else null. $2 =
+# the commit files are read at when a row has none. Report rows get ids that
+# cannot collide with GitHub's.
+merge_report_findings() {
+  jq -s --slurpfile reports "$1" --arg head "$2" "$jq_marker$jq_report"'
+    .[0] as $inline
+    | ([$inline[] | marker.f // empty]) as $have
+    | (reduce ($reports[0][] | .login as $u | .commit as $k | .body | report_rows($u; $k)[]) as $r
+        ([]; if any(.[]; .finding == $r.finding) then . else . + [$r] end))
+    | [.[] | select(.finding as $f | $have | index($f) | not)]
+    | $inline + (to_entries | map(.value + {id: (900000000000 + .key)} | del(.finding)))'
 }
 
 # --- files in other repositories ---
@@ -152,11 +232,13 @@ sanitize_context() {
 # Items of the comment's hidden `<!-- review-anvil: context={...} -->` line as
 # a JSON array ([] when absent; one invalid item when unparsable).
 marker_items() {
-  local raw
-  raw=$(comment_json "$1" | jq -r '
+  local c raw
+  c=$(comment_json "$1")
+  if jq -e 'has("ctx_items")' <<<"$c" >/dev/null; then jq -c '.ctx_items' <<<"$c"; return; fi
+  raw=$(jq -r '
     [.body | split("\n")[] | sub("\r$"; "")
      | select(startswith("<!-- review-anvil: context="))
-     | sub("^<!-- review-anvil: context="; "") | sub("\\s*-->\\s*$"; "")][0] // empty')
+     | sub("^<!-- review-anvil: context="; "") | sub("\\s*-->\\s*$"; "")][0] // empty' <<<"$c")
   [[ -n $raw ]] || { echo '[]'; return; }
   jq -c 'if .v == 1 and (.items | type) == "array" then .items else error("version") end' <<<"$raw" 2>/dev/null \
     || echo '[{"kind": "invalid", "label": "invalid context marker"}]'
@@ -187,12 +269,16 @@ context_file() {
   [[ $ocommit != "$head" ]] && ctx_ref=$ocommit
 
   f="$CTX_CACHE/context-$id.json"
-  jq -n --arg path "$(jq -r .path <<<"$c")" --argjson l "$line" --arg ref "$commit" \
+  jq -n --argjson path "$(jq '.path' <<<"$c")" --argjson l "$line" --arg ref "$commit" \
+        --argjson sl "$(jq '.start_line // .original_start_line // null' <<<"$c")" \
         --arg repo "$CTX_REPO" --arg cref "$ctx_ref" \
         --argjson marker "$(marker_items "$id")" '
-    ({label: "Anchor", path: $path} + (if $l == null then {} else {lines: [$l], focus: $l} end)
+    ({label: "Anchor", path: $path}
+     + (if $l == null then {}
+        elif ($sl | type) == "number" and $sl < $l then {range: [$sl, $l], focus: $sl}
+        else {lines: [$l], focus: $l} end)
      + (if $ref == "disk" then {} else {ref: $ref} end)) as $anchor
-    | {items: [$anchor] + [$marker[]
+    | {items: (if $path == null then [] else [$anchor] end) + [$marker[]
         | if $cref != "" and (.kind // "file") == "file" and .ref == null
              and ((.repo // $repo) == $repo) then .ref = $cref else . end]}' > "$f.raw"
   sanitize_context "$f.raw" > "$f"
@@ -312,8 +398,8 @@ cmd_preview_comment() {
   local id=$1 c
   c=$(comment_json "$id")
   jq -r --arg f "$(finding_of "$id")" '
-    "\u001b[1m\(if $f != "" then $f + " · " else "" end)@\(.user.login)\u001b[0m · \(.path):\(.line // .original_line)"
-    + (if .line == null then " \u001b[33m(outdated)\u001b[0m" else "" end)
+    "\u001b[1m\(if $f != "" then $f + " · " else "" end)@\(.user.login)\u001b[0m · \(.path // "(no file)"):\(.line // .original_line // "-")"
+    + (if .line == null and .original_line != null then " \u001b[33m(outdated)\u001b[0m" else "" end)
     + " · \(.commit_id[0:7])", ""' <<<"$c"
   jq -r '.body' <<<"$c" | strip_ctl | sed -E 's/<!--.*-->//g' \
     | "$(bat_bin)" --color=always --paging=never --style=plain --language markdown \
@@ -345,7 +431,7 @@ ui_context() {
   json=$(context_file "$id")
   fid=$(finding_of "$id")
   header=$(comment_json "$id" | jq -r --arg f "$fid" '
-    "\(if $f != "" then $f + " · " else "" end)@\(.user.login) · \(.path):\(.line // .original_line)",
+    "\(if $f != "" then $f + " · " else "" end)@\(.user.login) · \(.path // "(no file)"):\(.line // .original_line // "-")",
     (.body | split("\n")[0] | gsub("[\u0001-\u001f\u007f]"; "") | .[0:200])')
   header+=$'\n'"Enter: open · ⌫: comments · Esc: close"
 
@@ -383,19 +469,20 @@ ui_comments() {
     | . as $c
     | ([$all[] | select(.in_reply_to_id == $c.id)] | length) as $n
     | (marker // {f: "-", s: "-"} | .f |= sub("^RAV-"; "")) as $m
-    | (.path | split("/") | if length > 4 then (.[:2] + ["…"] + .[-2:]) else . end | join("/")) as $p
-    | ([.body | split("\n")[] | sub("\r$"; "") | select(startswith("<!-- review-anvil: context="))
-        | sub("^<!-- review-anvil: context="; "") | sub("\\s*-->\\s*$"; "")
-        | (try fromjson catch null) | .items? // [] | length][0] // 0) as $k
-    | [.id, $m.f, $m.s, "@" + .user.login, "\($p):\(.line // .original_line)",
+    | (.path // "(no file)" | split("/") | if length > 4 then (.[:2] + ["…"] + .[-2:]) else . end | join("/")) as $p
+    | (if has("ctx_items") then (.ctx_items | length) else
+        [.body | split("\n")[] | sub("\r$"; "") | select(startswith("<!-- review-anvil: context="))
+         | sub("^<!-- review-anvil: context="; "") | sub("\\s*-->\\s*$"; "")
+         | (try fromjson catch null) | .items? // [] | length][0] // 0 end) as $k
+    | [.id, $m.f, $m.s, "@" + .user.login, "\($p):\(.line // .original_line // "-")",
        (if $k > 0 then "+\($k) ctx" else "·" end),
        (if $n > 0 then "↩\($n)" else "·" end), (.body | split("\n")[0] | gsub("[\u0001-\u001f\u007f]"; "") | .[0:90])] | @tsv' "$CTX_COMMENTS")
-  [[ -n $tsv ]] || { echo "PR #$CTX_PR has no review comments" >&2; sleep 2; return 1; }
+  [[ -n $tsv ]] || { echo "$CTX_LABEL has no review comments" >&2; sleep 2; return 1; }
   rows=$(paste <(cut -f1 <<<"$tsv") <(cut -f2- <<<"$tsv" | column -t -s $'\t' -o '  '))
   pos=$(cut -f1 <<<"$rows" | grep -nx "${id:-none}" | cut -d: -f1 || true)
 
   fzf --layout reverse --prompt 'comment> ' --delimiter '\t' --with-nth 2 \
-    --header "$CTX_REPO #$CTX_PR · $(wc -l <<<"$rows") comments · Enter: context · Esc: close" \
+    --header "$CTX_REPO · $CTX_LABEL · $(wc -l <<<"$rows") comments · Enter: context · Esc: close" \
     --preview "'$self' _preview-comment {1}" \
     --preview-window 'down,60%,wrap,border-top' \
     ${pos:+--bind "load:pos($pos)"} \
@@ -420,34 +507,76 @@ cmd_ui() {
 
 cmd_open() {
   local mode=$1; shift
-  local finding="" pr="" inline=0 id="" pane
+  local finding="" pr="" inline=0 local_mode=0 id="" pane lf pr_head
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --pr)     pr=${2:?--pr needs a number}
                 [[ $pr =~ ^[1-9][0-9]*$ ]] || die "--pr must be a PR number, got: $pr"
                 shift 2 ;;
       --inline) inline=1; shift ;;
+      --local)  local_mode=1; shift ;;
       -*)       die "unknown option: $1" ;;
       *)        [[ -z $finding ]] || die "unexpected argument: $1"; finding=$1; shift ;;
     esac
   done
   [[ $mode == comments || -n $finding ]] || die "context needs a finding ID (e.g. F001)"
-  need jq gh fzf git less column readlink
+  [[ $local_mode == 0 || -z $pr ]] || die "--local and --pr exclude each other"
+  need jq gh fzf git less column readlink sha256sum
   bat_bin >/dev/null
 
-  CTX_DIR=$(git rev-parse --show-toplevel 2>/dev/null) || die "run inside the PR's git checkout"
-  CTX_REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner) || die "gh cannot resolve this repo"
-  CTX_PR=${pr:-$(gh pr view --json number -q .number 2>/dev/null)} \
-    || die "no PR for the current branch; pass --pr N"
-  CTX_CACHE="$cache_root/${CTX_REPO//\//_}/pr-$CTX_PR"
-  CTX_COMMENTS="$CTX_CACHE/comments.json"
-  mkdir -p "$CTX_CACHE"
-  gh api --paginate "repos/$CTX_REPO/pulls/$CTX_PR/comments" | jq -s 'add // []' > "$CTX_COMMENTS.tmp" \
-    && mv "$CTX_COMMENTS.tmp" "$CTX_COMMENTS" || die "cannot fetch review comments of PR #$CTX_PR"
-  export CTX_DIR CTX_REPO CTX_PR CTX_CACHE CTX_COMMENTS
+  CTX_DIR=$(git rev-parse --show-toplevel 2>/dev/null) || die "run inside the reviewed git checkout"
+  # No PR for the branch (and none given): a local review is the only source.
+  # Any other gh failure (auth, network, rate limit) stops here.
+  if [[ $local_mode == 0 && -z $pr ]]; then
+    local gh_out
+    if ! gh_out=$(gh pr view --json number -q .number 2>&1); then
+      grep -qi 'no pull requests found' <<<"$gh_out" || die "gh pr view failed: $gh_out"
+      local_mode=1
+    else
+      pr=$gh_out
+    fi
+  fi
+
+  if [[ $local_mode == 1 ]]; then
+    lf=$(local_report_file) \
+      || die "no local review report in $CTX_DIR/.review-anvil/ (run a review first, or pass --pr N)"
+    CTX_REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null) || CTX_REPO="local/$(basename "$CTX_DIR")"
+    CTX_PR=local
+    CTX_LABEL="local review ${lf##*/}"
+    # Local findings belong to one checkout: key the cache on it, not the repo.
+    CTX_CACHE="$cache_root/${CTX_REPO//\//_}/local-$(printf '%s' "$CTX_DIR" | sha256sum | cut -c1-12)"
+    CTX_COMMENTS="$CTX_CACHE/comments.json"
+    mkdir -p "$CTX_CACHE"
+    jq -Rs --arg head "$(git -C "$CTX_DIR" rev-parse HEAD)" '[{body: ., login: "review-anvil (local)", commit: $head}]' \
+      "$lf" > "$CTX_CACHE/reports.json" || die "cannot read $lf"
+    echo '[]' | merge_report_findings "$CTX_CACHE/reports.json" "$(git -C "$CTX_DIR" rev-parse HEAD)" \
+      > "$CTX_COMMENTS" || die "cannot parse $lf"
+  else
+    CTX_REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner) || die "gh cannot resolve this repo"
+    CTX_PR=$pr
+    CTX_LABEL="PR #$CTX_PR"
+    CTX_CACHE="$cache_root/${CTX_REPO//\//_}/pr-$CTX_PR"
+    CTX_COMMENTS="$CTX_CACHE/comments.json"
+    mkdir -p "$CTX_CACHE"
+    # Inline comments carry their own context line; the PR's review-anvil
+    # reports (top-level comments, review bodies) carry the rest in their block.
+    gh api --paginate "repos/$CTX_REPO/pulls/$CTX_PR/comments" | jq -s 'add // []' > "$CTX_CACHE/inline.json" \
+      || die "cannot fetch review comments of PR #$CTX_PR"
+    { gh api --paginate "repos/$CTX_REPO/issues/$CTX_PR/comments" && gh api --paginate "repos/$CTX_REPO/pulls/$CTX_PR/reviews"; } \
+      | jq -s '[add // [] | .[] | select((.body // "") | contains("review-anvil-report:") and contains("<!-- review-anvil-marker:"))
+               | {body, login: .user.login, commit: (.commit_id // null), at: (.updated_at // .submitted_at // .created_at)}]
+               | sort_by(.at) | reverse' > "$CTX_CACHE/reports.json" \
+      || die "cannot fetch the review reports of PR #$CTX_PR"
+    pr_head=$(gh api "repos/$CTX_REPO/pulls/$CTX_PR" -q .head.sha) && [[ $pr_head =~ ^[0-9a-f]{40}$ ]] \
+      || die "cannot read the head commit of PR #$CTX_PR"
+    merge_report_findings "$CTX_CACHE/reports.json" "$pr_head" \
+      < "$CTX_CACHE/inline.json" > "$CTX_COMMENTS.tmp" && mv "$CTX_COMMENTS.tmp" "$CTX_COMMENTS" \
+      || die "cannot merge the review findings of PR #$CTX_PR"
+  fi
+  export CTX_DIR CTX_REPO CTX_PR CTX_LABEL CTX_CACHE CTX_COMMENTS
 
   [[ -n $finding ]] && id=$(resolve_finding "$finding")
-  printf 'COMMENT_ID=%s\nFINDING_ID=%s\n' "$id" "${id:+$(finding_of "$id")}"
+  printf 'SOURCE=%s\nCOMMENT_ID=%s\nFINDING_ID=%s\n' "$CTX_LABEL" "$id" "${id:+$(finding_of "$id")}"
 
   if [[ -z ${TMUX:-} || $inline == 1 ]]; then
     cmd_ui "$mode" "$id"
@@ -457,7 +586,7 @@ cmd_open() {
   tmux list-panes -F '#{pane_id} #{@review_anvil_context}' | awk '$2 == 1 { print $1 }' \
     | xargs -r -n1 tmux kill-pane -t
   pane=$(tmux split-window -h -P -F '#{pane_id}' ${TMUX_PANE:+-t "$TMUX_PANE"} -c "$CTX_DIR" \
-    -e CTX_DIR="$CTX_DIR" -e CTX_REPO="$CTX_REPO" -e CTX_PR="$CTX_PR" \
+    -e CTX_DIR="$CTX_DIR" -e CTX_REPO="$CTX_REPO" -e CTX_PR="$CTX_PR" -e CTX_LABEL="$CTX_LABEL" \
     -e CTX_CACHE="$CTX_CACHE" -e CTX_COMMENTS="$CTX_COMMENTS" -e REVIEW_ANVIL_CACHE="$cache_root" \
     "$self" _ui "$mode" "$id")
   tmux set-option -p -t "$pane" @review_anvil_context 1
