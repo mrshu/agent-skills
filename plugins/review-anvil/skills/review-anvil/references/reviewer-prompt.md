@@ -267,6 +267,22 @@ For each issue, return a structured finding with these keys:
 - line: (OPTIONAL) line number on the "new" side of the diff, or a
   range `<start>-<end>`. Omit if `file` is omitted or the finding
   isn't line-anchorable.
+- context: (OPTIONAL) the other places you opened to establish this
+  finding, so a reader can follow the same path. List only locations you
+  read, never guesses, and not the `file`/`line` anchor itself. Each entry:
+  - label: what the location shows, in a few words (e.g. "Required vars").
+  - file: path relative to the repository root (never an absolute or
+    machine-specific path), and optionally line: `N`, a range `N-M`, or
+    scattered lines `N,M,K`; optionally focus: the one line to center on.
+  - repo: (OPTIONAL) `owner/name` when the file is in another repository.
+    Such an entry needs `ref` as the full 40-character commit SHA you read
+    (`git -C <that checkout> rev-parse HEAD`): readers fetch exactly that
+    commit from GitHub, on their own machine.
+  - ref: (OPTIONAL) commit SHA when a file in the reviewed repository matters
+    as of that commit, not as of the reviewed revision.
+  - pr: (OPTIONAL) a PR number instead of `file`, for a related PR (with
+    `repo` when it is in another repository).
+  `evidence` keeps the reasoning; `context` only says where to look.
 - prior_feedback: (OPTIONAL) `still-open`, `resolved-but-still-present`,
   or `reintroduced` when this finding matches PR REVIEW HISTORY. Omit for a
   genuinely new finding.
@@ -289,6 +305,13 @@ block containing one YAML list item per finding:
     what: ...
     why: ...
     suggested_fix: ...
+    context:
+      - label: Session store write
+        file: src/session.ts
+        line: 88-96
+      - label: Token check callers
+        file: src/routes.ts
+        line: 14,52
   ```
 
 If you find nothing worth raising, end with an empty findings block:

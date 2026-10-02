@@ -189,7 +189,7 @@ The `codex-exec` and `claude-exec` skills document the same recipes from the rev
 
 When all reviewers return:
 
-- **Dedup** on `(file, line, root cause)` when present, else `(area, root cause)`. Keep the highest-severity instance, record which reviewers raised it, and keep divergent anchors as `file_alternates: [...]`.
+- **Dedup** on `(file, line, root cause)` when present, else `(area, root cause)`. Keep the highest-severity instance, record which reviewers raised it, and keep divergent anchors as `file_alternates: [...]`. Merge the instances' `context` lists: drop repeats of the same `(repo, ref, file, line)` or `(repo, pr)` and the finding's own anchor, and keep the first reviewer's order. Reproduction and verdict passes may append locations that confirmed the finding. Before the final report, drop every entry whose file or line does not exist at the reviewed revision (or at its `ref`), and every entry whose lines do not show what its label says; never invent entries. An entry in another repository must carry the full 40-character SHA of the commit that was read: fill it in with `git -C <that checkout> rev-parse HEAD` when the reviewer omitted it, and drop the entry when that checkout is unknown. Paths are always relative to their repository's root.
 - **Group** by severity (`critical` → `nit`), then topic.
 - Unparseable reviewer output: pass the prose through as "unstructured" findings in a separate section; no retry.
 
@@ -602,6 +602,8 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
 
    For an explicitly reintroduced `author-resolved` finding, place `<!-- review-anvil: prior_feedback=reintroduced -->` immediately after its visible final-report finding row or bullet. Its matching inline item must carry helper-only `"prior_feedback": "reintroduced"`; the posting helper uses it before author-resolved suppression, strips the JSON field before the GitHub REST request, and inserts the hidden prior-feedback marker before the final finding-metadata marker so later history retains the disposition.
 
+   Include helper-only `"context"` when the synthesized finding has a non-empty `context` list: copy it verbatim, in the reviewer's schema (`label`, `file`, `line`, `focus`, `repo`, `ref`, `pr`). Attach it after the clarity and action-lock passes, from the synthesized finding; never send it through those passes, since it is data, not prose. The posting helper validates and converts the entries, drops invalid ones and repeats, strips the JSON field before the GitHub REST request, and inserts one hidden `<!-- review-anvil: context={"v":1,"items":[…]} -->` line before the final finding-metadata marker. Viewers such as `review-anvil-context` read it from there.
+
    Each eligible new `body` puts the same complete finding ID as its report marker, reproduction target, and adversarial target inside the final inline metadata marker, then follows the **inline-comment voice** in `references/report-artifacts.md`. Keep it short and plain: say what goes wrong, what happens, and the smallest source-backed request. Group work by cohesive implementation obligation, not by grammar; do not split values governed by one rule.
 
    Classify every source predicate before rendering it. Target behavior and required verification or documentation are author work. Accepted current behavior, allowed implementation boundaries, and explicitly optional follow-ups are no-change boundaries. Source intent outranks modal grammar: `can`, `could`, and `would` do not make target behavior optional.
@@ -654,6 +656,18 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
    Use `APPROVE` for review-only PR runs when all of these hold: `approve` is not `never`, at least one reviewer succeeded, no action-lock exact-source fallback has been used, there are no `critical`/`high` actionable in-scope findings, no `critical`/`high` in-scope deferred finding needs author action, no prior `critical`/`high` open or resolved-but-still-present item remains unaddressed, no unresolved `critical`/`high` adversarial dispute remains, and remaining items are only `medium`/`low`/`nit` findings, suggestions, deferred notes, or out-of-scope follow-ups. Medium-and-lower in-scope findings should still be posted clearly, but the review event is approval: leave those fixes to the author. Use `COMMENT` otherwise. Out-of-scope follow-ups do not block approval.
 5. Print the report path as the last output line; the `.inline.json`, `.resolutions.json`, and `.approval.json` files are implied by convention.
 6. For out-of-scope follow-ups, write the sibling `<report_path>.followups.json` once, after the final round, using the follow-ups schema from §3 "Approving out-of-scope follow-ups" (NOT the `.approval.json` schema above). The posting helper deletes it after a successful post, so any consumer (surfacing follow-ups to the user, filing issues for `auto_approved` entries after duplicate search) must read it **before** the post/post-update step — the presets do this.
+
+**Context block (every run, every `commit_mode`).** The report carries each finding's context, so a viewer such as `review-anvil-context` can show it before the report is posted, after it is posted (it is part of the top-level PR comment), or when nothing is ever posted. When `report_path` is unset, also write the report to `.review-anvil/report-<UTC timestamp, YYYYMMDDTHHMMSSZ>.md` (create `.review-anvil/` with a `.gitignore` containing `*` when missing; keep only the five newest `report-*.md`). At the very end of the report, after all visible content and before the footer, separated by a blank line, write one hidden line per finding that has a `review-anvil-report` marker, in report order:
+
+```
+<!-- review-anvil: context id=RAV-R1-F001 {"v":1,"commit":"<40-hex SHA or null>","context":[{"label":"Required vars","file":"src/env.ts","line":"59,75"}]} -->
+```
+
+- `id` = the finding's complete ID, as in its report marker. One line per finding, also when its context is empty (`"context":[]`), so the line still records the commit.
+- `commit` = the commit that finding's round reviewed: for a PR target the PR head SHA (`HEAD_SHA` from the preset; the local worktree is irrelevant there), otherwise `git rev-parse HEAD` when the round was dispatched; `null` when the reviewed change was not committed (a working-tree diff), so viewers read the files from disk. Under `per_fix`, later fix commits move lines, which is why each finding keeps its own round's commit.
+- `context` = the synthesized finding's list in the reviewer schema, unchanged; the JSON stays on one line.
+- Add the block after the clarity and action-lock passes, like the inline `context` field: it is data, not prose. Never put it inside a table or list, and never on a finding's own line: the report parsers match each finding line whole.
+- The posting helper validates every line, drops invalid entries with a warning, and re-encodes the JSON (every `-` escaped, so the HTML comment cannot close early) before anything reaches GitHub.
 
 ### Failure handling
 
