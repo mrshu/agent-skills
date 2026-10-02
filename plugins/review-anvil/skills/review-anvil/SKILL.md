@@ -716,6 +716,14 @@ concern only when that delta is useful; otherwise use the ordinary current-code
 summary. Refer to earlier concerns or the latest changes, not run ordinals,
 rounds, or review mechanics.
 
+When active findings are only low/nit suggestions, lead with the material
+outcome: no material issue was identified in the reviewed change. Then give
+the count or broad topic of optional suggestions, if useful. Keep their
+specific behavior and requested changes in the collapsed table, not the
+headline. This applies to the pre-clarity report and its exact-source fallback
+as well as the final clarity rendering. Do not imply the whole PR is correct
+or ready to merge.
+
 All active findings stay collapsed in fixed four-column tables. Each row shows
 severity, frozen report location, the complete issue or suggestion, and the
 complete requested or suggested change. This full collapsed detail is

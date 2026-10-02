@@ -190,6 +190,13 @@ when it helps the reader understand the detection result. Do not invent praise,
 readiness, or an `otherwise looks good` claim. When no material issue is
 detected, state that plainly and mention optional suggestions if present.
 
+When the only active findings are low/nit, lead with the absence of material
+issues and optionally mention their count or broad topic. Do not lead with
+the exact low-priority behavior; its full detail belongs in the collapsed
+`Optional suggestions` table. Apply this even if the frozen result or draft
+headline foregrounds that behavior. Do not claim the whole PR is correct or
+ready to merge.
+
 Do not narrate the review pipeline in the visible summary. Avoid internal
 phrases such as:
 

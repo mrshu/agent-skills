@@ -37,6 +37,12 @@ review outcomes into observations about the changed code. Do not require a fixed
 replacement phrase. Choose a natural statement about affected behavior,
 detected issue areas, optional suggestions, or unreproduced uncertainty.
 
+For a low/nit-only report, the visible summary leads with the absence of
+material issues and may mention the number or broad topic of optional
+suggestions. Leave the specific low-priority observation and proposed change
+inside `Optional suggestions`. A true style observation should not become
+the apparent main review result merely because it is the only finding.
+
 Use the review history only when it changes what the author needs to understand
 about the current code. Keep a first-review summary focused on current findings.
 For a follow-up, describe a meaningful code delta—fixed, still present,
