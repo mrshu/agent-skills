@@ -519,6 +519,11 @@ Read `references/clarity-pass-prompt.md` and dispatch one clean read-only
 renderer under the synthesis-side deadline rule. When using Codex for this
 renderer or for any action-lock auditor/repair pass, apply the lazy resolution
 rule above and invoke `"$CODEX_BIN" exec -m gpt-6-luna -c 'model_reasoning_effort="max"' -c 'shell_environment_policy.inherit="all"' -c 'mcp_servers.webexapis.enabled=false'`;
+if the renderer/auditor workdir is not a trusted git repository (for example
+`-C /tmp`), add `--skip-git-repo-check` or run it from the trusted synthesis
+worktree instead. Codex exits before model invocation with `Not inside a trusted
+directory and --skip-git-repo-check was not specified` in such directories,
+which wrongly forces pre-clarity fallback and COMMENT-only PR delivery.
 do not use `--ignore-user-config`, `gpt-5.6-sol`, or a lower reasoning effort. The clarity pass rewrites both
 the top-level report and eligible inline comments in one bundle. It is a copy
 editor, not another reviewer: it cannot change inventory, priority, decision,
