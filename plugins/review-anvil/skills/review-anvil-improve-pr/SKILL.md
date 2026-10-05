@@ -1,6 +1,6 @@
 ---
 name: review-anvil-improve-pr
-description: Multi-agent review-and-improve loop for a GitHub PR you have checked out: applies fix commits to the local branch, pushes them to the PR, and reports back in a PR comment. Use when the user wants to "improve a PR", "review and commit fixes", "iterate on my PR", or "review and push back" against a checked-out PR branch; the PR is auto-detected when no locator is supplied. Activates the `review-anvil` engine in per_fix mode.
+description: 'Multi-agent review-and-improve loop for a GitHub PR you have checked out: applies fix commits to the local branch, pushes them to the PR, and reports back in a PR comment. Use when the user wants to "improve a PR", "review and commit fixes", "iterate on my PR", or "review and push back" against a checked-out PR branch; the PR is auto-detected when no locator is supplied. Activates the `review-anvil` engine in per_fix mode.'
 ---
 
 # review-anvil-improve-pr
