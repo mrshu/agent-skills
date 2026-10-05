@@ -35,7 +35,7 @@ Pass-through args the user may specify (non-exhaustive — any engine param not 
 - `adversarial_rounds: 1|2`, `disagreement_policy: defer|comment` — tune the adversarial gate; it remains read-only and bounded
 - `reviewer_timeout: <seconds>`, `report_path: <file>` — as in the engine
 
-After the engine completes, surface the synthesized report inline. **Do not** follow with edits, commits, or any side effects — that's exactly what `commit_mode=none` rules out.
+After the engine completes, surface the synthesized report inline, as the engine's chat copy (no hidden `<!-- … -->` markers or context block; the report file keeps them). **Do not** follow with edits, commits, or any side effects — that's exactly what `commit_mode=none` rules out.
 
 Read-only review still means no tracked edits, staging, commits, or pushes.
 Temporary prompt/reviewer/report artifacts under the artifact-local,
