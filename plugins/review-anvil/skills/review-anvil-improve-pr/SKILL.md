@@ -19,7 +19,7 @@ The skill orchestrates six steps:
 3. The [`review-anvil`](../review-anvil/SKILL.md) engine in `commit_mode=per_fix` on a branch-vs-base diff (NOT a PR-locator target — the engine's "PR-target / per_fix incompatibility" rule forbids that combination; this preset deliberately routes around it by targeting the local branch directly). The engine writes the final synthesized report to `report_path` — on failure paths too.
 4. `git push` — once, after requested rounds plus any adaptive continuation complete (or converge early) and only if the engine reported no failures and the build/test gate ended green, to publish the fix commits to the PR.
 5. `scripts/pr-helper.sh post-update` — PATCH-edit the starting comment to replace its body with the full final report (outcome=success) or a failure summary (outcome=failure). GitHub does NOT notify on edits, so the author isn't pinged again — the original `cc @author` notification at step 2 is the only ping.
-6. Surface the final report inline + the comment URL to the user.
+6. Surface the final report inline (the engine's chat copy, without hidden markers) + the comment URL to the user.
 
 ## Inputs
 
@@ -171,7 +171,7 @@ If `post-update` itself fails (rare: transient `gh` issue, comment was deleted b
 
 ### 7. Report back
 
-Surface the engine's final report inline. Echo a two-line summary:
+Surface the engine's final report inline, as its chat copy (no hidden `<!-- … -->` markers or context block). Echo a two-line summary:
 - `pushed N commits to $HOST/$OWNER/$REPO#$N ($HEAD_BRANCH)` with `N` from the pushed fix commits or the final report's collapsed `Changes made` list. If step 5 was skipped (failure path), say `did not push (engine/run failure)` instead.
 - `comment $COMMENT_URL updated with outcome=$OUTCOME` (or `comment update failed: ...` if step 6 errored).
 

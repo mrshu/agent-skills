@@ -581,7 +581,11 @@ validated `report_markdown` string to `report_path`, and write only validated
 `disposition_items`, or `predicate_inventory`; they exist only for
 byte-identity and action-lock validation.
 
-After the final round, emit the **Final Report** (Output Format). If `report_path` is set:
+After the final round, emit the **Final Report** (Output Format).
+
+Show the report in the conversation without its hidden `<!-- … -->` comments (finding markers and context block); the report file keeps them.
+
+If `report_path` is set:
 
 1. Write the rendered PR report there (creating parent dirs).
 2. Write a sibling `<report_path>.inline.json`: an array of GitHub PR review comment payloads for findings with both `file` and `line` —
