@@ -31,7 +31,7 @@
 #   compact-report …        — legacy no-op; reports are posted without loss.
 #   process-inline …        — filter/prepare inline review comments.
 #   embed-context …         — embed <report_path>.context.json records as
-#                             hidden lines in the report and inline comments.
+#                             hidden lines at the end of the report.
 #   check-pins …            — mechanical preset pin-rejection over raw args.
 #
 # Environment switches:
@@ -343,48 +343,35 @@ if filtered or suggested:
 PY
 }
 # Embed finding context from the engine's <report_path>.context.json (schema
-# in review-anvil/references/report-artifacts.md) as hidden lines:
+# in review-anvil/references/report-artifacts.md) as one hidden line per
+# finding the report still lists, before the footer:
 #   <!-- review-anvil: context={"v":1,"id":…,"revision":…,"items":[…]} -->
-# one per inline comment with items (before its terminal metadata marker) and
-# one per finding the report still lists (before the footer). Every record is
-# validated here, the posting boundary; invalid items are dropped with a
-# warning, and a missing or malformed file never blocks a post. Re-running
-# replaces earlier context lines, so the result is idempotent.
-# $1 = report path (may be empty), $2 = inline JSON (may be empty),
-# $3 = context JSON.
+# Records are validated here, at the posting boundary; invalid items are
+# dropped with a warning, and a missing or malformed file never blocks a post.
+# Earlier context lines are always replaced, so re-running is idempotent.
+# $1 = report path, $2 = context JSON (may be missing).
 embed_finding_context() {
-    local report_path="${1:-}" inline_json="${2:-}" context_json="${3:-}"
-    # Without a context file, still strip lines a previous attempt embedded.
-    [[ -n "$context_json" ]] || return 0
+    local report_path="${1:-}" context_json="${2:-}"
+    [[ -n "$report_path" && -f "$report_path" ]] || return 0
 
-    _py - "$report_path" "$inline_json" "$context_json" <<'PY'
+    _py - "$report_path" "$context_json" <<'PY'
 import json
 import re
 import sys
 from pathlib import Path
 
-report = Path(sys.argv[1]) if sys.argv[1] else None
-inline = Path(sys.argv[2]) if sys.argv[2] else None
-sidecar = Path(sys.argv[3])
+report = Path(sys.argv[1])
+sidecar = Path(sys.argv[2]) if sys.argv[2] else None
 
 PREFIX = "<!-- review-anvil: context="
 FOOTER = "_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._"
 # GitHub rejects bodies over 65536 characters; keep room for delivery notes.
 REPORT_BUDGET = 60000
 MAX_ITEMS = 8
-MAX_SPANS = 10
 MAX_LABEL = 80
-MAX_PATH = 300
-MAX_LINE = 10_000_000
 ORDINAL = r"(?:00[1-9]|0[1-9][0-9]|[1-9][0-9]{2,})"
 FINDING_ID = rf"RAV-(?:RUN[1-9][0-9]*-)?R[1-9][0-9]*-F{ORDINAL}"
 finding_id_re = re.compile(FINDING_ID)
-metadata_re = re.compile(
-    rf"<!--\s*review-anvil:\s*id=(?P<id>{FINDING_ID})\s+"
-    r"severity=(?:critical|high|medium|low|nit)\s+"
-    r"area=(?P<area>[A-Za-z0-9][A-Za-z0-9._/-]*)\s*-->",
-    re.I,
-)
 report_id_re = re.compile(rf"<!--\s*review-anvil-report:\s*id=(?P<id>{FINDING_ID})\s")
 repo_re = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")
 sha_re = re.compile(r"[0-9a-fA-F]{40}")
@@ -393,18 +380,8 @@ control_re = re.compile(r"[\x00-\x1f\x7f]")
 def warn(message):
     print(f"pr-helper: context: {message}", file=sys.stderr)
 
-def positive_int(value, limit=None):
-    return (isinstance(value, int) and not isinstance(value, bool) and value >= 1
-            and (limit is None or value <= limit))
-
-def valid_path(path):
-    if not isinstance(path, str) or not path or len(path) > MAX_PATH:
-        return False
-    if control_re.search(path) or "\\" in path or path.startswith("-"):
-        return False
-    parts = path.split("/")
-    # "C:" would make a drive-absolute, machine-specific path.
-    return not parts[0].endswith(":") and all(part not in ("", ".", "..") for part in parts)
+def positive_int(value):
+    return type(value) is int and value >= 1
 
 def context_item(entry):
     """Validated item in canonical key order, or (None, reason)."""
@@ -418,15 +395,13 @@ def context_item(entry):
     out = {"kind": kind, "label": label}
     repo = entry.get("repo")
     if repo is not None:
-        if (not isinstance(repo, str) or not repo_re.fullmatch(repo)
-                or any(part in (".", "..") for part in repo.split("/"))):
+        if not isinstance(repo, str) or not repo_re.fullmatch(repo) or ".." in repo:
             return None, f"invalid repo {repo!r}"
         out["repo"] = repo
     if kind == "pr":
-        number = entry.get("number")
-        if not positive_int(number):
-            return None, f"invalid pr number {number!r}"
-        out["number"] = number
+        if not positive_int(entry.get("number")):
+            return None, f"invalid pr number {entry.get('number')!r}"
+        out["number"] = entry["number"]
         return out, None
     if kind != "file":
         return None, f"invalid kind {kind!r}"
@@ -435,24 +410,21 @@ def context_item(entry):
         if not isinstance(commit, str) or not sha_re.fullmatch(commit):
             return None, f"invalid commit {commit!r}"
         out["commit"] = commit.lower()
-    if "repo" in out and "commit" not in out:
+    if repo is not None and commit is None:
         return None, f"file in {repo} needs a full 40-character commit"
     path = entry.get("path")
-    if not valid_path(path):
+    if (not isinstance(path, str) or not path or control_re.search(path)
+            or path.startswith("/") or ".." in path.split("/")):
         return None, f"invalid path {path!r}"
     out["path"] = path
     lines = entry.get("lines")
     if lines is not None:
-        if not isinstance(lines, list) or not lines or len(lines) > MAX_SPANS:
+        if not (isinstance(lines, list) and lines and all(
+                isinstance(span, list) and len(span) == 2
+                and all(positive_int(n) for n in span) and span[0] <= span[1]
+                for span in lines)):
             return None, f"invalid lines {lines!r}"
-        spans = []
-        for span in lines:
-            if not (isinstance(span, list) and len(span) == 2
-                    and all(positive_int(n, MAX_LINE) for n in span) and span[0] <= span[1]):
-                return None, f"invalid lines {lines!r}"
-            if span not in spans:
-                spans.append(span)
-        out["lines"] = spans
+        out["lines"] = lines
     return out, None
 
 def context_record(raw):
@@ -460,21 +432,18 @@ def context_record(raw):
     if not isinstance(fid, str) or not finding_id_re.fullmatch(fid):
         warn(f"record with invalid id {fid!r} dropped")
         return None
-    if "revision" not in raw or "items" not in raw:
-        warn(f"{fid}: record needs revision and items; dropped")
-        return None
-    revision = raw["revision"]
-    if revision is not None:
-        if not (isinstance(revision, str) and sha_re.fullmatch(revision)):
-            warn(f"{fid}: invalid revision {revision!r}; record dropped")
-            return None
-        revision = revision.lower()
-    entries = raw["items"]
-    if not isinstance(entries, list):
+    if not isinstance(raw.get("items"), list):
         warn(f"{fid}: items is not a list; record dropped")
         return None
+    record = {"v": 1, "id": fid}
+    revision = raw.get("revision")
+    if revision is not None:
+        if isinstance(revision, str) and sha_re.fullmatch(revision):
+            record["revision"] = revision.lower()
+        else:
+            warn(f"{fid}: invalid revision {revision!r} omitted")
     items = []
-    for entry in entries:
+    for entry in raw["items"]:
         item, reason = context_item(entry)
         if item is None:
             warn(f"{fid}: item dropped ({reason})")
@@ -482,29 +451,26 @@ def context_record(raw):
             items.append(item)
     if len(items) > MAX_ITEMS:
         warn(f"{fid}: kept the first {MAX_ITEMS} of {len(items)} items")
-        items = items[:MAX_ITEMS]
-    return {"v": 1, "id": fid, "revision": revision, "items": items}
+    record["items"] = items[:MAX_ITEMS]
+    return record
 
 def load_records():
-    if not sidecar.exists():
+    if sidecar is None or not sidecar.exists():
         return {}
     try:
         data = json.loads(sidecar.read_text())
     except (OSError, ValueError) as exc:
         warn(f"{sidecar} is unreadable ({exc}); no context embedded")
         return {}
-    if not isinstance(data, dict) or data.get("v") != 1 or not isinstance(data.get("findings"), list):
+    if (not isinstance(data, dict) or type(data.get("v")) is not int or data["v"] != 1
+            or not isinstance(data.get("findings"), list)):
         warn(f"{sidecar} is not a v1 context file; no context embedded")
         return {}
     records = {}
     for raw in data["findings"]:
         record = context_record(raw)
-        if record is None:
-            continue
-        if record["id"] in records:
-            warn(f"{record['id']}: duplicate record ignored")
-            continue
-        records[record["id"]] = record
+        if record is not None:
+            records.setdefault(record["id"], record)
     return records
 
 def encode(record):
@@ -533,75 +499,23 @@ def strip_context_lines(text):
         out.append(line)
     return "\n".join(out)
 
-def terminal_metadata(body):
-    text = body.rstrip()
-    if not text:
-        return None
-    match = metadata_re.fullmatch(text.splitlines()[-1])
-    if match and "--" not in match.group("area"):
-        return match
-    return None
-
-def insert_before_metadata(body, line):
-    text = body.rstrip()
-    marker = terminal_metadata(text).group(0)
-    text = text[:text.rfind(marker)].rstrip()
-    return "\n\n".join(part for part in (text, line, marker) if part)
-
-def insert_before_footer(text, block):
-    rendered = text.rstrip()
-    if rendered.endswith(FOOTER):
-        rendered = rendered[: -len(FOOTER)].rstrip()
-        return rendered + "\n\n" + block + "\n\n" + FOOTER + "\n"
-    return rendered + "\n\n" + block + "\n"
-
 records = load_records()
-
-if inline is not None and inline.is_file():
-    raw = inline.read_text().strip()
-    comments = json.loads(raw) if raw else []
-    if not isinstance(comments, list):
-        raise SystemExit(f"pr-helper: {inline} is not a JSON array of comment objects")
-    changed = False
-    embedded = 0
-    for comment in comments:
-        if not isinstance(comment, dict) or not isinstance(comment.get("body"), str):
-            continue
-        body = strip_context_lines(comment["body"])
-        metadata = terminal_metadata(body)
-        record = records.get(metadata.group("id")) if metadata else None
-        if record and record["items"]:
-            body = insert_before_metadata(body, encode(record))
-            embedded += 1
-        if body != comment["body"]:
-            comment["body"] = body
-            changed = True
-    if changed:
-        inline.write_text(json.dumps(comments, indent=2) + "\n")
-    if embedded:
-        warn(f"embedded in {embedded} inline comment(s)")
-
-if report is not None and report.is_file():
-    original = report.read_text()
-    text = strip_context_lines(original)
-    ids = []
-    for match in report_id_re.finditer(text):
-        if match.group("id") not in ids:
-            ids.append(match.group("id"))
-    missing = [fid for fid in ids if fid not in records]
-    if missing:
-        warn(f"no record for {', '.join(missing)}")
-    lines = [encode(records[fid]) for fid in ids if fid in records]
-    rendered = text
-    if lines:
-        candidate = insert_before_footer(text, "\n".join(lines))
-        if len(candidate) > REPORT_BUDGET:
-            warn(f"report block omitted: the report would exceed {REPORT_BUDGET} characters")
-        else:
-            rendered = candidate
-            warn(f"embedded {len(lines)} record(s) in the report")
-    if rendered != original:
-        report.write_text(rendered)
+original = report.read_text()
+text = strip_context_lines(original)
+ids = list(dict.fromkeys(m.group("id") for m in report_id_re.finditer(text)))
+lines = [encode(records[fid]) for fid in ids if fid in records]
+rendered = text
+if lines:
+    body = text.rstrip()
+    footer = FOOTER if body.endswith(FOOTER) else ""
+    body = body[: len(body) - len(footer)].rstrip()
+    candidate = "\n\n".join(part for part in (body, "\n".join(lines), footer) if part) + "\n"
+    if len(candidate) > REPORT_BUDGET:
+        warn(f"report block omitted: the report would exceed {REPORT_BUDGET} characters")
+    else:
+        rendered = candidate
+if rendered != original:
+    report.write_text(rendered)
 PY
 }
 append_inline_details_to_report() {
@@ -630,23 +544,6 @@ items = [item for item in items if isinstance(item, dict) and item.get("body")]
 if not items:
     raise SystemExit(0)
 
-def without_context_lines(body):
-    # The report carries its own context block; copies here would repeat it.
-    # Drop each context line with the blank line that separated it.
-    out, in_fence, skip_blank = [], False, False
-    for line in body.split("\n"):
-        if line.strip().startswith(("```", "~~~")):
-            in_fence = not in_fence
-        elif not in_fence and line.strip().startswith("<!-- review-anvil: context="):
-            skip_blank = bool(out) and out[-1] == ""
-            continue
-        if skip_blank and line == "":
-            skip_blank = False
-            continue
-        skip_blank = False
-        out.append(line)
-    return "\n".join(out)
-
 parts = [
     "",
     "<details>",
@@ -665,7 +562,7 @@ for index, item in enumerate(items, 1):
         location = str(path)
     else:
         location = f"Finding {index}"
-    parts.extend((f"### `{location}`", "", without_context_lines(str(item["body"])).strip(), ""))
+    parts.extend((f"### `{location}`", "", str(item["body"]).strip(), ""))
 parts.extend(("</details>", section_marker, ""))
 section = "\n".join(parts).strip()
 footer = (
@@ -2541,7 +2438,7 @@ cmd_post() {
     fi
 
     process_inline_comments_for_github "$inline_json"
-    embed_finding_context "$report_path" "$inline_json" "${report_path}.context.json" \
+    embed_finding_context "$report_path" "${report_path}.context.json" \
         || printf 'warning: finding context could not be embedded; posting without it\n' >&2
     compact_report_for_github "$report_path" "$inline_json"
 
@@ -2875,7 +2772,7 @@ cmd_post_update() {
     compact_report_for_github "$report_path" "${report_path}.inline.json"
     if [[ "$outcome" == "success" ]]; then
         append_inline_details_to_report "$report_path" "${report_path}.inline.json"
-        embed_finding_context "$report_path" "" "${report_path}.context.json" \
+        embed_finding_context "$report_path" "${report_path}.context.json" \
             || printf 'warning: finding context could not be embedded; posting without it\n' >&2
     fi
 
@@ -2944,6 +2841,6 @@ case "${1:-}" in
     process-inline)   shift; process_inline_comments_for_github "$@" ;;
     embed-context)    shift; embed_finding_context "$@" ;;
     check-pins)       shift; cmd_check_pins "$@" ;;
-    "")               die "usage: pr-helper.sh {init [<locator>] | next-run <host> <owner> <repo> <n> | post <host> <owner> <repo> <n> <marker> <report_path> | verify-checkout [<locator>] | post-start <host> <owner> <repo> <n> <marker> <author> | post-update <host> <owner> <repo> <n> <comment_id> <marker> <report_path> <author> <success|failure> [<started_at>] | history <host> <owner> <repo> <n> | resolve <host> <owner> <repo> <n> <resolutions_json> | dismissed <host> <owner> <repo> <n> | dismiss <host> <owner> <repo> <n> <path> <pattern> [<reason>] | compact-report <report_path> [<inline_json>] | process-inline <inline_json> | embed-context <report_path> <inline_json> <context_json> | check-pins <preset> <pins-csv> [<raw-args>]}" ;;
+    "")               die "usage: pr-helper.sh {init [<locator>] | next-run <host> <owner> <repo> <n> | post <host> <owner> <repo> <n> <marker> <report_path> | verify-checkout [<locator>] | post-start <host> <owner> <repo> <n> <marker> <author> | post-update <host> <owner> <repo> <n> <comment_id> <marker> <report_path> <author> <success|failure> [<started_at>] | history <host> <owner> <repo> <n> | resolve <host> <owner> <repo> <n> <resolutions_json> | dismissed <host> <owner> <repo> <n> | dismiss <host> <owner> <repo> <n> <path> <pattern> [<reason>] | compact-report <report_path> [<inline_json>] | process-inline <inline_json> | embed-context <report_path> <context_json> | check-pins <preset> <pins-csv> [<raw-args>]}" ;;
     *)                die "unknown subcommand: $1" ;;
 esac

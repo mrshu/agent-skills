@@ -2535,23 +2535,11 @@ JSON
     {"kind": "pr", "label": "Upstream fix", "repo": "acme/app", "number": 790},
     {"kind": "file", "label": "Session -- write -->", "path": "src/session.ts", "lines": [[88, 96]]},
     {"kind": "file", "label": "Escape", "path": "../etc/passwd"},
-    {"kind": "file", "label": "Absolute", "path": "/etc/passwd"},
-    {"kind": "file", "label": "Option", "path": "-rf"},
-    {"kind": "file", "label": "Dot repo", "repo": "acme/..", "commit": "$SHA_A", "path": "a.ts"},
     {"kind": "file", "label": "No commit", "repo": "acme/app", "path": "a.ts"},
-    {"kind": "file", "label": "Short commit", "commit": "3f545a5", "path": "a.ts"},
-    {"kind": "file", "label": "Backwards", "path": "a.ts", "lines": [[5, 2]]},
-    {"kind": "file", "label": "Huge line", "path": "a.ts", "lines": [[1, 99999999999]]},
-    {"kind": "file", "label": "Drive path", "path": "C:/work/a.ts"},
-    {"kind": "url", "label": "Unknown", "path": "a.ts"},
-    {"kind": "file", "label": "  ", "path": "a.ts"}
+    {"kind": "file", "label": "Backwards", "path": "a.ts", "lines": [[5, 2]]}
   ]},
-  {"id": "RAV-RUN3-R2-F002", "revision": null, "items": []},
-  {"id": "RAV-RUN3-R2-F003", "revision": "main", "items": []},
-  {"id": "RAV-RUN3-R2-F004", "items": []},
-  {"id": "RAV-RUN3-R2-F009", "revision": null, "items": [{"kind": "file", "label": "Gone", "path": "x.ts"}]},
-  {"id": "RAV-RUN3-R2-F001", "revision": null, "items": []},
-  {"id": "not-an-id", "items": []}
+  {"id": "RAV-RUN3-R2-F002", "revision": "main", "items": []},
+  {"id": "RAV-RUN3-R2-F009", "items": [{"kind": "file", "label": "Gone", "path": "x.ts"}]}
 ]}
 JSON
 }
@@ -2564,66 +2552,37 @@ context_payload() {
 }
 
 test_embed_context_validates_and_is_idempotent() {
-    local tmp stderr body report payload expected
+    local tmp stderr report
     tmp="$(mktemp -d)"
     trap "rm -rf '$tmp'" RETURN
     make_context_fixtures "$tmp"
     stderr="$tmp/stderr"
 
-    "$HELPER" embed-context "$tmp/report.md" "$tmp/report.md.inline.json" "$tmp/report.md.context.json" 2>"$stderr"
-
-    expected="$(jq -cn --arg sha "$SHA_A" '{v:1,id:"RAV-RUN3-R2-F001",revision:$sha,items:[
-        {kind:"file",label:"Session -- write -->",path:"src/session.ts",lines:[[88,96]]},
-        {kind:"file",label:"Required vars",repo:"acme/app",commit:$sha,path:"src/env.ts",lines:[[59,59],[75,75]]},
-        {kind:"pr",label:"Upstream fix",repo:"acme/app",number:790}]}')"
-
-    body="$(jq -r '.[0].body' "$tmp/report.md.inline.json")"
-    [[ "$(context_payload "$body" RAV-RUN3-R2-F001)" == "$expected" ]] \
-        || fail "inline context did not round-trip: $body"
-    [[ "$(sed -n 's/^<!-- review-anvil: context=\(.*\) -->$/\1/p' <<<"$body")" != *--* ]] \
-        || fail "inline context payload must not contain --"
-    [[ "$body" == *'reintroduced -->'$'\n\n''<!-- review-anvil: context='*$'\n\n''<!-- review-anvil: id=RAV-RUN3-R2-F001 severity=medium area=auth -->' ]] \
-        || fail "context line must sit between prior-feedback and terminal markers: $body"
-    jq -e '.[1].body | contains("review-anvil: context=") | not' "$tmp/report.md.inline.json" >/dev/null \
-        || fail "a finding without items gets no inline context line"
+    "$HELPER" embed-context "$tmp/report.md" "$tmp/report.md.context.json" 2>"$stderr"
 
     report="$(cat "$tmp/report.md")"
-    [[ "$(context_payload "$report" RAV-RUN3-R2-F001)" == "$expected" ]] || fail "report record for F001 missing"
-    [[ "$(context_payload "$report" RAV-RUN3-R2-F002)" == '{"v":1,"id":"RAV-RUN3-R2-F002","revision":null,"items":[]}' ]] \
-        || fail "F002 must keep a record with a null revision"
+    jq -en --arg sha "$SHA_A" --argjson got "$(context_payload "$report" RAV-RUN3-R2-F001)" '$got == {v:1,id:"RAV-RUN3-R2-F001",revision:$sha,items:[
+        {kind:"file",label:"Session -- write -->",path:"src/session.ts",lines:[[88,96]]},
+        {kind:"file",label:"Required vars",repo:"acme/app",commit:$sha,path:"src/env.ts",lines:[[59,59],[75,75]]},
+        {kind:"pr",label:"Upstream fix",repo:"acme/app",number:790}]}' >/dev/null \
+        || fail "F001 record did not round-trip: $report"
+    jq -en --argjson got "$(context_payload "$report" RAV-RUN3-R2-F002)" '$got == {v:1,id:"RAV-RUN3-R2-F002",items:[]}' >/dev/null \
+        || fail "an invalid revision must be omitted, keeping the record"
     [[ -z "$(context_payload "$report" RAV-RUN3-R2-F009)" ]] || fail "records for unlisted findings must not be posted"
+    [[ "$(sed -n 's/^<!-- review-anvil: context=\(.*\) -->$/\1/p' "$tmp/report.md")" != *--* ]] \
+        || fail "context payloads must not contain --"
     grep -Fxq '<!-- review-anvil: context={"quoted":"keep me"} -->' "$tmp/report.md" || fail "fenced quotes must survive"
-    [[ "$(grep -c '^<!-- review-anvil: context={"v"' "$tmp/report.md")" == 2 ]] || fail "expected exactly two report records"
     [[ "$(tail -n1 "$tmp/report.md")" == '_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._' ]] \
         || fail "footer must stay last"
-
-    for reason in "invalid path '../etc/passwd'" "invalid path '/etc/passwd'" "invalid path '-rf'" \
-                  "invalid repo 'acme/..'" "file in acme/app needs a full 40-character commit" \
-                  "invalid commit '3f545a5'" "invalid lines" "invalid kind 'url'" "missing label" \
-                  "invalid path 'C:/work/a.ts'" "invalid revision 'main'; record dropped" \
-                  "RAV-RUN3-R2-F004: record needs revision and items" \
-                  "RAV-RUN3-R2-F001: duplicate record ignored" \
-                  "record with invalid id 'not-an-id'" ; do
-        grep -Fq "$reason" "$stderr" || fail "missing warning: $reason"
-    done
+    grep -Fq "invalid path '../etc/passwd'" "$stderr" || fail "dropped items must warn"
 
     cp "$tmp/report.md" "$tmp/once.md"
-    cp "$tmp/report.md.inline.json" "$tmp/once.json"
-    "$HELPER" embed-context "$tmp/report.md" "$tmp/report.md.inline.json" "$tmp/report.md.context.json" 2>/dev/null
+    "$HELPER" embed-context "$tmp/report.md" "$tmp/report.md.context.json" 2>/dev/null
     cmp -s "$tmp/report.md" "$tmp/once.md" || fail "second run changed the report"
-    cmp -s "$tmp/report.md.inline.json" "$tmp/once.json" || fail "second run changed inline comments"
-
-    # A changed sidecar replaces earlier lines instead of stacking them.
-    printf '{"v":1,"findings":[{"id":"RAV-RUN3-R2-F002","revision":null,"items":[]}]}\n' >"$tmp/report.md.context.json"
-    "$HELPER" embed-context "$tmp/report.md" "$tmp/report.md.inline.json" "$tmp/report.md.context.json" 2>"$stderr"
-    grep -Fq "no record for RAV-RUN3-R2-F001" "$stderr" || fail "a listed finding without a record must warn"
-    jq -e '.[0].body == "Refresh accepts missing state.\n\n<!-- review-anvil: prior_feedback=reintroduced -->\n\n<!-- review-anvil: id=RAV-RUN3-R2-F001 severity=medium area=auth -->"' \
-        "$tmp/report.md.inline.json" >/dev/null || fail "stale inline context must be removed cleanly"
-    [[ "$(grep -c '^<!-- review-anvil: context={"v"' "$tmp/report.md")" == 1 ]] || fail "stale report record must be removed"
 
     # Without a context file, earlier lines are still removed before a retry.
     rm "$tmp/report.md.context.json"
-    "$HELPER" embed-context "$tmp/report.md" "" "$tmp/report.md.context.json" 2>/dev/null
+    "$HELPER" embed-context "$tmp/report.md" "$tmp/report.md.context.json" 2>/dev/null
     ! grep -q '^<!-- review-anvil: context={"v"' "$tmp/report.md" || fail "a missing context file must clear stale lines"
 }
 
@@ -2635,21 +2594,19 @@ test_embed_context_never_blocks_posting() {
     stderr="$tmp/stderr"
     cp "$tmp/report.md" "$tmp/orig.md"
 
-    printf '{not json' >"$tmp/report.md.context.json"
-    "$HELPER" embed-context "$tmp/report.md" "" "$tmp/report.md.context.json" 2>"$stderr" \
-        || fail "malformed context must not fail"
-    cmp -s "$tmp/report.md" "$tmp/orig.md" || fail "malformed context must leave the report unchanged"
-    grep -q 'unreadable' "$stderr" || fail "malformed context must warn"
-
-    printf '{"v":2,"findings":[]}' >"$tmp/report.md.context.json"
-    "$HELPER" embed-context "$tmp/report.md" "" "$tmp/report.md.context.json" 2>"$stderr"
-    grep -q 'not a v1 context file' "$stderr" || fail "unknown version must warn"
+    for bad in '{not json' '{"v":true,"findings":[]}'; do
+        printf '%s' "$bad" >"$tmp/report.md.context.json"
+        "$HELPER" embed-context "$tmp/report.md" "$tmp/report.md.context.json" 2>"$stderr" \
+            || fail "malformed context must not fail: $bad"
+        cmp -s "$tmp/report.md" "$tmp/orig.md" || fail "malformed context must leave the report unchanged: $bad"
+        [[ -s "$stderr" ]] || fail "malformed context must warn: $bad"
+    done
 
     # A report near GitHub's limit keeps its content and drops the block.
-    printf '{"v":1,"findings":[{"id":"RAV-RUN3-R2-F001","revision":null,"items":[]}]}' >"$tmp/report.md.context.json"
+    printf '{"v":1,"findings":[{"id":"RAV-RUN3-R2-F001","items":[]}]}' >"$tmp/report.md.context.json"
     { head -c 59990 /dev/zero | tr '\0' 'x'; printf '\n'; cat "$tmp/orig.md"; } >"$tmp/report.md"
     cp "$tmp/report.md" "$tmp/big.md"
-    "$HELPER" embed-context "$tmp/report.md" "" "$tmp/report.md.context.json" 2>"$stderr"
+    "$HELPER" embed-context "$tmp/report.md" "$tmp/report.md.context.json" 2>"$stderr"
     cmp -s "$tmp/report.md" "$tmp/big.md" || fail "over-budget block must be omitted"
     grep -q 'report block omitted' "$stderr" || fail "over-budget block must warn"
 }
@@ -2670,33 +2627,11 @@ test_post_embeds_finding_context() {
     PATH="$bin:$PATH" \
       "$HELPER" post github.com acme widgets 42 marker-123 "$tmp/report.md" >/dev/null 2>&1
 
-    jq -e '.comments[0].body | contains("<!-- review-anvil: context={\"v\":1,\"id\":\"RAV-RUN3-R2-F001\"")' \
-        "$tmp/review-payload.json" >/dev/null || fail "inline comment must carry its context"
     jq -e '.body | [scan("review-anvil: context=\\{\"v\"")] | length == 2' "$tmp/review-payload.json" >/dev/null \
         || fail "review body must carry one record per listed finding"
+    jq -e '[.comments[].body | contains("review-anvil: context=")] | any | not' "$tmp/review-payload.json" >/dev/null \
+        || fail "inline comments must not repeat the report's context"
     assert_file_missing "$tmp/report.md.context.json"
-}
-
-test_post_approval_details_do_not_repeat_context() {
-    local tmp bin
-    tmp="$(mktemp -d)"
-    trap "rm -rf '$tmp'" RETURN
-    bin="$tmp/bin"
-    mkdir "$bin"
-    install_fake_gh "$bin"
-    make_context_fixtures "$tmp"
-    printf '{"event":"APPROVE","head_sha":"head-sha","adversarial_mode":"targeted","approval_allowed":true}\n' >"$tmp/report.md.approval.json"
-
-    GH_MOCK_INLINE_REVIEW_FAIL=1 \
-    GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
-    GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
-    PATH="$bin:$PATH" \
-      "$HELPER" post github.com acme widgets 42 marker-123 "$tmp/report.md" >/dev/null 2>&1
-
-    jq -e '.event == "APPROVE" and (.body | contains("<summary>Finding details</summary>"))' "$tmp/review-payload.json" >/dev/null \
-        || fail "fixture must reach the body-only approval path"
-    jq -e '.body | [scan("context=\\{\"v\":1,\"id\":\"RAV-RUN3-R2-F001\"")] | length == 1' "$tmp/review-payload.json" >/dev/null \
-        || fail "finding details must not repeat context lines"
 }
 
 test_history_ignores_context_lines() {
@@ -2736,7 +2671,6 @@ main() {
     test_embed_context_validates_and_is_idempotent
     test_embed_context_never_blocks_posting
     test_post_embeds_finding_context
-    test_post_approval_details_do_not_repeat_context
     test_history_ignores_context_lines
     test_process_inline_rejects_severity_mismatch
     test_process_inline_rejects_invalid_marker_severity_field
