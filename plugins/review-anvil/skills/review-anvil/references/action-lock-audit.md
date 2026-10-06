@@ -106,11 +106,10 @@ row's surface. It can be shorter only when every actor, action, target,
 condition, qualifier, concrete impact, evidence identifier, and path remains.
 
 
-Before returning a verdict, build source-to-rendered and rendered-to-source
-predicate ledgers for each item. Quote and classify every predicate in each
-direction, then point to its exact counterpart and obligation status. Split
-every mixed sentence before checking it. Return `pass` only when both ledgers
-are complete and mapped correctly. Do not include the ledgers in the output.
+Return `pass` only when the source-to-rendered and rendered-to-source predicate
+mappings are both complete: every source predicate has a rendered counterpart
+with the same obligation status, and every rendered predicate traces back to a
+source predicate. Split every mixed sentence before checking it.
 
 Use source context to settle meaning before applying those rules:
 

@@ -7,16 +7,9 @@ description: Delegate code review, plan review, and exploration to Codex CLI. Us
 
 Delegate review and exploration tasks to **Codex CLI** for an independent second opinion. Codex acts as a strict counter-reviewer that catches blind spots you might miss.
 
-## When to Use
+## When Not to Use
 
-Use this skill when:
-- You have finished implementing a feature or fix and want an independent review before committing/pushing
-- The user explicitly asks to run `codex exec`, `codex review`, or to "get codex's opinion"
-- You have written or revised a plan and want a counter-review
-- You want to explore the codebase for blind spots, simplification opportunities, or quality issues
-- You need a second opinion on architecture or design decisions
-
-**Do NOT use this skill** for tasks where you are confident in the output and the user hasn't asked for a second opinion. Reserve it for quality gates and deliberate review steps.
+Skip this skill when you are confident in the output and the user hasn't asked for a second opinion. Reserve it for quality gates and deliberate review steps.
 
 ## Commands
 
@@ -94,48 +87,9 @@ plan/confirmation request or does not end with the required fenced findings
 block. The orchestrator retries that specific failure once with a corrective
 non-interactive prefix; it must not answer the model's confirmation request.
 
-### Iterative Review
-
-Run review in a loop until all issues are resolved:
-
-```bash
-# First pass
-codex review --base main
-
-# Fix the issues codex found, then re-run
-codex review --base main
-
-# Repeat until the review comes back clean
-```
-
-For plans, iterate with `codex exec`:
-
-```bash
-codex exec 'Review the plan in PLAN.md and list remaining problems.'
-# Revise the plan based on feedback, then re-run until agreed
-```
-
 ## Workflow Patterns
 
-### Pre-push Quality Gate
-
-After completing implementation and before pushing:
-
-1. Run `codex review --base main`
-2. Read the review output carefully
-3. Fix any issues raised
-4. Re-run the review until clean
-5. Push
-
-### Plan Counter-Review
-
-When drafting an implementation plan:
-
-1. Write the plan
-2. Run `codex exec 'Review the plan in PLAN.md. Be very strict: identify gaps, missing edge cases, wrong assumptions, and over-engineering.'`
-3. Revise the plan based on feedback
-4. Re-run until codex agrees with the plan
-5. Proceed with implementation
+Use the review as a gate: run `codex review --base main` before pushing, or `codex exec` on a plan before implementing it, fix or revise what it raises, and re-run until it comes back clean.
 
 ### Deep Dig
 
@@ -151,7 +105,5 @@ codex exec 'Look deeper at the error handling pattern in src/api/client.ts. Is t
 
 ## Tips
 
-- **Be pointed in prompts.** Vague prompts get vague reviews. Tell codex exactly what to focus on and what format you want the response in.
 - **Use `--base main`** for branch reviews, `--uncommitted` for work-in-progress checks.
-- **Iterate.** Don't treat the first review as final — run it again after fixes to catch regressions or new issues.
-- **Model override.** Use `-m <model>` to pick a specific model for the review if needed: `codex review --base main -m o3`.
+- **Model override.** Use `-m <model>` to pick a specific model for the review if needed: `codex review --base main -m gpt-6-luna`.

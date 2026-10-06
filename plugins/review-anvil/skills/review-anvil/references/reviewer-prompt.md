@@ -132,9 +132,9 @@ Review principles:
 - Prefer the smallest clear fix and existing local patterns. Suggest a new
   layer, helper, or abstraction only when evidence shows the simple approach
   would fail or threaten correctness or safety.
-- Apply the ASD-STE100-inspired language contract in
-  `asd-ste100-inspired.md` to generated findings and suggested fixes.
-  Preserve code identifiers, diagnostics, URLs, and schema tokens.
+- State one fact or action per sentence, in active voice, with one term for
+  one meaning. Preserve code identifiers, diagnostics, URLs, and schema tokens
+  verbatim.
 
 - Use short everyday words. Prefer one clear sentence over a dense explanation.
   Keep code names and necessary technical terms, but explain what they mean in
@@ -243,16 +243,12 @@ For each issue, return a structured finding with these keys:
   requires independently implementable work there. A required source-backed
   test is a separate obligation when it has its own exact boundary. Reuse
   exact source wording for scope and collection phrases.
-  Privately map every source predicate to author work or a no-change boundary.
-  Do not return the finding until every author-work predicate appears as an
-  explicit request.
+  Every author-work predicate must appear as an explicit request.
   Default to starting required work with its action verb. Keep one or two
   cohesive obligations in one short prose paragraph. For three or more
   independently implementable obligations, use one direct-action Markdown
   bullet per obligation. Order required behavior changes before required tests.
-  A deliberate collaborative request may use a courtesy wrapper sparingly when
-  coordination or tone benefits. Never use one as a stock opener throughout a
-  review. Use question grammar only for a genuinely unresolved choice. Preserve
+  Use question grammar only for a genuinely unresolved choice. Preserve
   suggestion grammar for low and nit guidance. Never describe requested work as
   code already present. Mention a test only when the code, existing tests, or
   task establishes its boundary. Include replacement code only when it safely
@@ -304,5 +300,6 @@ If you find nothing worth raising, end with an empty findings block:
 - Fill `{ROUNDS}` with the requested round count and `{MAX_ROUNDS}` with the resolved cap after final `commit_mode`, PR-locator forcing, exact/no-extra phrasing, and default handling.
 - Fill `{ROUND_KIND}` as `requested` for rounds `N <= ROUNDS` and `adaptive` for rounds after the requested count, so reviewers never see an impossible requested-round label once adaptive continuation starts.
 - Reviewers return **prose findings only** — ignore any embedded patches.
+- The task block's language rules are the reviewer-facing subset of `asd-ste100-inspired.md`. A dispatched reviewer cannot read that file, so keep the two in sync instead of referencing it from the block.
 - Build PRIOR ROUNDS from each prior round's synthesis: header `Round N (K fixes applied, <sha1>..<shaN>; verification <state>):` plus `addressed:`/`deferred:` lists of `- [severity] area — what (reason)` lines. Severity counts alone can't tell a reviewer *which* issues not to re-raise.
 - **`commit_mode=none` multi-round:** nothing changes between rounds, so replace PRIOR ROUNDS with `None — review-only mode; this is an independent reviewer pass.` and drop only the PRIOR-ROUNDS do-not-repeat paragraph from the task block — **keep PR REVIEW HISTORY**, which applies regardless of rounds.

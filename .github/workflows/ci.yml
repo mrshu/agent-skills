@@ -26,6 +26,11 @@ jobs:
       - name: Check plugin/marketplace consistency
         run: python3 scripts/check-manifests.py
 
+      - name: Validate skill frontmatter
+        run: |
+          python3 -m pip install PyYAML==6.0.3
+          python3 scripts/check-skills.py
+
       - name: review-anvil test suites
         run: |
           set -euo pipefail
