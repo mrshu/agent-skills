@@ -132,12 +132,6 @@ reviewed-worktree-contained result before that dispatch. Never pin a
 package-manager-specific path or resolve the binary from the reviewed
 repository.
 
-Keep the user's MCP configuration unchanged in every Codex-backed dispatch.
-Do not add server-specific `mcp_servers.<name>.enabled` overrides: when the
-named server is absent, Codex CLI v0.157.0 rejects the resulting incomplete
-server definition with `invalid transport` before analysis starts. Review Anvil
-does not require a Webex MCP server or a placeholder server definition.
-
 #### In Claude Code (the primary host)
 
 **Use the Agent tool for `claude-exec` reviewers. Do NOT use `claude -p` via Bash — that path is for non-Claude hosts only.**
