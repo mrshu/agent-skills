@@ -9,7 +9,7 @@
   "policy_hashes": {
     "plugins/review-anvil/skills/review-anvil/SKILL.md": {
       "baseline_sha256": "14708e9c12efc006405ae01c8bb71bdd195346d4d6ce3f9f14a10d4d918a9a32",
-      "final_sha256": "4dc9254b190dfa36f966d31af0d2814e7ea02a5092eff0743bc6d84eb4d363c1"
+      "final_sha256": "b96f2576721e3f00ca148edddd3036fd0286e5265ecf21329eb438df19b4caf2"
     },
     "plugins/review-anvil/skills/review-anvil/references/report-artifacts.md": {
       "baseline_sha256": "ee0357a74f6e328c0d233944791157e0237682dd5d279d75984ab73b45274c91",
@@ -113,7 +113,7 @@
       "conclusion": "Observed improvement concerns proof-expectation construction, not a measured final false-positive reduction. Most baseline notes already recognize the relevant contract.",
       "snapshot_limits": "Cancellation and generation assessments use later merged snapshots; routing uses a later snapshot. Historical startup and session cases retain incomplete source/patch evidence. Do not infer dispositions at unavailable original review heads."
     },
-    "final_policy_differences": "Final policy also includes the verified close-save example, diagnostic-lock/proof/work separation, a no-runner static-relabel guard, and explicit whole-file/path scope and non-formal contract support. These refinements were exercised in final smoke, not in all paired pilot calls."
+    "final_policy_differences": "Final policy includes a generic later-action evidence-gap example, diagnostic-lock/proof/work separation, a no-runner static-relabel guard, and explicit whole-file/path scope and non-formal contract support. These refinements were exercised in focused smoke, not in all paired pilot calls. The initial clarity smoke used a project-specific example, subsequently generalized and re-smoked."
   },
   "final_smoke": {
     "selected_diagnosis": {
@@ -179,6 +179,18 @@
       "accepted_explanation_and_requests_retained": true,
       "scope": "Separate forced-failure instruction smoke with retained canonical source fixture, not execution of a live review/posting workflow; production Run-details routing not exercised."
     }
+  },
+  "generalized_example_smoke": {
+    "model_selector": "default",
+    "resolved_backend_identity": "unknown",
+    "calls": 1,
+    "scope": "Reused the retained real-case selection request, changing only its shared example from project-specific names to the generic later-action evidence-gap pattern.",
+    "accepted_id_and_requests_byte_identical": true,
+    "original_diagnostic_facts_preserved": true,
+    "observed_explanation": "A later close can itself submit under the supported non-nested, non-skipped conditions, so checking saved state only afterward does not prove the earlier change submitted it.",
+    "source_backed_conditions_retained": true,
+    "incidental_proof_and_author_work_not_promoted_to_diagnostic_locks": true,
+    "limit": "One retained-case instruction-stage smoke, not a new full renderer/auditor or live review run, and not evidence of broad transfer or quality improvement."
   },
   "publication_scope_smoke": {
     "model_selector": "default",

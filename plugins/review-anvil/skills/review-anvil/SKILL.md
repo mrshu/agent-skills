@@ -525,11 +525,10 @@ relationship. Do not promote incidental fixture values, proof citations,
 process instructions, or requested-work predicates into diagnostic locks.
 Retain those in the existing evidence/source context and requested-work fields.
 
-For example, when an OpenText poll test checks persistence only after a normal
-non-nested drawer close, and that path submits on close, explain that the
-assertion can pass through close-time saving without proving save-on-change.
-Do not generalize this to paths that skip close submission, such as
-simulation-mode Ideas.
+For example, if a later action can produce the same result, a check made only
+after that action does not prove the earlier action worked. Explain that gap
+and retain the source-backed conditions under which the later action can
+produce the result.
 
 Run one clean final clarity pass after the report facts are frozen and before
 emitting any final artifact. First retain a complete pre-clarity report and
