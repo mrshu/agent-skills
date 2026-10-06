@@ -263,6 +263,22 @@ For each issue, return a structured finding with these keys:
 - line: (OPTIONAL) line number on the "new" side of the diff, or a
   range `<start>-<end>`. Omit if `file` is omitted or the finding
   isn't line-anchorable.
+- context: required list of the other locations you read to establish this
+  finding, so a reader can retrace it without redoing the research. Use `[]`
+  when the anchor alone shows the problem. List at most 8 locations you
+  actually opened, never guesses, and never the finding's own `file`/`line`.
+  `evidence` keeps the reasoning; `context` only says where to look. Each
+  entry is one of:
+  - `kind: file` — `label` (what the location shows, in a few words, e.g.
+    "Required vars"), `path` (relative to the repository root, forward
+    slashes, never an absolute or machine-specific path), and optionally
+    `lines` (a list of `[start, end]` spans; `[42, 42]` for one line).
+    For a file in another repository, add `repo: owner/name` and `commit`:
+    the full 40-character SHA you read (`git -C <that checkout> rev-parse
+    HEAD`). Add `commit` alone when a file in the reviewed repository
+    matters at a revision other than the reviewed one.
+  - `kind: pr` — `label` and `number` of a related pull request; add
+    `repo: owner/name` when it is in another repository.
 - prior_feedback: (OPTIONAL) `still-open`, `resolved-but-still-present`,
   or `reintroduced` when this finding matches PR REVIEW HISTORY. Omit for a
   genuinely new finding.
@@ -285,6 +301,15 @@ block containing one YAML list item per finding:
     what: ...
     why: ...
     suggested_fix: ...
+    context:
+      - kind: file
+        label: Session store write
+        path: src/session.ts
+        lines: [[88, 96]]
+      - kind: file
+        label: Token check callers
+        path: src/routes.ts
+        lines: [[14, 14], [52, 52]]
   ```
 
 If you find nothing worth raising, end with an empty findings block:

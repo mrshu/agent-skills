@@ -189,7 +189,7 @@ The `codex-exec` and `claude-exec` skills document the same recipes from the rev
 
 When all reviewers return:
 
-- **Dedup** on `(file, line, root cause)` when present, else `(area, root cause)`. Keep the highest-severity instance, record which reviewers raised it, and keep divergent anchors as `file_alternates: [...]`.
+- **Dedup** on `(file, line, root cause)` when present, else `(area, root cause)`. Keep the highest-severity instance, record which reviewers raised it, and keep divergent anchors as `file_alternates: [...]`. Merge the instances' `context` lists (schema in `references/reviewer-prompt.md`): drop the finding's own anchor and repeats of the same location, keep the first reviewer's order, and keep at most 8 entries. Drop an entry only when you checked it and its location does not exist or does not show what its label says; never invent entries. Record the finding's `revision`: the commit its origin round reviewed — the PR head SHA for a PR target, otherwise `git rev-parse HEAD` at that round's snapshot; leave it unset for an uncommitted working-tree diff.
 - **Group** by severity (`critical` → `nit`), then topic.
 - Unparseable reviewer output: pass the prose through as "unstructured" findings in a separate section; no retry.
 
@@ -586,7 +586,11 @@ validated `report_markdown` string to `report_path`, and write only validated
 `disposition_items`, or `predicate_inventory`; they exist only for
 byte-identity and action-lock validation.
 
-After the final round, emit the **Final Report** (Output Format). If `report_path` is set:
+After the final round, emit the **Final Report** (Output Format).
+
+Show the report in the conversation without its hidden `<!-- … -->` comments; the report file keeps them.
+
+If `report_path` is set:
 
 1. Write the rendered PR report there (creating parent dirs).
 2. Write a sibling `<report_path>.inline.json`: an array of GitHub PR review comment payloads for findings with both `file` and `line` —
@@ -657,8 +661,9 @@ After the final round, emit the **Final Report** (Output Format). If `report_pat
    Include `"head_sha"` — the `HEAD_SHA` the preset captured at init/verify-checkout time — so the posting helper can verify the approval still matches the reviewed state (it downgrades to COMMENT if the PR head moved mid-run). Include `"adversarial_mode"` and set `"approval_allowed": false` when approval must be mechanically disabled, including explicit `adversarial: off` in a PR run or any run where an action-lock exact-source fallback has been used.
 
    Use `APPROVE` for review-only PR runs when all of these hold: `approve` is not `never`, at least one reviewer succeeded, no action-lock exact-source fallback has been used, there are no `critical`/`high` actionable in-scope findings, no `critical`/`high` in-scope deferred finding needs author action, no prior `critical`/`high` open or resolved-but-still-present item remains unaddressed, no unresolved `critical`/`high` adversarial dispute remains, and remaining items are only `medium`/`low`/`nit` findings, suggestions, deferred notes, or out-of-scope follow-ups. Medium-and-lower in-scope findings should still be posted clearly, but the review event is approval: leave those fixes to the author. Use `COMMENT` otherwise. Out-of-scope follow-ups do not block approval.
-5. Print the report path as the last output line; the `.inline.json`, `.resolutions.json`, and `.approval.json` files are implied by convention.
+5. Print the report path as the last output line; the `.inline.json`, `.resolutions.json`, `.approval.json`, and `.context.json` files are implied by convention.
 6. For out-of-scope follow-ups, write the sibling `<report_path>.followups.json` once, after the final round, using the follow-ups schema from §3 "Approving out-of-scope follow-ups" (NOT the `.approval.json` schema above). The posting helper deletes it after a successful post, so any consumer (surfacing follow-ups to the user, filing issues for `auto_approved` entries after duplicate search) must read it **before** the post/post-update step — the presets do this.
+7. Write a sibling `<report_path>.context.json` with every finding's `revision` and merged `context` list, one record per complete finding ID that has a `review-anvil-report` marker (schema in `references/report-artifacts.md`). Build it from the synthesized findings, never from rendered prose: context is data, so it never enters the clarity or action-lock passes. Never write context into the report, `.inline.json`, or any body yourself; the posting helper validates the file and embeds one hidden context line per finding at the end of the report.
 
 ### Failure handling
 
