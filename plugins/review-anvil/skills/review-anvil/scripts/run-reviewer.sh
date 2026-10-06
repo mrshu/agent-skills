@@ -14,6 +14,11 @@
 #
 # Usage:
 #   run-reviewer.sh <out_file> <timeout_seconds> -- <command> [args...]
+#   run-reviewer.sh <out_file> <timeout_seconds> --codex-copy-editor <absolute-trusted-codex-bin> <prompt>
+# Copy editors (clarity renderers, action-lock auditors, and bounded repairs)
+# run in a new private empty directory that is removed on every normal outcome.
+# The orchestrator owns lazy canonical trusted binary resolution; this mode
+# rejects relative or non-executable paths and owns the Codex command flags.
 #
 # stdin is inherited by <command> — pipe/redirect the reviewer prompt in:
 #   run-reviewer.sh out.md 600 -- claude -p --max-turns 100 ... < prompt.txt
@@ -32,6 +37,8 @@
 # mode, successful output must end with a complete fenced `findings` block;
 # plan-only or confirmation-request output is classified as a protocol failure.
 # Reproduction/adversarial dispatches use different schemas and leave it unset.
+# Copy-editor mode ignores REVIEW_ANVIL_REQUIRE_FINDINGS because its output
+# is not a normal review. It preserves inherited stdin and environment.
 #
 # The orchestrator must treat any STATUS other than ok as a failed
 # reviewer per the engine's failure-handling rules, with the tail of
@@ -41,12 +48,31 @@ set -u
 
 die() { printf 'run-reviewer: %s\n' "$*" >&2; exit 2; }
 
-out="${1:-}"; secs="${2:-}"; sep="${3:-}"
-[[ -n "$out" && -n "$secs" && "$sep" == "--" ]] \
-    || die 'usage: run-reviewer.sh <out_file> <timeout_seconds> -- <command> [args...]'
+out="${1:-}"; secs="${2:-}"; mode="${3:-}"
+[[ -n "$out" && -n "$secs" && ( "$mode" == "--" || "$mode" == "--codex-copy-editor" ) ]] \
+    || die 'usage: run-reviewer.sh <out_file> <timeout_seconds> -- <command> [args...] | --codex-copy-editor <absolute-trusted-codex-bin> <prompt>'
 shift 3
-[[ $# -ge 1 ]] || die 'no command given after --'
+if [[ "$mode" == "--" ]]; then
+    [[ $# -ge 1 ]] || die 'no command given after --'
+else
+    [[ $# -eq 2 ]] || die 'copy-editor mode requires a trusted Codex binary and one prompt'
+    [[ "$1" == /* && -f "$1" && -x "$1" ]] \
+        || die 'copy-editor Codex binary must be an absolute executable file'
+fi
 [[ "$secs" =~ ^[0-9]+$ ]] || die "timeout must be an integer number of seconds, got '$secs'"
+
+# Do not allocate a workspace or touch output files until usage is valid.
+if [[ "$mode" == "--codex-copy-editor" ]]; then
+    workspace="$(mktemp -d "${TMPDIR:-/tmp}/review-anvil-copy-editor.XXXXXXXX")" \
+        || die 'could not create the copy-editor workspace'
+    [[ "$workspace" == /* ]] || workspace="$PWD/$workspace"
+    trap 'rm -rf -- "$workspace"' EXIT
+    set -- "$1" exec -m gpt-6-luna \
+        -c 'model_reasoning_effort="max"' \
+        -c 'shell_environment_policy.inherit="all"' \
+        --ephemeral --sandbox read-only --skip-git-repo-check \
+        -C "$workspace" "$2"
+fi
 
 err="${out}.err"
 stamp="${out}.timedout"
@@ -103,7 +129,7 @@ if [[ ! -s "$out" ]]; then
     printf 'STATUS=empty\n'
     exit 3
 fi
-if [[ "${REVIEW_ANVIL_REQUIRE_FINDINGS:-}" == "1" ]]; then
+if [[ "$mode" == "--" && "${REVIEW_ANVIL_REQUIRE_FINDINGS:-}" == "1" ]]; then
     if ! awk '
         /^[[:space:]]*```findings[[:space:]]*$/ { in_findings = 1; next }
         in_findings && /^[[:space:]]*```[[:space:]]*$/ {

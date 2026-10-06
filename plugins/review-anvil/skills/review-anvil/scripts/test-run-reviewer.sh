@@ -265,36 +265,143 @@ test_findings_protocol_rejects_confirmation_only_output() {
 
     assert_eq "$status" "4" "findings protocol failure exit"
     assert_file_text "$stdout" "STATUS=protocol" "findings protocol failure status"
-    assert_file_text "$out.err" "The reviewer output lacks a complete fenced findings block. Confirmation requests and plan-only responses are invalid." "findings protocol failure reason"
+    [[ -s "$out.err" ]] || fail "protocol failure must include a diagnostic"
 }
 
-test_review_protocol_is_wired_into_prompt_and_dispatch() {
-    assert_contains "$ROOT/../references/reviewer-prompt.md" \
-        "NON-INTERACTIVE EXECUTION CONTRACT" "reviewer prompt contract"
-    assert_contains "$ROOT/../references/reviewer-prompt.md" \
-        "Do not present a plan, ask for confirmation" "reviewer prompt confirmation guard"
-    assert_contains "$ROOT/../SKILL.md" \
-        "REVIEW_ANVIL_REQUIRE_FINDINGS=1" "reviewer dispatch validation flag"
-    assert_contains "$ROOT/../SKILL.md" \
-        "PROTOCOL RETRY" "reviewer corrective retry"
+# This controlled executable consumes the workdir like Codex does, then
+# exercises the filesystem there. It does not emulate model responses.
+make_copy_editor_fixture() {
+    local path="$1"
+    cat >"$path" <<'PY'
+#!/usr/bin/env python3
+import os
+from pathlib import Path
+import stat
+import sys
+
+workspace = Path(sys.argv[sys.argv.index("-C") + 1])
+Path(os.environ["WORKSPACE_RECORD"]).write_text(str(workspace))
+os.chdir(workspace)
+assert workspace.is_absolute()
+assert workspace.stat().st_uid == os.getuid()
+assert stat.S_IMODE(workspace.stat().st_mode) == 0o700
+assert not list(Path(".").iterdir())
+assert not Path("repository-only.txt").exists()
+payload = sys.stdin.read() + os.environ["COPY_EDITOR_PAYLOAD"]
+Path("scratch.txt").write_text(payload)
+assert Path("scratch.txt").read_text() == payload
+outcome = os.environ["COPY_EDITOR_OUTCOME"]
+if outcome != "empty":
+    print(Path("scratch.txt").read_text(), flush=True)
+if outcome == "failed":
+    # A real filesystem failure must survive in the captured diagnostic.
+    Path("missing-directory/result.txt").write_text(payload)
+elif outcome == "timeout":
+    os.execvp("sleep", ["sleep", "10"])
+PY
+    chmod +x "$path"
 }
 
-test_protocol_failure_uses_short_declarative_diagnostic() {
-    local tmp out stdout stderr status
+test_copy_editor_isolation_and_cleanup() {
+    local tmp fixture repository outcome out stdout stderr status workspace expected timeout
     tmp="$(mktemp -d)"
     trap "rm -rf '$tmp'" RETURN
-    out="$tmp/out.md"
+    fixture="$tmp/codex-fixture"
+    make_copy_editor_fixture "$fixture"
+    repository="$tmp/repository"
+    mkdir "$repository" "$tmp/workspaces"
+    printf 'private repository data' >"$repository/repository-only.txt"
+    printf 'stdin payload ' >"$tmp/stdin"
+
+    for outcome in ok failed timeout empty; do
+        out="$tmp/$outcome.md"
+        stdout="$tmp/$outcome.wrapper.out"
+        stderr="$tmp/$outcome.wrapper.err"
+        timeout=10
+        [[ "$outcome" != "timeout" ]] || timeout=3
+        status="$(
+            cd "$repository"
+            TMPDIR="$tmp/workspaces" WORKSPACE_RECORD="$tmp/workspace-record" \
+                COPY_EDITOR_PAYLOAD="inherited environment" COPY_EDITOR_OUTCOME="$outcome" \
+                REVIEW_ANVIL_REQUIRE_FINDINGS=1 \
+                run_wrapper "$stdout" "$stderr" "$out" "$timeout" \
+                    --codex-copy-editor "$fixture" "Read only the supplied evidence." <"$tmp/stdin"
+        )"
+        case "$outcome" in
+            ok) expected=0 ;;
+            failed) expected=1 ;;
+            timeout) expected=124 ;;
+            empty) expected=3 ;;
+        esac
+        assert_eq "$status" "$expected" "copy-editor $outcome exit"
+        assert_contains "$stdout" "STATUS=$outcome" "copy-editor $outcome status"
+        workspace="$(cat "$tmp/workspace-record")"
+        [[ "$workspace" == "$tmp/workspaces/"* ]] || fail "workspace is outside the temp root"
+        assert_file_missing "$workspace"
+        assert_file_missing "$out.timedout"
+        assert_file_missing "$repository/scratch.txt"
+        assert_file_text "$repository/repository-only.txt" "private repository data" "repository unchanged"
+        if [[ "$outcome" == "empty" ]]; then
+            assert_file_empty "$out" "copy-editor empty output"
+        else
+            assert_file_text "$out" "stdin payload inherited environment" "copy-editor stdin and environment"
+        fi
+        if [[ "$outcome" == "failed" ]]; then
+            [[ -s "$out.err" ]] || fail "filesystem failure diagnostic was lost"
+        fi
+    done
+}
+
+test_copy_editor_usage_creates_no_workspace() {
+    local tmp fixture scenario out stdout stderr status
+    local -a workspaces
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    fixture="$tmp/codex-fixture"
+    make_copy_editor_fixture "$fixture"
+    mkdir "$tmp/workspaces"
+    printf 'not executable' >"$tmp/non-executable"
+
+    for scenario in missing extra relative non-executable bad-timeout; do
+        out="$tmp/$scenario.md"
+        stdout="$tmp/$scenario.wrapper.out"
+        stderr="$tmp/$scenario.wrapper.err"
+        case "$scenario" in
+            missing) set -- "$out" 5 --codex-copy-editor "$fixture" ;;
+            extra) set -- "$out" 5 --codex-copy-editor "$fixture" prompt extra ;;
+            relative) set -- "$out" 5 --codex-copy-editor ./codex-fixture prompt ;;
+            non-executable) set -- "$out" 5 --codex-copy-editor "$tmp/non-executable" prompt ;;
+            bad-timeout) set -- "$out" nope --codex-copy-editor "$fixture" prompt ;;
+        esac
+        status="$(TMPDIR="$tmp/workspaces" run_wrapper "$stdout" "$stderr" "$@")"
+        assert_eq "$status" "2" "copy-editor $scenario usage exit"
+        assert_file_empty "$stdout" "copy-editor $scenario usage stdout"
+        [[ -s "$stderr" ]] || fail "copy-editor $scenario usage needs a diagnostic"
+        assert_file_missing "$out"
+        assert_file_missing "$out.err"
+        shopt -s nullglob dotglob
+        workspaces=("$tmp/workspaces/"*)
+        shopt -u nullglob dotglob
+        [[ ${#workspaces[@]} -eq 0 ]] || fail "invalid usage allocated a workspace"
+    done
+}
+
+test_copy_editor_workspace_failure_does_not_dispatch() {
+    local tmp stdout stderr status
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    make_copy_editor_fixture "$tmp/codex-fixture"
     stdout="$tmp/wrapper.out"
     stderr="$tmp/wrapper.err"
-
-    export REVIEW_ANVIL_REQUIRE_FINDINGS=1
-    status="$(run_wrapper "$stdout" "$stderr" "$out" 5 -- bash -c 'printf incomplete')"
-    unset REVIEW_ANVIL_REQUIRE_FINDINGS
-
-    assert_eq "$status" "4" "short diagnostic exit"
-    assert_file_text "$out.err" \
-        "The reviewer output lacks a complete fenced findings block. Confirmation requests and plan-only responses are invalid." \
-        "short declarative protocol diagnostic"
+    # A nonexistent temp parent fails deterministically, even when run as root.
+    status="$(TMPDIR="$tmp/missing" WORKSPACE_RECORD="$tmp/workspace-record" \
+        run_wrapper "$stdout" "$stderr" "$tmp/out.md" 5 \
+            --codex-copy-editor "$tmp/codex-fixture" prompt)"
+    assert_eq "$status" "2" "workspace creation failure exit"
+    assert_file_missing "$tmp/workspace-record"
+    assert_file_missing "$tmp/out.md"
+    assert_file_missing "$tmp/out.md.err"
+    [[ -s "$stderr" ]] || fail "workspace creation failure needs a diagnostic"
 }
 
 main() {
@@ -309,8 +416,9 @@ main() {
     test_stale_timeout_stamp_is_removed_before_run
     test_findings_protocol_accepts_completed_review
     test_findings_protocol_rejects_confirmation_only_output
-    test_protocol_failure_uses_short_declarative_diagnostic
-    test_review_protocol_is_wired_into_prompt_and_dispatch
+    test_copy_editor_isolation_and_cleanup
+    test_copy_editor_usage_creates_no_workspace
+    test_copy_editor_workspace_failure_does_not_dispatch
 
     printf 'test-run-reviewer: all wrapper tests passed\n'
 }

@@ -199,7 +199,8 @@ Plausible-but-wrong findings are the dominant failure mode of LLM review, and bo
 
 - **Prior-feedback check first (orchestrator judgment).** Compare every merged finding against PR REVIEW HISTORY *semantically* — same root cause counts even when wording differs. Revalidate `open`, `resolved`, and summary-only `reported` items against the current head. For each PR-author reply, verify the explanation against the cited code, callers, tests, and contract before accepting or rejecting it. A valid explanation closes the concern: classify it as `author-explanation-accepted`, keep it out of findings and reproduction, and request resolution only when the ledger marks the open root `anvil=true`. An unsupported explanation does not suppress the concern; record why it remains `still-open` without creating a duplicate inline thread. An open item that remains real is a carry-forward finding and must retain its effect on severity/approval, but must not create a duplicate inline thread; a resolved item means only that GitHub discussion was closed, not that the code was proven fixed. Record a still-present resolved item as `resolved-but-still-present` in the summary and do not create a new inline thread. Items now fixed/stale become one-line status notes and request resolution only for open `anvil=true` roots. `outdated` is an anchor state, not proof that the concern is stale. Explicit local `suppressed` items are never auto-fixed or posted as actionable findings, but remain as compact status-only audit rows. Keep `author-resolved` items in PR REVIEW HISTORY for reviewer context. After synthesis and dedup, drop semantic matches to `author-resolved` items before building reproduction candidates. Exception: retain a finding when the reviewer explicitly set `prior_feedback: reintroduced` for a distinct new instance with new evidence. Do not report, post, auto-fix, or let ordinary `author-resolved` matches affect approval. A reintroduced finding remains actionable; it affects approval only at `critical` or `high` severity. The post-time helper catches near-verbatim repeats (exact path + text similarity ≥ 0.9) as a deterministic duplicate-thread backstop.
 - **Accepted-explanation reintroduction.** Treat `author-explanation-accepted` like `author-resolved` for ordinary duplicate suppression, but not as a permanent waiver. If later code invalidates the accepted explanation, retain a finding only when the reviewer supplies distinct new evidence and explicitly sets `prior_feedback: reintroduced`. It then remains actionable, receives the reintroduction marker on both report and inline surfaces, and bypasses the helper's accepted-explanation suppression.
-- **Scope/artifact filter next (orchestrator judgment).** Drop or move to out-of-scope follow-ups before reproduction when the claim is about archived design notes, changelogs, old migration examples, generated fixtures, vendored files, or historical docs that are not the review's live product surface. Do not spend verifier budget proving historical provenance is stale. Conversely, live docs that users rely on — README usage, CLI help, API docs, config reference, plugin metadata, or marketplace copy — are product surface and may become reproduction candidates when they drift from code/runtime behavior.
+- **Scope/evidence reconciliation next (orchestrator judgment).** Before retaining a `medium`+ finding, reconcile its existing evidence and impact with base/head behavior and the applicable contract. Establish whether the change introduces or regresses the failure, exposes an existing defect to a new caller/input, or directly undermines the stated review purpose. Identify the reachable boundary and supported operating conditions, then justify severity from the concrete consequence, exposure, and recoverability; the deduplicated maximum is provisional. Reachability includes supported API clients, exposed trust boundaries, workers, migrations, and development commands, not only bundled UI flows. A verified author explanation must cover the claimed consequence: intent, lack of observed incidents, or lack of a bundled caller alone does not refute it. Confirmed unrelated unchanged defects use the existing follow-up policy. Missing material evidence selects the existing reproduction path; if the necessary proof remains unavailable, use Deferred rather than qualifying speculation into an actionable finding.
+- **Artifact filter.** Drop or move to out-of-scope follow-ups before reproduction when the claim is about archived design notes, changelogs, old migration examples, generated fixtures, vendored files, or historical docs that are not the review's live product surface. Do not spend verifier budget proving historical provenance is stale. Conversely, live docs that users rely on — README usage, CLI help, API docs, config reference, plugin metadata, or marketplace copy — are product surface and may become reproduction candidates when they drift from code/runtime behavior.
 - **Assign provenance IDs.** Assign IDs after semantic deduplication, prior-feedback classification, and scope filtering, and before reproduction or adversarial dispatch. Use this output recipe:
 
   ```text
@@ -269,7 +270,7 @@ Plausible-but-wrong findings are the dominant failure mode of LLM review, and bo
   - `downgraded` findings re-enter the normal severity gates after changing severity.
   - `refuted` findings are dropped from final Findings (or, if useful for transparency, one-line Deferred notes).
   - `unclear` findings move to Deferred with `We set this aside because <plain-language description of the missing proof>.` Rewrite the verifier's reason; do not copy it.
-- Findings raised independently by **2+ reviewers** and not listed as reproduction candidates may skip batched reproduction; consensus is the signal (this is why dedup records who raised what). Still open enough code/context before destructive action to ensure the fix path is coherent.
+- Findings raised independently by **2+ reviewers** and not listed as reproduction candidates may skip batched reproduction when the synthesis reconciliation establishes the delta or purpose, contract, reachability, and impact. Agreement saves duplicate verification work; it does not supply missing evidence or justify severity. Still open enough code/context before destructive action to ensure the fix path is coherent.
 - **Deletions ("delete this"/dead/unused/redundant) require reproduction plus execution when `per_fix` applies the cut** — the highest-blast-radius, highest-false-positive class. In `per_fix`, after reproduction confirms the cut, apply it and run the full test suite: a **red gate means keep it**. A green gate is necessary but not sufficient (it only proves *test-covered* behavior), so the reproduction/skeptic pass must also look for a concrete reason the code must stay, visible in the diff (trust boundary, aliasing copy, ordering, back-compat, dedup, edge semantics — or another specific contract). The two cover different blind spots: the gate catches callers the skeptic can't see; the skeptic catches behavior no test exercises. Block **only** on a red gate or a specific skeptic refutation — not on generic "there might be an unseen caller" (that's what the gate tests). Read-only mode has only the skeptic. Blocked → **Deferred** (`We set this aside because the code is still needed — <what>`).
 - If `reproduction=off`, say so in the round summary and final report. Required reproduction candidates — including single-reviewer `medium`+ findings, deletion/high-risk findings, and orchestrator-uncertain findings — cannot become actionable unless the orchestrator independently reproduces them from code/tests/runtime evidence; otherwise move them to Deferred with `We set this aside because the needed check was not run.`
 - `low`/`nit` findings skip verification: they're below the auto-fix gate and surface as suggestions either way.
@@ -516,18 +517,32 @@ Do not include raw reviewer prose, refuted candidates, superseded plans, or
 repository context.
 
 Read `references/clarity-pass-prompt.md` and dispatch one clean read-only
-renderer under the synthesis-side deadline rule. When using Codex for this
-renderer or for any action-lock auditor/repair pass, apply the lazy resolution
-rule above and invoke `"$CODEX_BIN" exec -m gpt-6-luna -c 'model_reasoning_effort="max"' -c 'shell_environment_policy.inherit="all"'`;
-if the renderer/auditor workdir is not a trusted git repository (for example
-`-C /tmp`), add `--skip-git-repo-check` or run it from the trusted synthesis
-worktree instead. Codex exits before model invocation with `Not inside a trusted
-directory and --skip-git-repo-check was not specified` in such directories,
-which wrongly forces pre-clarity fallback and COMMENT-only PR delivery.
-do not use `--ignore-user-config`, `gpt-5.6-sol`, or a lower reasoning effort. The clarity pass rewrites both
-the top-level report and eligible inline comments in one bundle. It is a copy
-editor, not another reviewer: it cannot change inventory, priority, decision,
-disposition, facts, author work, anchors, or suggestions.
+renderer under the synthesis-side deadline rule. For every Codex renderer,
+action-lock auditor, and bounded repair, apply the lazy binary resolution rule
+above, then use the trusted engine wrapper's copy-editor mode:
+
+```bash
+bash "$ENGINE_ROOT/scripts/run-reviewer.sh" \
+  "$OUTPUT_PATH" "$REVIEWER_TIMEOUT" --codex-copy-editor \
+  "$CODEX_BIN" "$PROMPT" < /dev/null
+```
+
+This mode owns the Codex command: `gpt-6-luna`, maximum reasoning, inherited
+host environment, ephemeral read-only execution, and
+`--skip-git-repo-check` in a fresh private empty workdir. It removes that
+workdir on completion, failure, or timeout. Do not reconstruct a raw
+`codex exec` call for these passes or run them in the reviewed repository.
+This avoids trust-check failures without giving the copy editor repository
+context. Keep the same parallel-wave and host-deadline rules.
+Do not use `--ignore-user-config`, `gpt-5.6-sol`, or a lower reasoning effort.
+The clarity pass rewrites both the top-level report and eligible inline
+comments in one bundle. It is a copy editor, not another reviewer: it cannot
+change inventory, priority, decision, disposition, facts, author work,
+anchors, or suggestions.
+
+The empty workdir supplies no reviewed files. Host configuration and inherited
+environment still apply; this mode does not add isolation beyond Codex's
+read-only sandbox.
 
 Write the packet and returned JSON to temporary files under `.review-anvil/`.
 Resolve `scripts/validate-clarity-output.py` from the trusted engine root and
