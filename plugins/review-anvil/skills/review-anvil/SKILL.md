@@ -137,7 +137,7 @@ repository.
 **Use the Agent tool for `claude-exec` reviewers. Do NOT use `claude -p` via Bash — that path is for non-Claude hosts only.**
 
 - **`claude-exec`**: Agent tool, `subagent_type: "general-purpose"`, the assembled Reviewer Prompt as `prompt`, `run_in_background: true`. The Agent tool streams natively, has no `--max-turns` ceiling, and inherits the session environment.
-- **`codex-exec`**: Bash through the wrapper: `REVIEW_ANVIL_REQUIRE_FINDINGS=1 bash <wrapper> .review-anvil/round<N>-<label>.md <reviewer_timeout> -- "$CODEX_BIN" exec -m gpt-6-luna -c 'model_reasoning_effort="max"' -c 'shell_environment_policy.inherit="all"' -c 'mcp_servers.webexapis.enabled=false' --ephemeral --sandbox read-only -C <project-dir> '<prompt>' < /dev/null`, with `run_in_background: true`. The validation flag makes the wrapper reject confirmation-only, plan-only, or otherwise incomplete responses that do not end with the required fenced findings block. `--ephemeral` prevents reviewer sessions from leaking into later dispatches. The `< /dev/null` is load-bearing: codex takes its prompt as argv and must not inherit an open stdin — the wrapper passes its stdin through (`<&0`, which the claude fallback needs), and codex blocks on a never-closing fd 0.
+- **`codex-exec`**: Bash through the wrapper: `REVIEW_ANVIL_REQUIRE_FINDINGS=1 bash <wrapper> .review-anvil/round<N>-<label>.md <reviewer_timeout> -- "$CODEX_BIN" exec -m gpt-6-luna -c 'model_reasoning_effort="max"' -c 'shell_environment_policy.inherit="all"' --ephemeral --sandbox read-only -C <project-dir> '<prompt>' < /dev/null`, with `run_in_background: true`. The validation flag makes the wrapper reject confirmation-only, plan-only, or otherwise incomplete responses that do not end with the required fenced findings block. `--ephemeral` prevents reviewer sessions from leaking into later dispatches. The `< /dev/null` is load-bearing: codex takes its prompt as argv and must not inherit an open stdin — the wrapper passes its stdin through (`<&0`, which the claude fallback needs), and codex blocks on a never-closing fd 0.
 - Send all M reviewers in a *single message* with multiple tool calls. The harness notifies you on completion; do not poll.
 
 #### In Codex CLI or other hosts without the Agent tool
@@ -155,7 +155,7 @@ repository.
 
   `--tools` restricts the built-in tool set; `--allowedTools` auto-approves the listed safe tool uses and is variadic, so the prompt MUST arrive via stdin (the wrapper passes its stdin through). `--permission-mode dontAsk` keeps the fallback non-interactive by denying anything outside the allowed/read-only path. **Do not size `--max-turns` to the task** — a reviewer that hits the cap loses its entire output. The wrapper's wall-clock timeout is the real bound; `100` is a runaway backstop that should never bind.
 
-- **`codex-exec`**: same validation-enabled wrapper around `"$CODEX_BIN" exec -m gpt-6-luna -c 'model_reasoning_effort="max"' -c 'shell_environment_policy.inherit="all"' -c 'mcp_servers.webexapis.enabled=false' --ephemeral --sandbox read-only -C <project-dir> '<prompt>' < /dev/null` — stdin from `/dev/null` here too.
+- **`codex-exec`**: same validation-enabled wrapper around `"$CODEX_BIN" exec -m gpt-6-luna -c 'model_reasoning_effort="max"' -c 'shell_environment_policy.inherit="all"' --ephemeral --sandbox read-only -C <project-dir> '<prompt>' < /dev/null` — stdin from `/dev/null` here too.
 - Launch all M wrapper invocations as background shell processes and `wait`.
 
 #### Bash-dispatched reviewers MUST go through `run-reviewer.sh`
@@ -518,7 +518,7 @@ repository context.
 Read `references/clarity-pass-prompt.md` and dispatch one clean read-only
 renderer under the synthesis-side deadline rule. When using Codex for this
 renderer or for any action-lock auditor/repair pass, apply the lazy resolution
-rule above and invoke `"$CODEX_BIN" exec -m gpt-6-luna -c 'model_reasoning_effort="max"' -c 'shell_environment_policy.inherit="all"' -c 'mcp_servers.webexapis.enabled=false'`;
+rule above and invoke `"$CODEX_BIN" exec -m gpt-6-luna -c 'model_reasoning_effort="max"' -c 'shell_environment_policy.inherit="all"'`;
 if the renderer/auditor workdir is not a trusted git repository (for example
 `-C /tmp`), add `--skip-git-repo-check` or run it from the trusted synthesis
 worktree instead. Codex exits before model invocation with `Not inside a trusted
