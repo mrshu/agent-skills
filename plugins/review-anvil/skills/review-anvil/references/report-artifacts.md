@@ -336,3 +336,56 @@ When `report_path` is set, write a sibling `<report_path>.followups.json` with a
 ```
 
 Downstream automation may file GitHub issues only for `auto_approved` entries after duplicate search; `needs_triage` stays in the PR report only.
+
+## `.context.json` schema
+
+Finding context records where each finding's evidence lives, pinned to the
+commit that was reviewed. It is the stable, versioned interface for tools
+built on review-anvil output. When `report_path` is set, write a sibling
+`<report_path>.context.json` with one record per complete finding ID that has
+a `review-anvil-report` marker, in report order:
+
+```json
+{
+  "v": 1,
+  "findings": [
+    {
+      "id": "RAV-RUN3-R2-F001",
+      "revision": "<40-hex commit the finding's origin round reviewed, or null>",
+      "items": [
+        {"kind": "file", "label": "Session store write", "path": "src/session.ts", "lines": [[88, 96]]},
+        {"kind": "file", "label": "Required vars", "repo": "acme/app", "commit": "<40-hex>", "path": "src/env.ts", "lines": [[59, 59], [75, 75]]},
+        {"kind": "pr", "label": "Upstream fix", "repo": "acme/app", "number": 790}
+      ]
+    }
+  ]
+}
+```
+
+- `v` is the schema version. Optional fields may be added within a version;
+  a change in meaning bumps it. Consumers ignore records of another version.
+- `revision`: the PR head SHA for a PR target; otherwise the commit at the
+  origin round's snapshot. `null` means the reviewed change was uncommitted,
+  so the locations describe a working tree that no commit preserves.
+- `items`: the merged reviewer `context` list, at most 8 entries, possibly
+  empty. A `file` item without `commit` refers to `revision`. `repo` marks
+  another repository, and then `commit` is required. `lines` spans are
+  1-based and inclusive. Labels are at most 80 characters.
+
+The posting helper validates every record, drops invalid items with a
+warning, and never blocks a post on context. A record without both `revision`
+and `items`, or with a malformed `revision`, is dropped whole, so an unknown
+revision is never mistaken for `null`. The helper embeds each record as one
+hidden line: in the inline comment for that finding, before the terminal
+finding-metadata marker, and in the top-level report, before the footer, for
+every finding the posted report still lists:
+
+```
+<!-- review-anvil: context={"v":1,"id":"RAV-RUN3-R2-F001","revision":"…","items":[…]} -->
+```
+
+Consumers read lines that start with `<!-- review-anvil: context=` and decode
+the JSON between `=` and the closing ` -->`. The helper escapes `-` as
+`\u002d` wherever `--` would otherwise appear, so the comment cannot close
+early. It omits the report block, with a warning, when the block would push the
+report body past its size budget.

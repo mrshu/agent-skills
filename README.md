@@ -31,8 +31,6 @@ npx skills add mrshu/agent-skills \
   --skill review-anvil-readonly \
   --skill review-anvil-pr \
   --skill review-anvil-improve-pr \
-  --skill review-anvil-context \
-  --skill review-anvil-comments \
   --skill codex-exec \
   --skill claude-exec
 ```
@@ -97,8 +95,6 @@ checked before they land.
 | Review without touching files | `review-anvil-readonly` | No | No | No | No | No |
 | Review a PR and post findings | `review-anvil-pr` | No | No | No | Yes | Yes, unless disabled |
 | Improve a checked-out PR branch | `review-anvil-improve-pr` | Yes | Yes | Yes | Yes | No |
-| See the code context of a PR finding | `review-anvil-context` | No | No | No | No | No |
-| Browse a PR's review comments and open their context | `review-anvil-comments` (needs `review-anvil-context`) | No | No | No | No | No |
 
 What makes it useful:
 
