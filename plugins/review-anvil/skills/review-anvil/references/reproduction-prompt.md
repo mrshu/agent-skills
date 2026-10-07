@@ -57,15 +57,31 @@ INPUTS
 For each candidate:
 - Inspect the cited code and enough surrounding context to decide whether the
   issue is real and reachable in the reviewed target.
+- Before choosing a proof or its `confirmed_when`/`refuted_when`, identify the
+  source-backed required behavior at the boundary. Callers, tests, API contracts,
+  and documented commands can establish it; a formal specification is not
+  required. For PR/diff targets, compare the same trigger at base and head to
+  establish the causal change; static comparison is sufficient. For whole-file
+  or path reviews, apply the declared review scope rather than inventing a PR.
+  An unchanged helper newly exposed by a supported path stays in scope. An
+  observed mechanism alone does not prove a contract violation. Do not inherit
+  cancellation-wins, immediate-consistency, or other obligations from the claim.
+  Documented choices do not waive independent security, confidentiality, or
+  data-integrity obligations.
 - Use `kind: executable` for claims about return values, exceptions, state
   transitions, side effects, rendered output, concurrency, ordering, or runtime
   compatibility whenever a focused probe can represent the contract. Visible
   control flow is not an exemption; the probe confirms reachability and the
   actual boundary behavior. Include valid and invalid controls when they
   separate a real defect from probe/setup failure.
-- Use `kind: static` only for docs, configuration, types, API shape, or
-  call-site claims whose contract is fully decided without executing target
-  code. Explain why execution cannot add evidence.
+- Use `kind: static` for docs, configuration, types, API shape, or call-site
+  claims fully decided without execution, and for inquiries into the required
+  contract or PR attribution. Explain what execution cannot settle. In AUTHOR,
+  record a missing requirement or delta in `static_evidence`/`notes` with empty
+  `files`/`argv`; describe the needed evidence, not an invented runtime oracle.
+  Once the requirement and attribution are grounded, retain executable proof
+  for behavior claims. An unavailable runner is not a reason to relabel a
+  runtime claim as a static inquiry.
 - For deletion/dead-code/redundant-code candidates, look for a specific reason
   the code must stay: a caller, compatibility path, ordering/aliasing behavior,
   trust boundary, dedup semantics, migration edge, or another visible contract.
@@ -98,6 +114,11 @@ Rules:
   use only `{source}`, `{proof}`, and `{runtime}` path tokens.
 - Do not install dependencies or request network access. Use only the target's
   declared toolchain and dependencies exposed by the trusted runner.
+- In VERDICT mode, an unresolved required contract or applicable PR attribution
+  means `unclear`. Static contract evidence can refute a claimed obligation,
+  not an unexecuted runtime outcome. For executable proof, check that the
+  observations violate the grounded requirement and apply to the review scope;
+  a matching mechanism alone is not confirmation.
 - In VERDICT mode, an executable finding can be confirmed or refuted only when
   `run-proof.sh` returned `STATUS=ok`, `TREE_UNCHANGED=yes`,
   `PROOF_UNCHANGED=yes`, `RUNTIME_REMOVED=yes`, and a valid matching
