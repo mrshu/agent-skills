@@ -29,7 +29,8 @@
 #   dismiss …               — record a local suppression in the dismissals
 #                             state file ($REVIEW_ANVIL_DISMISSALS).
 #   compact-report …        — legacy no-op; reports are posted without loss.
-#   process-inline …        — filter/prepare inline review comments.
+#   process-inline …        — filter/prepare inline review comments; with a
+#                             report path, also re-encode its context block.
 #   check-pins …            — mechanical preset pin-rejection over raw args.
 #
 # Environment switches:
@@ -194,18 +195,22 @@ compact_report_for_github() {
     return 0
 }
 
+# $1 = inline-comments JSON (may be absent), $2 = report path (optional): the
+# report's hidden context block is validated and re-encoded with the same
+# rules as the inline `context` field.
 process_inline_comments_for_github() {
-    local inline_json="${1:-}" min_severity="${REVIEW_ANVIL_INLINE_MIN_SEVERITY:-medium}"
-    [[ -n "$inline_json" && -f "$inline_json" ]] || return 0
+    local inline_json="${1:-}" report_path="${2:-}" min_severity="${REVIEW_ANVIL_INLINE_MIN_SEVERITY:-medium}"
+    [[ ( -n "$inline_json" && -f "$inline_json" ) || ( -n "$report_path" && -f "$report_path" ) ]] || return 0
 
-    _py - "$inline_json" "$min_severity" <<'PY'
+    _py - "$inline_json" "$min_severity" "$report_path" <<'PY'
 import json
 import os
 import re
 import sys
 from pathlib import Path
 
-inline = Path(sys.argv[1])
+inline = Path(sys.argv[1]) if sys.argv[1] else None
+report = Path(sys.argv[3]) if len(sys.argv) > 3 and sys.argv[3] else None
 min_severity = sys.argv[2].lower()
 enable_suggestions = os.environ.get("REVIEW_ANVIL_ENABLE_SUGGESTIONS", "1") != "0"
 
@@ -216,13 +221,13 @@ if min_severity not in rank:
         "critical|high|medium|low|nit"
     )
 
-raw = inline.read_text().strip()
-if not raw or raw == "[]":
-    raise SystemExit(0)
-
-items = json.loads(raw)
-if not isinstance(items, list):
-    raise SystemExit(f"pr-helper: {inline} is not a JSON array of comment objects")
+items = None
+if inline is not None and inline.is_file():
+    raw = inline.read_text().strip()
+    if raw and raw != "[]":
+        items = json.loads(raw)
+        if not isinstance(items, list):
+            raise SystemExit(f"pr-helper: {inline} is not a JSON array of comment objects")
 
 allowed = {"path", "position", "body", "line", "side", "start_line", "start_side"}
 reintroduced_marker = "<!-- review-anvil: prior_feedback=reintroduced -->"
@@ -309,35 +314,195 @@ def append_suggestion(body, item):
     block = "```suggestion\n" + suggestion + "\n```"
     return append_before_finding_metadata(body, block)
 
-kept = []
-filtered = 0
-suggested = 0
+context_marker_prefix = "<!-- review-anvil: context="
+context_repo_re = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")
+context_ref_re = re.compile(r"[0-9a-fA-F]{7,40}")
+context_full_sha_re = re.compile(r"[0-9a-fA-F]{40}")
+context_lines_re = re.compile(r"[1-9][0-9]*(?:-[1-9][0-9]*|(?:,[1-9][0-9]*)*)")
+control_chars_re = re.compile(r"[\x00-\x1f\x7f]")
 
-for item in items:
-    if not isinstance(item, dict):
-        kept.append(item)
-        continue
-    severity = infer_severity(item)
-    if rank[severity] > rank[min_severity]:
-        filtered += 1
-        continue
-    original_body = item.get("body") or ""
-    body = append_suggestion(original_body, item)
-    if "```suggestion" in body and "```suggestion" not in original_body:
-        suggested += 1
-    if item.get("prior_feedback") == "reintroduced" and reintroduced_marker not in body:
-        body = append_before_finding_metadata(body, reintroduced_marker)
-    clean = {key: item[key] for key in allowed if key in item}
-    clean["body"] = body
-    kept.append(clean)
+def context_entry(entry):
+    """Reviewer-schema context entry -> viewer item, or (None, reason).
 
-inline.write_text(json.dumps(kept, indent=2) + "\n")
-if filtered or suggested:
-    print(
-        "pr-helper: inline comments processed "
-        f"({filtered} summary-only, {suggested} suggestion block(s) added)",
-        file=sys.stderr,
-    )
+    Keep the rules in step with sanitize_context in
+    review-anvil-context/scripts/context-helper.sh, which reads them.
+    """
+    if not isinstance(entry, dict):
+        return None, "not an object"
+    label = entry.get("label")
+    if not isinstance(label, str) or not control_chars_re.sub("", label).strip():
+        return None, "missing label"
+    out = {"label": control_chars_re.sub("", label).strip()[:80]}
+    repo = entry.get("repo")
+    if repo is not None:
+        # Becomes part of a GitHub API URL in viewers: "." or ".." would
+        # address another endpoint.
+        if (not isinstance(repo, str) or not context_repo_re.fullmatch(repo)
+                or any(part in (".", "..") for part in repo.split("/"))):
+            return None, f"invalid repo {repo!r}"
+        out["repo"] = repo
+    pr = entry.get("pr")
+    if pr is not None:
+        if isinstance(pr, bool) or not isinstance(pr, int) or pr < 1:
+            return None, f"invalid pr {pr!r}"
+        return {"kind": "pr", **out, "number": pr}, None
+    path = entry.get("file")
+    if (not isinstance(path, str) or not path or control_chars_re.search(path)
+            or path.startswith(("/", "-")) or ".." in path.split("/")):
+        return None, f"invalid file {path!r}"
+    out["path"] = path
+    ref = entry.get("ref")
+    if ref is not None:
+        if not isinstance(ref, str) or not context_ref_re.fullmatch(ref):
+            return None, f"invalid ref {ref!r}"
+        out["ref"] = ref
+    # A file in another repository is fetched from GitHub at an exact commit;
+    # a short or missing SHA would make that lookup ambiguous or moving.
+    if "repo" in out and not context_full_sha_re.fullmatch(out.get("ref", "")):
+        return None, f"file in {out['repo']} needs a full 40-character ref"
+    line = entry.get("line")
+    if line is not None:
+        spec = str(line).replace(" ", "")
+        if isinstance(line, bool) or not context_lines_re.fullmatch(spec):
+            return None, f"invalid line {line!r}"
+        if "-" in spec:
+            start, end = (int(n) for n in spec.split("-"))
+            if end < start:
+                return None, f"invalid line {line!r}"
+            out["range"] = [start, end]
+        else:
+            out["lines"] = [int(n) for n in spec.split(",")]
+    focus = entry.get("focus")
+    if focus is not None:
+        if isinstance(focus, bool) or not isinstance(focus, int) or focus < 1:
+            return None, f"invalid focus {focus!r}"
+        out["focus"] = focus
+    return out, None
+
+def context_marker(item):
+    """Hidden context line for an inline item, or None.
+
+    JSON with every "-" written as \\u002d: nothing can then form "--", so the
+    HTML comment cannot end early, and the payload stays plain JSON.
+    """
+    entries = item.get("context")
+    if entries is None:
+        return None
+    label = item.get("path") or "inline item"
+    if not isinstance(entries, list):
+        print(f"pr-helper: {label}: context is not a list; ignored", file=sys.stderr)
+        return None
+    items = []
+    for entry in entries:
+        converted, reason = context_entry(entry)
+        if converted is None:
+            print(f"pr-helper: {label}: context entry dropped ({reason})", file=sys.stderr)
+            continue
+        if converted not in items:
+            items.append(converted)
+    if not items:
+        return None
+    payload = json.dumps({"v": 1, "items": items}, ensure_ascii=True, separators=(",", ":"))
+    return context_marker_prefix + payload.replace("-", "\\u002d") + " -->"
+
+if items is not None:
+    kept = []
+    filtered = 0
+    suggested = 0
+    with_context = 0
+
+    for item in items:
+        if not isinstance(item, dict):
+            kept.append(item)
+            continue
+        severity = infer_severity(item)
+        if rank[severity] > rank[min_severity]:
+            filtered += 1
+            continue
+        original_body = item.get("body") or ""
+        body = append_suggestion(original_body, item)
+        if "```suggestion" in body and "```suggestion" not in original_body:
+            suggested += 1
+        if item.get("prior_feedback") == "reintroduced" and reintroduced_marker not in body:
+            body = append_before_finding_metadata(body, reintroduced_marker)
+        marker = context_marker(item)
+        # Only a line that starts with the prefix is a context line; prose may
+        # quote the marker text.
+        if marker and not any(line.startswith(context_marker_prefix) for line in body.splitlines()):
+            body = append_before_finding_metadata(body, marker)
+            with_context += 1
+        clean = {key: item[key] for key in allowed if key in item}
+        clean["body"] = body
+        kept.append(clean)
+
+    inline.write_text(json.dumps(kept, indent=2) + "\n")
+    if filtered or suggested or with_context:
+        print(
+            "pr-helper: inline comments processed "
+            f"({filtered} summary-only, {suggested} suggestion block(s) added, "
+            f"{with_context} with context)",
+            file=sys.stderr,
+        )
+
+# Report context block: one hidden line per finding, written by the engine as
+#   <!-- review-anvil: context id=<ID> {"v":1,"commit":...,"context":[reviewer schema]} -->
+# Re-encoded here for GitHub: entries validated by context_entry, viewer items,
+# every "-" escaped. A line already re-encoded ("items") is encoded again,
+# which leaves it unchanged.
+context_block_re = re.compile(
+    rf"<!--\s*review-anvil:\s*context\s+id=(?P<id>{finding_id_pattern})\s+(?P<json>\{{.*\}})\s*-->", re.I
+)
+full_sha_re = re.compile(r"[0-9a-f]{40}")
+
+def context_block_line(match):
+    fid = match.group("id")
+    try:
+        obj = json.loads(match.group("json"))
+    except json.JSONDecodeError:
+        print(f"pr-helper: report context for {fid} is not JSON; dropped", file=sys.stderr)
+        return None
+    if not isinstance(obj, dict) or obj.get("v") != 1:
+        print(f"pr-helper: report context for {fid} has no v:1; dropped", file=sys.stderr)
+        return None
+    commit = obj.get("commit")
+    if commit is not None and not (isinstance(commit, str) and full_sha_re.fullmatch(commit)):
+        print(f"pr-helper: report context for {fid}: invalid commit {commit!r} dropped", file=sys.stderr)
+        commit = None
+    if "context" not in obj and isinstance(obj.get("items"), list):
+        # Already converted (a second run over the same report): keep the
+        # items, but always re-encode below, so no line reaches GitHub raw.
+        out = [item for item in obj["items"] if isinstance(item, dict)]
+    else:
+        entries = obj.get("context") or []
+        if not isinstance(entries, list):
+            print(f"pr-helper: report context for {fid} is not a list; ignored", file=sys.stderr)
+            entries = []
+        out = []
+        for entry in entries:
+            converted, reason = context_entry(entry)
+            if converted is None:
+                print(f"pr-helper: {fid}: context entry dropped ({reason})", file=sys.stderr)
+            elif converted not in out:
+                out.append(converted)
+    payload = json.dumps({"v": 1, "commit": commit, "items": out}, ensure_ascii=True, separators=(",", ":"))
+    return f"<!-- review-anvil: context id={fid} " + payload.replace("-", "\\u002d") + " -->"
+
+if report is not None and report.is_file():
+    lines, changed, blocks = [], False, 0
+    for line in report.read_text().split("\n"):
+        match = context_block_re.fullmatch(line.strip())
+        if match:
+            new = context_block_line(match)
+            blocks += 1
+            changed = changed or new != line
+            if new is not None:
+                lines.append(new)
+            continue
+        lines.append(line)
+    if changed:
+        report.write_text("\n".join(lines))
+    if blocks:
+        print(f"pr-helper: report context block checked ({blocks} line(s))", file=sys.stderr)
 PY
 }
 append_inline_details_to_report() {
@@ -2257,7 +2422,7 @@ cmd_post() {
         review_event="COMMENT"
     fi
 
-    process_inline_comments_for_github "$inline_json"
+    process_inline_comments_for_github "$inline_json" "$report_path"
     compact_report_for_github "$report_path" "$inline_json"
 
     # Compute inline presence after suppression (which may have emptied the
@@ -2586,7 +2751,7 @@ cmd_post_update() {
         fi
     fi
 
-    process_inline_comments_for_github "${report_path}.inline.json"
+    process_inline_comments_for_github "${report_path}.inline.json" "$report_path"
     compact_report_for_github "$report_path" "${report_path}.inline.json"
     if [[ "$outcome" == "success" ]]; then
         append_inline_details_to_report "$report_path" "${report_path}.inline.json"
@@ -2656,6 +2821,6 @@ case "${1:-}" in
     compact-report)   shift; compact_report_for_github "$@" ;;
     process-inline)   shift; process_inline_comments_for_github "$@" ;;
     check-pins)       shift; cmd_check_pins "$@" ;;
-    "")               die "usage: pr-helper.sh {init [<locator>] | next-run <host> <owner> <repo> <n> | post <host> <owner> <repo> <n> <marker> <report_path> | verify-checkout [<locator>] | post-start <host> <owner> <repo> <n> <marker> <author> | post-update <host> <owner> <repo> <n> <comment_id> <marker> <report_path> <author> <success|failure> [<started_at>] | history <host> <owner> <repo> <n> | resolve <host> <owner> <repo> <n> <resolutions_json> | dismissed <host> <owner> <repo> <n> | dismiss <host> <owner> <repo> <n> <path> <pattern> [<reason>] | compact-report <report_path> [<inline_json>] | process-inline <inline_json> | check-pins <preset> <pins-csv> [<raw-args>]}" ;;
+    "")               die "usage: pr-helper.sh {init [<locator>] | next-run <host> <owner> <repo> <n> | post <host> <owner> <repo> <n> <marker> <report_path> | verify-checkout [<locator>] | post-start <host> <owner> <repo> <n> <marker> <author> | post-update <host> <owner> <repo> <n> <comment_id> <marker> <report_path> <author> <success|failure> [<started_at>] | history <host> <owner> <repo> <n> | resolve <host> <owner> <repo> <n> <resolutions_json> | dismissed <host> <owner> <repo> <n> | dismiss <host> <owner> <repo> <n> <path> <pattern> [<reason>] | compact-report <report_path> [<inline_json>] | process-inline <inline_json> [<report_path>] | check-pins <preset> <pins-csv> [<raw-args>]}" ;;
     *)                die "unknown subcommand: $1" ;;
 esac

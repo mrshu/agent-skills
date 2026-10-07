@@ -299,6 +299,123 @@ JSON
     ' "$inline" >/dev/null
 }
 
+test_process_inline_embeds_context_marker() {
+    local tmp inline marker stderr payload
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    inline="$tmp/inline.json"
+    stderr="$tmp/stderr"
+    marker='<!-- review-anvil: id=RAV-RUN5-R1-F001 severity=high area=config -->'
+    cat >"$inline" <<'JSON'
+[
+  {
+    "path": "clusters/prod/app/main.tf",
+    "line": 122,
+    "side": "RIGHT",
+    "severity": "high",
+    "body": "The fallback map lacks the URL vars the app requires at boot.\n\n<!-- review-anvil: id=RAV-RUN5-R1-F001 severity=high area=config -->",
+    "prior_feedback": "reintroduced",
+    "context": [
+      {"label": "Required vars", "repo": "acme/app-backend", "ref": "3f545a5c2b1d4e6f8a9b0c1d2e3f4a5b6c7d8e9f", "file": "src/config/env.dto.ts", "line": "59,75"},
+      {"label": "What warn does", "file": "modules/env-file/main.tf", "line": "60-65", "focus": 62},
+      {"label": "Shipped env", "ref": "3f545a5", "file": ".env.deploy.dev"},
+      {"label": "Upstream fix", "repo": "acme/app-backend", "pr": 790},
+      {"label": "Required vars", "repo": "acme/app-backend", "ref": "3f545a5c2b1d4e6f8a9b0c1d2e3f4a5b6c7d8e9f", "file": "src/config/env.dto.ts", "line": "59,75"},
+      {"label": "Other repo, no SHA", "repo": "acme/app-backend", "file": "src/a.ts"},
+      {"label": "Dot repo", "repo": "acme/..", "ref": "3f545a5c2b1d4e6f8a9b0c1d2e3f4a5b6c7d8e9f", "file": "a.ts"},
+      {"label": "Escapes repo", "file": "../../etc/passwd"},
+      {"label": "Option-like ref", "file": "a.tf", "ref": "--output=/tmp/x"},
+      {"label": "Tricky -- label -->", "file": "x.tf", "line": 3}
+    ]
+  }
+]
+JSON
+
+    "$HELPER" process-inline "$inline" >/dev/null 2>"$stderr"
+
+    # Field stripped; context line sits after prior-feedback, before the terminal marker.
+    jq -e '.[0].context == null' "$inline" >/dev/null || fail "context field must be stripped"
+    jq -e --arg marker "$marker" '.[0].body | endswith($marker)' "$inline" >/dev/null \
+        || fail "finding metadata marker must stay last"
+    jq -e --arg marker "$marker" '
+      .[0].body
+      | index("<!-- review-anvil: prior_feedback=reintroduced -->") < index("<!-- review-anvil: context=")
+        and index("<!-- review-anvil: context=") < index($marker)
+    ' "$inline" >/dev/null || fail "context line must precede the terminal marker"
+
+    payload="$(jq -r '.[0].body' "$inline" | sed -n 's/^<!-- review-anvil: context=\(.*\) -->$/\1/p')"
+    [[ -n "$payload" ]] || fail "context line missing or malformed"
+    [[ "$payload" != *--* ]] || fail "context payload must not contain --"
+    jq -e '
+      .v == 1 and (.items | length) == 5
+      and .items[0] == {"label":"Required vars","repo":"acme/app-backend","path":"src/config/env.dto.ts","ref":"3f545a5c2b1d4e6f8a9b0c1d2e3f4a5b6c7d8e9f","lines":[59,75]}
+      and .items[1] == {"label":"What warn does","path":"modules/env-file/main.tf","range":[60,65],"focus":62}
+      and .items[2].ref == "3f545a5"
+      and .items[3] == {"kind":"pr","label":"Upstream fix","repo":"acme/app-backend","number":790}
+      and .items[4].label == "Tricky -- label -->"
+    ' <<<"$payload" >/dev/null || fail "context payload did not round-trip: $payload"
+    grep -q "context entry dropped (invalid file '../../etc/passwd')" "$stderr" || fail "path escape not reported"
+    grep -q "context entry dropped (invalid ref '--output=/tmp/x')" "$stderr" || fail "option-like ref not reported"
+    grep -q "context entry dropped (file in acme/app-backend needs a full 40-character ref)" "$stderr" \
+        || fail "other-repo file without a full SHA not reported"
+    grep -q "context entry dropped (invalid repo 'acme/..')" "$stderr" || fail "dot repo not reported"
+}
+
+test_process_inline_normalizes_report_context_block() {
+    local tmp report stderr row sha line1 line2 line3 payload
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    report="$tmp/report.md"
+    stderr="$tmp/stderr"
+    sha="3f545a5c2b1d4e6f8a9b0c1d2e3f4a5b6c7d8e9f"
+    row='| Medium | `src/db.ts:100-110` | Timed-out writes are counted as successful. | Count a write only after it returns successfully. <!-- review-anvil-report: id=RAV-RUN3-R2-F002 severity=medium area=db path=src%2Fdb.ts start_line=100 line=110 disposition=active --> |'
+    cat >"$report" <<EOF
+## Findings
+
+| Severity | Location | Issue | Requested change |
+|---|---|---|---|
+$row
+
+<!-- review-anvil: context id=RAV-RUN3-R2-F002 {"v":1,"commit":"$sha","context":[{"label":"Retry -- loop -->","file":"src/retry.ts","line":"10-20"},{"label":"Escapes","file":"../etc/passwd"},{"label":"Writer","repo":"acme/app-backend","ref":"$sha","file":"src/w.ts","line":3}]} -->
+<!-- review-anvil: context id=RAV-RUN3-R2-F003 {"v":1,"commit":"main","context":[]} -->
+<!-- review-anvil: context id=RAV-RUN3-R2-F004 {"v":1,"commit":null,"items":[{"label":"kept","path":"a.ts"}]} -->
+<!-- review-anvil: context id=RAV-RUN3-R2-F005 {"v":1,"commit":"main","items":[{"label":"a --> **visible** <!--","path":"b.ts"}]} -->
+
+_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._
+EOF
+
+    "$HELPER" process-inline "" "$report" >/dev/null 2>"$stderr"
+
+    grep -qxF -- "$row" "$report" || fail "finding row must stay byte for byte"
+    line1="$(grep '^<!-- review-anvil: context id=RAV-RUN3-R2-F002 ' "$report")"
+    line2="$(grep '^<!-- review-anvil: context id=RAV-RUN3-R2-F003 ' "$report")"
+    line3="$(grep '^<!-- review-anvil: context id=RAV-RUN3-R2-F004 ' "$report")"
+    payload="${line1#<!-- review-anvil: context id=RAV-RUN3-R2-F002 }"
+    payload="${payload% -->}"
+    [[ "$payload" != *--* ]] || fail "re-encoded payload must not contain --"
+    jq -e --arg sha "$sha" '
+      .v == 1 and .commit == $sha and (.items | length) == 2
+      and .items[0] == {"label":"Retry -- loop -->","path":"src/retry.ts","range":[10,20]}
+      and .items[1].repo == "acme/app-backend"
+    ' <<<"$(sed 's/^<!-- review-anvil: context id=[^ ]* //; s/ -->$//' <<<"$line1")" >/dev/null \
+        || fail "context block did not round-trip: $line1"
+    jq -e '.commit == null and .items == []' <<<"$(sed 's/^<!-- review-anvil: context id=[^ ]* //; s/ -->$//' <<<"$line2")" >/dev/null \
+        || fail "invalid commit must become null: $line2"
+    [[ "$line3" == '<!-- review-anvil: context id=RAV-RUN3-R2-F004 {"v":1,"commit":null,"items":[{"label":"kept","path":"a.ts"}]} -->' ]] \
+        || fail "already re-encoded line must stay unchanged: $line3"
+    line3="$(grep '^<!-- review-anvil: context id=RAV-RUN3-R2-F005 ' "$report")"
+    payload="${line3#<!-- review-anvil: context id=RAV-RUN3-R2-F005 }"
+    payload="${payload% -->}"
+    [[ "$payload" != *--* ]] || fail "an items line must be re-encoded too: $line3"
+    jq -e '.commit == null and .items[0].label == "a --> **visible** <!--"' <<<"$payload" >/dev/null \
+        || fail "items line did not round-trip: $line3"
+    cp "$report" "$tmp/once.md"
+    "$HELPER" process-inline "" "$report" >/dev/null 2>&1
+    cmp -s "$report" "$tmp/once.md" || fail "a second run must leave the report unchanged"
+    grep -q "RAV-RUN3-R2-F002: context entry dropped (invalid file '../etc/passwd')" "$stderr" || fail "path escape not reported"
+    grep -q "invalid commit 'main' dropped" "$stderr" || fail "invalid commit not reported"
+}
+
 test_process_inline_rejects_severity_mismatch() {
     local tmp inline original stderr
     tmp="$(mktemp -d)"
@@ -2509,6 +2626,8 @@ main() {
     test_process_inline
     test_process_inline_infers_id_prefixed_severity
     test_process_inline_preserves_terminal_finding_metadata
+    test_process_inline_embeds_context_marker
+    test_process_inline_normalizes_report_context_block
     test_process_inline_rejects_severity_mismatch
     test_process_inline_rejects_invalid_marker_severity_field
     test_history_parses_hidden_inline_metadata
