@@ -9,7 +9,7 @@
   "policy_hashes": {
     "plugins/review-anvil/skills/review-anvil/SKILL.md": {
       "baseline_sha256": "14708e9c12efc006405ae01c8bb71bdd195346d4d6ce3f9f14a10d4d918a9a32",
-      "final_sha256": "b96f2576721e3f00ca148edddd3036fd0286e5265ecf21329eb438df19b4caf2"
+      "final_sha256": "f78374ed1437d3253191d2575d59374815577aa7a8861e8bd86d70388bb3543d"
     },
     "plugins/review-anvil/skills/review-anvil/references/report-artifacts.md": {
       "baseline_sha256": "ee0357a74f6e328c0d233944791157e0237682dd5d279d75984ab73b45274c91",
@@ -191,6 +191,15 @@
     "source_backed_conditions_retained": true,
     "incidental_proof_and_author_work_not_promoted_to_diagnostic_locks": true,
     "limit": "One retained-case instruction-stage smoke, not a new full renderer/auditor or live review run, and not evidence of broad transfer or quality improvement."
+  },
+  "generic_codex_resolution_smoke": {
+    "CODEX_BIN_override": false,
+    "resolved_from_trusted_host_PATH": true,
+    "canonical_absolute_executable": true,
+    "outside_review_worktree": true,
+    "actual_cli_version_output": "codex-cli 0.160.0",
+    "scope": "Removed the fleet-specific executable preference paragraph; retained existing lazy trusted-host resolution and rejection safeguards. Actual command lookup and CLI launch succeeded without a package-manager-specific override.",
+    "limit": "Command-resolution smoke only, not a model request or full review. Machine installation cleanup was separate from this documentation change."
   },
   "publication_scope_smoke": {
     "model_selector": "default",

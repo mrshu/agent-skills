@@ -133,12 +133,6 @@ reviewed-worktree-contained result before that dispatch. Never pin a
 package-manager-specific path or resolve the binary from the reviewed
 repository.
 
-On this macOS review fleet, prefer `/opt/homebrew/bin/codex` when it exists and
-is executable, and export `CODEX_BIN=/opt/homebrew/bin/codex` from watchdog or
-manual review launchers before invoking the top-level `codex exec`. A stale or
-alternate `codex` earlier on `PATH` can use a different CLI install/auth surface
-and reject `gpt-6-luna` even when the Homebrew Codex CLI accepts it.
-
 #### In Claude Code (the primary host)
 
 **Use the Agent tool for `claude-exec` reviewers. Do NOT use `claude -p` via Bash — that path is for non-Claude hosts only.**
