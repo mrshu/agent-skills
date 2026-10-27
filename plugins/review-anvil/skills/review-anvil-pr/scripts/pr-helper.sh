@@ -30,6 +30,8 @@
 #                             state file ($REVIEW_ANVIL_DISMISSALS).
 #   compact-report …        — legacy no-op; reports are posted without loss.
 #   process-inline …        — filter/prepare inline review comments.
+#   embed-context …         — embed <report_path>.context.json records as
+#                             hidden lines at the end of the report.
 #   check-pins …            — mechanical preset pin-rejection over raw args.
 #
 # Environment switches:
@@ -94,7 +96,7 @@ report_is_infra_failure() {
 
 cleanup_post_artifacts() {
     local report_path="$1" resolution_policy="${2:-remove}" dir
-    rm -f "$report_path" "${report_path}.inline.json" "${report_path}.approval.json" "${report_path}.followups.json" "${report_path}.full.md"
+    rm -f "$report_path" "${report_path}.inline.json" "${report_path}.approval.json" "${report_path}.followups.json" "${report_path}.context.json" "${report_path}.full.md"
     if [[ "$resolution_policy" != "keep" ]]; then
         rm -f "${report_path}.resolutions.json"
     fi
@@ -338,6 +340,182 @@ if filtered or suggested:
         f"({filtered} summary-only, {suggested} suggestion block(s) added)",
         file=sys.stderr,
     )
+PY
+}
+# Embed finding context from the engine's <report_path>.context.json (schema
+# in review-anvil/references/report-artifacts.md) as one hidden line per
+# finding the report still lists, before the footer:
+#   <!-- review-anvil: context={"v":1,"id":…,"revision":…,"items":[…]} -->
+# Records are validated here, at the posting boundary; invalid items are
+# dropped with a warning, and a missing or malformed file never blocks a post.
+# Earlier context lines are always replaced, so re-running is idempotent.
+# $1 = report path, $2 = context JSON (may be missing).
+embed_finding_context() {
+    local report_path="${1:-}" context_json="${2:-}"
+    [[ -n "$report_path" && -f "$report_path" ]] || return 0
+
+    _py - "$report_path" "$context_json" <<'PY'
+import json
+import re
+import sys
+from pathlib import Path
+
+report = Path(sys.argv[1])
+sidecar = Path(sys.argv[2]) if sys.argv[2] else None
+
+PREFIX = "<!-- review-anvil: context="
+FOOTER = "_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._"
+# GitHub rejects bodies over 65536 characters; keep room for delivery notes.
+REPORT_BUDGET = 60000
+MAX_ITEMS = 8
+MAX_LABEL = 80
+ORDINAL = r"(?:00[1-9]|0[1-9][0-9]|[1-9][0-9]{2,})"
+FINDING_ID = rf"RAV-(?:RUN[1-9][0-9]*-)?R[1-9][0-9]*-F{ORDINAL}"
+finding_id_re = re.compile(FINDING_ID)
+report_id_re = re.compile(rf"<!--\s*review-anvil-report:\s*id=(?P<id>{FINDING_ID})\s")
+repo_re = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")
+sha_re = re.compile(r"[0-9a-fA-F]{40}")
+control_re = re.compile(r"[\x00-\x1f\x7f]")
+
+def warn(message):
+    print(f"pr-helper: context: {message}", file=sys.stderr)
+
+def positive_int(value):
+    return type(value) is int and value >= 1
+
+def context_item(entry):
+    """Validated item in canonical key order, or (None, reason)."""
+    if not isinstance(entry, dict):
+        return None, "not an object"
+    kind = entry.get("kind")
+    label = entry.get("label")
+    label = control_re.sub("", label).strip()[:MAX_LABEL].strip() if isinstance(label, str) else ""
+    if not label:
+        return None, "missing label"
+    out = {"kind": kind, "label": label}
+    repo = entry.get("repo")
+    if repo is not None:
+        if not isinstance(repo, str) or not repo_re.fullmatch(repo) or ".." in repo:
+            return None, f"invalid repo {repo!r}"
+        out["repo"] = repo
+    if kind == "pr":
+        if not positive_int(entry.get("number")):
+            return None, f"invalid pr number {entry.get('number')!r}"
+        out["number"] = entry["number"]
+        return out, None
+    if kind != "file":
+        return None, f"invalid kind {kind!r}"
+    commit = entry.get("commit")
+    if commit is not None:
+        if not isinstance(commit, str) or not sha_re.fullmatch(commit):
+            return None, f"invalid commit {commit!r}"
+        out["commit"] = commit.lower()
+    if repo is not None and commit is None:
+        return None, f"file in {repo} needs a full 40-character commit"
+    path = entry.get("path")
+    if (not isinstance(path, str) or not path or control_re.search(path)
+            or path.startswith("/") or ".." in path.split("/")):
+        return None, f"invalid path {path!r}"
+    out["path"] = path
+    lines = entry.get("lines")
+    if lines is not None:
+        if not (isinstance(lines, list) and lines and all(
+                isinstance(span, list) and len(span) == 2
+                and all(positive_int(n) for n in span) and span[0] <= span[1]
+                for span in lines)):
+            return None, f"invalid lines {lines!r}"
+        out["lines"] = lines
+    return out, None
+
+def context_record(raw):
+    fid = raw.get("id") if isinstance(raw, dict) else None
+    if not isinstance(fid, str) or not finding_id_re.fullmatch(fid):
+        warn(f"record with invalid id {fid!r} dropped")
+        return None
+    if not isinstance(raw.get("items"), list):
+        warn(f"{fid}: items is not a list; record dropped")
+        return None
+    record = {"v": 1, "id": fid}
+    revision = raw.get("revision")
+    if revision is not None:
+        if isinstance(revision, str) and sha_re.fullmatch(revision):
+            record["revision"] = revision.lower()
+        else:
+            warn(f"{fid}: invalid revision {revision!r} omitted")
+    items = []
+    for entry in raw["items"]:
+        item, reason = context_item(entry)
+        if item is None:
+            warn(f"{fid}: item dropped ({reason})")
+        elif item not in items:
+            items.append(item)
+    if len(items) > MAX_ITEMS:
+        warn(f"{fid}: kept the first {MAX_ITEMS} of {len(items)} items")
+    record["items"] = items[:MAX_ITEMS]
+    return record
+
+def load_records():
+    if sidecar is None or not sidecar.exists():
+        return {}
+    try:
+        data = json.loads(sidecar.read_text())
+    except (OSError, ValueError) as exc:
+        warn(f"{sidecar} is unreadable ({exc}); no context embedded")
+        return {}
+    if (not isinstance(data, dict) or type(data.get("v")) is not int or data["v"] != 1
+            or not isinstance(data.get("findings"), list)):
+        warn(f"{sidecar} is not a v1 context file; no context embedded")
+        return {}
+    records = {}
+    for raw in data["findings"]:
+        record = context_record(raw)
+        if record is not None:
+            records.setdefault(record["id"], record)
+    return records
+
+def encode(record):
+    payload = json.dumps(record, ensure_ascii=True, separators=(",", ":"))
+    # JSON has "-" only inside strings here, where \u002d is equivalent.
+    # Escaping every "-" that precedes another leaves no "--", so the HTML
+    # comment cannot end early, while IDs and paths stay readable.
+    return PREFIX + re.sub(r"-(?=-)", lambda _: "\\u002d", payload) + " -->"
+
+def strip_context_lines(text):
+    """Remove earlier context lines outside code fences, with their separator."""
+    out = []
+    in_fence = False
+    skip_blank = False
+    for line in text.split("\n"):
+        stripped = line.strip()
+        if stripped.startswith(("```", "~~~")):
+            in_fence = not in_fence
+        elif not in_fence and stripped.startswith(PREFIX):
+            skip_blank = bool(out) and out[-1] == ""
+            continue
+        if skip_blank and line == "":
+            skip_blank = False
+            continue
+        skip_blank = False
+        out.append(line)
+    return "\n".join(out)
+
+records = load_records()
+original = report.read_text()
+text = strip_context_lines(original)
+ids = list(dict.fromkeys(m.group("id") for m in report_id_re.finditer(text)))
+lines = [encode(records[fid]) for fid in ids if fid in records]
+rendered = text
+if lines:
+    body = text.rstrip()
+    footer = FOOTER if body.endswith(FOOTER) else ""
+    body = body[: len(body) - len(footer)].rstrip()
+    candidate = "\n\n".join(part for part in (body, "\n".join(lines), footer) if part) + "\n"
+    if len(candidate) > REPORT_BUDGET:
+        warn(f"report block omitted: the report would exceed {REPORT_BUDGET} characters")
+    else:
+        rendered = candidate
+if rendered != original:
+    report.write_text(rendered)
 PY
 }
 append_inline_details_to_report() {
@@ -1262,6 +1440,8 @@ def report_findings(node):
             in_fence = not in_fence
             continue
         if in_fence:
+            continue
+        if stripped.startswith("<!-- review-anvil: context="):
             continue
         if stripped == REINTRODUCED_MARKER and last_finding is not None:
             last_finding["prior_feedback"] = "reintroduced"
@@ -2258,6 +2438,8 @@ cmd_post() {
     fi
 
     process_inline_comments_for_github "$inline_json"
+    embed_finding_context "$report_path" "${report_path}.context.json" \
+        || printf 'warning: finding context could not be embedded; posting without it\n' >&2
     compact_report_for_github "$report_path" "$inline_json"
 
     # Compute inline presence after suppression (which may have emptied the
@@ -2590,6 +2772,8 @@ cmd_post_update() {
     compact_report_for_github "$report_path" "${report_path}.inline.json"
     if [[ "$outcome" == "success" ]]; then
         append_inline_details_to_report "$report_path" "${report_path}.inline.json"
+        embed_finding_context "$report_path" "${report_path}.context.json" \
+            || printf 'warning: finding context could not be embedded; posting without it\n' >&2
     fi
 
     local completed_at delivery_note
@@ -2655,7 +2839,8 @@ case "${1:-}" in
     dismiss)          shift; cmd_dismiss "$@" ;;
     compact-report)   shift; compact_report_for_github "$@" ;;
     process-inline)   shift; process_inline_comments_for_github "$@" ;;
+    embed-context)    shift; embed_finding_context "$@" ;;
     check-pins)       shift; cmd_check_pins "$@" ;;
-    "")               die "usage: pr-helper.sh {init [<locator>] | next-run <host> <owner> <repo> <n> | post <host> <owner> <repo> <n> <marker> <report_path> | verify-checkout [<locator>] | post-start <host> <owner> <repo> <n> <marker> <author> | post-update <host> <owner> <repo> <n> <comment_id> <marker> <report_path> <author> <success|failure> [<started_at>] | history <host> <owner> <repo> <n> | resolve <host> <owner> <repo> <n> <resolutions_json> | dismissed <host> <owner> <repo> <n> | dismiss <host> <owner> <repo> <n> <path> <pattern> [<reason>] | compact-report <report_path> [<inline_json>] | process-inline <inline_json> | check-pins <preset> <pins-csv> [<raw-args>]}" ;;
+    "")               die "usage: pr-helper.sh {init [<locator>] | next-run <host> <owner> <repo> <n> | post <host> <owner> <repo> <n> <marker> <report_path> | verify-checkout [<locator>] | post-start <host> <owner> <repo> <n> <marker> <author> | post-update <host> <owner> <repo> <n> <comment_id> <marker> <report_path> <author> <success|failure> [<started_at>] | history <host> <owner> <repo> <n> | resolve <host> <owner> <repo> <n> <resolutions_json> | dismissed <host> <owner> <repo> <n> | dismiss <host> <owner> <repo> <n> <path> <pattern> [<reason>] | compact-report <report_path> [<inline_json>] | process-inline <inline_json> | embed-context <report_path> <context_json> | check-pins <preset> <pins-csv> [<raw-args>]}" ;;
     *)                die "unknown subcommand: $1" ;;
 esac

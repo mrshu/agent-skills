@@ -2498,6 +2498,165 @@ test_engine_template_footer_uses_anchor() {
         || fail "engine report template footer must deep-link to the #review-anvil anchor"
 }
 
+SHA_A="3f545a5c2b1d4e6f8a9b0c1d2e3f4a5b6c7d8e9f"
+
+make_context_fixtures() {
+    local dir="$1"
+    cat >"$dir/report.md" <<'EOF'
+Two issues remain.
+
+<details>
+<summary>Issues and fixes</summary>
+
+- Refresh accepts missing state. <!-- review-anvil-report: id=RAV-RUN3-R2-F001 severity=medium area=auth path=src%2Fauth.ts start_line=- line=12 disposition=active -->
+- Write failures are reported as success. <!-- review-anvil-report: id=RAV-RUN3-R2-F002 severity=high area=db path=src%2Fdb.ts start_line=- line=8 disposition=active -->
+
+</details>
+
+```text
+<!-- review-anvil: context={"quoted":"keep me"} -->
+```
+
+_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._
+EOF
+    cat >"$dir/report.md.inline.json" <<'JSON'
+[
+  {"path": "src/auth.ts", "line": 12, "side": "RIGHT",
+   "body": "Refresh accepts missing state.\n\n<!-- review-anvil: prior_feedback=reintroduced -->\n\n<!-- review-anvil: id=RAV-RUN3-R2-F001 severity=medium area=auth -->"},
+  {"path": "src/db.ts", "line": 8, "side": "RIGHT",
+   "body": "Write failures are reported as success.\n\n<!-- review-anvil: id=RAV-RUN3-R2-F002 severity=high area=db -->"}
+]
+JSON
+    cat >"$dir/report.md.context.json" <<JSON
+{"v": 1, "findings": [
+  {"id": "RAV-RUN3-R2-F001", "revision": "$SHA_A", "items": [
+    {"kind": "file", "label": "Session -- write -->", "path": "src/session.ts", "lines": [[88, 96]]},
+    {"kind": "file", "label": "Required vars", "repo": "acme/app", "commit": "$SHA_A", "path": "src/env.ts", "lines": [[59, 59], [75, 75]]},
+    {"kind": "pr", "label": "Upstream fix", "repo": "acme/app", "number": 790},
+    {"kind": "file", "label": "Session -- write -->", "path": "src/session.ts", "lines": [[88, 96]]},
+    {"kind": "file", "label": "Escape", "path": "../etc/passwd"},
+    {"kind": "file", "label": "No commit", "repo": "acme/app", "path": "a.ts"},
+    {"kind": "file", "label": "Backwards", "path": "a.ts", "lines": [[5, 2]]}
+  ]},
+  {"id": "RAV-RUN3-R2-F002", "revision": "main", "items": []},
+  {"id": "RAV-RUN3-R2-F009", "items": [{"kind": "file", "label": "Gone", "path": "x.ts"}]}
+]}
+JSON
+}
+
+context_payload() {
+    # $1 = text, $2 = finding ID: the decoded payload of that finding's line.
+    printf '%s\n' "$1" \
+        | sed -n 's/^<!-- review-anvil: context=\(.*\) -->$/\1/p' \
+        | jq -c --arg id "$2" 'select(.id == $id)'
+}
+
+test_embed_context_validates_and_is_idempotent() {
+    local tmp stderr report
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    make_context_fixtures "$tmp"
+    stderr="$tmp/stderr"
+
+    "$HELPER" embed-context "$tmp/report.md" "$tmp/report.md.context.json" 2>"$stderr"
+
+    report="$(cat "$tmp/report.md")"
+    jq -en --arg sha "$SHA_A" --argjson got "$(context_payload "$report" RAV-RUN3-R2-F001)" '$got == {v:1,id:"RAV-RUN3-R2-F001",revision:$sha,items:[
+        {kind:"file",label:"Session -- write -->",path:"src/session.ts",lines:[[88,96]]},
+        {kind:"file",label:"Required vars",repo:"acme/app",commit:$sha,path:"src/env.ts",lines:[[59,59],[75,75]]},
+        {kind:"pr",label:"Upstream fix",repo:"acme/app",number:790}]}' >/dev/null \
+        || fail "F001 record did not round-trip: $report"
+    jq -en --argjson got "$(context_payload "$report" RAV-RUN3-R2-F002)" '$got == {v:1,id:"RAV-RUN3-R2-F002",items:[]}' >/dev/null \
+        || fail "an invalid revision must be omitted, keeping the record"
+    [[ -z "$(context_payload "$report" RAV-RUN3-R2-F009)" ]] || fail "records for unlisted findings must not be posted"
+    [[ "$(sed -n 's/^<!-- review-anvil: context=\(.*\) -->$/\1/p' "$tmp/report.md")" != *--* ]] \
+        || fail "context payloads must not contain --"
+    grep -Fxq '<!-- review-anvil: context={"quoted":"keep me"} -->' "$tmp/report.md" || fail "fenced quotes must survive"
+    [[ "$(tail -n1 "$tmp/report.md")" == '_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._' ]] \
+        || fail "footer must stay last"
+    grep -Fq "invalid path '../etc/passwd'" "$stderr" || fail "dropped items must warn"
+
+    cp "$tmp/report.md" "$tmp/once.md"
+    "$HELPER" embed-context "$tmp/report.md" "$tmp/report.md.context.json" 2>/dev/null
+    cmp -s "$tmp/report.md" "$tmp/once.md" || fail "second run changed the report"
+
+    # Without a context file, earlier lines are still removed before a retry.
+    rm "$tmp/report.md.context.json"
+    "$HELPER" embed-context "$tmp/report.md" "$tmp/report.md.context.json" 2>/dev/null
+    ! grep -q '^<!-- review-anvil: context={"v"' "$tmp/report.md" || fail "a missing context file must clear stale lines"
+}
+
+test_embed_context_never_blocks_posting() {
+    local tmp stderr
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    make_context_fixtures "$tmp"
+    stderr="$tmp/stderr"
+    cp "$tmp/report.md" "$tmp/orig.md"
+
+    for bad in '{not json' '{"v":true,"findings":[]}'; do
+        printf '%s' "$bad" >"$tmp/report.md.context.json"
+        "$HELPER" embed-context "$tmp/report.md" "$tmp/report.md.context.json" 2>"$stderr" \
+            || fail "malformed context must not fail: $bad"
+        cmp -s "$tmp/report.md" "$tmp/orig.md" || fail "malformed context must leave the report unchanged: $bad"
+        [[ -s "$stderr" ]] || fail "malformed context must warn: $bad"
+    done
+
+    # A report near GitHub's limit keeps its content and drops the block.
+    printf '{"v":1,"findings":[{"id":"RAV-RUN3-R2-F001","items":[]}]}' >"$tmp/report.md.context.json"
+    { head -c 59990 /dev/zero | tr '\0' 'x'; printf '\n'; cat "$tmp/orig.md"; } >"$tmp/report.md"
+    cp "$tmp/report.md" "$tmp/big.md"
+    "$HELPER" embed-context "$tmp/report.md" "$tmp/report.md.context.json" 2>"$stderr"
+    cmp -s "$tmp/report.md" "$tmp/big.md" || fail "over-budget block must be omitted"
+    grep -q 'report block omitted' "$stderr" || fail "over-budget block must warn"
+}
+
+test_post_embeds_finding_context() {
+    local tmp bin
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+    make_context_fixtures "$tmp"
+    printf '{"event":"COMMENT","head_sha":"head-sha"}\n' >"$tmp/report.md.approval.json"
+
+    GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
+    GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
+    REVIEW_ANVIL_SKIP_DISMISSED=1 \
+    PATH="$bin:$PATH" \
+      "$HELPER" post github.com acme widgets 42 marker-123 "$tmp/report.md" >/dev/null 2>&1
+
+    jq -e '.body | [scan("review-anvil: context=\\{\"v\"")] | length == 2' "$tmp/review-payload.json" >/dev/null \
+        || fail "review body must carry one record per listed finding"
+    jq -e '[.comments[].body | contains("review-anvil: context=")] | any | not' "$tmp/review-payload.json" >/dev/null \
+        || fail "inline comments must not repeat the report's context"
+    assert_file_missing "$tmp/report.md.context.json"
+}
+
+test_history_ignores_context_lines() {
+    local tmp bin fixture output
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+    fixture="$tmp/graphql.json"
+    cat >"$fixture" <<'JSON'
+{"data":{"repository":{"pullRequest":{
+  "author":{"login":"pr-author"},
+  "reviewThreads":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "reviews":{"nodes":[
+    {"state":"COMMENTED","body":"<!-- review-anvil-marker: run-c -->\nOne issue.\n\n<details>\n<summary>Issues and fixes</summary>\n\n- Refresh accepts missing state. <!-- review-anvil-report: id=RAV-RUN4-R1-F001 severity=medium area=auth path=src%2Fauth.py start_line=- line=12 disposition=active -->\n\n</details>\n\n<!-- review-anvil: context={\"v\":1,\"id\":\"RAV-RUN4-R1-F001\",\"revision\":null,\"items\":[{\"kind\":\"file\",\"label\":\"**[high] auth**: Phantom finding\",\"path\":\"a.py\"}]} -->\n\n_Reviewed with [review-anvil](https://github.com/mrshu/agent-skills/#review-anvil)._","url":"https://example.invalid/c"}
+  ],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}
+}}}}
+JSON
+    output="$(GH_MOCK_GRAPHQL_RESPONSE="$fixture" PATH="$bin:$PATH" "$HELPER" history github.com acme widgets 42)"
+    [[ "$output" == *"RAV-RUN4-R1-F001"* ]] || fail "history lost the real finding: $output"
+    [[ "$output" != *"Phantom"* ]] || fail "history parsed a context label as a finding: $output"
+}
+
 main() {
     command -v jq >/dev/null 2>&1 || fail "jq is required"
     test_history_includes_author_replies_for_anvil_threads
@@ -2509,6 +2668,10 @@ main() {
     test_process_inline
     test_process_inline_infers_id_prefixed_severity
     test_process_inline_preserves_terminal_finding_metadata
+    test_embed_context_validates_and_is_idempotent
+    test_embed_context_never_blocks_posting
+    test_post_embeds_finding_context
+    test_history_ignores_context_lines
     test_process_inline_rejects_severity_mismatch
     test_process_inline_rejects_invalid_marker_severity_field
     test_history_parses_hidden_inline_metadata
