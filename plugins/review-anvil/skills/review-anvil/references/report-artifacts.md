@@ -127,6 +127,20 @@ The marker remains the final line. Put a safe suggestion fence and the
 ID reuse produces an inline body only when the finding is otherwise eligible;
 ordinary prior-feedback carry-forwards do not create a new inline thread.
 
+Select the necessary source-backed explanation during canonical synthesis,
+before fact locks and pre-clarity fallback bodies are built, not only during
+final rendering. The diagnosis should connect the relevant trigger or condition
+to its concrete consequence, or explain why the existing evidence does not
+demonstrate the desired outcome. Keep path qualifiers and uncertainty intact:
+a coverage gap is not a demonstrated runtime failure, and a policy mismatch
+does not establish which policy to choose. Keep other proof in the existing
+evidence/source context; retain every accepted fact, requested obligation, and
+no-change boundary. Do not shorten an already clear diagnosis automatically.
+Diagnostic locks contain the accepted diagnosis and its necessary explanation,
+not every proof detail or requested-work predicate. Keep incidental fixture
+values, corroborating citations, and process instructions in evidence/source
+context, and keep remediation in requested work.
+
 Before rewriting, make a private fact lock from the final synthesized finding.
 Record only:
 

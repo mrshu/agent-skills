@@ -67,7 +67,7 @@ so the caller gets timeout, empty-output, and stderr classification:
 
 ```bash
 bash <review-anvil-wrapper> out.md 600 -- \
-  codex exec -m gpt-6-luna -c 'model_reasoning_effort="max"' --ephemeral --sandbox read-only -C <project-dir> '<prompt>'
+  codex exec -m gpt-6.1-sol -c 'model_reasoning_effort="high"' --ephemeral --sandbox read-only -C <project-dir> '<prompt>'
 ```
 
 `<review-anvil-wrapper>` is
@@ -79,7 +79,7 @@ For normal review-anvil reviewer prompts, enable output-contract validation:
 
 ```bash
 REVIEW_ANVIL_REQUIRE_FINDINGS=1 bash <review-anvil-wrapper> out.md 600 -- \
-  codex exec -m gpt-6-luna -c 'model_reasoning_effort="max"' --ephemeral --sandbox read-only -C <project-dir> '<prompt>'
+  codex exec -m gpt-6.1-sol -c 'model_reasoning_effort="high"' --ephemeral --sandbox read-only -C <project-dir> '<prompt>'
 ```
 
 This additionally returns `STATUS=protocol` when the final response is only a
@@ -106,4 +106,4 @@ codex exec 'Look deeper at the error handling pattern in src/api/client.ts. Is t
 ## Tips
 
 - **Use `--base main`** for branch reviews, `--uncommitted` for work-in-progress checks.
-- **Model override.** Use `-m <model>` to pick a specific model for the review if needed: `codex review --base main -m gpt-6-luna`.
+- **Model override.** Use `-m <model>` to pick a specific model for the review if needed: `codex review --base main -m gpt-6.1-sol`.

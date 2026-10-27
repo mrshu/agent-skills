@@ -30,8 +30,9 @@ decision ladder. Stop at the first rung that holds and flag the gap:
 **Guardrail:** simplifications must *preserve* trust-boundary validation,
 data-loss handling, security, and accessibility — never cut those for brevity,
 though redundant or dead instances are fair game. Severity tracks real impact:
-usually `low`/`medium`, but `high` for an unnecessary subsystem, an avoidable
-dependency, or a major maintainability burden.
+usually `low`/`medium`; an unnecessary subsystem or avoidable dependency is
+`high` only when it causes a demonstrated major maintenance or operational
+burden.
 
 | M | Lenses |
 |---|---|
@@ -66,11 +67,13 @@ PRIOR ROUNDS
 If this is round 1: "None — this is round 1."}
 
 SCOPE OF THIS REVIEW
-{When PR context is available: infer from PR title/body/base branch/file list and summarize
-what this PR is trying to change. Actionable findings must be caused by this PR,
-regress behavior touched by this PR, or directly undermine this PR's stated
-purpose. Obvious, high-confidence pre-existing defects may be mentioned only as
-"Out-of-scope follow-ups" for a separate PR, not as actionable findings.}
+{For PR/diff targets: infer the change's purpose from available title/body/base
+branch/file context. Actionable findings must be caused by the change, regress
+behavior it touches, or directly undermine its stated purpose. High-confidence
+pre-existing defects outside that scope belong only in "Out-of-scope follow-ups".
+For whole-file or path targets: state the declared target scope. Proven current
+defects within it remain actionable without a PR base or change attribution,
+even when incidental PR context is available.}
 
 PR REVIEW HISTORY
 {When PR context is available: every prior root review thread plus findings from
@@ -144,19 +147,30 @@ Review principles:
 - Include the key evidence the reproduction verifier would need: the concrete
   file/function/config/test/caller fact that makes the issue real and reachable.
 
-- Only report actionable findings that are in scope for this review: caused by
-the PR, a regression in behavior the PR touches, or a direct threat to the PR's
-stated purpose. If you notice an obvious, high-confidence pre-existing issue
-outside that scope, put it in a separate "Out-of-scope follow-ups" section and
-mark it `auto_approved` only when it meets the approval policy; otherwise mark
-it `needs_triage`. Do not include follow-ups in the fenced findings block.
+- For PR/diff targets, report actionable findings caused by the change, a
+  regression in behavior it touches, or a direct threat to its stated purpose.
+  An unchanged helper newly exposed by the change remains in scope.
+  For whole-file or path targets, report proven current defects within the
+  declared review scope; do not require PR attribution or exclude a defect
+  merely because it pre-exists.
+  If you notice an obvious, high-confidence issue outside the declared scope,
+  put it in a separate "Out-of-scope follow-ups" section and mark it
+  `auto_approved` only when it meets the approval policy; otherwise mark it
+  `needs_triage`. Do not include follow-ups in the fenced findings block.
 
 Severity guide:
-- critical: data loss, security breach, production crash
-- high: correctness bug or major maintainability problem
-- medium: should fix but not blocking
-- low: style or minor
+- critical: severe data loss/corruption, security breach, or production crash
+- high: material failure of a supported workflow, API, worker, or tool, or a
+  demonstrated major operational or maintenance burden
+- medium: real but localized, bounded, recoverable incorrect behavior without
+  those material consequences
+- low: minor nonmaterial issue or optional improvement
 - nit: preference
+
+Choose severity from the supported consequence, not the bug category. Preserve
+security, confidentiality, and data-integrity impact. Rarity, no known incident,
+or no UI does not make a supported path harmless. Credit recovery only when
+actual evidence shows it is available and compatible with the workflow.
 
 Do not repeat issues already addressed or deferred in prior rounds
 (see PRIOR ROUNDS). Deferrals are deliberate decisions — re-raise one

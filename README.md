@@ -102,6 +102,8 @@ What makes it useful:
   different lenses, then the workflow merges overlapping findings.
 - **Claim checking:** single-reviewer material findings, risky deletions, and
   uncertain claims are checked before they become comments or fix commits.
+  Establish required behavior and the applicable PR change before choosing
+  proof expectations; observing a mechanism alone does not prove a defect.
 - **Retained executable proof:** with `proof_runner: /trusted/absolute/path`,
   behavior claims get focused probes against an exact disposable snapshot. The
   runner must disable network access, mount source and proof inputs read-only,
@@ -117,7 +119,14 @@ What makes it useful:
   or continue up to 6 total rounds when useful fixes are still surfacing. Use
   "exactly 3 rounds" or `max_rounds: 3` when you want a hard stop.
 - **PR-native output:** anchored findings become full inline review comments;
-  broader findings stay in one focused summary.
+  broader findings stay in one focused summary. Select the necessary connection
+  between condition and consequence, or the reason existing evidence falls
+  short, before freezing facts for the clarity pass and its source fallback.
+  Keep proof details separate from diagnosis and preserve requested work.
+- **Impact-based priority:** judge supported workflows, APIs, workers, and tools
+  by their concrete consequences. Bounded, recoverable incorrect behavior is
+  not automatically high severity; security and data-integrity risks remain
+  serious even without a prior incident or a UI trigger.
 - **Conversation-aware follow-ups:** PR runs read replies from the PR author,
   validate explanations against the current code, suppress accepted findings,
   and resolve only obsolete review-anvil threads. Human-authored review threads

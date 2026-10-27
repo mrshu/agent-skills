@@ -1,0 +1,248 @@
+{
+  "evaluation": "Bounded source-grounded content-policy pilot and final instruction-stage smoke; not a production review or a human comprehension study",
+  "branch": "fix/review-anvil-finding-content",
+  "base_sha": "358a41938f8252e6623358b8901092a7749161ce",
+  "goals": [
+    "Select the necessary condition-to-consequence or evidence-gap explanation before freezing diagnostic facts and source fallback.",
+    "Ground proof expectations in required behavior and applicable review scope; choose severity from supported consequences."
+  ],
+  "policy_hashes": {
+    "plugins/review-anvil/skills/review-anvil/SKILL.md": {
+      "baseline_sha256": "14708e9c12efc006405ae01c8bb71bdd195346d4d6ce3f9f14a10d4d918a9a32",
+      "final_sha256": "f78374ed1437d3253191d2575d59374815577aa7a8861e8bd86d70388bb3543d"
+    },
+    "plugins/review-anvil/skills/review-anvil/references/report-artifacts.md": {
+      "baseline_sha256": "ee0357a74f6e328c0d233944791157e0237682dd5d279d75984ab73b45274c91",
+      "final_sha256": "ee03648cc0bb7364f5be309133984636a9919592eb99324d3b8447ac8bdf5bb4"
+    },
+    "plugins/review-anvil/skills/review-anvil/references/reviewer-prompt.md": {
+      "baseline_sha256": "155914f9e48d90215c32118d9b396b074ad88fec346874a2a503eb438d7b56ce",
+      "final_sha256": "e1c668fe5896053caa0440122168195ddbead33e631e6be23b3449c539b4235b"
+    },
+    "plugins/review-anvil/skills/review-anvil/references/reproduction-prompt.md": {
+      "baseline_sha256": "57cb41b5d0cb16f31c0b060002e9f9946f6251907706d9bac8c7e5fbf3b7b977",
+      "final_sha256": "4f7021f7a821bdca2c33bb03b87de820988b50a17ae9811d4100a432d131062c"
+    },
+    "plugins/review-anvil/skills/review-anvil/references/adversarial-prompt.md": {
+      "baseline_sha256": "1f962636be6acf63adcb0ba617da1be05a6822429e2aa73781d6c1ac940bed2b",
+      "final_sha256": "ce0c2e4dda4b650e92da62fd32b33e455fd4f16f2c22ab1fdc9f142d4d540067"
+    }
+  },
+  "pilot": {
+    "model_selector": "default",
+    "resolved_backend_identity": "unknown",
+    "attempts_per_variant_per_case": 2,
+    "counted_model_calls": 40,
+    "clarity": {
+      "cases": 4,
+      "calls": 16,
+      "results": [
+        {
+          "case": "changed-default-and-close-save-coverage",
+          "snapshot": "034357665f9c885d18a949d0c91291fab67c6562",
+          "outcome": "mixed / no consistent improvement"
+        },
+        {
+          "case": "changed-null-guard-coverage",
+          "snapshot": "3b8ab57d2edd",
+          "outcome": "tie"
+        },
+        {
+          "case": "unresolved-route-policy",
+          "snapshot": "50a77abcdca0",
+          "outcome": "tie with scope risk"
+        },
+        {
+          "case": "supported-tool-startup",
+          "snapshot": "bae1fa37cf76",
+          "outcome": "tie"
+        }
+      ],
+      "conclusion": "Mixed/tied. No consistent clarity improvement demonstrated.",
+      "excluded_exploratory_calls": 16,
+      "exclusion": "An initial shared wrapper instructed relation selection in both arms; replaced with a neutral wrapper before the counted comparison.",
+      "candidate_policy_sha256": {
+        "baseline": "b16db7b55a47e20c2e3525fc7074253ddd90b82e429af716535e9817d1b0390e",
+        "pilot_candidate_addition": "120fb2403ec0246c5868374c1ff0b345a19b55a49f085053d92856340081db2a",
+        "plugins/review-anvil/skills/review-anvil/SKILL.md": "6470350a4118aa6f9af28f185f6a1828e0af43757682893548af8f81149e8129",
+        "plugins/review-anvil/skills/review-anvil/references/report-artifacts.md": "ebb27dbc9d67ca616461307379649b2b454730877222d5f1a2b4591dc0ca0c06"
+      }
+    },
+    "contract_and_priority": {
+      "cases": 6,
+      "calls": 24,
+      "candidate_policy_sha256": {
+        "reproduction_sha256": "e6fb6bfeeb700c711a12bc146e13040dd114e5527d2f747470c844faf109698d",
+        "reviewer_sha256": "bc44042a0ff4a2e4b493379e249ea0c7347592391a143380a11d5412db242a79"
+      },
+      "baseline_authored_kinds": {
+        "executable": 8,
+        "static": 4
+      },
+      "candidate_authored_kinds": {
+        "executable": 1,
+        "static": 11
+      },
+      "structurally_compatible_authored_proofs": 24,
+      "results": [
+        {
+          "case": "terminal-cancellation",
+          "outcome": "Both recognize completion-wins contract. Candidate uses static obligation refutation rather than requiring an executable outcome."
+        },
+        {
+          "case": "stage-only-completion",
+          "outcome": "Candidate avoids asserting an ungrounded stage-only-exclusion oracle; supported requirement remains unresolved."
+        },
+        {
+          "case": "failed-nonempty-generation",
+          "outcome": "Candidate predicates consistently address the required completion behavior rather than treating intended pending state as a defect."
+        },
+        {
+          "case": "answered-cache-routing",
+          "outcome": "Tie: supported move contract and practical impact unresolved; absence of a UI is not a refutation."
+        },
+        {
+          "case": "supported-tool-startup",
+          "outcome": "Tie on uncertainty and conditional material priority. Candidate proof kind varies; no historical runtime outcome confirmed."
+        },
+        {
+          "case": "session-boundary",
+          "outcome": "Tie: material authorization impact remains conditional; incomplete reachability and attribution do not establish a confidentiality regression."
+        }
+      ],
+      "conclusion": "Observed improvement concerns proof-expectation construction, not a measured final false-positive reduction. Most baseline notes already recognize the relevant contract.",
+      "snapshot_limits": "Cancellation and generation assessments use later merged snapshots; routing uses a later snapshot. Historical startup and session cases retain incomplete source/patch evidence. Do not infer dispositions at unavailable original review heads."
+    },
+    "final_policy_differences": "Final policy includes a generic later-action evidence-gap example, diagnostic-lock/proof/work separation, a no-runner static-relabel guard, and explicit whole-file/path scope and non-formal contract support. These refinements were exercised in focused smoke, not in all paired pilot calls. The initial clarity smoke used a project-specific example, subsequently generalized and re-smoked."
+  },
+  "final_smoke": {
+    "selected_diagnosis": {
+      "source_head": "034357665f9c885d18a949d0c91291fab67c6562",
+      "accepted_id_and_requests_unchanged": true,
+      "original_diagnostic_facts_preserved": true,
+      "observed_explanation": "Normal non-nested close can submit the form, so a saved-value assertion after close does not prove save-on-change. Skip-close paths and coverage-not-runtime certainty are retained.",
+      "intermediate_failure": "First selection over-locked fixture values, proof/process details and requested work. Added explicit separation; final selection kept those out of diagnostic locks."
+    },
+    "renderer": {
+      "structural_validation": "rejected",
+      "diagnostic": "clarity-output: unsupported compact report section Deferred concern",
+      "renderer_and_validator_implementation_changed": false,
+      "invalid_bundle_posted": false,
+      "note": "Semantic row audits below do not make this structurally invalid bundle usable. No production rendering retry was added."
+    },
+    "semantic_auditors": {
+      "model_selector": "@default",
+      "independent_successful_auditors": 2,
+      "pairs_per_auditor": 3,
+      "pass_count_per_auditor": 3,
+      "fail_count_per_auditor": 0,
+      "exact_pair_inventory_and_status_consistency_checked": true,
+      "launch_and_protocol_limits": "Two initial launches failed before model invocation due missing default reviewer model. Two explicit-parent-model reviewers returned the default code-review schema, unusable as audit verdicts. Two fresh explicit-schema auditors returned valid all-pass ledgers. This tooling retry is not a new production audit wave."
+    },
+    "contract_verdicts": [
+      {
+        "case": "terminal-cancellation",
+        "verdict": "refuted",
+        "proof_kind": "static",
+        "boundary": "Named-snapshot obligation only; no runtime or unavailable historical-head outcome inferred."
+      },
+      {
+        "case": "stage-only-completion",
+        "verdict": "unclear",
+        "proof_kind": "static",
+        "boundary": "PR causal count change recognized; required stage-only treatment not established."
+      },
+      {
+        "case": "supported-tool-startup",
+        "verdict": "unclear",
+        "proof_kind": "executable",
+        "severity": "high, conditional on material supported-tool failure",
+        "boundary": "No runner receipt or execution.json; authored controls not executed."
+      },
+      {
+        "case": "whole-file-terminal-cancellation",
+        "verdict": "refuted",
+        "proof_kind": "static",
+        "boundary": "Declared whole-file scope honored without inventing a PR attribution requirement."
+      }
+    ],
+    "final_author_guard": {
+      "case": "supported-tool-startup",
+      "proof_kind": "executable",
+      "runtime_claim": "unclear",
+      "observation": "Unavailable runner did not relabel a grounded runtime claim as static; existing proof-file/proofs shape retained."
+    },
+    "source_fallback_instruction_smoke": {
+      "event": "COMMENT",
+      "complete_source_report_byte_identical": true,
+      "inline_payload_byte_identical": true,
+      "accepted_explanation_and_requests_retained": true,
+      "scope": "Separate forced-failure instruction smoke with retained canonical source fixture, not execution of a live review/posting workflow; production Run-details routing not exercised."
+    }
+  },
+  "generalized_example_smoke": {
+    "model_selector": "default",
+    "resolved_backend_identity": "unknown",
+    "calls": 1,
+    "scope": "Reused the retained real-case selection request, changing only its shared example from project-specific names to the generic later-action evidence-gap pattern.",
+    "accepted_id_and_requests_byte_identical": true,
+    "original_diagnostic_facts_preserved": true,
+    "observed_explanation": "A later close can itself submit under the supported non-nested, non-skipped conditions, so checking saved state only afterward does not prove the earlier change submitted it.",
+    "source_backed_conditions_retained": true,
+    "incidental_proof_and_author_work_not_promoted_to_diagnostic_locks": true,
+    "limit": "One retained-case instruction-stage smoke, not a new full renderer/auditor or live review run, and not evidence of broad transfer or quality improvement."
+  },
+  "generic_codex_resolution_smoke": {
+    "CODEX_BIN_override": false,
+    "resolved_from_trusted_host_PATH": true,
+    "canonical_absolute_executable": true,
+    "outside_review_worktree": true,
+    "actual_cli_version_output": "codex-cli 0.160.0",
+    "scope": "Removed the fleet-specific executable preference paragraph; retained existing lazy trusted-host resolution and rejection safeguards. Actual command lookup and CLI launch succeeded without a package-manager-specific override.",
+    "limit": "Command-resolution smoke only, not a model request or full review. Machine installation cleanup was separate from this documentation change."
+  },
+  "publication_scope_smoke": {
+    "model_selector": "default",
+    "resolved_backend_identity": "unknown",
+    "normal_reviewer_calls": 3,
+    "adversarial_calls": 1,
+    "target_type": "whole-file, no PR/diff/base",
+    "retained_target_sha256": "bc44042a0ff4a2e4b493379e249ea0c7347592391a143380a11d5412db242a79",
+    "reviewer_policy_sha256": "e1c668fe5896053caa0440122168195ddbead33e631e6be23b3449c539b4235b",
+    "baseline_retained_target": "Scope-contract defect reported as an actionable medium finding.",
+    "final_policy_retained_target": "Same existing whole-file scope-contract defect remains actionable; reported high severity.",
+    "corrected_current_target": "Normal reviewer returned an empty findings list.",
+    "scope_auditor": "Upheld the retained existing finding as in scope without PR attribution; noted that the instructional restriction does not prove every reviewer will omit defects.",
+    "scope_alignment": "Normal-reviewer context/task, engine scope selection and existing adversarial scope role now distinguish PR/diff from whole-file/path targets.",
+    "limit": "Baseline already identified the defect under the explicitly declared whole-file context. These smoke results establish contract alignment, not a measured filtering or severity improvement; severity varied medium/high."
+  },
+  "verification": {
+    "clarity_output_behavior_tests": {
+      "passed": true,
+      "tests": 29
+    },
+    "identifier_contract_suite": "passed",
+    "proof_runner_behavior_suite": {
+      "initial_run": "passed",
+      "publication_run": "failed",
+      "failure": "test-run-proof: timeout exit: got '3', want '124'",
+      "retained_capture": "Capability phase exited 143 with empty capability output; wrapper returned capability-rejected before the fixture run-phase timeout. Source and proof unchanged; runtime removed.",
+      "limit": "Cause of termination not established. Runner and suite code unchanged; no unrelated runtime fix or retry after this publication-run failure."
+    },
+    "pr_helper_e2e_suite": "passed",
+    "reviewer_wrapper_suite": "passed",
+    "reproduction_policy_examples": "passed",
+    "skill_frontmatter": "13 skills valid",
+    "plugin_manifests": "10 plugins registered and consistent"
+  },
+  "test_cleanup": "Removed plugins/review-anvil/skills/review-anvil/scripts/test-report-language.sh, a source-text/wording assertion suite. Retained behavioral suites; no replacement prose-pin tests or new permanent tests.",
+  "limits": [
+    "No human comprehension measurement or broad decision-quality estimate.",
+    "No model-authored target probes executed; runner tests are separate existing harness tests.",
+    "No confirmed bounded-recovery or confidentiality-regression severity case was available.",
+    "Default completion backend identity unknown; no cross-family efficacy claim.",
+    "Historical report metadata is retained test context, not a claim of a new live review.",
+    "No launcher/backend/schema/audit-wave changes, weakened semantic locks, changed approval thresholds, or live Hermes deployment."
+  ],
+  "private_evidence": "Exact requests, raw responses, source excerpts and frozen packets retained outside the repository at /tmp/anvil-content-implementation-tr13stqn. No source code, feedback quotations or author identities included here."
+}

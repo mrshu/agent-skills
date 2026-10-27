@@ -66,9 +66,10 @@ Rules:
 ## Role Additions
 
 `false-positive-scope-auditor`
-: Try to prove each actionable finding is wrong, pre-existing, dismissed, out
-  of scope, over-severe, anchored to the wrong line, or missing reachability
-  evidence.
+: Try to prove each actionable finding is wrong, dismissed, outside the declared
+  review scope, over-severe, anchored to the wrong line, or missing reachability
+  evidence. Pre-existence alone is not a refutation: apply whole-file/path scope
+  and keep unchanged helpers newly exposed by a PR/diff in scope.
 
 `fix-plan-breaker`
 : Assume the suggested fix is applied exactly as described. Find regressions,
