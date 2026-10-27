@@ -18,6 +18,20 @@ If a destination has no disclosure control, send a concise decision summary
 and preserve the full report in an attached artifact or stable link. Never put
 a blocker only in collapsed or linked detail.
 
+Record the resolved repository-rules state, path, and source revision/snapshot
+under collapsed Run details, including explicit absence. For rule-dependent
+findings, preserve the rule ID/heading and source citation in existing evidence
+and file-context fields; describe the concrete violated requirement in the
+diagnosis or requested work when the author needs it. Use the rules source
+commit for context at a different revision, with only actual source lines.
+For worktree policy, retain its digest and citation in evidence/run details
+and omit its rules-file context item; a context item without `commit` would
+inherit the finding's revision and could falsely pin pending policy to HEAD.
+Freeze accepted rule obligations and intentional-choice boundaries during
+synthesis so fact locks, requested work, and action-lock auditing preserve them.
+Keep raw repository rules out of the isolated clarity renderer; it receives
+only the already-synthesized facts and obligations in its existing packet.
+
 
 ## Final clarity pass
 

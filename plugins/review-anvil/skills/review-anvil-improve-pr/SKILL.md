@@ -21,6 +21,11 @@ The skill orchestrates six steps:
 5. `scripts/pr-helper.sh post-update` — PATCH-edit the starting comment to replace its body with the full final report (outcome=success) or a failure summary (outcome=failure). GitHub does NOT notify on edits, so the author isn't pinged again — the original `cc @author` notification at step 2 is the only ping.
 6. Surface the final report inline + the comment URL to the user.
 
+The engine automatically loads `.review-anvil-rules.md` from the branch
+target's captured base revision under its
+[repository-rules policy](../review-anvil/references/repository-rules.md).
+Keep that policy snapshot across all fix rounds.
+
 ## Inputs
 
 Same locator forms as `review-anvil-pr` — but you must already be on the PR's branch:

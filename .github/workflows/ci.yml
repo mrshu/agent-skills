@@ -37,3 +37,4 @@ jobs:
           bash plugins/review-anvil/skills/review-anvil-pr/scripts/test-pr-helper.sh
           bash plugins/review-anvil/skills/review-anvil/scripts/test-run-reviewer.sh
           bash plugins/review-anvil/skills/review-anvil/scripts/test-reproduction-policy.sh
+          python3 plugins/review-anvil/skills/review-anvil/scripts/test-repository-rules.py

@@ -150,6 +150,39 @@ controls (`rounds`, `max_rounds`, `agents`, `focus`, `target`, `verify_cmd`,
 `reproduction`, `proof_runner`, `adversarial`, `approve`, `report_path`, and
 more).
 
+#### Repository-specific review rules
+
+Commit an optional `.review-anvil-rules.md` at your repository root to describe
+project requirements, architectural constraints, preferences, and accepted
+tradeoffs. All four review-anvil variants load it explicitly and carry the same
+rules snapshot through reviewers, synthesis, verification, adversarial checks,
+and fixes. Ordinary Markdown is enough; rule IDs and `Applies to:` path scopes
+are optional.
+
+```markdown
+## AUTH-01: Tenant isolation
+Applies to: src/api/**
+
+Access to tenant-owned resources must use tenant-scoped queries.
+Authentication alone does not establish tenant access.
+
+## Accepted tradeoffs
+
+Batch status may lag writes by up to 30 seconds.
+That delay alone is expected behavior.
+```
+
+For PRs and diffs, rules from the captured base-branch/ref tip govern by
+default, even when the code diff starts at a merge base; a change to the
+dotfile is reviewed alongside the code. Uncommitted-change reviews use `HEAD`
+rules, while whole-file/path reviews use the declared target snapshot. An
+explicit request to evaluate proposed/head rules can select that policy
+instead. Rules supplement applicable `AGENTS.md` guidance and do not authorize
+commands, alter run permissions, or set severity merely by saying "must".
+Keep `.review-anvil/` for temporary run artifacts. See the
+[repository rules contract](plugins/review-anvil/skills/review-anvil/references/repository-rules.md)
+for source selection, scope, and finding evidence.
+
 ### overleaf-comment
 
 Bulk-post Overleaf comments from a JSON plan. Drives the user's already-logged-in browser tab via Chrome DevTools Protocol, so no API keys / no test accounts. Break-even is around 5 comments — under that, type them by hand.

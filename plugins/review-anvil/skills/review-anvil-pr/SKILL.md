@@ -16,6 +16,11 @@ Use direct imperatives for internal steps. Use short active declarative sentence
 2. The [`review-anvil`](../review-anvil/SKILL.md) engine in read-only mode (`commit_mode=none`)
 3. `scripts/pr-helper.sh post <host> <owner> <repo> <n> <marker> <report_path>` — marker injection, lossless report posting as a PR review / `gh pr comment`, race-free URL recovery
 
+The engine automatically loads `.review-anvil-rules.md` from the PR's base
+repository and captured base SHA under its
+[repository-rules policy](../review-anvil/references/repository-rules.md).
+Do not substitute rules from the local checkout.
+
 ## Inputs
 
 The user may provide a PR locator as the first argument, or omit it entirely:
