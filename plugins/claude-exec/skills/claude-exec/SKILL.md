@@ -11,6 +11,12 @@ Delegate review and exploration tasks to an **independent Claude sub-agent** for
 
 Skip this skill when you are confident in the output and the user hasn't asked for a second opinion. Reserve it for quality gates and deliberate review steps.
 
+## Model Selection
+
+Use the default model: omit the Agent tool's `model` parameter to inherit the
+session model, and omit `--model` for the CLI fallback. Set a model override
+only when the user explicitly requests a specific model.
+
 ## How It Works
 
 > **In Claude Code, ALWAYS use the Agent tool. Do not shell out to `claude -p`.** The Bash-`claude -p` path is the cross-agent fallback for environments without the Agent tool (Codex CLI, Cursor, OpenCode, …) — it is NOT a shortcut from inside Claude Code itself.
@@ -89,7 +95,6 @@ Agent call 2:
 | `description` | Short label shown to the user (3-5 words) |
 | `prompt` | The review instructions |
 | `run_in_background: true` | Run review while you continue other work |
-| `model` | Optional override; the sub-agent otherwise inherits the session's model, which is the right default for a review |
 
 ---
 
@@ -141,7 +146,6 @@ claude -p --tools "" --max-turns 1 --no-session-persistence \
 | Flag | Purpose |
 |---|---|
 | `-p, --print` | Non-interactive mode — print response and exit (required for delegation) |
-| `--model <model>` | Optional model override; omit to use the CLI default |
 | `--max-turns <n>` | Turn-cap backstop. Use 1 for prompt-only, 100 for anything that explores files (see Invocation Rule 3) |
 | `--tools "..."` | Restrict the available built-in tools; use `""` to disable all tools |
 | `--allowedTools "..."` | Auto-approve matching tool uses. **Variadic — must pipe prompt via stdin when used** |
