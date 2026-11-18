@@ -1898,6 +1898,160 @@ JSON
     jq -e '.event == "COMMENT"' "$tmp/review-payload.json" >/dev/null
 }
 
+test_post_time_negated_fix_downgrades_approval() {
+    local tmp bin fixture report
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+    fixture="$tmp/graphql.json"
+    cat >"$fixture" <<'JSON'
+{"data":{"repository":{"pullRequest":{
+  "reviewThreads":{"nodes":[{"isResolved":false,"isOutdated":false,"path":"src/auth.ts","line":12,"comments":{"nodes":[{"body":"**RAV-RUN2-R1-F003 [high] auth** — Refresh accepts missing state.","url":"https://example.invalid/open-high"}]}}],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "reviews":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}
+}}}}
+JSON
+    report="$tmp/report.md"
+    cat >"$report" <<'REPORT'
+# review-anvil report
+
+## Findings
+- **RAV-RUN3-R2-F001 [medium] db** `src/db.ts:8` — New unrelated finding.
+
+<details>
+<summary>Earlier feedback</summary>
+
+- **still-present** — Refresh accepts missing state; it is not fixed. https://example.invalid/open-high (`RAV-RUN2-R1-F003`)
+
+</details>
+REPORT
+    printf '[{"path":"src/db.ts","line":8,"side":"RIGHT","severity":"medium","body":"**[medium] db** — New unrelated finding."}]\n' >"$report.inline.json"
+    printf '{"event":"APPROVE","head_sha":"head-sha","adversarial_mode":"targeted","approval_allowed":true}\n' >"$report.approval.json"
+
+    GH_MOCK_GRAPHQL_RESPONSE="$fixture" \
+    GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
+    GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
+    REVIEW_ANVIL_DISMISSALS="$tmp/nonexistent-dismissals.json" \
+    PATH="$bin:$PATH" \
+      "$HELPER" post github.com acme widgets 42 marker-negated-fix "$report" >"$tmp/post.out"
+
+    jq -e '.event == "COMMENT"' "$tmp/review-payload.json" >/dev/null
+}
+
+test_post_time_shared_url_requires_each_finding_clearance() {
+    local tmp bin fixture report
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+    fixture="$tmp/graphql.json"
+    cat >"$fixture" <<'JSON'
+{"data":{"repository":{"pullRequest":{
+  "reviewThreads":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "reviews":{"nodes":[{"state":"COMMENTED","body":"<!-- review-anvil-marker: earlier -->\n# review-anvil report\n\n## Findings\n- **RAV-RUN2-R1-F001 [high] auth** `src/auth.ts:12` — Refresh accepts missing state; the session remains open after shutdown.\n- **RAV-RUN2-R1-F002 [high] db** `src/db.ts:8` — Write failures are reported as success.","url":"https://example.invalid/shared-review"}],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}
+}}}}
+JSON
+    report="$tmp/report.md"
+    cat >"$report" <<'REPORT'
+# review-anvil report
+
+## Findings
+- **RAV-RUN3-R2-F001 [medium] docs** `docs/cli.md:8` — New unrelated finding.
+
+<details>
+<summary>Earlier feedback</summary>
+
+- **fixed** — Refresh accepts missing state; the session remains open after shutdown. https://example.invalid/shared-review (`RAV-RUN2-R1-F001`)
+
+</details>
+REPORT
+    printf '[{"path":"docs/cli.md","line":8,"side":"RIGHT","severity":"medium","body":"**[medium] docs** — New unrelated finding."}]\n' >"$report.inline.json"
+    printf '{"event":"APPROVE","head_sha":"head-sha","adversarial_mode":"targeted","approval_allowed":true}\n' >"$report.approval.json"
+
+    GH_MOCK_GRAPHQL_RESPONSE="$fixture" \
+    GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
+    GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
+    REVIEW_ANVIL_DISMISSALS="$tmp/nonexistent-dismissals.json" \
+    PATH="$bin:$PATH" \
+      "$HELPER" post github.com acme widgets 42 marker-shared-url "$report" >"$tmp/post.out"
+
+    jq -e '.event == "COMMENT"' "$tmp/review-payload.json" >/dev/null
+
+    report="$tmp/report-cleared.md"
+    cat >"$report" <<'REPORT'
+# review-anvil report
+
+## Findings
+- **RAV-RUN3-R2-F001 [medium] docs** `docs/cli.md:8` — New unrelated finding.
+
+<details>
+<summary>Earlier feedback</summary>
+
+- **fixed** — Refresh accepts missing state; the session remains open after shutdown. https://example.invalid/shared-review (`RAV-RUN2-R1-F001`)
+- **stale** — Write failures are reported as success. https://example.invalid/shared-review (`RAV-RUN2-R1-F002`)
+
+</details>
+REPORT
+    printf '[{"path":"docs/cli.md","line":8,"side":"RIGHT","severity":"medium","body":"**[medium] docs** — New unrelated finding."}]\n' >"$report.inline.json"
+    printf '{"event":"APPROVE","head_sha":"head-sha","adversarial_mode":"targeted","approval_allowed":true}\n' >"$report.approval.json"
+
+    GH_MOCK_GRAPHQL_RESPONSE="$fixture" \
+    GH_MOCK_REVIEW_PAYLOAD="$tmp/cleared-review-payload.json" \
+    GH_MOCK_COMMENT_BODY="$tmp/cleared-comment.md" \
+    REVIEW_ANVIL_DISMISSALS="$tmp/nonexistent-dismissals.json" \
+    PATH="$bin:$PATH" \
+      "$HELPER" post github.com acme widgets 42 marker-shared-url-cleared "$report" >"$tmp/cleared-post.out"
+
+    jq -e '.event == "APPROVE"' "$tmp/cleared-review-payload.json" >/dev/null
+}
+
+test_post_time_shared_url_uses_legacy_finding_text() {
+    local tmp bin fixture report
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+    fixture="$tmp/graphql.json"
+    cat >"$fixture" <<'JSON'
+{"data":{"repository":{"pullRequest":{
+  "reviewThreads":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "reviews":{"nodes":[{"state":"COMMENTED","body":"<!-- review-anvil-marker: legacy -->\n# review-anvil report\n\n## Findings\n- **[high] auth** `src/auth.ts:12` — Refresh accepts missing state. The handler rotates the session before validating the state token, so a stale tab can mint a new session after the old token should have failed. A second request then reuses the session and bypasses the state check.\n- **[high] db** `src/db.ts:8` — Write failures are reported as success.","url":"https://example.invalid/shared-legacy-review"}],"pageInfo":{"hasNextPage":false,"endCursor":null}},
+  "comments":{"nodes":[],"pageInfo":{"hasNextPage":false,"endCursor":null}}
+}}}}
+JSON
+    report="$tmp/report.md"
+    cat >"$report" <<'REPORT'
+# review-anvil report
+
+## Findings
+- **RAV-RUN3-R2-F001 [medium] docs** `docs/cli.md:8` — New unrelated finding.
+
+<details>
+<summary>Earlier feedback</summary>
+
+- **fixed** — Refresh accepts missing state. The handler rotates the session before validating the state token, so a stale tab can mint a new session after the old token should have failed. A second request then reuses the session and bypasses the state check. https://example.invalid/shared-legacy-review
+- **stale** — Write failures are reported as success. https://example.invalid/shared-legacy-review
+
+</details>
+REPORT
+    printf '[{"path":"docs/cli.md","line":8,"side":"RIGHT","severity":"medium","body":"**[medium] docs** — New unrelated finding."}]\n' >"$report.inline.json"
+    printf '{"event":"APPROVE","head_sha":"head-sha","adversarial_mode":"targeted","approval_allowed":true}\n' >"$report.approval.json"
+
+    GH_MOCK_GRAPHQL_RESPONSE="$fixture" \
+    GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
+    GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
+    REVIEW_ANVIL_DISMISSALS="$tmp/nonexistent-dismissals.json" \
+    PATH="$bin:$PATH" \
+      "$HELPER" post github.com acme widgets 42 marker-legacy-shared-url "$report" >"$tmp/post.out"
+
+    jq -e '.event == "APPROVE"' "$tmp/review-payload.json" >/dev/null
+}
+
 test_outside_history_does_not_downgrade_approval() {
     local tmp bin fixture report
     tmp="$(mktemp -d)"
@@ -2707,6 +2861,9 @@ main() {
     test_local_suppression_overrides_open_history
     test_compact_post_fails_closed_when_refresh_changes_inventory
     test_post_time_material_history_downgrades_approval
+    test_post_time_negated_fix_downgrades_approval
+    test_post_time_shared_url_requires_each_finding_clearance
+    test_post_time_shared_url_uses_legacy_finding_text
     test_outside_history_does_not_downgrade_approval
     test_author_resolved_thread_is_not_raised_again
     test_non_author_resolved_thread_remains_revalidated

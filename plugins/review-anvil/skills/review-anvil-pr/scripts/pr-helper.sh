@@ -1027,6 +1027,27 @@ def earlier_feedback_finding(line):
         "url": source_url,
     }
 
+def earlier_feedback_assessments(body):
+    in_feedback = False
+    assessments = []
+    for _, line in iter_unfenced_lines(body):
+        stripped = line.strip()
+        if stripped.startswith("<summary>") and stripped.endswith("</summary>"):
+            heading = re.sub(r"<[^>]+>", "", stripped).strip().lower()
+            in_feedback = heading.startswith(("earlier feedback", "earlier review comments"))
+            continue
+        if stripped == "</details>" or line.startswith("## "):
+            in_feedback = False
+            continue
+        if line.startswith("### "):
+            in_feedback = line[4:].strip().lower() == "earlier review comments"
+            continue
+        if in_feedback:
+            assessment = earlier_feedback_finding(line)
+            if assessment:
+                assessments.append(assessment)
+    return assessments
+
 def finding_id_from_body(body):
     metadata = terminal_finding_metadata(body)
     if metadata:
@@ -1527,12 +1548,15 @@ def report_findings(node):
         if match:
             location = match.group("location") or ""
             finding_body = parse_line
+            full_finding = match.group("finding").strip()
         elif item:
             location = item.get("location") or ""
             finding_body = parse_line
+            full_finding = item["finding"]
         elif clarity_item:
             location = clarity_item.get("location") or ""
             finding_body = parse_line
+            full_finding = clarity_item["finding"]
         else:
             continue
         sig = signature(finding_body)
@@ -1555,6 +1579,7 @@ def report_findings(node):
             identity = identity_from_body(line)
             found.append({"path": path_from_location(location), "line": parsed_line,
                           "sig": sig, "summary": summary(finding_body),
+                          "full_finding": full_finding,
                           "source": node.get("url") or "prior-review-anvil-report",
                           "status": status,
                           "severity": severity_from_body(finding_body),
@@ -2069,20 +2094,57 @@ if report.exists():
         report.write_text(rewritten)
 
 # A material item discovered during the post-time refresh must not race with a
-# previously selected APPROVE event. The final report must account for its URL
-# or local reason on a line that explicitly says fixed/stale; absent or
-# still-present assessments block. This lets a validated fix approve even when
-# the author has not yet clicked Resolve in GitHub.
+# previously selected APPROVE event. Require an unambiguous fixed/stale row for
+# that exact earlier finding; a shared review URL or a still-present row whose
+# old issue text says "not fixed" cannot clear it. The status label governs
+# because the finding text quotes the old issue, which may describe an open
+# defect. This lets a validated fix approve before GitHub thread resolution.
 report_text = report.read_text() if report.exists() else ""
-def material_item_blocks(item):
+assessments_by_item = {}
+
+def assessment_matches(item, assessment):
+    if not assessment["url"] or assessment["url"] != item.get("source"):
+        return False
+    ids = [item.get("finding_id"), *(item.get("legacy_ids") or [])]
+    ids = {finding_id.casefold() for finding_id in ids if finding_id}
+    assessment_id = (assessment["id"] or "").casefold()
+    return assessment_id in ids if ids else not assessment_id
+
+for assessment in earlier_feedback_assessments(report_text):
+    matches = [index for index, prior in enumerate(history)
+               if assessment_matches(prior, assessment)]
+    if len(matches) > 1 and not assessment["id"]:
+        # Legacy findings can lack IDs and share their review's URL. Match
+        # either the displayed summary or its issue text when it is unique.
+        def exact_text(text):
+            return " ".join(text.split()).casefold()
+        assessment_text = exact_text(assessment["finding"])
+        def text_matches(index):
+            summary_text = history[index]["summary"]
+            issue = re.match(
+                r"^\[(?:critical|high|medium|low|nit)\]\s+.+?\s+—\s+(.+)$",
+                summary_text,
+                re.I,
+            )
+            return assessment_text in {
+                exact_text(summary_text),
+                exact_text(issue.group(1)) if issue else "",
+                exact_text(history[index].get("full_finding") or ""),
+            }
+        matches = [index for index in matches
+                   if assessment_text and text_matches(index)]
+    if len(matches) == 1:
+        assessments_by_item.setdefault(matches[0], []).append(assessment)
+
+def material_item_blocks(index, item):
     if item.get("severity") not in {"critical", "high"} or does_not_reraise(item):
         return False
-    source = item.get("source") or ""
-    assessment = next((line.lower() for line in report_text.splitlines()
-                       if source and source in line), "")
-    return not assessment or not any(clear in assessment for clear in ("fixed", "stale/outdated", "stale"))
+    item_assessments = assessments_by_item.get(index, [])
+    return (len(item_assessments) != 1
+            or item_assessments[0]["status"] not in {"fixed", "stale"})
 
-blocking_prior = any(material_item_blocks(item) for item in history)
+blocking_prior = any(material_item_blocks(index, item)
+                     for index, item in enumerate(history))
 blocking_match = any(
     severity in {"critical", "high"} and (reintroduced or not does_not_reraise(item))
     for item, severity, reintroduced in matched_history
