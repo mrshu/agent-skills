@@ -145,7 +145,7 @@ The plugin ships four cross-agent skills under `plugins/review-anvil/skills/`.
 Anything that supports `Skill <name>` (Claude Code, Codex CLI, Cursor, OpenCode,
 Continue, Cline, Gemini CLI, …) can activate them by description match. In
 Claude Code, you can also invoke directly as `Skill review-anvil "<free-form
-args>"`; see `skills/review-anvil/SKILL.md` for the full behavior and advanced
+args>"`; see `plugins/review-anvil/skills/review-anvil/SKILL.md` for the full behavior and advanced
 controls (`rounds`, `max_rounds`, `agents`, `focus`, `target`, `verify_cmd`,
 `reproduction`, `proof_runner`, `adversarial`, `approve`, `report_path`, and
 more).

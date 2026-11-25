@@ -50,19 +50,19 @@
     {
       "name": "overleaf-compile",
       "source": "./plugins/overleaf-compile",
-      "description": "Recompile an Overleaf project and extract its build logs/errors/warnings in a standardized format via Chrome DevTools Protocol. Uses the chrome-cdp skill to drive an existing logged-in browser tab.",
+      "description": "Recompile an Overleaf project and extract its build logs/errors/warnings in a standardized format, via Chrome DevTools Protocol against an already-logged-in browser tab.",
       "version": "0.1.0"
     },
     {
       "name": "gdocs-comment",
       "source": "./plugins/gdocs-comment",
-      "description": "Bulk-post anchored Google Docs comments (with @-mentions) from a JSON plan via Chrome DevTools Protocol. Uses the chrome-cdp skill to drive an existing logged-in browser tab.",
+      "description": "Bulk-post anchored comments (with @-mentions) to Google Docs from a JSON plan via Chrome DevTools Protocol. Uses the chrome-cdp skill to drive an existing logged-in browser tab.",
       "version": "0.1.0"
     },
     {
       "name": "gh-pr-image",
       "source": "./plugins/gh-pr-image",
-      "description": "Upload local images to a GitHub PR description or comment without committing them to the repo, using release assets as a CDN. Works from the CLI for private repos.",
+      "description": "Upload local images to GitHub PRs without committing them to the repo, using release assets as a CDN",
       "version": "0.1.0"
     }
   ]
