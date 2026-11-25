@@ -32,8 +32,9 @@ codex review --uncommitted
 # Review a specific commit
 codex review --commit <sha>
 
-# Review with custom focus instructions
-codex review --base main 'Pay special attention to error handling and edge cases'
+# Review with custom instructions (cannot be combined with --base, --uncommitted, or --commit;
+# use `codex exec` below for custom focus instructions against a specific branch diff)
+codex review 'Review changes against main; pay special attention to error handling and edge cases'
 
 # Review with a descriptive title for context
 codex review --base main --title "Add user authentication middleware"

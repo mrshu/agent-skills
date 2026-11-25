@@ -7,7 +7,7 @@
 #   overleaf-compile --url <project-url> [options]
 #   overleaf-compile --list
 #
-# <target> is a unique CDP target prefix from `cdp list` (e.g. 60D065AD).
+# <target> is a unique CDP target prefix from `cdp list` (e.g. ABCD1234).
 # The Overleaf tab must already be open and logged in.
 #
 # Options:
@@ -70,21 +70,10 @@ resolve_cdp() {
       "${CLAUDE_PLUGIN_ROOT:-/var/empty}/../chrome-cdp/skills/chrome-cdp/scripts/cdp.mjs"
     )
     for c in "${candidates[@]}"; do
-      [ -x "$c" ] && { echo "$c"; exit 0; }
+      if [ -x "$c" ]; then echo "$c"; exit 0; fi
     done
   )
 }
-
-CDP="$(resolve_cdp)"
-if [ -z "$CDP" ]; then
-  cat >&2 <<'EOF'
-overleaf-compile: chrome-cdp not found.
-
-Install the chrome-cdp skill (or set CDP_BIN=/path/to/cdp.mjs).
-Searched: $CDP_BIN, PATH, ~/.claude/skills/chrome-cdp/, ~/.claude/plugins/*/skills/chrome-cdp/, sibling skills.
-EOF
-  exit 2
-fi
 
 USAGE_TEXT='overleaf-compile — recompile an Overleaf project and extract its logs via CDP.
 
@@ -106,7 +95,7 @@ Options:
   --out-dir DIR            also save raw output.log / output.blg into DIR
   --timeout SECONDS        max wait for a compile (default: 180)
 
-<target> is a unique CDP target prefix from `cdp list` (e.g. 60D065AD).'
+<target> is a unique CDP target prefix from `cdp list` (e.g. ABCD1234).'
 
 usage() { printf '%s\n' "$USAGE_TEXT"; exit "${1:-0}"; }
 
@@ -153,6 +142,17 @@ while [ $# -gt 0 ]; do
   esac
 done
 
+CDP="$(resolve_cdp)"
+if [ -z "$CDP" ]; then
+  cat >&2 <<'EOF'
+overleaf-compile: chrome-cdp not found.
+
+Install the chrome-cdp skill (or set CDP_BIN=/path/to/cdp.mjs).
+Searched: $CDP_BIN, PATH, ~/.claude/skills/chrome-cdp/, ~/.claude/plugins/*/skills/chrome-cdp/, sibling skills.
+EOF
+  exit 2
+fi
+
 # ---------------------------------------------------------------------------
 # --list: show Overleaf project tabs, exit.
 # ---------------------------------------------------------------------------
@@ -160,7 +160,7 @@ if [ "$LIST" = 1 ]; then
   CDP_OUT="$("$CDP" list 2>&1)" || { echo "overleaf-compile: failed to query browser via cdp.mjs:" >&2; printf '%s\n' "$CDP_OUT" >&2; exit 1; }
   matches="$(printf '%s\n' "$CDP_OUT" | awk -v hosts="$OVERLEAF_HOSTS" '
     BEGIN { n = split(hosts, h, " "); for (i=1; i<=n; i++) p[i] = h[i] "/project/" }
-    { for (i=1; i<=n; i++) if (index($0, p[i])) { print; next } }')"
+    { for (i=1; i<=n; i++) if (index($NF, p[i])) { print; next } }')"
   if [ -z "$matches" ]; then
     echo "overleaf-compile: no Overleaf project tabs are open" >&2
     echo "  (looked for hosts: $OVERLEAF_HOSTS — override with OVERLEAF_HOSTS env var)" >&2

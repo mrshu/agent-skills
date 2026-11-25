@@ -5,7 +5,7 @@ description: Bulk-post Overleaf comments from a JSON plan. Use when asked to add
 
 # Overleaf bulk comment poster
 
-Post N Overleaf comments from a JSON plan, one CDP eval per item. Uses the user's already-logged-in browser session via the [`chrome-cdp`](../../chrome-cdp) skill.
+Post N Overleaf comments from a JSON plan, one CDP eval per item. Uses the user's already-logged-in browser session via the `chrome-cdp` skill.
 
 Break-even is around 5 comments — for fewer, type them directly in Overleaf.
 
@@ -22,7 +22,7 @@ Break-even is around 5 comments — for fewer, type them directly in Overleaf.
 ${CLAUDE_PLUGIN_ROOT}/skills/overleaf-comment/overleaf-comment --list
 
 # 2. post a plan (target prefix from `cdp list`)
-${CLAUDE_PLUGIN_ROOT}/skills/overleaf-comment/overleaf-comment 6172EEAA plan.json
+${CLAUDE_PLUGIN_ROOT}/skills/overleaf-comment/overleaf-comment ABCD1234 plan.json
 
 # or supply the project URL — the wrapper picks the matching tab
 ${CLAUDE_PLUGIN_ROOT}/skills/overleaf-comment/overleaf-comment --url https://www.overleaf.com/project/<id> plan.json
@@ -36,8 +36,8 @@ A JSON array of `{file, line, text}`:
 
 ```json
 [
-  {"file": "main.tex",                 "line": 8,   "text": "linespread should be 1.5"},
-  {"file": "parts/200-discussion.tex", "line": 108, "text": "ungrammatical"}
+  {"file": "main.tex",                "line": 8,   "text": "linespread should be 1.5"},
+  {"file": "sections/discussion.tex", "line": 108, "text": "ungrammatical"}
 ]
 ```
 

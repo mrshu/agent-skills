@@ -54,7 +54,7 @@ AFTER_URL=$(gh api "repos/$REPO/releases/tags/$TAG" \
   --jq '.assets[] | select(.name=="after.png") | .browser_download_url')
 
 # 3. Use in PR body
-gh pr edit "$PR_NUMBER" --body "$(cat <<EOF
+gh pr edit "$PR_NUMBER" --repo "$REPO" --body "$(cat <<EOF
 ## Summary
 Description here.
 
@@ -113,10 +113,10 @@ Prerelease tags can be cleaned up after PRs are merged:
 
 ```bash
 # Delete a specific PR's image release
-gh release delete "pr-137-images" --yes --cleanup-tag
+gh release delete "pr-137-images" --repo "$REPO" --yes --cleanup-tag
 
 # List all image releases
-gh release list | grep "pr-.*-images"
+gh release list --repo "$REPO" | grep "pr-.*-images"
 ```
 
 ## Requirements
