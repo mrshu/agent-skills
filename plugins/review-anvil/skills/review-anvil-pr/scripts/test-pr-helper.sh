@@ -1025,6 +1025,43 @@ test_post_update_refresh_failure_omits_inline_details() {
     assert_file_missing "$tmp/report.md.approval.json"
 }
 
+test_post_update_failure_ignores_malformed_inline_json() {
+    local tmp bin report inline
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    bin="$tmp/bin"
+    mkdir "$bin"
+    install_fake_gh "$bin"
+
+    report="$tmp/report-direct.md"
+    inline="$tmp/report-direct.md.inline.json"
+    make_report "$report"
+    printf '[{"path": "src/broken.ts"' >"$inline"
+
+    GH_MOCK_PATCH_PAYLOAD="$tmp/patch-direct.json" \
+    PATH="$bin:$PATH" \
+      "$HELPER" post-update github.com acme widgets 42 123 marker-123 "$report" octocat failure 2026-06-19T00:00:00Z >/dev/null
+
+    jq -e '.body | contains("review-anvil-improve-pr **failed** on this PR. cc @octocat.")' "$tmp/patch-direct.json" >/dev/null
+    assert_file_missing "$report"
+    assert_file_missing "$inline"
+
+    report="$tmp/report-refresh.md"
+    inline="$tmp/report-refresh.md.inline.json"
+    make_report "$report"
+    printf '[{"path": "src/broken.ts"' >"$inline"
+
+    GH_MOCK_GRAPHQL_FAIL=1 \
+    GH_MOCK_PATCH_PAYLOAD="$tmp/patch-refresh.json" \
+    PATH="$bin:$PATH" \
+      "$HELPER" post-update github.com acme widgets 42 123 marker-123 "$report" octocat success 2026-06-19T00:00:00Z >/dev/null 2>&1
+
+    jq -e '.body | contains("review-anvil-improve-pr **failed** on this PR. cc @octocat.")' "$tmp/patch-refresh.json" >/dev/null
+    jq -e '.body | contains("prior-feedback refresh failed")' "$tmp/patch-refresh.json" >/dev/null
+    assert_file_missing "$report"
+    assert_file_missing "$inline"
+}
+
 
 test_post_adversarial_off_downgrades_approval() {
     local tmp bin report inline
@@ -2491,6 +2528,26 @@ test_run_ordinal_is_pinned_by_pr_presets() {
     fi
 }
 
+test_check_pins_does_not_glob_expand() {
+    local tmp out
+    tmp="$(mktemp -d)"
+    trap "rm -rf '$tmp'" RETURN
+    mkdir "$tmp/target"
+    : >"$tmp/run_ordinal"
+
+    out="$(cd "$tmp" && "$HELPER" check-pins review-anvil-pr \
+        "commit_mode,target,report_path,run_ordinal" \
+        "focus: src/*, t*, r*")" \
+        || fail "check-pins must not glob-expand wildcard args into pinned names"
+    [[ "$out" == "pins-ok" ]] || fail "unexpected check-pins output: $out"
+
+    if (cd "$tmp" && "$HELPER" check-pins review-anvil-pr \
+        "commit_mode,target,report_path,run_ordinal" \
+        "focus: *, target: main" >/dev/null 2>&1); then
+        fail "check-pins must still reject explicit pinned overrides alongside wildcards"
+    fi
+}
+
 test_engine_template_footer_uses_anchor() {
     local skill="$ROOT/../../review-anvil/SKILL.md"
     [[ -f "$skill" ]] || fail "engine SKILL.md not found at $skill"
@@ -2684,6 +2741,7 @@ main() {
     test_post_start_uses_short_declarative_comment
     test_post_update_success
     test_post_update_refresh_failure_omits_inline_details
+    test_post_update_failure_ignores_malformed_inline_json
     test_post_adversarial_off_downgrades_approval
     test_post_dismisses_id_prefixed_report_findings
     test_compact_report_preserves_body_losslessly
@@ -2727,6 +2785,7 @@ main() {
     test_distinct_open_history_is_revalidated_when_author_resolved_comes_first
     test_post_refuses_infra_failure_reports
     test_run_ordinal_is_pinned_by_pr_presets
+    test_check_pins_does_not_glob_expand
     test_engine_template_footer_uses_anchor
     printf 'test-pr-helper: all e2e checks passed\n'
 }
