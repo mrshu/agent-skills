@@ -188,7 +188,7 @@ Surface the engine's final report inline. Echo a two-line summary:
 
 ## Constraints
 
-- Requires `gh`, `uuidgen`, `jq` (a real binary — gh's `--jq` is built-in gojq and doesn't count), plus `uv` (preferred; falls back to `python3`) for PR-feedback history handling. `verify-checkout` preflights all of these so a missing dependency fails before the expensive review. The helper honors the same environment switches as `review-anvil-pr` (`REVIEW_ANVIL_NO_APPROVE`, legacy-named `REVIEW_ANVIL_SKIP_DISMISSED`, `REVIEW_ANVIL_DISMISSALS`).
+- Requires `gh`, `uuidgen`, `jq` (a real binary — gh's `--jq` is built-in gojq and doesn't count), plus `uv` (preferred; falls back to `python3`) for PR-feedback history handling. `verify-checkout` preflights all of these so a missing dependency fails before the expensive review. The helper honors legacy-named `REVIEW_ANVIL_SKIP_DISMISSED`, `REVIEW_ANVIL_DISMISSALS`, `REVIEW_ANVIL_INLINE_MIN_SEVERITY`, and `REVIEW_ANVIL_ENABLE_SUGGESTIONS` (see `review-anvil-pr` for details).
 - **Mutates the local working tree and pushes to the PR.** Use `review-anvil-pr` (read-only + comment) when you only want feedback without applying fixes.
 - The user must already be on the PR's branch with a clean worktree. The verify-checkout step enforces this and gives clear recovery instructions on failure (e.g. `gh pr checkout <N>`).
 - The PR must be one you have push access to. `git push` will fail with a normal git error if not — the script doesn't pre-check push permissions.

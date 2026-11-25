@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # run-reviewer.sh — dispatch wrapper for a single review-anvil reviewer
+# subprocess (claude -p, codex exec, ...).
+#
 # Generated prose follows the ASD-STE100-inspired language contract in
 # ../references/asd-ste100-inspired.md. STATUS and EXIT_CODE stay machine-readable.
-# subprocess (claude -p, codex exec, ...).
 #
 # Solves the silent-hang failure mode: a reviewer whose stdout is
 # redirected to a file gives the orchestrator no signal to distinguish

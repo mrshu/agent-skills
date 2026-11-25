@@ -5,12 +5,7 @@ description: Read-only multi-agent review of a GitHub Pull Request, with the syn
 
 # review-anvil-pr
 
-Preset that reviews a GitHub PR with the multi-agent loop and posts the result back as a top-level PR comment. The skill orchestrates three steps:
-
-## Generated Language
-
-Apply the [ASD-STE100-inspired language contract](../review-anvil/references/asd-ste100-inspired.md) to this preset.
-Use direct imperatives for internal steps. Use short active declarative sentences in PR comments. Keep inline diagnoses unlabeled and put requested work under `Suggestions:`, with one bullet per independently implementable change. Default to starting required work with its action verb. Keep no-change constraints in prose, suggestion grammar for low/nit guidance, and questions for genuinely unresolved choices.
+Preset that reviews a GitHub PR with the multi-agent loop and posts the result back as a native GitHub PR review with inline comments (falling back to a top-level PR comment when no inline anchors apply). The skill orchestrates three steps:
 
 1. `scripts/pr-helper.sh init [<locator>]` — locator parsing or auto-detect from the current branch, `gh` preflight (auth + PR reachability), marker UUID + report path setup
 2. The [`review-anvil`](../review-anvil/SKILL.md) engine in read-only mode (`commit_mode=none`)
@@ -20,6 +15,11 @@ The engine automatically loads `.review-anvil-rules.md` from the PR's base
 repository and captured base SHA under its
 [repository-rules policy](../review-anvil/references/repository-rules.md).
 Do not substitute rules from the local checkout.
+
+## Generated Language
+
+Apply the [ASD-STE100-inspired language contract](../review-anvil/references/asd-ste100-inspired.md) to this preset.
+Use direct imperatives for internal steps. Use short active declarative sentences in PR comments. Keep inline diagnoses unlabeled and put requested work under `Suggestions:`, with one bullet per independently implementable change. Default to starting required work with its action verb. Keep no-change constraints in prose, suggestion grammar for low/nit guidance, and questions for genuinely unresolved choices.
 
 ## Inputs
 
@@ -171,7 +171,7 @@ Surface the URL (or `posted (URL unavailable)`) to the user. If the helper scrip
 ## Constraints
 
 - Requires `gh`, `uuidgen`, `jq` (a real binary — gh's `--jq` is built-in gojq and doesn't count), and `uv` (preferred; falls back to `python3`) for PR-feedback history handling. `init` preflights all of these so a missing dependency fails before the expensive review, not after.
-- Environment switches honored by the helper: `REVIEW_ANVIL_NO_APPROVE=1` (never submit an approval), `REVIEW_ANVIL_POST_INFRA_FAILURES=1` (manual-debug escape hatch that allows posting infrastructure-failure reports; default is to refuse them so watchdogs retry instead of notifying authors), `REVIEW_ANVIL_SKIP_DISMISSED=1` (legacy name: skip the full PR-history lookup for hosts without GraphQL access — degraded mode that also forces COMMENT), `REVIEW_ANVIL_DISMISSALS=<path>` (local-suppressions file, default `~/.review-anvil/dismissed-findings.json`; record entries with `pr-helper.sh dismiss <host> <owner> <repo> <n> <path> <pattern> [<reason>]`), `REVIEW_ANVIL_INLINE_MIN_SEVERITY=<critical|high|medium|low|nit>` (minimum severity posted inline; default `medium`), and `REVIEW_ANVIL_ENABLE_SUGGESTIONS=0` (disable helper-added GitHub suggestion blocks).
+- Environment switches honored by the helper: `REVIEW_ANVIL_NO_APPROVE=1` (never submit an approval), `REVIEW_ANVIL_POST_INFRA_FAILURES=1` (manual-debug escape hatch that allows posting infrastructure-failure reports; default is to refuse them so automated callers retry instead of notifying authors), `REVIEW_ANVIL_SKIP_DISMISSED=1` (legacy name: skip the full PR-history lookup for hosts without GraphQL access — degraded mode that also forces COMMENT), `REVIEW_ANVIL_DISMISSALS=<path>` (local-suppressions file, default `~/.review-anvil/dismissed-findings.json`; record entries with `pr-helper.sh dismiss <host> <owner> <repo> <n> <path> <pattern> [<reason>]`), `REVIEW_ANVIL_INLINE_MIN_SEVERITY=<critical|high|medium|low|nit>` (minimum severity posted inline; default `medium`), and `REVIEW_ANVIL_ENABLE_SUGGESTIONS=0` (disable helper-added GitHub suggestion blocks).
 - **An `APPROVE` decision submits a real GitHub approval from your authenticated `gh` account.** It counts toward branch-protection required reviews and reads to collaborators as your judgment — while the gate behind it is the engine's LLM classification. If that posture isn't acceptable for a repo or org, pass `approve: never` (or "never approve" / "comment only") and the run always posts plain `COMMENT` reviews. `REQUEST_CHANGES` is deliberately unsupported: blocking someone's merge on LLM judgment is a different risk class from commenting or approving.
 - What lands on the PR has passed the engine's reproduction/verification gates:
   uncertain `medium`+ findings are checked against the actual reviewed snapshot
