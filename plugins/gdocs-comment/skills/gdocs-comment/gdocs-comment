@@ -9,11 +9,11 @@
 #
 # Plan format (JSON array of {anchor, text, mentions?}):
 #   [
-#     {"anchor": "training sessions", "text": "...", "mentions": ["a@b.com"]},
-#     {"anchor": "Accommodation can be easily arranged", "text": "..."}
+#     {"anchor": "Introduction", "text": "...", "mentions": ["alice@example.com"]},
+#     {"anchor": "Open questions", "text": "..."}
 #   ]
 #
-# <target> is a unique CDP target prefix from `cdp list` (e.g. 312C822D).
+# <target> is a unique CDP target prefix from `cdp list` (e.g. ABCD1234).
 # The Google Doc tab must already be open and logged in.
 
 set -euo pipefail
@@ -44,7 +44,6 @@ resolve_cdp() {
     local candidates=(
       "$HOME/.claude/skills/chrome-cdp/scripts/cdp.mjs"
       "$HOME"/.claude/plugins/*/skills/chrome-cdp/scripts/cdp.mjs
-      "$HOME/.claude-rc/skills/chrome-cdp/scripts/cdp.mjs"
       "$HOME/.agents/skills/chrome-cdp/scripts/cdp.mjs"
       "$HOME/.codex/skills/chrome-cdp/scripts/cdp.mjs"
       "$SCRIPT_DIR/../../../chrome-cdp/skills/chrome-cdp/scripts/cdp.mjs"
@@ -66,11 +65,11 @@ Usage:
 
 Plan format (JSON array of {anchor, text, mentions?}):
   [
-    {"anchor": "training sessions", "text": "...", "mentions": ["a@b.com"]},
-    {"anchor": "Accommodation can be easily arranged", "text": "..."}
+    {"anchor": "Introduction", "text": "...", "mentions": ["alice@example.com"]},
+    {"anchor": "Open questions", "text": "..."}
   ]
 
-<target> is a unique CDP target prefix from `cdp list` (e.g. 312C822D).
+<target> is a unique CDP target prefix from `cdp list` (e.g. ABCD1234).
 The Google Doc tab must already be open and logged in.'
 
 usage() { printf '%s\n' "$USAGE_TEXT"; exit "${1:-0}"; }
@@ -129,8 +128,7 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# --dry-run: validate plan only. Single node invocation; the validator
-# prints "N items OK" so we don't need a separate `count` call.
+# --dry-run: validate plan and print item count in a single node invocation.
 # ---------------------------------------------------------------------------
 if [ "$DRY_RUN" = 1 ]; then
   exec node "$POST_MJS" validate "$PLAN" --print-count
@@ -142,7 +140,7 @@ if [ -z "$CDP" ]; then
 gdocs-comment: chrome-cdp not found.
 
 Install the chrome-cdp skill (or set CDP_BIN=/path/to/cdp.mjs).
-Searched: $CDP_BIN, PATH, ~/.claude/skills/chrome-cdp/, ~/.claude/plugins/*/skills/chrome-cdp/, ~/.claude-rc/skills/chrome-cdp/, ~/.agents/skills/chrome-cdp/, ~/.codex/skills/chrome-cdp/, sibling plugin paths, $CLAUDE_PLUGIN_ROOT.
+Searched: $CDP_BIN, PATH, ~/.claude/skills/chrome-cdp/, ~/.claude/plugins/*/skills/chrome-cdp/, ~/.agents/skills/chrome-cdp/, ~/.codex/skills/chrome-cdp/, sibling plugin paths, $CLAUDE_PLUGIN_ROOT.
 EOF
   exit 2
 fi
