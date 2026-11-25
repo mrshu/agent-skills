@@ -2226,7 +2226,9 @@ cmd_check_pins() {
         printf 'pins-ok\n'
         return 0
     fi
-    local seg key pin pin_norm
+    local seg key pin pin_norm had_noglob=0
+    case $- in *f*) had_noglob=1 ;; esac
+    set -f
     local IFS=','
     for seg in $raw; do
         key=$(printf '%s' "${seg%%:*}" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')
@@ -2234,10 +2236,12 @@ cmd_check_pins() {
         for pin in $pins_csv; do
             pin_norm=$(printf '%s' "$pin" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')
             if [[ "$key" == "$pin_norm" ]]; then
+                (( had_noglob )) || set +f
                 die "error: $pin_norm is pinned by $preset and cannot be overridden in args"
             fi
         done
     done
+    (( had_noglob )) || set +f
     printf 'pins-ok\n'
 }
 
@@ -2768,9 +2772,9 @@ cmd_post_update() {
         fi
     fi
 
-    process_inline_comments_for_github "${report_path}.inline.json"
     compact_report_for_github "$report_path" "${report_path}.inline.json"
     if [[ "$outcome" == "success" ]]; then
+        process_inline_comments_for_github "${report_path}.inline.json"
         append_inline_details_to_report "$report_path" "${report_path}.inline.json"
         embed_finding_context "$report_path" "${report_path}.context.json" \
             || printf 'warning: finding context could not be embedded; posting without it\n' >&2
