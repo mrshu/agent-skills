@@ -116,26 +116,26 @@ Use source context to settle meaning before applying those rules:
 - If the source requests a new report “while keeping the nonzero exit
   conditional on failures,” saving the report is author work. The already
   correct exit condition is a no-change boundary.
-- If the diagnosis says each task currently receives a different metric ID,
-  “`accuracy` can remain the metric ID” is target behavior and therefore author
-  work.
-- “Unresolved keys can be reported after valid metrics are preserved” mixes
-  required preservation with an allowed reporting follow-up. Make preservation
-  explicit; do not request reporting.
-- “Leave the unit unset otherwise” inside a direct request is author work.
-  “`pwc_scale` remains in details” is a no-change boundary when the context
+- If the diagnosis says each endpoint currently emits a different error code,
+  “`invalid_input` can remain the error code” is target behavior and therefore
+  author work.
+- “Unknown headers can be logged after valid parameters are preserved” mixes
+  required preservation with an allowed logging follow-up. Make preservation
+  explicit; do not request logging.
+- “Leave the currency unset otherwise” inside a direct request is author work.
+  “`raw_amount` remains in metadata” is a no-change boundary when the context
   says it is already there.
-- “Add a no-match check. It can stop before existing-output discovery or
-  publication.” requests the check but permits its stopping point. Do not turn
-  the permitted point into a “Stop before…” action.
-- “Retrieval time can remain only in `retrieved_timestamp`” is a no-change
-  boundary when the context shows that field already records retrieval time.
-  Do not fold it into the stable-ID request.
-- If construction currently fails after files are written, “Complete output
-  can stage before publication” is author work. “Existing logical output can
-  be rejected until replacement is atomic, with sidecar validation kept
-  streaming” preserves two allowed boundaries; do not turn either into an
-  action.
+- “Add an empty-batch check. It can return before cache lookup or database
+  writes.” requests the check but permits its stopping point. Do not turn the
+  permitted point into a “Return before…” action.
+- “Request time can remain only in `created_at`” is a no-change boundary when
+  the context shows that field already records request time. Do not fold it
+  into the cache-key request.
+- If export currently fails after partial files are written, “Complete output
+  can stage in a temp directory before publishing” is author work. “Existing
+  archives can be rejected until replacement is atomic, with checksum
+  verification kept streaming” preserves two allowed boundaries; do not turn
+  either into an action.
 - Preserve every source condition on accepted current behavior exactly.
 
 Return valid, pretty-printed JSON only:

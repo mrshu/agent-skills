@@ -166,9 +166,9 @@ easier to verify. Preserve an exact safe `suggestion` if one is frozen.
 
 Prefer:
 
-- `An exclusions-only run never saves its report.`
-- `This entry point still uses the old parser, so it fails before conversion.`
-- `A branch can change while the stored evaluation ID stays the same.`
+- `A dry-run export still writes to the output directory.`
+- `The publish command still builds the old options object, so upload fails before startup.`
+- `The upstream branch can move while the cached artifact key stays the same.`
 
 Avoid:
 
@@ -291,10 +291,12 @@ The review-anvil footer appears exactly once as the absolute final nonblank
 line. Every collapsed section and helper-only idempotency marker must come
 before it.
 
-Keep earlier feedback, changes made, set-aside/outside items, and exact review
-metadata in separate collapsed sections with natural labels. Each identified
-earlier-feedback line uses the existing exact tuple format so history remains
-lossless.
+Use only the exact `<summary>` labels enforced by
+`scripts/validate-clarity-output.py`: `Issues and fixes`, `Optional
+suggestions`, `Earlier feedback`, `Changes made`, `Set aside`, `Outside this
+change`, and `Review context`. Omit optional sections when empty; always include
+`Review context`. Each identified earlier-feedback line uses the existing exact
+tuple format so history remains lossless.
 
 ```md
 - **<status>** — <exact text> <exact URL> (`<finding ID>`)
@@ -315,12 +317,12 @@ combine them into one request even if frozen `requested_work` lists both.
 Example:
 
 ```md
-This entry point still builds the old argument namespace, so the handler reads
-missing fields and fails before conversion.
+`src/publish.py` reads the timeout in milliseconds while the client expects
+seconds, so requests wait 1,000 times longer than configured.
 
 Suggestions:
-- Switch it to the shared parser.
-- Add one offline test covering the defaults.
+- Convert the configured timeout to seconds before passing it to the client.
+- Add a unit test checking the client timeout value for the default config.
 
 <!-- review-anvil: id=RAV-RUN2-R1-F003 severity=medium area=cli -->
 ```

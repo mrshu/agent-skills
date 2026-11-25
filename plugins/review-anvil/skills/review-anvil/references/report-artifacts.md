@@ -4,29 +4,29 @@ Read at final-report time when `report_path` is set (Loop Mechanics §6 of the e
 
 ## Progressive disclosure for external reports
 
-Keep the decision, result, scope, and actionable critical/high/medium findings
-visible without an extra click. Preserve supporting evidence and auditability
-without filling the destination's conversation surface: use the destination's
-native collapsed/expandable sections for run metadata and longer supporting
-sections. On GitHub, wrap Run details in `<details>` for every external report,
-and collapse prior-feedback, would-apply, deferred/out-of-scope, and low/nit
-sections when they exceed the thresholds in the engine's Output Format. Use a
-specific summary with an item count when available, leave a blank line after
-`<summary>`, and place `</details>` on its own line.
+Keep the top-level surface short: one headingless line containing one or two
+neutral detection sentences, followed by collapsed `<details>` sections. Do not
+expose decision labels, review mechanics, scope metadata, or full finding tables
+above the fold. On GitHub, use the exact fixed `<summary>` labels enforced by
+`scripts/validate-clarity-output.py` with no item counts: `Issues and fixes`,
+`Optional suggestions`, `Earlier feedback`, `Changes made`, `Set aside`,
+`Outside this change`, and `Review context`. Omit optional sections when empty,
+always include `Review context`, leave a blank line after `</summary>`, and
+place `</details>` on its own line. Anchored material findings also appear in
+GitHub's native inline review UI.
 
-If a destination has no disclosure control, send a concise decision summary
-and preserve the full report in an attached artifact or stable link. Never put
-a blocker only in collapsed or linked detail.
+If a destination has no disclosure control, send a concise neutral detection
+summary and preserve the full report in an attached artifact or stable link.
 
 Record the resolved repository-rules state, path, and source revision/snapshot
-under collapsed Run details, including explicit absence. For rule-dependent
+under collapsed `Review context`, including explicit absence. For rule-dependent
 findings, preserve the rule ID/heading and source citation in existing evidence
 and file-context fields; describe the concrete violated requirement in the
 diagnosis or requested work when the author needs it. Use the rules source
 commit for context at a different revision, with only actual source lines.
-For worktree policy, retain its digest and citation in evidence/run details
-and omit its rules-file context item; a context item without `commit` would
-inherit the finding's revision and could falsely pin pending policy to HEAD.
+For worktree policy, retain its digest and citation in evidence and `Review
+context` and omit its rules-file context item; a context item without `commit`
+would inherit the finding's revision and could falsely pin pending policy to HEAD.
 Freeze accepted rule obligations and intentional-choice boundaries during
 synthesis so fact locks, requested work, and action-lock auditing preserve them.
 Keep raw repository rules out of the isolated clarity renderer; it receives
@@ -295,7 +295,7 @@ When one change has an accepted boundary, keep it in natural prose:
 
 ```md
 Invalid populated cells currently disappear, and invalid denominators fall
-back to 805.
+back to a hard-coded default.
 
 Suggestions:
 - Validate uncertainty, counts, and positive denominators separately while keeping empty optional cells allowed.
@@ -353,12 +353,12 @@ When `report_path` is set, write a sibling `<report_path>.followups.json` with a
   {
     "approval": "auto_approved | needs_triage",
     "severity": "high",
-    "area": "entity-resolution",
-    "title": "Canonicalize merged co-mentions before seeding annotation prompts",
-    "why": "Confirmed pre-existing bug; stale merged IDs can re-enter prompts.",
-    "evidence": {"file": "apps/api/src/pipeline/seeder.rs", "line": 359},
-    "separate_pr_reason": "Not introduced by this performance PR; should be fixed independently.",
-    "dedupe_key": "entity-resolution merged co-mentions seeding"
+    "area": "order-sync",
+    "title": "Deduplicate retried webhook events before recording shipments",
+    "why": "Confirmed pre-existing bug; redelivered webhooks can create duplicate shipment rows.",
+    "evidence": {"file": "src/orders/sync.py", "line": 142},
+    "separate_pr_reason": "Not introduced by this caching PR; should be fixed independently.",
+    "dedupe_key": "order-sync duplicate shipment webhook retries"
   }
 ]
 ```
