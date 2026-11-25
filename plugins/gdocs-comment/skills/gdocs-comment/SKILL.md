@@ -5,7 +5,7 @@ description: Bulk-post anchored comments (with @-mentions) to a Google Doc from 
 
 # Google Docs bulk comment poster
 
-Post N anchored Google Docs comments from a JSON plan. Each comment is attached to a unique substring of doc body text, optionally with `@-mentions` of collaborators. Uses the user's already-logged-in browser session via the [`chrome-cdp`](../../chrome-cdp) skill.
+Post N anchored Google Docs comments from a JSON plan. Each comment is attached to a unique substring of doc body text, optionally with `@-mentions` of collaborators. Uses the user's already-logged-in browser session via the `chrome-cdp` skill.
 
 Break-even is around 5 comments — for fewer, type them directly in the doc.
 
@@ -23,7 +23,7 @@ Break-even is around 5 comments — for fewer, type them directly in the doc.
 ${CLAUDE_PLUGIN_ROOT}/skills/gdocs-comment/gdocs-comment --list
 
 # 2. post a plan (target prefix from `cdp list`)
-${CLAUDE_PLUGIN_ROOT}/skills/gdocs-comment/gdocs-comment 312C822D plan.json
+${CLAUDE_PLUGIN_ROOT}/skills/gdocs-comment/gdocs-comment ABCD1234 plan.json
 
 # or supply the document URL — the wrapper picks the matching tab
 ${CLAUDE_PLUGIN_ROOT}/skills/gdocs-comment/gdocs-comment --url https://docs.google.com/document/d/<id>/edit plan.json
@@ -39,18 +39,18 @@ A JSON array of `{anchor, text, mentions?}`:
 ```json
 [
   {
-    "anchor": "training sessions",
-    "text": "Detail optional training for participants — content, schedule, who runs it.",
-    "mentions": ["jakub.krcho@gmail.com", "mirokohut13@gmail.com"]
+    "anchor": "Introduction",
+    "text": "Could we add a one-paragraph motivation here? The doc dives into specifics before saying why this matters.",
+    "mentions": ["alice@example.com", "bob@example.com"]
   },
   {
-    "anchor": "Accommodation can be easily arranged through common online platforms",
-    "text": "Please add an explicit list of hotels at different price levels + a youth/hostel option."
+    "anchor": "Open questions",
+    "text": "Suggestion: number each question so we can reference them in the meeting."
   }
 ]
 ```
 
-- `anchor` — substring of doc body to attach the comment to. The skill uses Find & Replace's *Next* button, so the **first** match in the doc is selected; pick a substring unique enough to land where you want.
+- `anchor` — substring of doc body to attach the comment to. The skill uses Find & Replace's incremental search (without clicking *Next*), so the **first** match in the doc is selected; pick a substring unique enough to land where you want.
 - `text` — comment body. Multi-line is fine via `\n` in the JSON string.
 - `mentions` — optional list of emails. They are prepended to the comment as `+email@…` chips; Google Docs auto-resolves them and sends notifications.
 
@@ -59,7 +59,7 @@ A JSON array of `{anchor, text, mentions?}`:
 Per-item results stream to stdout:
 
 ```
-[1/3] anchor: training sessions
+[1/3] anchor: Introduction
   ✓ posted
 [2/3] anchor: nonexistent text in doc
   ERROR: anchor not found in doc (0 matches): "nonexistent text in doc"

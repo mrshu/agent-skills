@@ -3,9 +3,8 @@
 // daemon's per-tab Unix socket. Called by the `gdocs-comment` wrapper.
 //
 // Modes:
-//   gdocs-post.mjs validate <plan.json>            # validate plan, exit 0/2
-//   gdocs-post.mjs count <plan.json>               # print item count to stdout
-//   gdocs-post.mjs <target> <plan.json> [residual] # post comments (default)
+//   gdocs-post.mjs validate <plan.json> [--print-count]  # validate plan, exit 0/2
+//   gdocs-post.mjs <target> <plan.json> [residual]       # post comments (default)
 //
 // <target> is a CDP target id or unique prefix; the socket is resolved by
 // globbing the chrome-cdp daemon's runtime dir.
@@ -78,7 +77,7 @@ function validatePlan(plan) {
   return plan;
 }
 
-// ─── subcommands: validate, count ────────────────────────────────────────────
+// ─── subcommand: validate ────────────────────────────────────────────────────
 const argv = process.argv.slice(2);
 if (argv[0] === 'validate') {
   if (argv.length < 2 || argv.length > 3) die('usage: gdocs-post.mjs validate <plan.json> [--print-count]');
@@ -88,18 +87,12 @@ if (argv[0] === 'validate') {
   }
   process.exit(0);
 }
-if (argv[0] === 'count') {
-  if (argv.length !== 2) die('usage: gdocs-post.mjs count <plan.json>');
-  process.stdout.write(loadPlan(argv[1]).length + '\n');
-  process.exit(0);
-}
 
 // ─── post mode ───────────────────────────────────────────────────────────────
 const [TARGET_ARG, PLAN_PATH, RESIDUAL_PATH] = argv;
 if (!TARGET_ARG || !PLAN_PATH) {
   process.stderr.write('usage: gdocs-post.mjs <target> <plan.json> [residual-out.json]\n');
-  process.stderr.write('       gdocs-post.mjs validate <plan.json>\n');
-  process.stderr.write('       gdocs-post.mjs count <plan.json>\n');
+  process.stderr.write('       gdocs-post.mjs validate <plan.json> [--print-count]\n');
   process.exit(2);
 }
 
