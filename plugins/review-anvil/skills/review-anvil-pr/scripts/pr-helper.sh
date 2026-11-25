@@ -25,10 +25,8 @@
 #                             replies, and review-anvil thread identity.
 #   resolve …               — validate and resolve requested review-anvil
 #                             threads from a .resolutions.json artifact.
-#   dismissed …             — legacy resolved/suppressed-only history view.
 #   dismiss …               — record a local suppression in the dismissals
 #                             state file ($REVIEW_ANVIL_DISMISSALS).
-#   compact-report …        — legacy no-op; reports are posted without loss.
 #   process-inline …        — filter/prepare inline review comments.
 #   embed-context …         — embed <report_path>.context.json records as
 #                             hidden lines at the end of the report.
@@ -36,6 +34,9 @@
 #
 # Environment switches:
 #   REVIEW_ANVIL_NO_APPROVE=1     never submit APPROVE (downgrade to COMMENT)
+#   REVIEW_ANVIL_POST_INFRA_FAILURES=1
+#                                 manual-debug escape hatch: allow posting
+#                                 infrastructure-failure reports (default: refuse)
 #   REVIEW_ANVIL_SKIP_DISMISSED=1 legacy name: skip full PR-history lookups
 #                                 (degraded mode for hosts without GraphQL;
 #                                 also forces APPROVE -> COMMENT)
@@ -89,14 +90,14 @@ _dir_has_other_artifacts() {
 report_is_infra_failure() {
     local report_path="$1"
     # Do not publish transparent infrastructure-failure reports. They are local
-    # diagnostics, not PR feedback. The watchdog should mark the run failed and
-    # retry with a healthy reviewer wave instead of notifying the author.
+    # diagnostics, not PR feedback. Automated callers should mark the run failed
+    # and retry with a healthy reviewer wave instead of notifying the author.
     grep -Eqi 'reviewer wave failed|reviewer wave produced no usable|reviewer wave did not (return|produce)|all three (Codex )?reviewers (returned empty|timed out|reached|failed)|all requested reviewers failed|every reviewer process ended without|without a completed findings block|could not produce a code assessment|no valid reviewer output to synthesize|no candidate findings were available|no completed reviewer findings were available|no reviewer produced usable evidence|no usable code review|no code-review result is available|no code-quality decision was made|review did not (complete|produce a reliable result|finish)|review could not (finish|produce a reliable result)|reviewer execution failed|STATUS=empty|returned no final (response|output|review)|no final findings block' "$report_path"
 }
 
 cleanup_post_artifacts() {
     local report_path="$1" resolution_policy="${2:-remove}" dir
-    rm -f "$report_path" "${report_path}.inline.json" "${report_path}.approval.json" "${report_path}.followups.json" "${report_path}.context.json" "${report_path}.full.md"
+    rm -f "$report_path" "${report_path}.inline.json" "${report_path}.approval.json" "${report_path}.followups.json" "${report_path}.context.json"
     if [[ "$resolution_policy" != "keep" ]]; then
         rm -f "${report_path}.resolutions.json"
     fi
@@ -183,17 +184,6 @@ _py() {
     else
         die "neither uv nor python3 found; one is required for PR-feedback history handling (install uv: https://docs.astral.sh/uv/)"
     fi
-}
-
-compact_report_for_github() {
-    local report_path="${1:-}"
-    [[ -f "$report_path" ]] || die "compact-report: report file not found: $report_path"
-
-    # Historical versions rewrote long reports into a compact summary before
-    # posting. Review output is now kept lossless; if GitHub rejects an
-    # unusually large payload, the original report remains on disk for the
-    # caller to rewrite intentionally and retry.
-    return 0
 }
 
 process_inline_comments_for_github() {
@@ -646,8 +636,6 @@ PY
 #       Print every prior root review thread with its open/resolved/outdated
 #       state, plus summary-only findings from earlier review-anvil reports and
 #       explicit local suppressions. This builds the PR REVIEW HISTORY prompt.
-#   list <owner> <repo> <n>
-#       Backwards-compatible resolved/suppressed-only view.
 #   next-run <owner> <repo> <n>
 #       Print the next positive run ordinal derived from distinct finalized
 #       review-anvil reports.
@@ -662,8 +650,7 @@ PY
 # the script exits non-zero
 # and the caller decides whether that is fatal (cmd_post) or a warning
 # (cmd_post_update). Local suppressions come from $REVIEW_ANVIL_DISMISSALS,
-# default ~/.review-anvil/dismissed-findings.json (a legacy
-# ~/.hermes/state/review-anvil-dismissed-findings.json is honored if present).
+# default ~/.review-anvil/dismissed-findings.json.
 # Shape: {"<owner>/<repo>#<N>": [{"path":"...", "pattern":"...", "reason":"..."}]}
 _review_history_py() {
     _py - "$@" <<'PY'
@@ -1184,11 +1171,8 @@ def state_file():
     env = os.environ.get("REVIEW_ANVIL_DISMISSALS")
     if env:
         return Path(env)
-    for p in (Path.home() / ".review-anvil" / "dismissed-findings.json",
-              Path.home() / ".hermes" / "state" / "review-anvil-dismissed-findings.json"):
-        if p.exists():
-            return p
-    return None
+    default_path = Path.home() / ".review-anvil" / "dismissed-findings.json"
+    return default_path if default_path.exists() else None
 
 def same_finding(cand, previous, require_path):
     cpath, ppath = cand.get("path") or "", previous.get("path") or ""
@@ -1650,20 +1634,11 @@ def coalesce_history(items):
 
 history = coalesce_history(history)
 
-if mode in {"history", "list"}:
-    selected = history if mode == "history" else [
-        item for item in history
-        if item["status"] in {
-            "resolved",
-            "author-resolved",
-            "author-explanation-accepted",
-            "suppressed",
-        }
-    ]
-    if not selected:
+if mode == "history":
+    if not history:
         print("None.")
     else:
-        for d in selected:
+        for d in history:
             if d["path"]:
                 loc = f'{d["path"]}:{d["line"]}' if d.get("line") else d["path"]
             else:
@@ -2123,20 +2098,6 @@ suppress_prior_feedback() {
     _review_history_py suppress "$owner" "$repo" "$n" "$report_path" "$inline_json"
 }
 
-cmd_dismissed() {
-    # Legacy resolved/suppressed-only view retained for older callers.
-    local host="${1:-}" owner="${2:-}" repo="${3:-}" n="${4:-}"
-    for v in host owner repo n; do
-        [[ -n "${!v}" ]] || die "dismissed: missing <$v>"
-    done
-    if [[ "${REVIEW_ANVIL_SKIP_DISMISSED:-}" == "1" ]]; then
-        printf 'None. (dismissed-finding lookup skipped: REVIEW_ANVIL_SKIP_DISMISSED=1 — degraded mode)\n'
-        return 0
-    fi
-    export GH_HOST="$host"
-    _review_history_py list "$owner" "$repo" "$n"
-}
-
 cmd_history() {
     # Print the complete status-aware PR feedback ledger for reviewer prompts.
     local host="${1:-}" owner="${2:-}" repo="${3:-}" n="${4:-}"
@@ -2440,7 +2401,6 @@ cmd_post() {
     process_inline_comments_for_github "$inline_json"
     embed_finding_context "$report_path" "${report_path}.context.json" \
         || printf 'warning: finding context could not be embedded; posting without it\n' >&2
-    compact_report_for_github "$report_path" "$inline_json"
 
     # Compute inline presence after suppression (which may have emptied the
     # array). Empty array / whitespace-only / missing file = no inline.
@@ -2489,7 +2449,6 @@ cmd_post() {
         printf 'warning: approval could not be submitted (common cause: GitHub rejects approving your own PR); downgrading to a comment review\n' >&2
         append_review_context_note "$report_path" \
             "Delivery: review-anvil selected APPROVE, but GitHub rejected the approval, so review-anvil posted a comment instead."
-        compact_report_for_github "$report_path" "$inline_json"
         if [[ "$has_inline" -eq 1 ]]; then
             if url=$(_submit_review COMMENT "$inline_json"); then
                 _emit_post_result COMMENT "$url"
@@ -2659,7 +2618,6 @@ cmd_verify_checkout() {
     # Generate marker UUID + absolute report path (same scheme as cmd_init
     # so the post-summary step can post the engine's final report back
     # to the PR with race-free URL recovery).
-    command -v uuidgen >/dev/null 2>&1 || die "uuidgen not available"
     local anchor
     anchor=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
     local marker report_path
@@ -2769,7 +2727,6 @@ cmd_post_update() {
     fi
 
     process_inline_comments_for_github "${report_path}.inline.json"
-    compact_report_for_github "$report_path" "${report_path}.inline.json"
     if [[ "$outcome" == "success" ]]; then
         append_inline_details_to_report "$report_path" "${report_path}.inline.json"
         embed_finding_context "$report_path" "${report_path}.context.json" \
@@ -2835,12 +2792,10 @@ case "${1:-}" in
     post-update)      shift; cmd_post_update "$@" ;;
     history)          shift; cmd_history "$@" ;;
     resolve)          shift; cmd_resolve "$@" ;;
-    dismissed)        shift; cmd_dismissed "$@" ;;
     dismiss)          shift; cmd_dismiss "$@" ;;
-    compact-report)   shift; compact_report_for_github "$@" ;;
     process-inline)   shift; process_inline_comments_for_github "$@" ;;
     embed-context)    shift; embed_finding_context "$@" ;;
     check-pins)       shift; cmd_check_pins "$@" ;;
-    "")               die "usage: pr-helper.sh {init [<locator>] | next-run <host> <owner> <repo> <n> | post <host> <owner> <repo> <n> <marker> <report_path> | verify-checkout [<locator>] | post-start <host> <owner> <repo> <n> <marker> <author> | post-update <host> <owner> <repo> <n> <comment_id> <marker> <report_path> <author> <success|failure> [<started_at>] | history <host> <owner> <repo> <n> | resolve <host> <owner> <repo> <n> <resolutions_json> | dismissed <host> <owner> <repo> <n> | dismiss <host> <owner> <repo> <n> <path> <pattern> [<reason>] | compact-report <report_path> [<inline_json>] | process-inline <inline_json> | embed-context <report_path> <context_json> | check-pins <preset> <pins-csv> [<raw-args>]}" ;;
+    "")               die "usage: pr-helper.sh {init [<locator>] | next-run <host> <owner> <repo> <n> | post <host> <owner> <repo> <n> <marker> <report_path> | verify-checkout [<locator>] | post-start <host> <owner> <repo> <n> <marker> <author> | post-update <host> <owner> <repo> <n> <comment_id> <marker> <report_path> <author> <success|failure> [<started_at>] | history <host> <owner> <repo> <n> | resolve <host> <owner> <repo> <n> <resolutions_json> | dismiss <host> <owner> <repo> <n> <path> <pattern> [<reason>] | process-inline <inline_json> | embed-context <report_path> <context_json> | check-pins <preset> <pins-csv> [<raw-args>]}" ;;
     *)                die "unknown subcommand: $1" ;;
 esac

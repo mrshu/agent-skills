@@ -221,7 +221,7 @@ test_process_inline() {
     inline="$tmp/inline.json"
     make_inline "$inline"
 
-    REVIEW_ANVIL_INLINE_MAX_CHARS=220 "$HELPER" process-inline "$inline" >/dev/null
+    "$HELPER" process-inline "$inline" >/dev/null
 
     jq -e 'length == 2' "$inline" >/dev/null
     jq -e 'map(select(.path == "README.md")) | length == 0' "$inline" >/dev/null
@@ -760,7 +760,7 @@ JSON
     GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
     PATH="$bin:$PATH" \
       "$HELPER" post github.com acme widgets 42 marker-hidden-identity "$report" \
-      >/tmp/review-anvil-hidden-identity.out
+      >"$tmp/hidden-identity.out"
 
     jq -e '.comments | length == 1' "$tmp/review-payload.json" >/dev/null
     jq -e '.comments[0].body | contains("id=RAV-RUN5-R1-F002")' "$tmp/review-payload.json" >/dev/null
@@ -790,10 +790,8 @@ test_post_review_success() {
     GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
     GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
     REVIEW_ANVIL_SKIP_DISMISSED=1 \
-    REVIEW_ANVIL_GITHUB_MAX_CHARS=500 \
-    REVIEW_ANVIL_INLINE_MAX_CHARS=220 \
     PATH="$bin:$PATH" \
-      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-post.out
+      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >"$tmp/post.out"
 
     jq -e '.event == "COMMENT"' "$tmp/review-payload.json" >/dev/null
     jq -e '.body | contains("review-anvil-marker: marker-123")' "$tmp/review-payload.json" >/dev/null
@@ -833,7 +831,7 @@ test_post_approval_body_only_retains_inline_details() {
     GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
     GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
     PATH="$bin:$PATH" \
-      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-body-approval.out
+      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >"$tmp/body-approval.out"
 
     jq -e '.event == "APPROVE"' "$tmp/review-payload.json" >/dev/null
     jq -e '.comments | length == 0' "$tmp/review-payload.json" >/dev/null
@@ -860,7 +858,7 @@ test_post_head_move_note_stays_collapsed() {
     GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
     GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
     PATH="$bin:$PATH" \
-      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-head-move.out
+      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >"$tmp/head-move.out"
 
     jq -e '.event == "COMMENT"' "$tmp/review-payload.json" >/dev/null
     jq -e '.body | contains("<summary>Review context</summary>")' "$tmp/review-payload.json" >/dev/null
@@ -886,7 +884,7 @@ test_post_approval_rejection_note_stays_collapsed() {
     GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
     GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
     PATH="$bin:$PATH" \
-      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-approval-rejection.out
+      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >"$tmp/approval-rejection.out"
 
     jq -e '.event == "COMMENT"' "$tmp/review-payload.json" >/dev/null
     jq -e '.body | contains("<summary>Review context</summary>")' "$tmp/review-payload.json" >/dev/null
@@ -914,10 +912,8 @@ test_post_fallback_comment() {
     GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
     GH_MOCK_REVIEW_FAIL=1 \
     REVIEW_ANVIL_SKIP_DISMISSED=1 \
-    REVIEW_ANVIL_GITHUB_MAX_CHARS=500 \
-    REVIEW_ANVIL_INLINE_MAX_CHARS=220 \
     PATH="$bin:$PATH" \
-      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-fallback.out
+      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >"$tmp/fallback.out"
 
     grep -q 'review-anvil-marker: marker-123' "$tmp/comment.md"
     grep -Fxq "$REPRODUCTION_LINE" "$tmp/comment.md"
@@ -971,10 +967,8 @@ test_post_update_success() {
 
     GH_MOCK_PATCH_PAYLOAD="$tmp/patch.json" \
     REVIEW_ANVIL_SKIP_DISMISSED=1 \
-    REVIEW_ANVIL_GITHUB_MAX_CHARS=500 \
-    REVIEW_ANVIL_INLINE_MAX_CHARS=220 \
     PATH="$bin:$PATH" \
-      "$HELPER" post-update github.com acme widgets 42 123 marker-123 "$report" octocat success 2026-06-19T00:00:00Z >/tmp/review-anvil-update.out
+      "$HELPER" post-update github.com acme widgets 42 123 marker-123 "$report" octocat success 2026-06-19T00:00:00Z >"$tmp/update.out"
 
     jq -e '.body | capture("^<!-- review-anvil-marker: marker-123 -->\\n(?<summary>[^\\n]+)") | .summary == "A state-validation issue and a write-accounting issue remain."' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("review-anvil selected APPROVE") | not' "$tmp/patch.json" >/dev/null
@@ -1012,7 +1006,7 @@ test_post_update_refresh_failure_omits_inline_details() {
     GH_MOCK_GRAPHQL_FAIL=1 \
     GH_MOCK_PATCH_PAYLOAD="$tmp/patch.json" \
     PATH="$bin:$PATH" \
-      "$HELPER" post-update github.com acme widgets 42 123 marker-123 "$report" octocat success 2026-06-19T00:00:00Z >/tmp/review-anvil-update-failure.out
+      "$HELPER" post-update github.com acme widgets 42 123 marker-123 "$report" octocat success 2026-06-19T00:00:00Z >"$tmp/update-failure.out"
 
     jq -e '.body | contains("review-anvil-improve-pr **failed** on this PR. cc @octocat.")' "$tmp/patch.json" >/dev/null
     jq -e '.body | contains("prior-feedback refresh failed")' "$tmp/patch.json" >/dev/null
@@ -1043,10 +1037,8 @@ test_post_adversarial_off_downgrades_approval() {
     GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
     GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
     REVIEW_ANVIL_SKIP_DISMISSED=1 \
-    REVIEW_ANVIL_GITHUB_MAX_CHARS=500 \
-    REVIEW_ANVIL_INLINE_MAX_CHARS=220 \
     PATH="$bin:$PATH" \
-      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-adversarial-off.out
+      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >"$tmp/adversarial-off.out"
 
     jq -e '.event == "COMMENT"' "$tmp/review-payload.json" >/dev/null
     assert_file_missing "$report"
@@ -1071,94 +1063,14 @@ test_post_dismisses_id_prefixed_report_findings() {
     GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
     GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
     REVIEW_ANVIL_DISMISSALS="$dismissals" \
-    REVIEW_ANVIL_GITHUB_MAX_CHARS=12000 \
     PATH="$bin:$PATH" \
-      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-dismissed-id.out
+      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >"$tmp/dismissed-id.out"
 
     grep -q 'Earlier feedback' "$tmp/comment.md"
     ! grep -Fq 'RAV-RUN3-R2-F001 [medium] auth' "$tmp/comment.md"
     grep -q 'local-test-dismissal' "$tmp/comment.md"
     assert_file_missing "$report"
     assert_file_missing "$tmp/report.md.approval.json"
-}
-
-test_compact_report_preserves_body_losslessly() {
-    local tmp report expected
-    tmp="$(mktemp -d)"
-    trap "rm -rf '$tmp'" RETURN
-
-    report="$tmp/report.md"
-    expected="$tmp/expected.md"
-    {
-        printf '# ⚒️ review-anvil report\n\n'
-        printf '**Result:** legacy ID compatibility fixture.\n\n'
-        printf '## Findings\n'
-        printf '| ID | Sev | Area | Location | Finding |\n'
-        printf '|---|---|---|---|---|\n'
-        printf '| RAVF001 | H | db | `src/db.ts:8` | table rows stay in the full report. |\n'
-        printf -- '- **F-001 [medium] auth** `src/auth.ts:12` — dashed legacy IDs stay untouched.\n'
-        printf '\n## Fixes / Would Apply\n'
-        printf -- '- **RAVW001 [medium] auth** — would commit as `fix(auth): validate state`; covers RAVF001\n'
-        printf '\n## Deferred / Out-of-Scope\n'
-        printf -- '- **W-001 [medium] config** — legacy would-apply IDs stay untouched.\n'
-    } >"$report"
-    cp "$report" "$expected"
-
-    REVIEW_ANVIL_GITHUB_MAX_CHARS=1 "$HELPER" compact-report "$report" >/tmp/review-anvil-legacy-compact.out
-
-    cmp -s "$expected" "$report"
-    [[ ! -e "$report.full.md" ]] || fail "compact-report should not create a full-copy artifact"
-}
-
-test_compact_report_preserves_invalid_and_fenced_text() {
-    local tmp report expected
-    tmp="$(mktemp -d)"
-    trap "rm -rf '$tmp'" RETURN
-
-    report="$tmp/report.md"
-    expected="$tmp/expected.md"
-    {
-        printf '# ⚒️ review-anvil report\n\n'
-        printf '**Result:** invalid ID fixture.\n\n'
-        printf '## Misc\n'
-        printf -- '- **F001 [high] db** — bare transitional IDs are not findings.\n'
-        printf -- '- **F1 [high] auth** — short IDs are not findings.\n'
-        printf -- '- **RAVF-001 [high] api** — dashed RAV IDs are not findings.\n'
-        printf -- '- **RAV-RUN0-R2-F001 [high] provenance** — run zero is not a finding.\n'
-        printf -- '- **RAV-RUN3-R0-F001 [high] provenance** — round zero is not a finding.\n'
-        printf -- '- **RAV-RUN3-R2-F000 [high] provenance** — finding zero is not a finding.\n'
-        printf -- '- **RAV-RUN3-R2-P001 [high] provenance** — plan IDs are not findings.\n'
-        printf '```md\n'
-        printf -- '- **RAV-RUN3-R2-F999 [high] fenced** — fenced examples are not findings.\n'
-        printf '```\n'
-    } >"$report"
-    cp "$report" "$expected"
-
-    REVIEW_ANVIL_GITHUB_MAX_CHARS=1 "$HELPER" compact-report "$report" >/tmp/review-anvil-invalid-compact.out
-
-    cmp -s "$expected" "$report"
-}
-
-test_compact_report_preserves_wrapped_reproduction_metadata() {
-    local tmp report expected
-    tmp="$(mktemp -d)"
-    trap "rm -rf '$tmp'" RETURN
-
-    report="$tmp/report.md"
-    expected="$tmp/expected.md"
-    {
-        printf '# ⚒️ review-anvil report\n\n'
-        printf '**Result:** wrapped metadata fixture.\n'
-        printf '**Reproduction:** 4 candidates; 3 confirmed, 1 deferred after\n'
-        printf 'failed reproduction.\n\n'
-        printf '## Findings\n'
-        printf -- '- **RAV-RUN3-R2-F001 [medium] auth** `src/auth.ts:12` — wrapped metadata should stay exactly as generated.\n'
-    } >"$report"
-    cp "$report" "$expected"
-
-    REVIEW_ANVIL_GITHUB_MAX_CHARS=1 "$HELPER" compact-report "$report" >/tmp/review-anvil-wrapped-reproduction.out
-
-    cmp -s "$expected" "$report"
 }
 
 test_post_dismisses_table_report_findings() {
@@ -1195,9 +1107,8 @@ JSON
     GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
     GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
     REVIEW_ANVIL_DISMISSALS="$dismissals" \
-    REVIEW_ANVIL_GITHUB_MAX_CHARS=12000 \
     PATH="$bin:$PATH" \
-      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-dismissed-table.out
+      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >"$tmp/dismissed-table.out"
 
     grep -q 'Earlier feedback' "$tmp/comment.md"
     ! grep -Fq '| RAV-RUN3-R2-F001 | M | auth | `src/auth.ts:12` |' "$tmp/comment.md"
@@ -1238,9 +1149,8 @@ JSON
     GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
     GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
     REVIEW_ANVIL_DISMISSALS="$dismissals" \
-    REVIEW_ANVIL_GITHUB_MAX_CHARS=12000 \
     PATH="$bin:$PATH" \
-      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-path-dismissal.out
+      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >"$tmp/path-dismissal.out"
 
     ! grep -q 'Prior PR feedback status' "$tmp/comment.md"
     grep -Fq 'same summary text appears in another file' "$tmp/comment.md"
@@ -1623,7 +1533,7 @@ JSON
     GH_MOCK_COMMENT_BODY="$tmp/posted-comment.md" \
     PATH="$bin:$PATH" \
       "$HELPER" post github.com acme widgets 42 marker-round-trip "$report" \
-      >/tmp/review-anvil-identity-round-trip.out
+      >"$tmp/identity-round-trip.out"
 
     grep -Fq '<summary>Earlier feedback</summary>' "$tmp/posted-comment.md"
     grep -Fq 'RAV-RUN3-R1-F001' "$tmp/posted-comment.md"
@@ -1752,7 +1662,7 @@ JSON
     GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
     GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
     PATH="$bin:$PATH" \
-      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-open-history.out
+      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >"$tmp/open-history.out"
 
     grep -Fq 'Earlier feedback' "$tmp/comment.md"
     grep -Fq '(This is still present. Source: https://example.invalid/open; id=RAV-RUN3-R2-F001)' "$tmp/comment.md"
@@ -1802,11 +1712,11 @@ REPORT
        GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
        PATH="$bin:$PATH" \
          "$HELPER" post github.com acme widgets 42 marker-123 "$report" \
-         >/tmp/review-anvil-compact-refresh.out 2>/tmp/review-anvil-compact-refresh.err; then
+         >"$tmp/compact-refresh.out" 2>"$tmp/compact-refresh.err"; then
         fail "compact post must fail when post-time history changes inventory"
     fi
 
-    grep -Fq 'rerun review-anvil' /tmp/review-anvil-compact-refresh.err
+    grep -Fq 'rerun review-anvil' "$tmp/compact-refresh.err"
     grep -Fq 'Refresh can accept missing state' "$report"
     grep -Fq 'id=RAV-RUN3-R2-F001' "$inline"
     [[ ! -e "$tmp/review-payload.json" ]]
@@ -1893,7 +1803,7 @@ JSON
     GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
     GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
     PATH="$bin:$PATH" \
-      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-history-approval.out
+      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >"$tmp/history-approval.out"
 
     jq -e '.event == "COMMENT"' "$tmp/review-payload.json" >/dev/null
 }
@@ -1922,7 +1832,7 @@ JSON
     GH_MOCK_REVIEW_PAYLOAD="$tmp/review-payload.json" \
     GH_MOCK_COMMENT_BODY="$tmp/comment.md" \
     PATH="$bin:$PATH" \
-      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >/tmp/review-anvil-outside-approval.out
+      "$HELPER" post github.com acme widgets 42 marker-123 "$report" >"$tmp/outside-approval.out"
 
     jq -e '.event == "APPROVE"' "$tmp/review-payload.json" >/dev/null
 }
@@ -2686,9 +2596,6 @@ main() {
     test_post_update_refresh_failure_omits_inline_details
     test_post_adversarial_off_downgrades_approval
     test_post_dismisses_id_prefixed_report_findings
-    test_compact_report_preserves_body_losslessly
-    test_compact_report_preserves_invalid_and_fenced_text
-    test_compact_report_preserves_wrapped_reproduction_metadata
     test_post_dismisses_table_report_findings
     test_dismissal_respects_report_paths
     test_next_run_counts_distinct_finalized_reports
