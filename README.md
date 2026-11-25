@@ -15,6 +15,7 @@ Then install plugins:
 /plugin install wshot
 /plugin install paper-siphon
 /plugin install codex-exec
+/plugin install cursor-exec
 /plugin install claude-exec
 /plugin install review-anvil
 /plugin install overleaf-comment
@@ -65,6 +66,14 @@ Delegate code review, plan review, and deep exploration tasks to **Codex CLI** f
 - `codex review --base main` — review current branch against main
 - `codex review --uncommitted` — review work-in-progress changes
 - `codex exec '<prompt>'` — custom prompted review, plan critique, or codebase exploration
+
+### cursor-exec
+
+Delegate code review, plan review, and exploration to **Cursor Agent CLI** for
+an independent second opinion. Use `agent -p --mode ask --output-format text
+'<prompt>'` for non-interactive reviews, and specify the exact diff or files to
+inspect. See `plugins/cursor-exec/skills/cursor-exec/SKILL.md` for setup,
+review scope, and read-only boundaries.
 
 ### claude-exec
 

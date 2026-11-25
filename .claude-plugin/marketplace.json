@@ -30,6 +30,12 @@
       "version": "0.1.0"
     },
     {
+      "name": "cursor-exec",
+      "source": "./plugins/cursor-exec",
+      "description": "Delegate code review, plan review, and deep exploration tasks to Cursor Agent CLI",
+      "version": "0.1.0"
+    },
+    {
       "name": "claude-exec",
       "source": "./plugins/claude-exec",
       "description": "Delegate code review, plan review, and deep exploration tasks to Claude Code CLI from Codex or other agents",
