@@ -202,7 +202,7 @@ _BIB_LINE_FILE = re.compile(r"---line (\d+) of file (\S+)")
 
 # Overleaf wraps log-entry locations in bidi control chars (U+202A..U+202E,
 # U+2066..U+2069); strip them before parsing "path, line".
-_BIDI = re.compile(r"[‪-‮⁦-⁩]")
+_BIDI = re.compile(r"[\u202a-\u202e\u2066-\u2069]")
 _DOM_LOC = re.compile(r"^(.*?)(?:,\s*(\d+))?\s*$")
 
 

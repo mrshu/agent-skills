@@ -7,8 +7,7 @@ description: Recompile an Overleaf project and extract its build logs, errors an
 
 Recompile an Overleaf project and pull its build diagnostics out in a
 standardized format, closing a publish → compile → debug loop. Uses the user's
-already-logged-in browser session via the [`chrome-cdp`](../../chrome-cdp)
-skill.
+already-logged-in browser session via the `chrome-cdp` skill.
 
 Mechanism is **API-first**: the page helper calls Overleaf's internal
 `POST /project/:id/compile` from inside the tab (which holds the session
@@ -30,16 +29,16 @@ fallback.
 ${CLAUDE_PLUGIN_ROOT}/skills/overleaf-compile/overleaf-compile --list
 
 # recompile + standardized JSON logs (target prefix from `cdp list`)
-${CLAUDE_PLUGIN_ROOT}/skills/overleaf-compile/overleaf-compile 60D065AD
+${CLAUDE_PLUGIN_ROOT}/skills/overleaf-compile/overleaf-compile ABCD1234
 
 # or address the tab by project URL
 ${CLAUDE_PLUGIN_ROOT}/skills/overleaf-compile/overleaf-compile --url https://www.overleaf.com/project/<id>
 
 # fast triage: just the errors, human-readable
-overleaf-compile 60D065AD --errors-only --format compiler
+overleaf-compile ABCD1234 --errors-only --format compiler
 
 # recompile from scratch and keep the raw artifacts
-overleaf-compile 60D065AD --clear-cache --out-dir ./build-logs
+overleaf-compile ABCD1234 --clear-cache --out-dir ./build-logs
 ```
 
 Run `overleaf-compile --help` for the full flag list (`--format`,
